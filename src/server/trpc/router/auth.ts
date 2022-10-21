@@ -7,4 +7,23 @@ export const authRouter = router({
   getSecretMessage: protectedProcedure.query(() => {
     return "You are logged in and can see this secret message!";
   }),
+  getCorps: protectedProcedure.query(({ ctx }) => {
+    const corps = prisma?.corps.findFirst({
+      where: {
+        userId: ctx.session?.user.id,
+      },
+      include: {
+        instruments: {
+          select: {
+            instrument: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return corps;
+  }),
 });
