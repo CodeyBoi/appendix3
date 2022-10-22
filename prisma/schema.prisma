@@ -69,8 +69,7 @@ model VerificationToken {
 // Custom models
 model Corps {
   id                    Int       @id @default(autoincrement())
-  username              String
-  number                Int
+  number                Int?
   firstName             String
   lastName              String
   isActive              Boolean   @default(true)
@@ -94,15 +93,15 @@ model CorpsInstrument {
   corpsId           Int
   instrumentId      Int
   isMainInstrument  Boolean
-  corps             Corps        @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  instrument        Instrument   @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  corps             Corps       @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  instrument        Instrument  @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, instrumentId])
 }
 
 model Instrument {
   id       Int      @id @default(autoincrement())
-  name     String
+  name     String   @unique
   corps    CorpsInstrument[]
 }
 
@@ -117,9 +116,9 @@ model Gig {
   signupEnd         DateTime?
   description       String?
   typeId            Int
-  points            Int      @default(1)
-  countsPositively  Boolean @default(false)
-  isPublic          Boolean @default(false)
+  points            Int       @default(1)
+  countsPositively  Boolean   @default(false)
+  isPublic          Boolean   @default(false)
   prompt1           String?
   prompt2           String?
   createdAt         DateTime  @default(now())
@@ -132,7 +131,7 @@ model Gig {
 
 model GigType {
   id       Int      @id @default(autoincrement())
-  name     String
+  name     String   @unique
   gigs     Gig[]
 }
 

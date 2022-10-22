@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { signIn, signOut, useSession } from "next-auth/react";
-import styles from "./index.module.css";
+import styles from "../index.module.css";
 
 const Home: NextPage = () => {
   const { data } = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -70,16 +70,13 @@ const AuthShowcase: React.FC = () => {
 
   const { data: sessionData } = useSession();
 
-  const { data: corps } = trpc.auth.getCorps.useQuery();
-
   return (
     <div className={styles.authShowcase}>
       {sessionData && <p>Logged in as {sessionData?.user?.name}</p>}
       {secretMessage && <p>{secretMessage}</p>}
-      {corps && <p>{`Välkommen ${corps.instruments[0]?.instrument.name}`}</p>}
       <button
         className={styles.signInButton}
-        onClick={sessionData ? () => signOut() : () => signIn('discord')}
+        onClick={sessionData ? () => signOut() : () => signIn('google')}
       >
         {sessionData ? "Sign out" : "Sign in"}
       </button>
