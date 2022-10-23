@@ -100,9 +100,10 @@ model CorpsInstrument {
 }
 
 model Instrument {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique
-  corps    CorpsInstrument[]
+  id          Int      @id
+  name        String   @unique
+  corps       CorpsInstrument[]
+  gigSignups  GigSignup[]
 }
 
 model Gig {
@@ -130,28 +131,31 @@ model Gig {
 }
 
 model GigType {
-  id       Int      @id @default(autoincrement())
+  id       Int      @id
   name     String   @unique
   gigs     Gig[]
 }
 
 model GigSignup {
-  id                Int       @id @default(autoincrement())
   corpsId           Int
   gigId             Int
   signupStatusId    Int
+  instrumentId      Int
   attended          Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  instrument        Instrument  @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   status            GigSignupStatus   @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
   corps             Corps     @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   gig               Gig       @relation(fields: [gigId], references: [id], onDelete: Cascade)
+
+  @@unique([corpsId, gigId])
 }
 
 model GigSignupStatus {
-  id       Int      @id @default(autoincrement())
-  value    String
+  id       Int      @id
+  value    String   @unique
   signups  GigSignup[]
 }
 

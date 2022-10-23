@@ -1,69 +1,69 @@
-import { Select, Stack } from "@mantine/core";
-import React, { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Gig, Corps } from "@prisma/client";
+import { Select, Skeleton, Stack } from "@mantine/core";
+import React from "react";
 import { trpc } from "../../utils/trpc";
 
 interface GigSignupBoxProps {
-  gig: Gig;
-  value?: string;
+  gigId: number;
 }
 
-const GigSignupBox = ({ gig, value }: GigSignupBoxProps) => {
+const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
+
+  const utils = trpc.useContext();
+
+  const addSignup = trpc.gig.addSignup.useMutation({
+    onSuccess: async () => {
+      await utils.gig.invalidate();
+    },
+  });
 
   const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
   const { data: mainInstrument, status: mainInstrumentStatus } = trpc.corps.mainInstrument.useQuery();
+  const { data: signup, status: signupStatus } = trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id! }, { enabled: !!corps });
 
-  const mainInstrumentName = mainInstrument?.name;
+  const [instrument, setInstrument] = React.useState('');
+  const [status, setStatus] = React.useState('Ej svarat');
 
-  const handleChange = async (value: string, instrument?: boolean) => {
-
-    const data: any = { gigId: gig.id, corpsId: corps?.id };
-    if (instrument) {
-      data.instrument = value;
-    } else {
-      data.status = value;
-      // data.instrument = corps.mainInstrument;
-    }
-
-    // const res = await axios.post("/api/signup", data);
-
-    // if (res.status === 200) {
-    //   queryClient.invalidateQueries(["signup", gig.id]);
-    // } else {
-    //   console.log(`Error when setting status for gig ${gig.id}`);
-    // }
+  if (signup && status === 'Ej svarat' && instrument === '') {
+    setStatus(signup.status.value);
+    setInstrument(signup.instrument.name);
   }
 
+  const loading = corpsStatus === "loading" || mainInstrumentStatus === "loading" || signupStatus === "loading";
   return (
     <Stack spacing={2}>
-      <Select
-        mr={8}
-        size="xs"
-        sx={{ maxWidth: "90px" }}
-        value={value ?? "Ej svarat"}
-        onChange={handleChange}
-        data={[
-          { label: 'Ja', value: 'Ja' },
-          { label: 'Nej', value: 'Nej' },
-          { label: 'Kanske', value: 'Kanske' },
-          { label: 'Ej svarat', value: 'Ej svarat' },
-        ]}
-      />
-      {corps && corps.instruments && corps?.instruments.length > 1 &&
-        <Select
-          mr={8}
-          size="xs"
-          sx={{ maxWidth: "90px" }}
-          label="Instrument:"
-          defaultValue={mainInstrumentName ?? ''}
-          onChange={value => handleChange(value ?? mainInstrumentName ?? '', true)}
-          data={[
-            { label: mainInstrumentName ?? '', value: mainInstrumentName ?? '' },
-//            { label: corps.secondaryInstrument, value: corps.secondaryInstrument },
-          ]}
-        />
-      }
+      {corps && mainInstrument && (
+        <>
+          <Select
+            mr={8}
+            size="xs"
+            value={status}
+            label="Jag deltar:"
+            onChange={s => {
+              setStatus(s!);
+              addSignup.mutateAsync({ gigId, corpsId: corps.id, status: s!, instrument: instrument || mainInstrument.name });
+            }}
+            data={[
+              { label: 'Ja', value: 'Ja' },
+              { label: 'Nej', value: 'Nej' },
+              { label: 'Kanske', value: 'Kanske' },
+              { label: 'Ej svarat', value: 'Ej svarat' },
+            ]}
+          />
+          {corps?.instruments.length > 1 &&
+            <Select
+              mr={8}
+              size="xs"
+              label="Instrument:"
+              value={instrument}
+              onChange={val => {
+                setInstrument(val!);
+                addSignup.mutateAsync({ gigId, corpsId: corps.id, status: status, instrument: val! });
+              }}
+              data={corps.instruments.map(i => ({ label: i.instrument.name, value: i.instrument.name }))}
+            />
+          }
+        </>
+      )}
     </Stack>
   );
 }

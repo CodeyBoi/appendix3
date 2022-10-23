@@ -6,6 +6,7 @@ import GigDetails from "./details";
 import GigButtons from "./buttons";
 import dayjs from "dayjs";
 import { Gig } from "@prisma/client";
+import { trpc } from "../../utils/trpc";
 
 interface GigProps {
   gig: Gig & { type: { name: string } };
