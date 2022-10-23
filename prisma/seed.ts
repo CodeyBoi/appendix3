@@ -153,6 +153,13 @@ const GIG_TYPES = [
   "Något annat!",
 ];
 
+const GIG_SIGNUP_STATUSES = [
+  "Ja",
+  "Nej",
+  "Kanske",
+  "Ej svarat",
+];
+
 async function main() {
 
   // Create instruments
@@ -243,6 +250,19 @@ async function main() {
           connect: { name: gig.type },
         },
       },
+    });
+  }
+
+  // Create gig signup statuses
+  for (var i = 0; i < GIG_SIGNUP_STATUSES.length; i++) {
+    const status = GIG_SIGNUP_STATUSES[i];
+    if (!status) {
+      break;
+    }
+    await prisma.gigSignupStatus.upsert({
+      where: { id: i + 1 },
+      update: {},
+      create: { id: i + 1, value: status },
     });
   }
 }

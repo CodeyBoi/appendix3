@@ -1,6 +1,6 @@
-import { Button, Indicator, Menu, useMantineColorScheme } from "@mantine/core";
+import { Button, Menu, useMantineColorScheme } from "@mantine/core";
 import React, { useMemo } from "react";
-import { FilePlusIcon, GearIcon, LockOpen1Icon, PersonIcon, PlusIcon } from "@radix-ui/react-icons";
+import { IconFilePlus, IconSettings, IconLockOpen, IconUserPlus } from "@tabler/icons";
 import Link from "next/link";
 
 interface AdminMenuProps {
@@ -18,34 +18,23 @@ const AdminMenu = ({ permissions }: AdminMenuProps) => {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Button compact leftIcon={<GearIcon />}>Administration</Button>
+        <Button compact leftIcon={<IconSettings />}>Administration</Button>
       </Menu.Target>
 
       <Menu.Dropdown>
         {(canManageCorps || canManagePermissions) && <Menu.Label>Användare</Menu.Label>}
         {canManageCorps &&
           <Menu.Item
-            icon={
-              <Indicator
-                label={<PlusIcon width={12} />}
-                styles={{
-                  indicator: {
-                    color: colorScheme === 'dark' ? 'white' : 'black',
-                    backgroundColor: "transparent",
-                  }
-                }}
-              >
-                <PersonIcon />
-              </Indicator>}
+            icon={<IconUserPlus />}
             component={Link}
             href="/admin/register"
           >
             Skapa användare
           </Menu.Item>}
-        {canManagePermissions && <Menu.Item icon={<LockOpen1Icon />} component={Link} href="/admin/permissions">Hantera behörigheter</Menu.Item>}
+        {canManagePermissions && <Menu.Item icon={<IconLockOpen />} component={Link} href="/admin/permissions">Hantera behörigheter</Menu.Item>}
         {(canManageGig || canManagePermissions) && <Menu.Divider />}
         {(canManageGig) && <Menu.Label>Spelningar</Menu.Label>}
-        {(canManageGig) && <Menu.Item icon={<FilePlusIcon />} component={Link} href="/admin/gig/new">Skapa spelning</Menu.Item>}
+        {(canManageGig) && <Menu.Item icon={<IconFilePlus />} component={Link} href="/admin/gig/new">Skapa spelning</Menu.Item>}
       </Menu.Dropdown>
     </Menu>
   );

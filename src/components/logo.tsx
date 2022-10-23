@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "@mantine/core";
-import Link from "next/link";
+import { NextLink } from "@mantine/next";
 
 const Logo = () => {
   return (
@@ -9,7 +9,7 @@ const Logo = () => {
         fontSize: "1.5rem",
         fontFamily: "Castellar",
       }}
-      component={Link}
+      component={NextLink}
       href="/"
     >Blindtarmen</Text>
   );

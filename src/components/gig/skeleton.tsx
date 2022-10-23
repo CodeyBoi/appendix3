@@ -1,8 +1,6 @@
 import { Group, Skeleton, Stack } from "@mantine/core";
 import React from "react";
 
-
-
 const GigSkeleton = () => {
 
   const titleWidth = Math.floor(Math.random() * 120) + 170;

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Loading from './loading';
-import Login from '../pages/login';
+import Login from '../pages/auth/login';
 import { Corps } from '../src/types/common/main';
 import { fetchCorps } from '../src/utils/fetches';
 import useToken from '../src/utils/use-token';

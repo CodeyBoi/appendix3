@@ -1,5 +1,5 @@
 import React from "react";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { IconAlertTriangle } from "@tabler/icons";
 import { Alert } from "@mantine/core";
 
 const AlertError = ({ title, withCloseButton, msg }: { title?: string, withCloseButton?: boolean, msg: string }) => {
@@ -7,7 +7,7 @@ const AlertError = ({ title, withCloseButton, msg }: { title?: string, withClose
       <Alert
         withCloseButton={withCloseButton}
         color="red"
-        icon={<ExclamationTriangleIcon />}
+        icon={<IconAlertTriangle />}
         title={title}
       >
         {msg}

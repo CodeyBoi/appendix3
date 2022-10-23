@@ -1,6 +1,6 @@
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import React from "react";
-import styles from "./gig-info.module.css";
+import styles from "./info.module.css";
 
 interface DateboxProps {
   date: Dayjs;

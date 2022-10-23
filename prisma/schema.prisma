@@ -140,6 +140,7 @@ model GigSignup {
   corpsId           Int
   gigId             Int
   signupStatusId    Int
+  attended          Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

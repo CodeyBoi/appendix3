@@ -1,24 +1,6 @@
-import { Table, Text } from "@mantine/core";
-import axios from "axios";
+import { Skeleton, Table, Text } from "@mantine/core";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import Loading from "./loading";
-import AlertError from "./alert-error";
-
-interface Stats {
-  nbrOfGigs: number;
-  positiveGigs: number;
-  corpsii: Stat[];
-}
-
-interface Stat {
-  id: number;
-  number: number;
-  firstName: string;
-  lastName: string;
-  gigPointsCollected: number;
-  gigPointsMax: number;
-}
+import { trpc } from "../utils/trpc";
 
 interface StatisticsTableProps {
   operatingYear: number;
@@ -26,51 +8,43 @@ interface StatisticsTableProps {
 
 const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
 
-  const { data: stats, status: statsStatus } = useQuery<Stats>(['statistics', operatingYear], async () => {
-    const start = new Date(operatingYear, 8, 1).toISOString().split('T')[0];
-    const end = new Date(operatingYear + 1, 7, 31).toISOString().split('T')[0];
-    const stats = await axios.get(`/api/stats?start=${start}&end=${end}`);
-    return stats.data;
-  }, { enabled: !!operatingYear });
+  const { data: stats, status: statsStatus } =
+    trpc.stats.yearly.useQuery({ operatingYear });
 
-  if (statsStatus === 'loading') {
-    return <Loading msg="Laddar statistik..." />;
-  } else if (statsStatus === 'error') {
-    return <AlertError msg="Något gick fel under hämtningen av statistik." />;
-  }
+  const { nbrOfGigs, positivelyCountedGigs, corpsStats } = stats ?? {};
 
-
-  const { corpsii: corpsiiStats, nbrOfGigs, positiveGigs } = stats;
   const nbrOfGigsString = `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}.`;
-  const positiveGigsString = (positiveGigs ?? 0) > 0 ? `Av dessa har ${positiveGigs} räknats positivt.` : "";
+  const positiveGigsString = (positivelyCountedGigs ?? 0) > 0 ? `Av dessa har ${positivelyCountedGigs} räknats positivt.` : "";
   return (
-    <>
-      {corpsiiStats?.length === 0 ? <Text>Det finns inga statistikuppgifter för detta år.</Text> :
-        <>
-          <Text>{nbrOfGigsString + ' ' + positiveGigsString}</Text>
-          <Table>
-            <thead>
-              <tr>
-                <th>Nummer</th>
-                <th>Namn</th>
-                <th>Spelpoäng</th>
-                <th>Procent</th>
-              </tr>
-            </thead>
-            <tbody>
-              {corpsiiStats?.map(stat => (
-                <tr key={stat.id}>
-                  <td>{stat.number ?? 'p.e.'}</td>
-                  <td>{`${stat.firstName} ${stat.lastName}`}</td>
-                  <td>{stat.gigPointsCollected}</td>
-                  <td>{`${Math.round(stat.gigPointsMax === 0 ? 1 : stat.gigPointsCollected / stat.gigPointsMax * 100)}%`}</td>
+    <Skeleton visible={statsStatus === 'loading'}>
+      <>
+        {corpsStats?.length === 0 ? <Text>Det finns inga statistikuppgifter för detta år.</Text> :
+          <>
+            <Text>{nbrOfGigsString + ' ' + positiveGigsString}</Text>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Nummer</th>
+                  <th>Namn</th>
+                  <th>Spelpoäng</th>
+                  <th>Procent</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </>
-      }
-    </>
+              </thead>
+              <tbody>
+                {corpsStats?.map(stat => (
+                  <tr key={stat.id}>
+                    <td>{stat.number ?? 'p.e.'}</td>
+                    <td>{`${stat.firstName} ${stat.lastName}`}</td>
+                    <td>{stat.gigsAttended}</td>
+                    <td>{`${Math.round(stat.attendence * 100)}%`}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        }
+      </>
+    </Skeleton>
   );
 }
 
