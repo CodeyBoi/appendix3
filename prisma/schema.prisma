@@ -117,7 +117,7 @@ model Gig {
   signupEnd         DateTime?
   description       String?
   typeId            Int
-  points            Int       @default(1)
+  points            Int
   countsPositively  Boolean   @default(false)
   isPublic          Boolean   @default(false)
   prompt1           String?

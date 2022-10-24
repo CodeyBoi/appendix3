@@ -3,31 +3,19 @@ import { Header, Group, Button } from '@mantine/core';
 import Logo from './logo';
 import AdminMenu from './admin-menu';
 import { IconClipboard, IconLogout, IconUser, IconSpeakerphone } from '@tabler/icons';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { NextLink } from '@mantine/next';
 
 const getOperatingYear = () => {
   const date = new Date();
-  const month = date.getMonth();
   const year = date.getFullYear();
   // If month is September or later, return current year, else return previous year
-  return month >= 8 ? year : year - 1;
+  return date.getMonth() >= 8 ? year : year - 1;
 }
 
 const AppendixHeader = () => {
 
-  // const { data: permissions, status: permissionsStatus } = useQuery<Set<string>>(['permissions'], fetchPermissions, {
-  //   enabled: !!token,
-  //   staleTime: 1000 * 60 * 60,
-  // });
-
-  // if (permissionsStatus === 'loading') {
-  //   return null;
-  // }
-
-  // else if (permissionsStatus === 'error') {
-  //   return <AlertError msg='Något gick horribelt fel' />;
-  // }
+  const session = useSession();
 
   return (
     <Header height={60} p="sm" sx={(theme) => ({

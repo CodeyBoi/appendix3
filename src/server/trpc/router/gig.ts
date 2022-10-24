@@ -6,6 +6,13 @@ export const gigRouter = router({
     .input(z.object({ gigId: z.number() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.gig.findUnique({
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
         where: {
           id: input.gigId,
         },
@@ -43,6 +50,103 @@ export const gigRouter = router({
       });
     }),
 
+  create: protectedProcedure
+    .input(z.object({
+      title: z.string(),
+      date: z.date(),
+      type: z.string(),
+      points: z.number(),
+      meetup: z.string().optional(),
+      start: z.string().optional(),
+      location: z.string().optional(),
+      signupStart: z.string().optional(),
+      signupEnd: z.string().optional(),
+      description: z.string().optional(),
+      countsPositively: z.boolean().optional(),
+      isPublic: z.boolean().optional(),
+      prompt1: z.string().optional(),
+      prompt2: z.string().optional(),
+      hiddenFor: z.array(z.number()).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gig.create({
+        data: {
+          title: input.title,
+          date: input.date,
+          type: {
+            connect: {
+              name: input.type,
+            },
+          },
+          points: input.points,
+          meetup: input.meetup,
+          start: input.start,
+          location: input.location,
+          signupStart: input.signupStart,
+          signupEnd: input.signupEnd,
+          description: input.description,
+          countsPositively: input.countsPositively,
+          isPublic: input.isPublic,
+          prompt1: input.prompt1,
+          prompt2: input.prompt2,
+          hiddenFor: {
+            create: input.hiddenFor?.map((corpsId) => ({ corpsId })),
+          },
+        },
+      });
+    }),
+
+  update: protectedProcedure
+    .input(z.object({
+      gigId: z.number(),
+      title: z.string(),
+      date: z.date(),
+      type: z.string(),
+      points: z.number(),
+      meetup: z.string().optional(),
+      start: z.string().optional(),
+      location: z.string().optional(),
+      signupStart: z.string().optional(),
+      signupEnd: z.string().optional(),
+      description: z.string().optional(),
+      countsPositively: z.boolean().optional(),
+      isPublic: z.boolean().optional(),
+      prompt1: z.string().optional(),
+      prompt2: z.string().optional(),
+      hiddenFor: z.array(z.number()).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gig.update({
+        where: {
+          id: input.gigId,
+        },
+        data: {
+          title: input.title,
+          date: input.date,
+          type: {
+            connect: {
+              name: input.type,
+            },
+          },
+          points: input.points,
+          meetup: input.meetup,
+          start: input.start,
+          location: input.location,
+          signupStart: input.signupStart,
+          signupEnd: input.signupEnd,
+          description: input.description,
+          countsPositively: input.countsPositively,
+          isPublic: input.isPublic,
+          prompt1: input.prompt1,
+          prompt2: input.prompt2,
+          hiddenFor: {
+            deleteMany: {},
+            create: input.hiddenFor?.map((corpsId) => ({ corpsId })),
+          },
+        },
+      });
+    }),
+
   getSignup: publicProcedure
     .input(z.object({
       corpsId: z.number(),
@@ -68,56 +172,74 @@ export const gigRouter = router({
         },
       });
     }),
-  
+
   getSignups: publicProcedure
     .input(z.object({
       gigId: z.number(),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.gigSignup.findMany({
-        select: {
-          status: {
-            select: {
-              value: true,
-            },
-          },
-          instrument: {
-            select: {
-              name: true,
-            },
-          },
-          corps: {
-            select: {
-              number: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-        where: {
-          gigId: input.gigId,
-        },
-        orderBy: {
-          corps: {
-            number: "asc",
-            lastName: "asc",
-            firstName: "asc",
-          },
-        },
 
-      // TODO: Rewrite into a raw SQL query
+      interface WhosComingEntry {
+        corpsId: number;
+        firstName: string;
+        lastName: string;
+        number?: number;
+        instrument: string;
+        signupStatus: string;
+        attended: boolean;
+      }
 
-      });
-
+      return ctx.prisma.$queryRaw<WhosComingEntry[]>`
+        SELECT
+          Corps.id AS corpsId,
+          Corps.firstName AS firstName,
+          Corps.lastName AS lastName,
+          Corps.number AS number,
+          Instrument.name AS instrument,
+          GigSignupStatus.value AS signupStatus,
+          GigSignup.attended AS attended
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        JOIN Corps ON Corps.id = GigSignup.corpsId
+        JOIN GigSignupStatus ON GigSignupStatus.id = GigSignup.signupStatusId
+        JOIN Instrument ON Instrument.id = GigSignup.instrumentId
+        WHERE GigSignup.gigId = ${input.gigId}
+        ORDER BY
+          signupStatus,
+          Corps.number NULLS LAST,
+          Corps.lastName,
+          Corps.firstName
+      `;
+    }),
 
   addSignup: protectedProcedure
     .input(z.object({
       corpsId: z.number(),
       gigId: z.number(),
-      status: z.string().optional(),
+      status: z.string(),
       instrument: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+
+      let instrument: string;
+      if (!input.instrument) {
+        instrument = (await ctx.prisma.corpsInstrument.findFirst({
+          select: {
+            instrument: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          where: {
+            corpsId: input.corpsId,
+            isMainInstrument: true,
+          },
+        }))?.instrument.name ?? "Annat";
+      } else {
+        instrument = input.instrument;
+      }
+
       return ctx.prisma.gigSignup.upsert({
         where: {
           corpsId_gigId: {
@@ -133,7 +255,7 @@ export const gigRouter = router({
           },
           instrument: {
             connect: {
-              name: input.instrument,
+              name: instrument,
             },
           },
         },
@@ -155,9 +277,45 @@ export const gigRouter = router({
           },
           instrument: {
             connect: {
-              name: input.instrument,
+              name: instrument,
             },
           },
+        },
+      });
+    }),
+
+  removeSignup: protectedProcedure
+    .input(z.object({
+      corpsId: z.number(),
+      gigId: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gigSignup.delete({
+        where: {
+          corpsId_gigId: {
+            corpsId: input.corpsId,
+            gigId: input.gigId,
+          },
+        },
+      });
+    }),
+
+  editAttendance: protectedProcedure
+    .input(z.object({
+      corpsId: z.number(),
+      gigId: z.number(),
+      attended: z.boolean(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gigSignup.update({
+        where: {
+          corpsId_gigId: {
+            corpsId: input.corpsId,
+            gigId: input.gigId,
+          },
+        },
+        data: {
+          attended: input.attended,
         },
       });
     }),

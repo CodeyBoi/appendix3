@@ -5,6 +5,7 @@ import { authRouter } from "./auth";
 import { gigRouter } from "./gig";
 import { corpsRouter } from "./corps";
 import { statsRouter } from "./stats";
+import { instrumentRouter } from "./instrument";
 
 export const appRouter = router({
   example: exampleRouter,
@@ -12,6 +13,7 @@ export const appRouter = router({
   corps: corpsRouter,
   gig: gigRouter,
   stats: statsRouter,
+  instrument: instrumentRouter,
 });
 
 // export type definition of API

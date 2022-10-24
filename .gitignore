@@ -10,6 +10,7 @@
 
 # database
 /prisma/db.sqlite
+/prisma/db.sqlite3
 /prisma/db.sqlite-journal
 
 # next.js

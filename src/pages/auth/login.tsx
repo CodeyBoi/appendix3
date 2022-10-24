@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 
 const Login: NextPage = () => {
   return (
-    <Button onClick={() => signIn("google")}>Sign in with Google</Button>
+    <Button onClick={() => signIn("google")}>Logga in med Google</Button>
   );
 };
 

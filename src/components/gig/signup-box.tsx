@@ -18,7 +18,8 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
 
   const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
   const { data: mainInstrument, status: mainInstrumentStatus } = trpc.corps.mainInstrument.useQuery();
-  const { data: signup, status: signupStatus } = trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id! }, { enabled: !!corps });
+  const { data: signup, status: signupStatus } =
+    trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? -1 }, { enabled: !!corps });
 
   const [instrument, setInstrument] = React.useState('');
   const [status, setStatus] = React.useState('Ej svarat');
@@ -28,7 +29,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
     setInstrument(signup.instrument.name);
   }
 
-  const loading = corpsStatus === "loading" || mainInstrumentStatus === "loading" || signupStatus === "loading";
+  // const loading = corpsStatus === "loading" || mainInstrumentStatus === "loading" || signupStatus === "loading";
   return (
     <Stack spacing={2}>
       {corps && mainInstrument && (
@@ -40,7 +41,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
             label="Jag deltar:"
             onChange={s => {
               setStatus(s!);
-              addSignup.mutateAsync({ gigId, corpsId: corps.id, status: s!, instrument: instrument || mainInstrument.name });
+              addSignup.mutateAsync({ gigId, corpsId: corps.id, status: s!, instrument: instrument });
             }}
             data={[
               { label: 'Ja', value: 'Ja' },

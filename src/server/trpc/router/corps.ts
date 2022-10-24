@@ -16,6 +16,40 @@ export const corpsRouter = router({
         },
       });
     }),
+
+  getCorpsii: protectedProcedure
+    .query(async ({ ctx }) => {
+      const corpsii = await ctx.prisma.corps.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          number: true,
+          instruments: {
+            select: {
+              instrument: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          userId: {
+            not: ctx.session?.user.id,
+          },
+
+        },
+      });
+      return corpsii.map((corps) => ({
+        id: corps.id,
+        name: corps.firstName + " " + corps.lastName,
+        number: corps.number,
+        instruments: corps.instruments.map((instrument) => instrument.instrument.name),
+      }));
+    }),
+
   mainInstrument: protectedProcedure
     .query(async ({ ctx }) => {
       const corps = await ctx.prisma.corps.findUnique({

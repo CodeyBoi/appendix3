@@ -1,10 +1,8 @@
-import { Grid, Center, Group, Title, Accordion, Button, AppShell } from "@mantine/core";
+import { Grid, Center, Group, Title, Accordion } from "@mantine/core";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
 import React from "react";
 import GigCalendar from "../components/gig/calendar";
 import GigInfo from "../components/gig/info";
-import AppendixHeader from "../components/header";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { trpc } from "../utils/trpc";
 
@@ -29,9 +27,14 @@ const Home: NextPage = () => {
 
   const currentDate = new Date((new Date()).toISOString().split("T")[0]!);
   const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
+
+  if (!corps) {
+
+  }
+
   const { data: gigs } = trpc.gig.getMany.useQuery(
-    { corpsId: corps?.id!, startDate: currentDate },
-    { enabled: corpsStatus === 'success' }
+    { corpsId: corps?.id ?? -1, startDate: currentDate },
+    { enabled: !!corps }
   );
 
   return (
