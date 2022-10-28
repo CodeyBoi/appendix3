@@ -1,13 +1,11 @@
 import React, { useMemo } from "react";
 import { Box, Center, Table, Checkbox, CloseButton, Tooltip, Title, Button, Group, Select, Space } from "@mantine/core";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { trpc } from "../utils/trpc";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 
 interface SignupListProps {
-  isAdmin: boolean;
+  isAdmin?: boolean;
   gigId: number;
 }
 
@@ -33,25 +31,15 @@ interface SignupListProps {
 // };
 
 
-const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
+const SignupList = ({ gigId }: SignupListProps) => {
 
   const utils = trpc.useContext();
 
   const { data: signups, status: signupsStatus } =
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
-  // Divide the list of corpsii into people who answered yes and people who answered maybe
-  const splitList = useMemo(() => signups?.reduce((acc, signup) => {
-    if (signup.signupStatus === 'Ja') {
-      acc.yesList.push(signup);
-    } else if (signup.signupStatus === 'Kanske') {
-      acc.maybeList.push(signup);
-    }
-    return acc;
-  }, { yesList: [] as typeof signups, maybeList: [] as typeof signups }), [signups]);
-
-  const yesList = splitList?.yesList ?? [];
-  const maybeList = splitList?.maybeList ?? [];
+  const { data: role } = trpc.corps.getRole.useQuery();
+  const isAdmin = role === "Admin";
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -59,6 +47,39 @@ const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
     (acc as { [key: string]: number })[instrument.name] = instrument.id;
     return acc;
   }, {}) ?? [], [instruments]);
+
+  // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
+  const signupsSorted = useMemo(() => signups?.sort((a, b) => {
+    if (a.instrument === b.instrument) {
+      if (!a.number && !b.number) {
+        if (a.lastName === b.lastName) {
+          return a.firstName.localeCompare(b.firstName);
+        } else {
+          return a.lastName.localeCompare(b.lastName);
+        }
+      } else {
+        return (a.number ?? Infinity) - (b.number ?? Infinity);
+      }
+    } else {
+      if (!instrumentPrecedence) {
+        return 0;
+      }
+      return (instrumentPrecedence[a.instrument] ?? Infinity) - (instrumentPrecedence[b.instrument] ?? Infinity);
+    }
+  }) ?? [], [signups]);
+
+  // Divide the list of corpsii into people who answered yes and people who answered maybe
+  const splitList = signupsSorted?.reduce((acc, signup) => {
+    if (signup.signupStatus === 'Ja') {
+      acc.yesList.push(signup);
+    } else if (signup.signupStatus === 'Kanske') {
+      acc.maybeList.push(signup);
+    }
+    return acc;
+  }, { yesList: [] as typeof signupsSorted, maybeList: [] as typeof signupsSorted });
+
+  const yesList = splitList?.yesList ?? [];
+  const maybeList = splitList?.maybeList ?? [];
 
   const { data: selectCorpsii, status: selectCorpsiiStatus } = trpc.corps.getCorpsii.useQuery();
   const corpsii = useMemo(() => {
@@ -101,24 +122,6 @@ const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
 
   /** Code from here on is absolutely horrible, but it works. 
    *  Travelers beware. */
-
-  // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
-  const signupsSorted = useMemo(() => signups?.sort((a, b) => {
-    if (a.instrument === b.instrument) {
-      if (!a.number && !b.number) {
-        if (a.lastName === b.lastName) {
-          return a.firstName.localeCompare(b.firstName);
-        } else {
-          return a.lastName.localeCompare(b.lastName);
-        }
-      } else {
-        return (a.number ?? Infinity) - (b.number ?? Infinity);
-      }
-    } else {
-      return (instrumentPrecedence[a.instrument] ?? Infinity) - (instrumentPrecedence[b.instrument] ?? Infinity);
-    }
-  }) ?? [], [signups]);
-
   const signupsToTable = (signups: any) => {
     if (signups.length === 0) {
       return;
@@ -169,11 +172,7 @@ const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
 
   const yesTable = useMemo(() => signupsToTable(yesList), [yesList]);
   const maybeTable = useMemo(() => signupsToTable(maybeList), [maybeList]);
-
-  if (!signups || signups.length === 0) {
-    return null;
-  }
-
+  
   return (
     <Box>
       {isAdmin &&
@@ -196,7 +195,12 @@ const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
         </form>
       }
       <Space h="sm" />
-      <Title order={3}>{yesList.length > 0 ? 'Dessa är anmälda:' : <i>Ingen är anmäld än. Kanske kan du bli den första?</i>}</Title>
+      {yesList && (
+        <>
+          {yesList.length > 0 && <Title order={3}>Dessa är anmälda</Title>}
+          {yesList.length == 0 && <Title order={3}><i>Ingen är anmäld än. Kanske kan du bli den första?</i></Title>}
+        </>
+      )}
       {yesList.length > 0 &&(
       <Table sx={{ tableLayout: "fixed" }}>
         <thead>

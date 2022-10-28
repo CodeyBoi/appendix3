@@ -7,20 +7,14 @@ import { trpc } from "../utils/trpc";
 import { ColorSchemeProvider, MantineProvider, ColorScheme, AppShell } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { GLOBAL_THEME } from "../utils/global-theme";
-import { useState } from "react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import AppendixHeader from "../components/header";
 import { AppContainer } from "../components/app-container";
+import { AppRouter } from "../server/trpc/router/_app";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-
-  // const [colorScheme, setColorScheme] = useState<ColorScheme>('light');
-  // const toggleColorScheme = (value?: ColorScheme) => {
-  //   setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
-  // };
 
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({

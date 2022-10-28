@@ -38,3 +38,8 @@ body {
   font-family: Haettenschweiler;
   src: url(../../public/fonts/hatten.ttf);
 }
+
+.icon-tabler {
+  width: 20px;
+  height: 20px;
+}

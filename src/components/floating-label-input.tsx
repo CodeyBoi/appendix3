@@ -1,9 +1,6 @@
-import React from "react";
-import { TextInput, createStyles, PasswordInput } from "@mantine/core";
+import { useState } from 'react';
+import { TextInput, TextInputProps, createStyles } from '@mantine/core';
 
-/**
- * StyledTextInput taken from https://ui.mantine.dev/category/inputs
- */
 const useStyles = createStyles((theme, { floating }: { floating: boolean }) => ({
   root: {
     position: 'relative',
@@ -20,8 +17,8 @@ const useStyles = createStyles((theme, { floating }: { floating: boolean }) => (
         ? theme.white
         : theme.black
       : theme.colorScheme === 'dark'
-        ? theme.colors.dark[3]
-        : theme.colors.gray[5],
+      ? theme.colors.dark[3]
+      : theme.colors.gray[5],
     transition: 'transform 150ms ease, color 150ms ease, font-size 150ms ease',
     transform: floating ? `translate(-${theme.spacing.sm}px, -28px)` : 'none',
     fontSize: floating ? theme.fontSizes.xs : theme.fontSizes.sm,
@@ -41,50 +38,18 @@ const useStyles = createStyles((theme, { floating }: { floating: boolean }) => (
   },
 }));
 
-interface FloatingLabelInputProps {
-  label: string;
-  placeholder?: string;
-  required?: boolean;
-  type?: string;
-  [key: string]: any;
-}
-
-export function FloatingLabelInput({ label, required, placeholder, type }: FloatingLabelInputProps) {
-  const [focused, setFocused] = React.useState(false);
-  const [value, setValue] = React.useState('');
-  const { classes } = useStyles({ floating: value.trim().length !== 0 || focused });
-
-  if (type === "password") {
-    return (
-      <PasswordInput
-        label={label}
-        placeholder={placeholder}
-        required={required}
-        classNames={classes}
-        value={value}
-        onChange={(event) => setValue(event.currentTarget.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        mt="md"
-        autoComplete="nope"
-      />
-    );
-  }
+export function FloatingLabelInput(props: TextInputProps) {
+  const [focused, setFocused] = useState(false);
+  const { classes } = useStyles({ floating: props.value?.toString().length !== 0 || focused });
 
   return (
     <TextInput
-      label={label}
-      placeholder={placeholder}
-      required={required}
       classNames={classes}
-      value={value}
-      onChange={(event) => setValue(event.currentTarget.value)}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       mt="md"
       autoComplete="nope"
+      {...props}
     />
   );
 }
-
-export default FloatingLabelInput;

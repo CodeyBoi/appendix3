@@ -1,11 +1,11 @@
-import { MultiSelect, MultiSelectProps, SelectItem } from "@mantine/core";
+import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import React, { useMemo } from "react";
 import { trpc } from "../utils/trpc";
 
 const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
 
   const { data: corps } = trpc.corps.getCorps.useQuery();
-  const { data: corpsii } =
+  const { data: corpsii, status: corpsiiStatus } =
     trpc.corps.getCorpsii.useQuery(undefined, {
       enabled: !!corps,
       staleTime: 1000 * 60 * 60 * 24
@@ -21,7 +21,7 @@ const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
     searchable: true,
     clearable: true,
     data: corpsiiData ?? [],
-    placeholder: corpsiiData ? 'Laddar corps...' : props.placeholder,
+    placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
     nothingFound: "Inga corps hittades",
   };
 

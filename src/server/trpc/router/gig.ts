@@ -12,6 +12,11 @@ export const gigRouter = router({
               name: true,
             },
           },
+          hiddenFor: {
+            select: {
+              corpsId: true,
+            },
+          },
         },
         where: {
           id: input.gigId,
@@ -64,8 +69,8 @@ export const gigRouter = router({
       description: z.string().optional(),
       countsPositively: z.boolean().optional(),
       isPublic: z.boolean().optional(),
-      prompt1: z.string().optional(),
-      prompt2: z.string().optional(),
+      checkbox1: z.string().optional(),
+      checkbox2: z.string().optional(),
       hiddenFor: z.array(z.number()).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -87,8 +92,8 @@ export const gigRouter = router({
           description: input.description,
           countsPositively: input.countsPositively,
           isPublic: input.isPublic,
-          prompt1: input.prompt1,
-          prompt2: input.prompt2,
+          checkbox1: input.checkbox1,
+          checkbox2: input.checkbox2,
           hiddenFor: {
             create: input.hiddenFor?.map((corpsId) => ({ corpsId })),
           },
@@ -111,8 +116,8 @@ export const gigRouter = router({
       description: z.string().optional(),
       countsPositively: z.boolean().optional(),
       isPublic: z.boolean().optional(),
-      prompt1: z.string().optional(),
-      prompt2: z.string().optional(),
+      checkbox1: z.string().optional(),
+      checkbox2: z.string().optional(),
       hiddenFor: z.array(z.number()).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -137,8 +142,8 @@ export const gigRouter = router({
           description: input.description,
           countsPositively: input.countsPositively,
           isPublic: input.isPublic,
-          prompt1: input.prompt1,
-          prompt2: input.prompt2,
+          checkbox1: input.checkbox1,
+          checkbox2: input.checkbox2,
           hiddenFor: {
             deleteMany: {},
             create: input.hiddenFor?.map((corpsId) => ({ corpsId })),

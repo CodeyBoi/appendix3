@@ -160,17 +160,21 @@ const GIG_SIGNUP_STATUSES = [
   "Ej svarat",
 ];
 
+const ROLES = [
+  "Admin",
+];
+
 async function main() {
 
   // Create instruments
-  for (var i = 0; i < INSTRUMENTS.length; i++) {
+  for (let i = 0; i < INSTRUMENTS.length; i++) {
     const instrument = INSTRUMENTS[i];
     if (!instrument) {
       break;
     }
     await prisma.instrument.upsert({
       where: { id: i + 1 },
-      update: {},
+      update: { name: instrument },
       create: { id: i + 1, name: instrument },
     });
   }
@@ -213,14 +217,14 @@ async function main() {
   }
 
   // Create gig types
-  for (var i = 0; i < GIG_TYPES.length; i++) {
+  for (let i = 0; i < GIG_TYPES.length; i++) {
     const gigType = GIG_TYPES[i];
     if (!gigType) {
       break;
     }
     await prisma.gigType.upsert({
       where: { id: i + 1 },
-      update: {},
+      update: { name: gigType },
       create: { id: i + 1, name: gigType },
     });
   }
@@ -233,7 +237,7 @@ async function main() {
     await prisma.$executeRawUnsafe(`ALTER SEQUENCE gig_id_seq RESTART WITH 1`);
   }
 
-  for (var i = 0; i < GIGS.length; i++) {
+  for (let i = 0; i < GIGS.length; i++) {
     const gig = GIGS[i];
     if (!gig) {
       break;
@@ -254,17 +258,31 @@ async function main() {
   }
 
   // Create gig signup statuses
-  for (var i = 0; i < GIG_SIGNUP_STATUSES.length; i++) {
+  for (let i = 0; i < GIG_SIGNUP_STATUSES.length; i++) {
     const status = GIG_SIGNUP_STATUSES[i];
     if (!status) {
       break;
     }
     await prisma.gigSignupStatus.upsert({
       where: { id: i + 1 },
-      update: {},
+      update: { value: status },
       create: { id: i + 1, value: status },
     });
   }
+
+  // Create roles
+  for (let i = 0; i < ROLES.length; i++) {
+    const role = ROLES[i];
+    if (!role) {
+      break;
+    }
+    await prisma.role.upsert({
+      where: { id: i + 1 },
+      update: { name: role },
+      create: { id: i + 1, name: role },
+    });
+  }
+
 }
 
 main()

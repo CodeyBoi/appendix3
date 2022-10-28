@@ -27,10 +27,10 @@ const AppendixHeader = () => {
         <Logo />
         <Group spacing={0}>
           {/* {permissions && permissions.size > 0 && <AdminMenu permissions={permissions} />} */}
-          <Button compact leftIcon={<IconSpeakerphone size={20} />} component={NextLink} href='/gig'>Spelningar</Button>
-          <Button compact leftIcon={<IconClipboard size={20} />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
-          <Button compact leftIcon={<IconUser size={20} />} size='sm' component={NextLink} href="/me">Mina sidor</Button>
-          <Button compact leftIcon={<IconLogout size={20} />} size='sm' onClick={() => signOut()}>Logga ut</Button>
+          <Button compact leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
+          <Button compact leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
+          <Button compact leftIcon={<IconUser />} size='sm' component={NextLink} href="/me">Mina sidor</Button>
+          <Button compact leftIcon={<IconLogout />} size='sm' onClick={() => signOut()}>Logga ut</Button>
         </Group>
       </Group>
     </Header>

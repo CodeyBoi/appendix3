@@ -68,102 +68,111 @@ model VerificationToken {
 
 // Custom models
 model Corps {
-  id                    Int       @id @default(autoincrement())
+  id                    Int      @id @default(autoincrement())
   number                Int?
   firstName             String
   lastName              String
-  isActive              Boolean   @default(true)
-  vegetarian            Boolean   @default(false)
-  vegan                 Boolean   @default(false)
-  glutenIntolerant      Boolean   @default(false)
-  lactoseIntolerant     Boolean   @default(false)
-  nonDrinker            Boolean   @default(false)
-  otherFoodRestrictions String?
-  userId                String    @unique
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  isActive              Boolean  @default(true)
+  vegetarian            Boolean  @default(false)
+  vegan                 Boolean  @default(false)
+  glutenIntolerant      Boolean  @default(false)
+  lactoseIntolerant     Boolean  @default(false)
+  nonDrinker            Boolean  @default(false)
+  otherFoodRestrictions String   @default("")
+  userId                String   @unique
+  roleId                Int?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  hiddenGigs            HiddenGig[]
-  gigSignups            GigSignup[]
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  instruments           CorpsInstrument[]
+  hiddenGigs  HiddenGig[]
+  gigSignups  GigSignup[]
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments CorpsInstrument[]
+  role        Role?             @relation(fields: [roleId], references: [id])
 }
 
 model CorpsInstrument {
-  corpsId           Int
-  instrumentId      Int
-  isMainInstrument  Boolean
-  corps             Corps       @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  instrument        Instrument  @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  corpsId          Int
+  instrumentId     Int
+  isMainInstrument Boolean
+  corps            Corps      @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  instrument       Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, instrumentId])
 }
 
 model Instrument {
-  id          Int      @id
-  name        String   @unique
-  corps       CorpsInstrument[]
-  gigSignups  GigSignup[]
+  id         Int               @id
+  name       String            @unique
+  corps      CorpsInstrument[]
+  gigSignups GigSignup[]
 }
 
 model Gig {
-  id                Int       @id @default(autoincrement())
-  title             String
-  date              DateTime
-  meetup            String?
-  start             String?
-  location          String?
-  signupStart       DateTime?
-  signupEnd         DateTime?
-  description       String?
-  typeId            Int
-  points            Int
-  countsPositively  Boolean   @default(false)
-  isPublic          Boolean   @default(false)
-  prompt1           String?
-  prompt2           String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id               Int       @id @default(autoincrement())
+  title            String
+  date             DateTime
+  meetup           String    @default("")
+  start            String    @default("")
+  location         String    @default("")
+  signupStart      DateTime?
+  signupEnd        DateTime?
+  description      String    @default("")
+  typeId           Int
+  points           Int
+  countsPositively Boolean   @default(false)
+  isPublic         Boolean   @default(false)
+  checkbox1        String    @default("")
+  checkbox2        String    @default("")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  type              GigType   @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  signups           GigSignup[]
-  hiddenFor         HiddenGig[]
+  type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  signups   GigSignup[]
+  hiddenFor HiddenGig[]
 }
 
 model GigType {
-  id       Int      @id
-  name     String   @unique
-  gigs     Gig[]
+  id   Int    @id
+  name String @unique
+  gigs Gig[]
 }
 
 model GigSignup {
-  corpsId           Int
-  gigId             Int
-  signupStatusId    Int
-  instrumentId      Int
-  attended          Boolean   @default(false)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  corpsId        Int
+  gigId          Int
+  signupStatusId Int
+  instrumentId   Int
+  attended       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  instrument        Instrument  @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  status            GigSignupStatus   @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
-  corps             Corps     @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  gig               Gig       @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  instrument Instrument      @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  status     GigSignupStatus @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
+  corps      Corps           @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  gig        Gig             @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
 }
 
 model GigSignupStatus {
-  id       Int      @id
-  value    String   @unique
-  signups  GigSignup[]
+  id      Int         @id
+  value   String      @unique
+  signups GigSignup[]
 }
 
 model HiddenGig {
-  corpsId           Int
-  gigId             Int
-  corps             Corps     @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  gig               Gig       @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  corpsId Int
+  gigId   Int
+  corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  gig     Gig   @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
+}
+
+model Role {
+  id   Int    @id
+  name String @unique
+
+  corps Corps[]
 }

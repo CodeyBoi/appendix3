@@ -39,7 +39,6 @@ export const corpsRouter = router({
           userId: {
             not: ctx.session?.user.id,
           },
-
         },
       });
       return corpsii.map((corps) => ({
@@ -48,6 +47,23 @@ export const corpsRouter = router({
         number: corps.number,
         instruments: corps.instruments.map((instrument) => instrument.instrument.name),
       }));
+    }),
+
+  getRole: protectedProcedure
+    .query(async ({ ctx }) => {
+      const user = await ctx.prisma.corps.findUnique({
+        include: {
+          role: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          userId: ctx.session?.user.id,
+        },
+      });
+      return user?.role?.name;
     }),
 
   mainInstrument: protectedProcedure

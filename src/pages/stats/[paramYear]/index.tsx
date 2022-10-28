@@ -1,7 +1,7 @@
 import { Box, Center, Group, Select, Skeleton, Title } from "@mantine/core";
 import React from "react";
-import StatisticsTable from "../../components/statistics-table";
-import Loading from "../../components/loading";
+import StatisticsTable from "../../../components/statistics-table";
+import Loading from "../../../components/loading";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
 

@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { Gig } from "@prisma/client";
 import { NextLink } from "@mantine/next";
+import { trpc } from "../../utils/trpc";
 
 interface GigButtonsProps {
   gig: Gig;
@@ -19,6 +20,8 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
   const router = useRouter();
   const pathname = router.pathname;
 
+  const { data: role } = trpc.corps.getRole.useQuery();
+
   const currentDate = dayjs();
   const gigDate = dayjs(gig.date);
   const showSignup =
@@ -29,7 +32,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
     // There is no signup end date or today is before or at the signup end date
     && (!gig.signupEnd || currentDate.subtract(1, 'day').isBefore(dayjs(gig.signupEnd)));
 
-  const isAdmin = false;
+  const isAdmin = role === "Admin";
 
   return (
     <Group align="start" pl={12} pb={6} spacing={20}>
@@ -45,7 +48,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
               component={NextLink}
               href={`/gig/${gig.id}`}
             >
-              <IconUser size={20} />
+              <IconUser />
             </ActionIcon>
           </Tooltip>
         )}
@@ -59,7 +62,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
               component={NextLink}
               href={`/gig/${gig.id}/edit`}
             >
-              <IconEdit size={20} />
+              <IconEdit />
             </ActionIcon>
           </Tooltip>
         }
