@@ -2,9 +2,7 @@ import { Box, Center, Group, Select, Skeleton, Title } from "@mantine/core";
 import React from "react";
 import StatisticsTable from "../../components/statistics-table";
 import Loading from "../../components/loading";
-import AlertError from "../../components/alert-error";
 import { useRouter } from "next/router";
-import { trpc } from "../../utils/trpc";
 import { NextPage } from "next";
 
 const getOperatingYear = () => {

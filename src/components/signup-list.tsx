@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { Box, Center, Table, Checkbox, CloseButton, Tooltip, Title, Button, Group, Select, Space } from "@mantine/core";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { useQueryClient } from "@tanstack/react-query";
 import { trpc } from "../utils/trpc";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
@@ -37,7 +36,6 @@ interface SignupListProps {
 const SignupList = ({ isAdmin, gigId }: SignupListProps) => {
 
   const utils = trpc.useContext();
-  const queryClient = useQueryClient();
 
   const { data: signups, status: signupsStatus } =
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });

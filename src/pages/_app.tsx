@@ -22,7 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   //   setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
   // };
 
-  // Allows user to toggle between light and dark mode by pressing `mod+J`
+  // Allows user to toggle between light and dark mode by pressing `mod+Y`
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',

@@ -1,6 +1,7 @@
 import { Skeleton, Table, Text } from "@mantine/core";
 import React from "react";
 import { trpc } from "../utils/trpc";
+import AlertError from "./alert-error";
 
 interface StatisticsTableProps {
   operatingYear: number;
@@ -13,10 +14,17 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
 
   const { nbrOfGigs, positivelyCountedGigs, corpsStats } = stats ?? {};
 
-  const nbrOfGigsString = `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}.`;
-  const positiveGigsString = (positivelyCountedGigs ?? 0) > 0 ? `Av dessa har ${positivelyCountedGigs} räknats positivt.` : "";
+  const nbrOfGigsString =
+    `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}.`;
+  const positiveGigsString = 
+    (positivelyCountedGigs ?? 0) > 0 ? `Av dessa har ${positivelyCountedGigs} räknats positivt.` : "";
+
+  if (statsStatus === 'error') {
+    return <AlertError msg="Kunde inte hämta spelningsstatistik." />;
+  }
+
   return (
-    <Skeleton visible={statsStatus === 'loading'}>
+    <Skeleton visible={!corpsStats}>
       <>
         {corpsStats?.length === 0 ? <Text>Det finns inga statistikuppgifter för detta år.</Text> :
           <>

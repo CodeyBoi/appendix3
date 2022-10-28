@@ -14,7 +14,7 @@ const WhosComing = ({ isAdmin }: { isAdmin: boolean }) => {
   const gigId = parseInt(router.query.gigId as string ?? "0");
 
   const { data: gig, status: gigStatus } =
-    trpc.gig.getWithId.useQuery({ gigId }, { enabled: !!gigId });
+    trpc.gig.getWithId.useQuery({ gigId }, { enabled: !!router.isReady });
 
   const loading = gigStatus === "loading";
 
