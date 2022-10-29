@@ -55,8 +55,9 @@ export const gigRouter = router({
       });
     }),
 
-  create: protectedProcedure
+  upsert: protectedProcedure
     .input(z.object({
+      gigId: z.number().optional(),
       title: z.string(),
       date: z.date(),
       type: z.string(),
@@ -64,91 +65,36 @@ export const gigRouter = router({
       meetup: z.string().optional(),
       start: z.string().optional(),
       location: z.string().optional(),
-      signupStart: z.string().optional(),
-      signupEnd: z.string().optional(),
+      signupStart: z.date().nullable(),
+      signupEnd: z.date().nullable(),
       description: z.string().optional(),
       countsPositively: z.boolean().optional(),
       isPublic: z.boolean().optional(),
       checkbox1: z.string().optional(),
       checkbox2: z.string().optional(),
-      hiddenFor: z.array(z.number()).optional(),
+      hiddenFor: z.array(z.string()).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.gig.create({
-        data: {
-          title: input.title,
-          date: input.date,
-          type: {
-            connect: {
-              name: input.type,
-            },
-          },
-          points: input.points,
-          meetup: input.meetup,
-          start: input.start,
-          location: input.location,
-          signupStart: input.signupStart,
-          signupEnd: input.signupEnd,
-          description: input.description,
-          countsPositively: input.countsPositively,
-          isPublic: input.isPublic,
-          checkbox1: input.checkbox1,
-          checkbox2: input.checkbox2,
-          hiddenFor: {
-            create: input.hiddenFor?.map((corpsId) => ({ corpsId })),
+      if (input.points < 0) {
+        throw new Error("Points cannot be negative");
+      }
+      const { gigId, ...data} = {
+        ...input,
+        hiddenFor: {
+          create: input.hiddenFor?.map((corpsId) => ({ corpsId: parseInt(corpsId) })),
+        },
+        type: {
+          connect: {
+            name: input.type,
           },
         },
-      });
-    }),
-
-  update: protectedProcedure
-    .input(z.object({
-      gigId: z.number(),
-      title: z.string(),
-      date: z.date(),
-      type: z.string(),
-      points: z.number(),
-      meetup: z.string().optional(),
-      start: z.string().optional(),
-      location: z.string().optional(),
-      signupStart: z.string().optional(),
-      signupEnd: z.string().optional(),
-      description: z.string().optional(),
-      countsPositively: z.boolean().optional(),
-      isPublic: z.boolean().optional(),
-      checkbox1: z.string().optional(),
-      checkbox2: z.string().optional(),
-      hiddenFor: z.array(z.number()).optional(),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.gig.update({
+      };
+      return ctx.prisma.gig.upsert({
         where: {
-          id: input.gigId,
+          id: gigId,
         },
-        data: {
-          title: input.title,
-          date: input.date,
-          type: {
-            connect: {
-              name: input.type,
-            },
-          },
-          points: input.points,
-          meetup: input.meetup,
-          start: input.start,
-          location: input.location,
-          signupStart: input.signupStart,
-          signupEnd: input.signupEnd,
-          description: input.description,
-          countsPositively: input.countsPositively,
-          isPublic: input.isPublic,
-          checkbox1: input.checkbox1,
-          checkbox2: input.checkbox2,
-          hiddenFor: {
-            deleteMany: {},
-            create: input.hiddenFor?.map((corpsId) => ({ corpsId })),
-          },
-        },
+        update: data,
+        create: data,
       });
     }),
 
@@ -312,6 +258,20 @@ export const gigRouter = router({
       attended: z.boolean(),
     }))
     .mutation(async ({ ctx, input }) => {
+      const user = ctx.prisma.user.findUnique({
+        where: {
+          id: "1",
+        },
+        include: {
+          corps: true,
+        },
+      });
+    
+      return {
+        user: {
+          id: "1",
+        },
+      };
       return ctx.prisma.gigSignup.update({
         where: {
           corpsId_gigId: {
@@ -325,3 +285,7 @@ export const gigRouter = router({
       });
     }),
 });
+
+const getSession = () => {
+  
+}

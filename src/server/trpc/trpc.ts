@@ -32,7 +32,39 @@ const isAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const isAdmin = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const role = await ctx.prisma.user.findUnique({
+    where: { id: ctx.session.user.id },
+    select: {
+      corps: {
+        select: {
+          role: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  if (role?.corps?.role?.name !== "Admin") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+
 /**
  * Protected procedure
  **/
 export const protectedProcedure = t.procedure.use(isAuthed);
+
+export const adminProcedure = t.procedure.use(isAdmin);

@@ -9,6 +9,7 @@ import { trpc } from "../../../../utils/trpc";
 import 'dayjs/locale/sv';
 
 interface FormValues {
+  gigId?: number;
   title: string;
   type: string;
   description: string;
@@ -16,8 +17,8 @@ interface FormValues {
   date: Date;
   meetup: string;
   start: string;
-  signupStart: Date;
-  signupEnd: Date;
+  signupStart: Date | null;
+  signupEnd: Date | null;
   isPublic: boolean;
   points: number;
   countsPositively: boolean;
@@ -31,11 +32,11 @@ const initialValues: FormValues = {
   type: "",
   description: "",
   location: "",
-  date: "" as unknown as Date,
+  date: null as unknown as Date,
   meetup: "",
   start: "",
-  signupStart: "" as unknown as Date,
-  signupEnd: "" as unknown as Date,
+  signupStart: null,
+  signupEnd: null,
   isPublic: false,
   points: 1,
   countsPositively: false,
@@ -77,8 +78,8 @@ const AdminGig = ({ newGig }: { newGig: boolean }) => {
         date: gig.date,
         meetup: gig.meetup,
         start: gig.start,
-        signupStart: gig.signupStart ?? '' as unknown as Date,
-        signupEnd: gig.signupEnd ?? '' as unknown as Date,
+        signupStart: gig.signupStart ?? null,
+        signupEnd: gig.signupEnd ?? null,
         isPublic: gig.isPublic,
         points: gig.points,
         countsPositively: gig.countsPositively,
@@ -89,7 +90,7 @@ const AdminGig = ({ newGig }: { newGig: boolean }) => {
     }
   }, [gig]);
 
-  const mutation = trpc.gig[newGig ? 'create' : 'update'].useMutation({
+  const mutation = trpc.gig.upsert.useMutation({
     onSuccess: () => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
@@ -97,12 +98,13 @@ const AdminGig = ({ newGig }: { newGig: boolean }) => {
     },
   })
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     setSubmittning(true);
     if (newGig) {
       mutation.mutateAsync(values);
     } else {
-      mutation.mutateAsync({ ...values, id: gigId });
+      console.log({gigId});
+      mutation.mutateAsync({ ...values, gigId });
     }
   }
 
@@ -125,6 +127,7 @@ const AdminGig = ({ newGig }: { newGig: boolean }) => {
                 label="Spelningstyp"
                 placeholder="Välj typ..."
                 data={gigTypes?.map((type) => ({ value: type.name, label: type.name })) ?? []}
+                defaultValue={gig?.type.name}
                 {...form.getInputProps('typeId')}
               />
               <DatePicker
@@ -181,6 +184,7 @@ const AdminGig = ({ newGig }: { newGig: boolean }) => {
               maxDropdownHeight={260}
               label="Dölj spelning"
               disabled={form.values.isPublic}
+              defaultValue={form.values.hiddenFor}
               description="Spelningsanmälan kommer inte att synas för dessa corps"
               placeholder="Välj corps..."
               {...form.getInputProps('hiddenFor')}

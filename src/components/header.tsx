@@ -15,7 +15,8 @@ const getOperatingYear = () => {
 
 const AppendixHeader = () => {
 
-  const session = useSession();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.corps?.role?.name === 'Admin';
 
   return (
     <Header height={60} p="sm" sx={(theme) => ({
@@ -26,7 +27,7 @@ const AppendixHeader = () => {
       <Group position="apart">
         <Logo />
         <Group spacing={0}>
-          {/* {permissions && permissions.size > 0 && <AdminMenu permissions={permissions} />} */}
+          {isAdmin && <AdminMenu />}
           <Button compact leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
           <Button compact leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
           <Button compact leftIcon={<IconUser />} size='sm' component={NextLink} href="/me">Mina sidor</Button>

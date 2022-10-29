@@ -9,7 +9,6 @@ import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { GLOBAL_THEME } from "../utils/global-theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppContainer } from "../components/app-container";
-import { AppRouter } from "../server/trpc/router/_app";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

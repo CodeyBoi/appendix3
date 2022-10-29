@@ -21,14 +21,14 @@ export default class _Document extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <link rel="icon" href="%PUBLIC_URL%/AMCBleckhornenLOGO.png" />
+          <link rel="icon" href="/AMCBleckhornenLOGO.png" />
           <meta name="theme-color" content="#000000" />
           <meta
             name="description"
             content="Ett internt verktyg för alla corps"
           />
-          <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-          <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+          <link rel="apple-touch-icon" href="/logo192.png" />
+          <link rel="manifest" href="/manifest.json" />
         </Head>
         <body>
           <Main />
