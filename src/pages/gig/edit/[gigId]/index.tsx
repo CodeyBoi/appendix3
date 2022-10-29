@@ -1,10 +1,10 @@
 import { Box, Title, Center } from '@mantine/core';
 import React from 'react';
-import GigInfo from '../../../components/gig/info';
-import Loading from '../../../components/loading';
-import SignupList from '../../../components/signup-list';
+import GigInfo from '../../../../components/gig/info';
+import Loading from '../../../../components/loading';
+import SignupList from '../../../../components/signup-list';
 import { useRouter } from 'next/router';
-import { trpc } from '../../../utils/trpc';
+import { trpc } from '../../../../utils/trpc';
 
 const LIST_WIDTH = "700px";
 
