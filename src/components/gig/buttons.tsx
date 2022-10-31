@@ -22,15 +22,15 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
 
   const { data: role } = trpc.corps.getRole.useQuery();
 
-  const currentDate = dayjs();
+  const currentDate = dayjs().startOf('day');
   const gigDate = dayjs(gig.date);
   const showSignup =
     // Today is before the gig date
     currentDate.subtract(1, 'day').isBefore(gigDate)
     // There is no signup start date or today is after or at the signup start date
-    && (!gig.signupStart || currentDate.add(1, 'day').isAfter(dayjs(gig.signupStart)))
+    && (!gig.signupStart || currentDate.add(1, 'day').isAfter(dayjs(gig.signupStart).startOf('day')))
     // There is no signup end date or today is before or at the signup end date
-    && (!gig.signupEnd || currentDate.subtract(1, 'day').isBefore(dayjs(gig.signupEnd)));
+    && (!gig.signupEnd || currentDate.subtract(1, 'day').isBefore(dayjs(gig.signupEnd).startOf('day')));
 
   const isAdmin = role === "Admin";
 
@@ -60,7 +60,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
               sx={{ color: theme.colors.red[5], borderColor: theme.colors.gray[4] }}
               variant="outline"
               component={NextLink}
-              href={`/gig/${gig.id}/edit`}
+              href={`/gig/edit/${gig.id}`}
             >
               <IconEdit />
             </ActionIcon>

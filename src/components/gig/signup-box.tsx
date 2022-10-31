@@ -1,4 +1,4 @@
-import { Select, Skeleton, Stack } from "@mantine/core";
+import { Select, Stack } from "@mantine/core";
 import React from "react";
 import { trpc } from "../../utils/trpc";
 
@@ -12,7 +12,10 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
 
   const addSignup = trpc.gig.addSignup.useMutation({
     onSuccess: async () => {
-      await utils.gig.invalidate();
+      if (corps) {
+        await utils.gig.getSignup.invalidate({ gigId, corpsId: corps.id });
+      }
+      await utils.gig.getSignups.invalidate({ gigId });
     },
   });
 

@@ -1,4 +1,4 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { router, publicProcedure, protectedProcedure, adminProcedure } from "../trpc";
 import { z } from "zod";
 
 export const gigRouter = router({
@@ -55,7 +55,7 @@ export const gigRouter = router({
       });
     }),
 
-  upsert: protectedProcedure
+  upsert: adminProcedure
     .input(z.object({
       gigId: z.number().optional(),
       title: z.string(),

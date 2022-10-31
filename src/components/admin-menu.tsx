@@ -16,7 +16,7 @@ const AdminMenu = () => {
         <Menu.Item
           icon={<IconUserPlus />}
           component={NextLink}
-          href="/admin/register"
+          href="/register"
         >
           Skapa användare
         </Menu.Item>
