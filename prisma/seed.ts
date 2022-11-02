@@ -231,11 +231,11 @@ async function main() {
 
   // Create gigs
   await prisma.gig.deleteMany({});
-  if (process.env.DATABASE_URL?.endsWith('.sqlite3')) {
-    await prisma.$executeRawUnsafe("UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'table_name';");
-  } else {
-    await prisma.$executeRawUnsafe(`ALTER SEQUENCE gig_id_seq RESTART WITH 1`);
-  }
+  // if (process.env.DATABASE_URL?.endsWith('.sqlite3')) {
+  //   await prisma.$executeRawUnsafe("UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'table_name';");
+  // } else if (process.env.DATABASE_URL?.startsWith('mysql://')) {
+  //   await prisma.$executeRawUnsafe(`ALTER SEQUENCE gig_id_seq RESTART WITH 1`);
+  // }
 
   for (let i = 0; i < GIGS.length; i++) {
     const gig = GIGS[i];

@@ -3,6 +3,7 @@ import { Box, Center, Table, Checkbox, CloseButton, Tooltip, Title, Button, Grou
 import { trpc } from "../utils/trpc";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SignupListProps {
   isAdmin?: boolean;
@@ -30,12 +31,12 @@ interface SignupListProps {
 //   Annat: 0,
 // };
 
-
 const SignupList = ({ gigId }: SignupListProps) => {
-
+  
+  const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
-  const { data: signups, status: signupsStatus } =
+  const { data: signups } =
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
   const { data: role } = trpc.corps.getRole.useQuery();
@@ -66,7 +67,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
       }
       return (instrumentPrecedence[a.instrument] ?? Infinity) - (instrumentPrecedence[b.instrument] ?? Infinity);
     }
-  }) ?? [], [signups]);
+  }) ?? [], [signups, instrumentPrecedence]);
 
   // Divide the list of corpsii into people who answered yes and people who answered maybe
   const splitList = signupsSorted?.reduce((acc, signup) => {
@@ -81,7 +82,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const yesList = splitList?.yesList ?? [];
   const maybeList = splitList?.maybeList ?? [];
 
-  const { data: selectCorpsii, status: selectCorpsiiStatus } = trpc.corps.getCorpsii.useQuery();
+  const { data: selectCorpsii } = trpc.corps.getCorpsii.useQuery();
   const corpsii = useMemo(() => {
     if (!selectCorpsii) return [];
     return selectCorpsii.map((corps) => ({
@@ -99,11 +100,12 @@ const SignupList = ({ gigId }: SignupListProps) => {
   });
 
   const addSignup = trpc.gig.addSignup.useMutation({
-    onSuccess: async (_, { corpsId }) => {
-      form.setValues({ corpsId: "" });
-      await utils.gig.getSignups.invalidate({ gigId });
-      await utils.gig.getSignup.invalidate({ gigId, corpsId });
-    }
+    onMutate: async () => {
+      form.reset();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries([["gig", "getSignups"], { gigId }]);
+    },
   });
 
   const removeSignup = trpc.gig.removeSignup.useMutation({
@@ -113,23 +115,18 @@ const SignupList = ({ gigId }: SignupListProps) => {
     },
   });
 
-  const editAttendance = trpc.gig.editAttendance.useMutation({
-    onSuccess: async () => {
-      await utils.gig.getSignup.invalidate();
-      await utils.gig.getSignups.invalidate();
-    },
-  });
+  const editAttendance = trpc.gig.editAttendance.useMutation();
 
   /** Code from here on is absolutely horrible, but it works. 
    *  Travelers beware. */
-  const signupsToTable = (signups: any) => {
+  const signupsToTable = (signups: typeof signupsSorted) => {
     if (signups.length === 0) {
       return;
     }
 
     return (
       <tbody>
-        {signups.map((signup: any) => {
+        {signups.map((signup) => {
           return (
             <tr key={signup.corpsId}>
               <td style={{ border: 0, padding: 0 }}>{signup.instrument}</td>
@@ -170,8 +167,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
     );
   }
 
-  const yesTable = useMemo(() => signupsToTable(yesList), [yesList]);
-  const maybeTable = useMemo(() => signupsToTable(maybeList), [maybeList]);
+  const yesTable = signupsToTable(yesList);
+  const maybeTable = signupsToTable(maybeList);
   
   return (
     <Box>
@@ -197,7 +194,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
       <Space h="sm" />
       {yesList && (
         <>
-          {yesList.length > 0 && <Title order={3}>Dessa är anmälda</Title>}
+          {yesList.length > 0 && <Title order={3}>Dessa är anmälda:</Title>}
           {yesList.length == 0 && <Title order={3}><i>Ingen är anmäld än. Kanske kan du bli den första?</i></Title>}
         </>
       )}

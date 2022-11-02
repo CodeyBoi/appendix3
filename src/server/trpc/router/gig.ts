@@ -121,7 +121,7 @@ export const gigRouter = router({
           corpsId: input.corpsId,
           gigId: input.gigId,
         },
-      });
+      }); 
     }),
 
   getSignups: publicProcedure
@@ -157,7 +157,7 @@ export const gigRouter = router({
         WHERE GigSignup.gigId = ${input.gigId}
         ORDER BY
           signupStatus,
-          Corps.number NULLS LAST,
+          ISNULL(Corps.number), Corps.number,
           Corps.lastName,
           Corps.firstName
       `;
@@ -285,7 +285,3 @@ export const gigRouter = router({
       });
     }),
 });
-
-const getSession = () => {
-  
-}

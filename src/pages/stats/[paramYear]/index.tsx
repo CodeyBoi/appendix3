@@ -1,4 +1,4 @@
-import { Box, Center, Group, Select, Skeleton, Title } from "@mantine/core";
+import { Box, Center, Group, Select, Title } from "@mantine/core";
 import React from "react";
 import StatisticsTable from "../../../components/statistics-table";
 import Loading from "../../../components/loading";
@@ -43,7 +43,10 @@ const Statistics: NextPage = () => {
               value: y.toString()
             })) ?? []}
             onChange={(y) => {
-              const year = parseInt(y!);
+              if (!y) {
+                return;
+              }
+              const year = parseInt(y);
               if (year) {
                 setYear(year);
               }

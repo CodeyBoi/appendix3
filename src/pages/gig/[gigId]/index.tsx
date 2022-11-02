@@ -9,7 +9,6 @@ import { trpc } from '../../../utils/trpc';
 const LIST_WIDTH = "700px";
 
 const WhosComing = ({ isAdmin }: { isAdmin: boolean }) => {
-
   const router = useRouter();
   const gigId = parseInt(router.query.gigId as string ?? "0");
 

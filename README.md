@@ -1,50 +1,102 @@
-# Create T3 App
+# Setting up the developer environment
 
-This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
+All the following instructions assume you're using Linux. If you're using Windows, I'd recommend using [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) with an Ubuntu install. If you're using macOS, you should be fine.
 
-## Why are there `.js` files in here?
+## Prerequisites
+Tools needed for the rest of the project setup:
+- [nvm](https://github.com/nvm-sh/nvm)
+- [yarn](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
 
-As per [T3-Axiom #3](https://github.com/t3-oss/create-t3-app/tree/next#3-typesafety-isnt-optional), we take typesafety as a first class citizen. Unfortunately, not all frameworks and plugins support TypeScript which means some of the configuration files have to be `.js` files.
+We will install nvm (Node Version Manager) to manage our Node.js versions. This can be installed via
 
-We try to emphasize that these files are javascript for a reason, by explicitly declaring its type (`cjs` or `mjs`) depending on what's supported by the library it is used by. Also, all the `js` files in this project are still typechecked using a `@ts-check` comment at the top.
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+```
 
-## What's next? How do I make an app with this?
+Then, we will install the latest version of Node.js 16 via
 
-We try to keep this project as simple as possible, so you can start with the most basic configuration and then move on to more advanced configuration.
+```bash
+nvm install node 16
+```
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+We will also install yarn via
 
-- [Next-Auth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [TailwindCSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+```bash
+npm install --global yarn
+```
 
-Also checkout these awesome tutorials on `create-t3-app`.
+This will allow us to use yarn though the command line.
 
-- [Build a Blog With the T3 Stack - tRPC, TypeScript, Next.js, Prisma & Zod](https://www.youtube.com/watch?v=syEWlxVFUrY)
-- [Build a Live Chat Application with the T3 Stack - TypeScript, Tailwind, tRPC](https://www.youtube.com/watch?v=dXRRY37MPuk)
-- [Build a full stack app with create-t3-app](https://www.nexxel.dev/blog/ct3a-guestbook)
-- [A first look at create-t3-app](https://dev.to/ajcwebdev/a-first-look-at-create-t3-app-1i8f)
+## Setting up the project
 
-## How do I deploy this?
+### 1. Cloning the repository
 
-### Vercel
+Firstly, we will clone this repository via
 
-We recommend deploying to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss). It makes it super easy to deploy NextJs apps.
+```bash
+git clone https://github.com/CodeyBoi/appendix3.git
+```
 
-- Push your code to a GitHub repository.
-- Go to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss) and sign up with GitHub.
-- Create a Project and import the repository you pushed your code to.
-- Add your environment variables.
-- Click **Deploy**
-- Now whenever you push a change to your repository, Vercel will automatically redeploy your website!
+Or if you have SSH set up (which I would recommend), you can use
 
-### Docker
+```bash
+git clone git@github.com:CodeyBoi/appendix3.git
+```
 
-You can also dockerize this stack and deploy a container. See the [Docker deployment page](https://create-t3-app-nu.vercel.app/en/deployment/docker) for details.
+This will download the repo into a new folder `appendix3`. Then, we will change directory to the newly cloned repo and install the dependencies via
 
-## Useful resources
+```bash
+cd appendix3
+yarn install
+```
 
-Here are some resources that we commonly refer to:
+This will install all dependencies for the project. 
 
-- [Protecting routes with Next-Auth.js](https://next-auth.js.org/configuration/nextjs#unstable_getserversession)
+### 2. Environment variables
+
+We will now define some environment variables. Copy the `.env.example` file to `.env` via
+
+```bash
+cp .env.example .env
+```
+
+Then, open the `.env` file and fill in the values. `NEXTAUTH_SECRET` should be set to any random value. Do this by running
+
+```bash
+openssl rand -hex 32
+```
+
+Paste the output into the `NEXTAUTH_SECRET` variable.
+
+The other values should be set depending on which authentication provider we're currently using. For example, if we're using Google, we should set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to the values we got from the Google Cloud Platform.
+
+### 3. The database
+
+To set up the sqlite3 database locally (which is what we will be using for development), we will run
+
+```bash
+npx prisma db push
+```
+
+This will create a sqlite3 database in `/prisma/dev.sqlite3`. The schema for this database can be found [here](/prisma/schema.prisma). To populate the database with some dummy data, we will run
+
+```bash
+npx prisma db seed
+```
+
+To start the development server, we will run
+
+```bash
+yarn run dev
+```
+
+If everything went well, you should be able to see a login screen at [http://localhost:3000](http://localhost:3000)!
+
+# Changing the database schema
+The database schema is defined in [`/prisma/schema.prisma`](/prisma/schema.prisma). To modify the schema, simply make a change to this file and run
+
+```bash
+npx prisma db push
+```
+
+Be careful when modifying the schema, as some changes may require you to lose some data (e.g renaming or removing a column) or even the entire database. Prisma will warn you about this when you do a push, so be sure to read the warning carefully.

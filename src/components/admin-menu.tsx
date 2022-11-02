@@ -6,9 +6,9 @@ import { NextLink } from "@mantine/next";
 const AdminMenu = () => {
 
   return (
-    <Menu shadow="md" width={200}>
+    <Menu shadow="md">
       <Menu.Target>
-        <Button compact leftIcon={<IconSettings />}>Administration</Button>
+        <Button px={6} leftIcon={<IconSettings />}>Administration</Button>
       </Menu.Target>
 
       <Menu.Dropdown>
@@ -23,7 +23,7 @@ const AdminMenu = () => {
         <Menu.Item icon={<IconLockOpen />} component={NextLink} href="/admin/permissions">Hantera behörigheter</Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>
-        <Menu.Item icon={<IconFilePlus />} component={NextLink} href="/gig/edit/new">Skapa spelning</Menu.Item>
+        <Menu.Item icon={<IconFilePlus />} component={NextLink} href="/admin/gig/new">Skapa spelning</Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );

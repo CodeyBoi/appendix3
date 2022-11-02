@@ -28,10 +28,10 @@ const AppendixHeader = () => {
         <Logo />
         <Group spacing={0}>
           {isAdmin && <AdminMenu />}
-          <Button compact leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
-          <Button compact leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
-          <Button compact leftIcon={<IconUser />} size='sm' component={NextLink} href="/me">Mina sidor</Button>
-          <Button compact leftIcon={<IconLogout />} size='sm' onClick={() => signOut()}>Logga ut</Button>
+          <Button px={6} leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
+          <Button px={6} leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
+          <Button px={6} leftIcon={<IconUser />} size='sm' component={NextLink} href="/me">Mina sidor</Button>
+          <Button px={6} leftIcon={<IconLogout />} size='sm' onClick={() => signOut()}>Logga ut</Button>
         </Group>
       </Group>
     </Header>

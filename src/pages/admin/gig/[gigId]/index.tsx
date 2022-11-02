@@ -55,7 +55,7 @@ const AdminGig = () => {
   const [loading, setLoading] = React.useState(!newGig);
   const [submittning, setSubmittning] = React.useState(false);
 
-  const { data: gig, status: gigDataStatus } =
+  const { data: gig } =
     trpc.gig.getWithId.useQuery({ gigId }, { enabled: !newGig && !!gigId });
 
   const { data: gigTypes } = trpc.gigType.getAll.useQuery();
@@ -96,6 +96,7 @@ const AdminGig = () => {
       form.setValues(initialValues);
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gig, newGig]);
 
   const mutation = trpc.gig.upsert.useMutation({
@@ -105,7 +106,7 @@ const AdminGig = () => {
       setSubmittning(false);
       router.push('/');
     },
-  })
+  });
 
   const handleSubmit = async (values: FormValues) => {
     setSubmittning(true);
@@ -137,7 +138,6 @@ const AdminGig = () => {
                   label="Spelningstyp"
                   placeholder="Välj typ..."
                   data={gigTypes?.map((type) => ({ value: type.name, label: type.name })) ?? []}
-                  defaultValue={gig?.type.name}
                   {...form.getInputProps('type')}
                 />
                 <DatePicker

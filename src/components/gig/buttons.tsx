@@ -1,7 +1,6 @@
 import React from "react";
 import { ActionIcon, Button, Center, Group, Stack, Tooltip, useMantineTheme } from "@mantine/core";
 import { IconUser, IconEdit } from "@tabler/icons";
-// import { Corps, Gig } from "../src/types/common/main";
 import GigSignupBox from "./signup-box";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
@@ -23,14 +22,13 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
   const { data: role } = trpc.corps.getRole.useQuery();
 
   const currentDate = dayjs().startOf('day');
-  const gigDate = dayjs(gig.date);
   const showSignup =
     // Today is before the gig date
-    currentDate.subtract(1, 'day').isBefore(gigDate)
+    currentDate.subtract(1, 'day').isBefore(gig.date, 'day')
     // There is no signup start date or today is after or at the signup start date
-    && (!gig.signupStart || currentDate.add(1, 'day').isAfter(dayjs(gig.signupStart).startOf('day')))
+    && (!gig.signupStart || currentDate.add(1, 'day').isAfter(gig.signupStart, 'day'))
     // There is no signup end date or today is before or at the signup end date
-    && (!gig.signupEnd || currentDate.subtract(1, 'day').isBefore(dayjs(gig.signupEnd).startOf('day')));
+    && (!gig.signupEnd || currentDate.subtract(1, 'day').isBefore(gig.signupEnd, 'day'));
 
   const isAdmin = role === "Admin";
 
@@ -60,7 +58,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
               sx={{ color: theme.colors.red[5], borderColor: theme.colors.gray[4] }}
               variant="outline"
               component={NextLink}
-              href={`/gig/edit/${gig.id}`}
+              href={`/admin/gig/${gig.id}`}
             >
               <IconEdit />
             </ActionIcon>

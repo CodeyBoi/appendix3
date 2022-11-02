@@ -5,7 +5,6 @@ import AppendixHeader from "./header";
 
 const AppContainer = ({ children }: { children: ReactElement }) => {
   const session = useSession();
-  console.log("session", session);
   return (
     <AppShell
       header={<AppendixHeader />}

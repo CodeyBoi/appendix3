@@ -35,10 +35,10 @@ export const statsRouter = router({
 
       const corpsStatsQuery = ctx.prisma.$queryRaw<CorpsStats[]>`
         SELECT 
-          "Corps"."id" as id,
-          "number",
-          "firstName",
-          "lastName", 
+          Corps.id as id,
+          number,
+          firstName,
+          lastName, 
           SUM(CASE WHEN "attended" THEN "points" ELSE 0 END) AS "gigsAttended",
           SUM(
             CASE WHEN NOT COALESCE("attended", false) AND "Gig"."countsPositively" 
@@ -52,10 +52,10 @@ export const statsRouter = router({
         WHERE "Gig"."date" BETWEEN ${statsStart} AND ${statsEnd}
         GROUP BY "Corps"."id"
         ORDER BY 
-          "gigsAttended" DESC,
-          "number" NULLS LAST,
-          "lastName",
-          "firstName";
+          gigsAttended DESC,
+          ISNULL(number), number,
+          lastName,
+          firstName;
       `;
 
       const [nbrOfGigs, positivelyCountedGigs, corpsStats] =
