@@ -118,7 +118,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const editAttendance = trpc.gig.editAttendance.useMutation();
 
   /** Code from here on is absolutely horrible, but it works. 
-   *  Travelers beware. */
+   *  Travelers beware.
+   */
+
   const signupsToTable = (signups: typeof signupsSorted) => {
     if (signups.length === 0) {
       return;

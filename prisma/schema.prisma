@@ -70,6 +70,7 @@ model VerificationToken {
 model Corps {
   id                    Int      @id @default(autoincrement())
   number                Int?
+  bNumber               Int?
   firstName             String
   lastName              String
   isActive              Boolean  @default(true)
@@ -117,7 +118,7 @@ model Gig {
   location         String    @default("")
   signupStart      DateTime?
   signupEnd        DateTime?
-  description      String    @default("")
+  description      String    @db.Text @default("")
   typeId           Int
   points           Int
   countsPositively Boolean   @default(false)

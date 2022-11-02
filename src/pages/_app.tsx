@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import type { AppType } from "next/app";
 import { trpc } from "../utils/trpc";
-import { ColorSchemeProvider, MantineProvider, ColorScheme, AppShell } from "@mantine/core";
+import { ColorSchemeProvider, MantineProvider, ColorScheme } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { GLOBAL_THEME } from "../utils/global-theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
