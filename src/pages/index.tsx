@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
 
 const Home: NextPage = () => {
 
-  const currentDate = new Date((new Date()).toISOString().split("T")[0]!);
+  const currentDate = new Date(new Date().toISOString().split("T")[0]!);
   const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
 
   if (!corps) {
