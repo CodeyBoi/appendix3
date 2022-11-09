@@ -60,7 +60,7 @@ const CORPSII = [
     "number": 558,
     "firstName": "Aron",
     "lastName": "Paulsson",
-    "email": "aron@paulsson.com",
+    "email": "aronpaulsson99@gmail.com",
     "isActive": true,
     "mainInstrument": "Basklarinett"
   },
@@ -68,9 +68,10 @@ const CORPSII = [
     "username": "bprinoth",
     "password": "qwer",
     "number": 559,
+    "bNumber": 113,
     "firstName": "Bibiana",
     "lastName": "Prinoth",
-    "email": "b@prinoth.com",
+    "email": "bibiana.prinoth@gmail.com",
     "isActive": true,
     "mainInstrument": "Fötter"
   },
@@ -83,6 +84,26 @@ const CORPSII = [
     "email": "erik@wallin.se",
     "isActive": true,
     "mainInstrument": "Horn"
+  },
+  {
+    "username": "HugoKing",
+    "password": "qwer",
+    "number": 509,
+    "bNumber": 105,
+    "firstName": "Hugo",
+    "lastName": "Rogmark",
+    "email": "hrogmark@gmail.com",
+    "isActive": true,
+    "mainInstrument": "Trombon",
+  },
+  {
+    "username": "Hannils",
+    "password": "qwer",
+    "firstName": "Hanna",
+    "lastName": "Nilsson",
+    "email": "hanils98@gmail.com",
+    "isActive": true,
+    "mainInstrument": "Fötter"
   },
   {
     "username": "johans",

@@ -6,20 +6,20 @@ interface DateboxProps {
   date: Dayjs;
 }
 
-// const WEEKDAY_NAMES = [
-//   'MÅN',
-//   'TIS',
-//   'ONS',
-//   'TOR',
-//   'FRE',
-//   'LÖR',
-//   'SÖN',
-// ];
+const WEEKDAY_NAMES = [
+  'MÅN',
+  'TIS',
+  'ONS',
+  'TOR',
+  'FRE',
+  'LÖR',
+  'SÖN',
+];
 
 const Datebox = ({ date }: DateboxProps) => {
 
-  // const weekday = WEEKDAY_NAMES[date.getDay() - 1];
-  const month = date.format('MMM');
+  const weekday = WEEKDAY_NAMES[date.day() - 1];
+  // const month = date.format('MMM');
 
   return (
     <div className={styles.datebox}>
@@ -27,8 +27,8 @@ const Datebox = ({ date }: DateboxProps) => {
         {date.date()}
       </div>
       <div className={styles.month}>
-        {/* {weekday} */}
-        {month.toUpperCase()}
+        {weekday}
+        {/* {month.toUpperCase()} */}
       </div>
     </div>
   );
