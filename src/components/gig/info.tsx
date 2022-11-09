@@ -36,14 +36,16 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
     return (
       // TODO: Make this not look ugly
       <Stack>
-        <Group  align={"center"}>
-          <Datebox date={dayjs(gig.date)} />
-          <Stack spacing={0} align="flex-start">
-            <Title order={3} sx={{ fontWeight: 600 }}>{gig.title}</Title>
-            <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
-            {gig.meetup && <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>}
-            {gig.start && <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>}
-          </Stack>
+        <Group align="apart">
+          <Group position="left">
+            <Datebox date={dayjs(gig.date)} />
+            <Stack spacing={0} align="flex-start">
+              <Title order={3} sx={{ fontWeight: 600 }}>{gig.title}</Title>
+              <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
+              {gig.meetup && <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>}
+              {gig.start && <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>}
+            </Stack>
+          </Group>
           <GigButtons gig={gig} />
         </Group>
         <GigDetails description={gig.description ?? ''} />
