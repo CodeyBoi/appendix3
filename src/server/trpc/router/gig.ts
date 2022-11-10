@@ -386,4 +386,37 @@ export const gigRouter = router({
         },
       });
     }),
+
+  getAttendance: publicProcedure
+    .input(z.object({
+      corpsId: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.gigSignup.findMany({
+        select: {
+          status: {
+            select: {
+              value: true,
+            },
+          },
+          gig: {
+            select: {
+              title: true,
+              date: true,
+              description: true,
+              id: true,
+            },
+          },
+          instrument: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          corpsId: input.corpsId,
+          attended: true,
+        },
+      });
+    }),
 });

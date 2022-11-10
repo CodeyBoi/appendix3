@@ -41,7 +41,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
   return (
     <Group align="start" pl={12} pb={6} spacing={20}>
       {showSignup && <GigSignupBox gigId={gig.id} />}
-      <Stack spacing={6}>
+      <Stack spacing={0}>
         {/* Only show this button if the user isn't at the `/gig/:id/signups` page */}
         {!pathname.endsWith("/signups") && (
           <Tooltip label="Visa anmälningar">
