@@ -47,7 +47,7 @@ const Home: NextPage = () => {
       <Grid.Col xs={8} lg={9}>
         <Group position="apart">
           <Title order={1}>
-            {gigs?.length === 0 ?? false ? 'Inga kommande spelningar :(' : 'Bajs i arslet'}
+            {gigs && gigs.length === 0 ? 'Inga kommande spelningar :(' : 'Kommande spelningar'}
           </Title>
         </Group>
         <Accordion>
