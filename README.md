@@ -1,3 +1,6 @@
+# Other links:
+- [Contributing code](contributing.md)
+
 # Setting up the developer environment
 
 All the following instructions assume you're using Linux. If you're using Windows, I'd recommend using [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) with an Ubuntu install. If you're using macOS, you should be fine.
@@ -16,7 +19,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
 Then, we will install the latest version of Node.js 16 via
 
 ```bash
-nvm install node 16
+nvm install 16
 ```
 
 We will also install yarn via
@@ -72,19 +75,15 @@ The other values should be set depending on which authentication provider we're 
 
 ### 3. The database
 
-To set up the sqlite3 database locally (which is what we will be using for development), we will run
+To set up the database locally (which is what we will be using for development), we will run
 
 ```bash
-npx prisma db push
+npx prisma generate
 ```
 
-This will create a sqlite3 database in `/prisma/dev.sqlite3`. The schema for this database can be found [here](/prisma/schema.prisma). To populate the database with some dummy data, we will run
+The schema for this database can be found [here](/prisma/schema.prisma).
 
-```bash
-npx prisma db seed
-```
-
-To start the development server, we will run
+To start the development webserver, we will run
 
 ```bash
 yarn run dev
