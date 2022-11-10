@@ -71,7 +71,6 @@ const AdminGig = () => {
   });
 
   useEffect(() => {
-    console.log('useEffect');
     if (gig) {
       form.setValues({
         title: gig.title,
@@ -113,7 +112,6 @@ const AdminGig = () => {
     if (newGig) {
       mutation.mutateAsync(values);
     } else {
-      console.log({ gigId });
       mutation.mutateAsync({ ...values, type: values.type, gigId });
     }
   }
