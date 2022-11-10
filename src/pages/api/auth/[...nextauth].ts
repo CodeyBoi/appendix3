@@ -36,7 +36,9 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clientId: process.env.GOOGLE_CLIENT_ID!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     // ...add more providers here
