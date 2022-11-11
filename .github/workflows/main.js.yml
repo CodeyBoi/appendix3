@@ -1,8 +1,6 @@
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [staging]
 
 jobs:
   build:
@@ -14,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           clean: "false"
-      - name: Build node.js
+      - name: Building and running nextjs app...
         shell: bash
 
         run: |
