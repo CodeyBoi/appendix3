@@ -63,7 +63,7 @@ export const corpsRouter = router({
           userId: ctx.session?.user.id,
         },
       });
-      return user?.role?.name;
+      return user?.role?.name ?? "user";
     }),
 
   mainInstrument: protectedProcedure

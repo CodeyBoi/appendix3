@@ -1,7 +1,14 @@
-import { Accordion, Title, Text, Stack, Box, Group } from "@mantine/core";
+import {
+  Accordion,
+  Title,
+  Text,
+  Stack,
+  Box,
+  Group,
+  Space,
+} from "@mantine/core";
 import React from "react";
 import Datebox from "./datebox";
-import GigDetails from "./details";
 import GigButtons from "./buttons";
 import dayjs from "dayjs";
 import { Gig } from "@prisma/client";
@@ -14,7 +21,7 @@ interface GigProps {
 const GigInfo = ({ gig, inAccordion }: GigProps) => {
   if (inAccordion) {
     return (
-      <Accordion.Item value={gig.id.toString()}>
+      <Accordion.Item sx={{ border: 0 }} value={gig.id.toString()}>
         <Box sx={{ display: "flex" }}>
           <Accordion.Control sx={{ width: "auto", flexGrow: 1 }}>
             <Group position="left" spacing="xs">
@@ -25,10 +32,7 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
                 </Title>
                 <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
                 {gig.meetup && (
-                  <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>
-                )}
-                {gig.start && (
-                  <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>
+                  <Text sx={{ fontSize: 13 }}>{`Samling: ${gig.meetup}`}</Text>
                 )}
               </Stack>
             </Group>
@@ -36,7 +40,15 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           <GigButtons gig={gig} />
         </Box>
         <Accordion.Panel>
-          <GigDetails description={gig.description ?? ""} />
+          {gig.start && (
+            <>
+              <Text>
+                <i>{`Spelningen börjar ${gig.start}.`}</i>
+              </Text>
+              <Space h="xs" />
+            </>
+          )}
+          <Text>{gig.description}</Text>
         </Accordion.Panel>
       </Accordion.Item>
     );
@@ -62,7 +74,15 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           </Group>
           <GigButtons gig={gig} />
         </Group>
-        <GigDetails description={gig.description ?? ""} />
+        {gig.start && (
+          <>
+            <Text>
+              <i>{`Spelningen börjar ${gig.start}.`}</i>
+            </Text>
+            <Space h="xs" />
+          </>
+        )}
+        <Text>{gig.description}</Text>
       </Stack>
     );
   }

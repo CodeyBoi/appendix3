@@ -182,7 +182,8 @@ const GIG_SIGNUP_STATUSES = [
 ];
 
 const ROLES = [
-  "Admin",
+  "user",
+  "admin",
 ];
 
 async function main() {

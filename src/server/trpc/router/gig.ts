@@ -65,6 +65,9 @@ export const gigRouter = router({
           },
           ...visibilityFilter,
         },
+        orderBy: {
+          date: "asc",
+        },
       });
     }),
 

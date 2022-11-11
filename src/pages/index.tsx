@@ -59,7 +59,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
     const month = gigs[0]?.date.getMonth() ?? -1;
     return (
       <>
-        <Title order={2}>
+        <Title pt={6} order={2}>
           <u>{monthNames[month]}</u>
         </Title>
         <Accordion key={month}>
@@ -82,8 +82,6 @@ const Home: NextPage = () => {
   const { data: gigs } = trpc.gig.getMany.useQuery(
     { startDate: currentDate },
   );
-
-  console.log(gigs);
 
   return (
     <Grid sx={{ flexDirection: "row-reverse" }}>
