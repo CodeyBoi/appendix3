@@ -9,7 +9,7 @@
 }
 
 .datebox .date,
-.datebox .month {
+.datebox .day {
   text-align: center;
   padding: 1px 6px;
 }
@@ -22,10 +22,10 @@
   font-family: Castellar, sans-serif;
 }
 
-.datebox .month {
+.datebox .day {
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: monospace, 'Arial Narrow Bold', sans-serif;
   color: black;
   background-color: lightgray;
 }

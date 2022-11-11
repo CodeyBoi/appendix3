@@ -12,23 +12,31 @@ interface GigProps {
 }
 
 const GigInfo = ({ gig, inAccordion }: GigProps) => {
-
   if (inAccordion) {
     return (
-      <Accordion.Item value={gig.id.toString()} py={3}>
-        <Box sx={{ display: "flex" }} >
-          <Accordion.Control icon={<Datebox date={dayjs(gig.date)} />} sx={{ width: "auto", flexGrow: 1 }} py={4}>
-            <Stack spacing={0} align="flex-start">
-              <Title order={3} sx={{ fontWeight: 600 }}>{gig.title}</Title>
-              <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
-              {gig.meetup && <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>}
-              {gig.start && <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>}
-            </Stack>
+      <Accordion.Item value={gig.id.toString()}>
+        <Box sx={{ display: "flex" }}>
+          <Accordion.Control sx={{ width: "auto", flexGrow: 1 }}>
+            <Group position="left" spacing="xs">
+              <Datebox date={dayjs(gig.date)} />
+              <Stack spacing={0} align="flex-start">
+                <Title order={3} sx={{ fontWeight: 600 }}>
+                  {gig.title}
+                </Title>
+                <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
+                {gig.meetup && (
+                  <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>
+                )}
+                {gig.start && (
+                  <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>
+                )}
+              </Stack>
+            </Group>
           </Accordion.Control>
           <GigButtons gig={gig} />
         </Box>
         <Accordion.Panel>
-          <GigDetails description={gig.description ?? ''} />
+          <GigDetails description={gig.description ?? ""} />
         </Accordion.Panel>
       </Accordion.Item>
     );
@@ -40,18 +48,24 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           <Group position="left">
             <Datebox date={dayjs(gig.date)} />
             <Stack spacing={0} align="flex-start">
-              <Title order={3} sx={{ fontWeight: 600 }}>{gig.title}</Title>
+              <Title order={3} sx={{ fontWeight: 600 }}>
+                {gig.title}
+              </Title>
               <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
-              {gig.meetup && <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>}
-              {gig.start && <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>}
+              {gig.meetup && (
+                <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>
+              )}
+              {gig.start && (
+                <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>
+              )}
             </Stack>
           </Group>
           <GigButtons gig={gig} />
         </Group>
-        <GigDetails description={gig.description ?? ''} />
+        <GigDetails description={gig.description ?? ""} />
       </Stack>
     );
   }
-}
+};
 
 export default GigInfo;

@@ -15,6 +15,7 @@ export const authOptions: NextAuthOptions = {
           include: {
             corps: {
               select: {
+                id: true,
                 role: {
                   select: {
                     name: true,

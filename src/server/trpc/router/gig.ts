@@ -1,8 +1,13 @@
-import { router, publicProcedure, protectedProcedure, adminProcedure } from "../trpc";
+import {
+  router,
+  publicProcedure,
+  protectedProcedure,
+  adminProcedure,
+} from "../trpc";
 import { z } from "zod";
 
 export const gigRouter = router({
-  getWithId: publicProcedure
+  getWithId: protectedProcedure
     .input(z.object({ gigId: z.number() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.gig.findUnique({
@@ -25,12 +30,26 @@ export const gigRouter = router({
     }),
 
   getMany: publicProcedure
-    .input(z.object({
-      corpsId: z.number(),
-      startDate: z.date().optional(),
-      endDate: z.date().optional(),
-    }))
+    .input(
+      z.object({
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      })
+    )
     .query(({ ctx, input }) => {
+      const corpsId = ctx.session?.user?.corps?.id;
+      const visibilityFilter =
+        corpsId !== undefined
+          ? {
+              hiddenFor: {
+                none: {
+                  corpsId,
+                },
+              },
+            }
+          : {
+              isPublic: true,
+            };
       return ctx.prisma.gig.findMany({
         include: {
           type: {
@@ -40,48 +59,46 @@ export const gigRouter = router({
           },
         },
         where: {
-          hiddenFor: {
-            none: {
-              corpsId: input.corpsId,
-            },
+          date: {
+            gte: input.startDate,
+            lte: input.endDate,
           },
-          AND: {
-            date: {
-              gte: input.startDate,
-              lte: input.endDate,
-            },
-          },
+          ...visibilityFilter,
         },
       });
     }),
 
   upsert: adminProcedure
-    .input(z.object({
-      gigId: z.number().optional(),
-      title: z.string(),
-      date: z.date(),
-      type: z.string(),
-      points: z.number(),
-      meetup: z.string().optional(),
-      start: z.string().optional(),
-      location: z.string().optional(),
-      signupStart: z.date().nullable(),
-      signupEnd: z.date().nullable(),
-      description: z.string().optional(),
-      countsPositively: z.boolean().optional(),
-      isPublic: z.boolean().optional(),
-      checkbox1: z.string().optional(),
-      checkbox2: z.string().optional(),
-      hiddenFor: z.array(z.string()).optional(),
-    }))
+    .input(
+      z.object({
+        gigId: z.number().optional(),
+        title: z.string(),
+        date: z.date(),
+        type: z.string(),
+        points: z.number(),
+        meetup: z.string().optional(),
+        start: z.string().optional(),
+        location: z.string().optional(),
+        signupStart: z.date().nullable(),
+        signupEnd: z.date().nullable(),
+        description: z.string().optional(),
+        countsPositively: z.boolean().optional(),
+        isPublic: z.boolean().optional(),
+        checkbox1: z.string().optional(),
+        checkbox2: z.string().optional(),
+        hiddenFor: z.array(z.string()).optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       if (input.points < 0) {
         throw new Error("Points cannot be negative");
       }
-      const { gigId, ...data} = {
+      const { gigId, ...data } = {
         ...input,
         hiddenFor: {
-          create: input.hiddenFor?.map((corpsId) => ({ corpsId: parseInt(corpsId) })),
+          create: input.hiddenFor?.map((corpsId) => ({
+            corpsId: parseInt(corpsId),
+          })),
         },
         type: {
           connect: {
@@ -99,10 +116,12 @@ export const gigRouter = router({
     }),
 
   getSignup: publicProcedure
-    .input(z.object({
-      corpsId: z.number(),
-      gigId: z.number(),
-    }))
+    .input(
+      z.object({
+        corpsId: z.number(),
+        gigId: z.number(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       return ctx.prisma.gigSignup.findFirst({
         select: {
@@ -121,15 +140,16 @@ export const gigRouter = router({
           corpsId: input.corpsId,
           gigId: input.gigId,
         },
-      }); 
+      });
     }),
 
   getSignups: publicProcedure
-    .input(z.object({
-      gigId: z.number(),
-    }))
+    .input(
+      z.object({
+        gigId: z.number(),
+      })
+    )
     .query(async ({ ctx, input }) => {
-
       interface WhosComingEntry {
         corpsId: number;
         firstName: string;
@@ -164,29 +184,33 @@ export const gigRouter = router({
     }),
 
   addSignup: protectedProcedure
-    .input(z.object({
-      corpsId: z.number(),
-      gigId: z.number(),
-      status: z.string(),
-      instrument: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        corpsId: z.number(),
+        gigId: z.number(),
+        status: z.string(),
+        instrument: z.string().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-
       let instrument: string;
       if (!input.instrument) {
-        instrument = (await ctx.prisma.corpsInstrument.findFirst({
-          select: {
-            instrument: {
+        instrument =
+          (
+            await ctx.prisma.corpsInstrument.findFirst({
               select: {
-                name: true,
+                instrument: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
-            },
-          },
-          where: {
-            corpsId: input.corpsId,
-            isMainInstrument: true,
-          },
-        }))?.instrument.name ?? "Annat";
+              where: {
+                corpsId: input.corpsId,
+                isMainInstrument: true,
+              },
+            })
+          )?.instrument.name ?? "Annat";
       } else {
         instrument = input.instrument;
       }
@@ -236,10 +260,12 @@ export const gigRouter = router({
     }),
 
   removeSignup: protectedProcedure
-    .input(z.object({
-      corpsId: z.number(),
-      gigId: z.number(),
-    }))
+    .input(
+      z.object({
+        corpsId: z.number(),
+        gigId: z.number(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.gigSignup.delete({
         where: {
@@ -251,27 +277,15 @@ export const gigRouter = router({
       });
     }),
 
-  editAttendance: protectedProcedure
-    .input(z.object({
-      corpsId: z.number(),
-      gigId: z.number(),
-      attended: z.boolean(),
-    }))
+  editAttendance: adminProcedure
+    .input(
+      z.object({
+        corpsId: z.number(),
+        gigId: z.number(),
+        attended: z.boolean(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      const user = ctx.prisma.user.findUnique({
-        where: {
-          id: "1",
-        },
-        include: {
-          corps: true,
-        },
-      });
-    
-      return {
-        user: {
-          id: "1",
-        },
-      };
       return ctx.prisma.gigSignup.update({
         where: {
           corpsId_gigId: {

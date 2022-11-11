@@ -26,7 +26,7 @@ const Datebox = ({ date }: DateboxProps) => {
       <div className={styles.date}>
         {date.date()}
       </div>
-      <div className={styles.month}>
+      <div className={styles.day}>
         {weekday}
         {/* {month.toUpperCase()} */}
       </div>
