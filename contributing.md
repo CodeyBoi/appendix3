@@ -11,10 +11,10 @@ Wordlist:
 
 First you need to fully update your local copy of the website. This is done by moving to your local repo (the folder to which `git clone` wrote to) and running the following commands:
 
-    $ git checkout master
+    $ git checkout main
     $ git pull
 
-This will switch you to the master/main branch, and download and apply any available updates to your local repo.
+This will switch you to the main branch, and download and apply any available updates to your local repo.
 
 You now can create a new branch. This is done with
 
@@ -37,23 +37,23 @@ If we, for example, updated this text (in `/contributing.md`) by adding a chapte
 
 ## 3. Upload your changes
 
-The master branch may have been updated since you created your branch. In this case you need to merge your changes with the changes made to the master branch. This is done by the following:
+The main branch may have been updated since you created your branch. In this case you need to merge your changes with the changes made to the main branch. This is done by the following:
 
     $ git checkout <name-of-your-branch>
-    $ git merge origin/master
+    $ git merge origin/main
     $ git push
 
-If the changes to the master branch and to your branch could be automatically resolved, congratulations! If not, you need to resolve it manually. This can be difficult and is outside the scope of this text, but you can read more about it [here!](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-on-github)
+If the changes to the main branch and to your branch could be automatically resolved, congratulations! If not, you need to resolve it manually. This can be difficult and is outside the scope of this text, but you can read more about it [here!](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-on-github)
 
-## 4. Applying your changes to the master branch
+## 4. Applying your changes to the main branch
 
-So you're happy with your code, and everything looks great. Wonderful! All that's left to do is to create a *pull request*, which will pull your changes into the master branch.
+So you're happy with your code, and everything looks great. Wonderful! All that's left to do is to create a *pull request*, which will pull your changes into the main branch.
 
-Firstly, open a web browser of your choice and go to [the repo on github](https://github.com/CodeyBoi/appendix2.0). Then switch to your branch using the branch selector (it can be found in the top left under the header, it should say *master*). 
+Firstly, open a web browser of your choice and go to [the repo on github](https://github.com/CodeyBoi/appendix2.0). Then switch to your branch using the branch selector (it can be found in the top left under the header, it should say *main*). 
 
 Press the button **Contribute** and then **Open pull request**. Input a reasonable title and a comment which describes the changes you have done. Then press **Create pull request**.
 
-Someone will then check your code, comment on anything that needs to be changed, and then merge your branch with the master branch.
+Someone will then check your code, comment on anything that needs to be changed, and then merge your branch with the main branch.
 
 Good job!
 
