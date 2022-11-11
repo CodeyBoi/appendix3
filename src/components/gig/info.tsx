@@ -67,20 +67,14 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
               {gig.meetup && (
                 <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>
               )}
-              {gig.start && (
-                <Text sx={{ fontSize: 13 }}>{`Spelning: ${gig.start}`}</Text>
-              )}
             </Stack>
           </Group>
           <GigButtons gig={gig} />
         </Group>
         {gig.start && (
-          <>
-            <Text>
-              <i>{`Spelningen börjar ${gig.start}.`}</i>
-            </Text>
-            <Space h="xs" />
-          </>
+          <Text>
+            <i>{`Spelningen börjar ${gig.start}.`}</i>
+          </Text>
         )}
         <Text>{gig.description}</Text>
       </Stack>

@@ -54,7 +54,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
       },
     },
   });
-  if (role?.corps?.role?.name !== "Admin") {
+  if (role?.corps?.role?.name !== "admin") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

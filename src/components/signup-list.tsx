@@ -40,7 +40,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
   const { data: role } = trpc.corps.getRole.useQuery();
-  const isAdmin = role === "Admin";
+  const isAdmin = role === "admin";
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array

@@ -16,7 +16,7 @@ const getOperatingYear = () => {
 const AppendixHeader = () => {
 
   const { data: session } = useSession();
-  const isAdmin = session?.user?.corps?.role?.name === 'Admin';
+  const isAdmin = session?.user?.corps?.role?.name === 'admin';
 
   return (
     <Header height={60} p="sm" sx={(theme) => ({

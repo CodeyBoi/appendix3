@@ -37,12 +37,12 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
     (!gig.signupEnd ||
       currentDate.subtract(1, "day").isBefore(gig.signupEnd, "day"));
 
-  const isAdmin = role === "Admin";
+  const isAdmin = role === "admin";
 
   return (
     <Group align="start" pl={12} pb={6} spacing={20}>
       {showSignup && <GigSignupBox gigId={gig.id} />}
-      <Stack spacing={0}>
+      <Stack spacing={6}>
         {/* Only show this button if the user isn't at the `/gig/:id/signups` page */}
         {!pathname.endsWith("/signups") && (
           <Tooltip label="Visa anmälningar">
@@ -65,7 +65,7 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
           <Tooltip label="Redigera spelning">
             <ActionIcon
               size={30}
-              mt={27}
+              // mt={27}
               sx={{
                 color: theme.colors.red[5],
                 borderColor: theme.colors.gray[4],
