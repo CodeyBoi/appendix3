@@ -1,33 +1,18 @@
-import React from 'react';
-import { Title, Text } from '@mantine/core';
-import { NextPage } from 'next';
-import { trpc } from '../../utils/trpc';
-import GigInfo from '../../components/gig/info';
+import React from "react";
+import { NextPage } from "next";
+import { trpc } from "../../utils/trpc";
+import GigInfo from "../../components/gig/info";
 
 const Gigs: NextPage = () => {
-
-  const blabal = {
-    id: 1,
-    namn: "hugo",
-    roll: "kingen",
-    corps: {
-      id: 1,
-      instrument: "trombon",
-    },
-  };
-
-  const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
-  const { data: gigs, status: gigsStatus } = trpc.gig.getMany.useQuery({ corpsId: corps?.id ?? -1 }, { enabled: !!corps });
+  const { data: gigs } = trpc.gig.getMany.useQuery({});
 
   return (
     <>
       {gigs?.map((gig) => {
-        return (
-          <GigInfo gig={gig} key={gig.id} />
-        );
+        return <GigInfo gig={gig} key={gig.id} />;
       })}
     </>
   );
-}
+};
 
 export default Gigs;

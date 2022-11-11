@@ -78,11 +78,9 @@ const Home: NextPage = () => {
   const currentDate = new Date(
     new Date().toISOString().split("T")[0] ?? "2021-01-01"
   );
-  const { data: corps } = trpc.corps.getCorps.useQuery();
 
   const { data: gigs } = trpc.gig.getMany.useQuery(
     { startDate: currentDate },
-    { enabled: !!corps }
   );
 
   console.log(gigs);
