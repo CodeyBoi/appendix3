@@ -59,7 +59,7 @@ const oldInstruments = [
   "Tuba",
   "Slagverk",
   "Basklarinett",
-  "Fötter",
+  "Balett",
   "Annat",
 ];
 
