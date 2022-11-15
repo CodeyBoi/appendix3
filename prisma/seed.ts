@@ -190,6 +190,9 @@ const ROLES = [
 
 async function main() {
 
+  // Delete all users
+  await prisma.user.deleteMany({});
+
   // Create instruments
   await prisma.instrument.deleteMany({});
   for (let i = 0; i < INSTRUMENTS.length; i++) {
