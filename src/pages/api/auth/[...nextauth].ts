@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import EmailProvider from "next-auth/providers/email";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -12,7 +13,9 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         const userData = await prisma.user.findUnique({
           where: { id: user.id },
-          include: {
+          select: {
+            id: true,
+            email: true,
             corps: {
               select: {
                 id: true,
@@ -42,11 +45,19 @@ export const authOptions: NextAuthOptions = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    EmailProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
+      maxAge: 180 * 24 * 60 * 60, // 180 days
+      // sendVerificationRequest({ identifier: email, url, provider: { server, from }) {
+      //   const transport = createTransport(server);
+    }),
     // ...add more providers here
   ],
-  pages: {
-    signIn: "/auth/login",
-  },
+  // pages: {
+  //   signIn: "/auth/login",
+  //   newUser: "/auth/new-user",
+  // },
 };
 
 export default NextAuth(authOptions);

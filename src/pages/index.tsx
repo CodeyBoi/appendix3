@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (!session) {
     return {
       redirect: {
-        destination: "/auth/login",
+        destination: "api/auth/signin",
         permanent: false,
       },
     };
@@ -75,6 +75,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
 };
 
 const Home: NextPage = () => {
+
   const currentDate = new Date(
     new Date().toISOString().split("T")[0] ?? "2021-01-01"
   );
