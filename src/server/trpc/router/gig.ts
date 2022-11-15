@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   router,
   publicProcedure,
@@ -41,12 +42,22 @@ export const gigRouter = router({
       const visibilityFilter =
         corpsId !== undefined
           ? {
+            OR: [
+              {
               hiddenFor: {
                 none: {
                   corpsId,
                 },
               },
-            }
+            },
+            {
+              // Stops hiding gig if it's in the past
+              date: {
+                gt: dayjs().startOf("day").toDate(),
+              },
+            },
+            ],
+          }
           : {
               isPublic: true,
             };
