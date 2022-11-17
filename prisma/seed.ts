@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Corps, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -24,96 +24,96 @@ const INSTRUMENTS = [
   'Annat',
 ];
 
-const CORPSII = [
-  {
-    "username": "admin",
-    "password": "admin",
-    "number": 113,
-    "firstName": "Admin",
-    "lastName": "Adminsson",
-    "email": "admin@localhost",
-    "isActive": true,
-    "mainInstrument": "Slagverk"
-  },
-  {
-    "username": "user",
-    "password": "user",
-    "firstName": "Test",
-    "lastName": "User",
-    "email": "inyourface323@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Klarinett"
-  },
-  {
-    "username": "Krabben",
-    "password": "qwer",
-    "number": 516,
-    "firstName": "Hannes",
-    "lastName": "Ryberg",
-    "email": "hannes.ryberg@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Slagverk"
-  },
-  {
-    "username": "KM2K",
-    "password": "qwer",
-    "number": 558,
-    "firstName": "Aron",
-    "lastName": "Paulsson",
-    "email": "aronpaulsson99@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Basklarinett"
-  },
-  {
-    "username": "bprinoth",
-    "password": "qwer",
-    "number": 559,
-    "bNumber": 113,
-    "firstName": "Bibiana",
-    "lastName": "Prinoth",
-    "email": "bibiana.prinoth@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Fötter"
-  },
-  {
-    "username": "skelpdar",
-    "password": "qwer",
-    "number": 521,
-    "firstName": "Erik",
-    "lastName": "Wallin",
-    "email": "erik@wallin.se",
-    "isActive": true,
-    "mainInstrument": "Horn"
-  },
-  {
-    "username": "HugoKing",
-    "password": "qwer",
-    "number": 509,
-    "bNumber": 105,
-    "firstName": "Hugo",
-    "lastName": "Rogmark",
-    "email": "hrogmark@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Trombon",
-  },
-  {
-    "username": "Hannils",
-    "password": "qwer",
-    "firstName": "Hanna",
-    "lastName": "Nilsson",
-    "email": "hanils98@gmail.com",
-    "isActive": true,
-    "mainInstrument": "Fötter"
-  },
-  {
-    "username": "johans",
-    "password": "qwer",
-    "firstName": "Johan",
-    "lastName": "Svensson",
-    "email": "main@com.se",
-    "isActive": false,
-    "mainInstrument": "Flöjt"
-  }
+const CORPSII: (Corps & { email: string, mainInstrument: string })[] = [
+  // {
+  //   "username": "admin",
+  //   "password": "admin",
+  //   "number": 113,
+  //   "firstName": "Admin",
+  //   "lastName": "Adminsson",
+  //   "email": "admin@localhost",
+  //   "isActive": true,
+  //   "mainInstrument": "Slagverk"
+  // },
+  // {
+  //   "username": "user",
+  //   "password": "user",
+  //   "firstName": "Test",
+  //   "lastName": "User",
+  //   "email": "inyourface323@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Klarinett"
+  // },
+  // {
+  //   "username": "Krabben",
+  //   "password": "qwer",
+  //   "number": 516,
+  //   "firstName": "Hannes",
+  //   "lastName": "Ryberg",
+  //   "email": "hannes.ryberg@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Slagverk"
+  // },
+  // {
+  //   "username": "KM2K",
+  //   "password": "qwer",
+  //   "number": 558,
+  //   "firstName": "Aron",
+  //   "lastName": "Paulsson",
+  //   "email": "aronpaulsson99@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Basklarinett"
+  // },
+  // {
+  //   "username": "bprinoth",
+  //   "password": "qwer",
+  //   "number": 559,
+  //   "bNumber": 113,
+  //   "firstName": "Bibiana",
+  //   "lastName": "Prinoth",
+  //   "email": "bibiana.prinoth@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Fötter"
+  // },
+  // {
+  //   "username": "skelpdar",
+  //   "password": "qwer",
+  //   "number": 521,
+  //   "firstName": "Erik",
+  //   "lastName": "Wallin",
+  //   "email": "erik.wallin@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Horn"
+  // },
+  // {
+  //   "username": "HugoKing",
+  //   "password": "qwer",
+  //   "number": 509,
+  //   "bNumber": 105,
+  //   "firstName": "Hugo",
+  //   "lastName": "Rogmark",
+  //   "email": "hrogmark@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Trombon",
+  // },
+  // {
+  //   "username": "Hannils",
+  //   "password": "qwer",
+  //   "firstName": "Hanna",
+  //   "lastName": "Nilsson",
+  //   "email": "hanils98@gmail.com",
+  //   "isActive": true,
+  //   "mainInstrument": "Fötter"
+  // },
+  // {
+  //   "username": "johans",
+  //   "password": "qwer",
+  //   "firstName": "Johan",
+  //   "lastName": "Svensson",
+  //   "email": "main@com.se",
+  //   "isActive": false,
+  //   "mainInstrument": "Flöjt"
+  // }
 ];
 
 const GIGS = [
@@ -160,18 +160,20 @@ const GIGS = [
     "points": 1,
     "start": "16:00",
     "description": "Om du kan anmäla dig till den här spelningen så har någonting gått fel!",
-    "type": "Något annat!",
+    "type": "Ospecificerat!",
     "signupStart": "2023-10-01"
   }
 ];
 
 const GIG_TYPES = [
+  "Ospecificerat!",
   "Pärmspelning!",
   "Marschspelning!",
   "Party-marsch-spelning!",
   "Julkoncert!",
+  "Vårkoncert!",
   "Fest!",
-  "Något annat!",
+  "Repa!",
 ];
 
 const GIG_SIGNUP_STATUSES = [
@@ -182,13 +184,17 @@ const GIG_SIGNUP_STATUSES = [
 ];
 
 const ROLES = [
-  "user",
   "admin",
+  "user",
 ];
 
 async function main() {
 
+  // Delete all users
+  await prisma.user.deleteMany({});
+
   // Create instruments
+  await prisma.instrument.deleteMany({});
   for (let i = 0; i < INSTRUMENTS.length; i++) {
     const instrument = INSTRUMENTS[i];
     if (!instrument) {
@@ -239,6 +245,7 @@ async function main() {
   }
 
   // Create gig types
+  await prisma.gigType.deleteMany({});
   for (let i = 0; i < GIG_TYPES.length; i++) {
     const gigType = GIG_TYPES[i];
     if (!gigType) {
@@ -253,12 +260,6 @@ async function main() {
 
   // Create gigs
   await prisma.gig.deleteMany({});
-  // if (process.env.DATABASE_URL?.endsWith('.sqlite3')) {
-  //   await prisma.$executeRawUnsafe("UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'table_name';");
-  // } else if (process.env.DATABASE_URL?.startsWith('mysql://')) {
-  //   await prisma.$executeRawUnsafe(`ALTER SEQUENCE gig_id_seq RESTART WITH 1`);
-  // }
-
   for (let i = 0; i < GIGS.length; i++) {
     const gig = GIGS[i];
     if (!gig) {
@@ -280,6 +281,7 @@ async function main() {
   }
 
   // Create gig signup statuses
+  await prisma.gigSignupStatus.deleteMany({});
   for (let i = 0; i < GIG_SIGNUP_STATUSES.length; i++) {
     const status = GIG_SIGNUP_STATUSES[i];
     if (!status) {
@@ -293,6 +295,7 @@ async function main() {
   }
 
   // Create roles
+  await prisma.role.deleteMany({});
   for (let i = 0; i < ROLES.length; i++) {
     const role = ROLES[i];
     if (!role) {
