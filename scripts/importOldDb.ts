@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Corps, CorpsInstrument, Gig, PrismaClient, User } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -72,8 +72,49 @@ const OLD_INSTRUMENTS = [
 //   "STATISTICS_ITEM",
 // ];
 
+interface Event {
+  Id: string;
+  Name: string;
+  Description: string;
+  EventDate: string;
+  Times: string;
+  Other: string;
+  Other2: string;
+  EventTypeID: string;
+  Adress: string;
+}
+
+interface OldUser {
+  UserID: string;
+  Number: string;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  BNumber: string;
+  Section: string;
+  AltSec: string;
+  Stamledare: string;
+  Status: string;
+  Enabled: string;
+}
+
+interface EventStats {
+  EVENTID: string;
+  TYPEID: string;
+  TITLE: string;
+  EVENTDATE: string;
+  DESCRIPTION: string;
+  Points: string;
+}
+
+interface StatsItem {
+  EVENTID: string;
+  USERID: string;
+  Points: string;
+}
+
 const gigTypeIds = OLD_GIG_TYPES.reduce(
-  (acc: { [key: number]: number }, type, i) => {
+  (acc: { [key: string]: number }, type, i) => {
     acc[i] = GIG_TYPES.indexOf(type) + 1;
     return acc;
   },
@@ -81,14 +122,14 @@ const gigTypeIds = OLD_GIG_TYPES.reduce(
 );
 
 const instrumentIds = OLD_INSTRUMENTS.reduce(
-  (acc: { [key: number]: number }, instrument, i) => {
-    acc[i + 1] = INSTRUMENTS.indexOf(instrument);
+  (acc: { [key: string]: number }, instrument, i) => {
+    acc[(i + 1).toString()] = INSTRUMENTS.indexOf(instrument) + 1;
     return acc;
   },
   {}
 );
 
-const parseDate = (date: string) => {
+const parseDate = (date: string | null) => {
   if (!date) {
     return new Date("1970-01-01");
   } else if (date.includes("-")) {
@@ -118,150 +159,274 @@ const parseDate = (date: string) => {
 const main = async () => {
   const prisma = new PrismaClient();
   try {
-    await prisma.$transaction(async (tx) => {
-      // These objects are used to map the old database's IDs to the new ones
-      const gigIds: { [key: number]: number } = {};
-      const corpsIds: { [key: number]: number } = {};
+    // These objects are used to map the old database's IDs to the new ones
+    const gigIds: { [key: string]: number } = {};
+    const corpsIds: { [key: string]: number } = {};
+    const userIds: { [key: string]: string } = {};
 
-      if (process.argv.length < 3) {
-        console.log("Usage: node importOldDb.mjs <oldDbDump.json>");
+    if (process.argv.length < 3) {
+      console.log("Usage: node importOldDb.mjs <old-db-dir-path>");
+      process.exit(1);
+    }
+
+    const dirPath = process.argv[2];
+    if (!dirPath) {
+      console.log("Usage: node importOldDb.mjs <old-db-dir-path>");
+      process.exit(1);
+    }
+
+    console.log("Importing old db dump from directory " + dirPath + "...");
+    const filenames = fs.readdirSync(dirPath);
+
+    const getTable = (table: string) => {
+      const filename = filenames.find((f) => f.endsWith(table + ".json"));
+      if (!filename) {
+        console.log("Could not find file for table " + table);
         process.exit(1);
       }
+      let data = fs.readFileSync(path.join(dirPath, filename)).toString();
+      while (data.toString().charAt(0) !== "{") {
+        data = data.slice(1);
+      }
+      return JSON.parse(data);
+    };
 
-      const dirPath = process.argv[2];
-      if (!dirPath) {
-        console.log("Usage: node importOldDb.mjs <oldDbDump.json>");
-        process.exit(1);
+    console.log("Importing points for events...");
+    const eventStatsTable = getTable("STATISTICS_EVENT");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const eventPoints = eventStatsTable.data.reduce((acc: { [key: string]: number }, row: any) => {
+      acc[row.EVENTID] = parseInt(row.Points);
+      return acc;
+    }, {} as { [key: string]: number });
+
+    console.log("Importing events...");
+    await prisma.gig.deleteMany({});
+    const eventTable = getTable("Events");
+    const events: Gig[] = eventTable.data.map((row: Event) => {
+      const {
+        Id,
+        Name,
+        Description,
+        EventDate,
+        Times,
+        Other,
+        Other2,
+        EventTypeID,
+        Adress,
+      } = row;
+
+      const date = parseDate(EventDate);
+      if (date.getFullYear() >= 2023) {
+        console.log("Skipping event " + Name + " because it's in the future");
+        return undefined;
+      }
+      if (!Name) {
+        console.log("Skipping event " + Name + " because it has no title");
+        return undefined;
       }
 
-      console.log("Importing old db dump from directory " + dirPath + "...");
-      const filenames = fs.readdirSync(dirPath);
+      // console.log("Importing event " + Name);
 
-      const getTable = (table: string) => {
-        const filename = filenames.find((f) => f.endsWith(table + ".json"));
-        if (!filename) {
-          console.log("Could not find file for table " + table);
-          process.exit(1);
-        }
-        let data = fs.readFileSync(path.join(dirPath, filename)).toString();
-        while (data.toString().charAt(0) !== "{") {
-          data = data.slice(1);
-        }
-        return JSON.parse(data);
+      const timeRegex = /\d{1,2}[\.:]\d{2}/g;
+      const [meetup = undefined, start = undefined] = Array.from((Times ?? "").matchAll(timeRegex)).map((m: any) => m[0]);
+
+      const parsedEventTypeID = parseInt(EventTypeID ?? "0");
+      const eventTypeId = parsedEventTypeID ? gigTypeIds[parsedEventTypeID] : 1;
+
+      const gig = {
+        title: Name,
+        description: Description || undefined,
+        date: date.toString() === "Invalid Date" ? new Date("1970-01-01") : date,
+        meetup: meetup || undefined,
+        start: start || undefined,
+        checkbox1: Other || undefined,
+        checkbox2: Other2 || undefined,
+        location: Adress,
+        points: eventPoints[Id] || 0,
+        typeId: eventTypeId || 1,
       };
-
-      console.log("Importing events...");
-      const eventTable = getTable("Events");
-      for (const row of eventTable.data) {
-        const {
-          Id,
-          Name,
-          Description,
-          EventDate,
-          Times,
-          Other,
-          Other2,
-          EventTypeID,
-          Adress,
-        } = row;
-
-        const date = parseDate(EventDate);
-        if (date.getFullYear() >= 2023) {
-          continue;
-        }
-
-        const timeRegex = /\d{1,2}[\.:]\d{2}/g;
-        const [meetup = undefined, start = undefined] = [
-          ...Times.matchAll(timeRegex),
-        ].map((m) => m[0]);
-
-        const gig = {
-          title: Name,
-          description: Description,
-          date: date.toString() === "Invalid Date" ? new Date(1970, 0, 1) : date,
-          meetup,
-          start,
-          checkbox1: Other,
-          checkbox2: Other2,
-          location: Adress,
-          points: 1,
-          typeId: gigTypeIds[EventTypeID] || 1,
-        };
-
-        const id = parseInt(Id);
-        gigIds[id] = (await tx.gig.create({ data: gig })).id;
-      }
-
-      console.log("Importing users...");
-      const userTable = getTable("Users");
-      for (const row of userTable.data) {
-        const {
-          UserID,
-          Number,
-          FirstName,
-          LastName,
-          Email,
-          BNumber,
-          Section,
-          AltSec,
-          // Stamledare,
-          Status,
-        } = row;
-
-        if (!Email) {
-          continue;
-        }
-
-        const user = {
-          email: Email,
-        };
-        const userId = (
-          await tx.user.upsert({
-            where: { email: Email },
-            update: user,
-            create: user,
-          })
-        ).id;
-        console.log(`Importing user ${FirstName} ${LastName} with email ${Email}`);
-        const instrumentIndex = parseInt(Section);
-        const altInstrumentIndex = parseInt(AltSec);
-        const instruments = {
-          create: [
-            {
-              instrument: {
-                connect: {
-                  name: OLD_INSTRUMENTS[instrumentIndex - 1],
-                },
-              },
-              isMainInstrument: true,
-            },
-            {
-              instrument: {
-                connect: {
-                  name: OLD_INSTRUMENTS[altInstrumentIndex - 1],
-                },
-              },
-              isMainInstrument: false,
-            },
-          ].filter((i) => i.instrument.connect.name !== undefined),
-        };
-
-        const corps = {
-          number: Number ? parseInt(Number) : undefined,
-          firstName: FirstName,
-          lastName: LastName,
-          bNumber: BNumber ? parseInt(BNumber.slice(1)) : undefined,
-          instruments,
-          isActive: Status === 1,
-          user: {
-            connect: {
-              id: userId,
-            },
-          },
-        };
-        corpsIds[UserID] = (await tx.corps.create({ data: corps })).id;
-      }
+      return gig;
     });
+
+    await prisma.gig.createMany({
+      data: events.filter((e) => e !== undefined),
+    });
+    const importedEvents = await prisma.gig.findMany({
+      orderBy: { id: "asc" },
+    });
+    importedEvents.forEach((e, i) => {
+      gigIds[eventTable.data[i].Id] = e.id;
+    });
+
+    console.log("Importing users...");
+    const userTable = getTable("Users");
+    const emails: { [key: string]: boolean } = {};
+    const users: { user: User, corps: Corps, mainInstrument: CorpsInstrument, altInstrument?: CorpsInstrument }[] = userTable.data.map((row: OldUser) => {
+      const {
+        UserID,
+        Number,
+        FirstName,
+        LastName,
+        Email = "",
+        BNumber,
+        Section,
+        AltSec,
+        // Stamledare,
+        Status,
+        Enabled,
+        // LastLoggin,
+      } = row;
+
+      if (!Email) {
+        console.log("Skipping user " + UserID + " because it has no email");
+        return undefined;
+      }
+
+      if (Enabled === "0") {
+        console.log("Skipping user " + FirstName + " " + LastName + " because they are disabled");
+        return undefined;
+      }
+
+      if (emails[Email]) {
+        console.log("Skipping user with email " + Email + " because it's already been added");
+        return undefined;
+      }
+
+      emails[Email] = true;
+      const user = {
+        email: Email,
+      };
+      // console.log(`Importing user ${FirstName} ${LastName} with email ${Email}`);
+      const altInstrumentIndex = parseInt(AltSec);
+      const mainInstrument = {
+        instrumentId: instrumentIds[Section],
+        isMainInstrument: true,
+      };
+      const altInstrument = altInstrumentIndex && AltSec !== "0" ? {
+        instrumentId: instrumentIds[altInstrumentIndex],
+        isMainInstrument: false,
+      } : undefined;
+
+      const corps = {
+        number: Number ? parseInt(Number) : undefined,
+        firstName: FirstName,
+        lastName: LastName,
+        bNumber: BNumber ? parseInt(BNumber.slice(1)) : undefined,
+        isActive: parseInt(Status ?? "0") === 1,
+      };
+      return {
+        user,
+        corps,
+        mainInstrument,
+        altInstrument,
+      };
+    });
+    const importedUserData = users.filter((u) => u !== undefined);
+    await prisma.user.deleteMany({});
+    await prisma.user.createMany({
+      data: importedUserData.map((u) => u.user),
+    });
+    const importedUsers = await prisma.user.findMany({
+      orderBy: { id: "asc" },
+    });
+    importedUsers.forEach((u, i) => {
+      userIds[userTable.data[i].UserID] = u.id;
+    });
+
+    await prisma.corps.deleteMany({});
+    await prisma.corps.createMany({
+      data: importedUserData.map((u, i) => ({
+        ...u.corps,
+        userId: userIds[userTable.data[i].UserID] ?? ""
+      })),
+    });
+    const importedCorps = await prisma.corps.findMany({
+      orderBy: { id: "asc" },
+    });
+    importedCorps.forEach((c, i) => {
+      corpsIds[userTable.data[i].UserID] = c.id;
+    });
+
+    await prisma.corpsInstrument.deleteMany({});
+    await prisma.corpsInstrument.createMany({
+      data: importedUserData.map((u, i) => ({
+        ...u.mainInstrument,
+        corpsId: corpsIds[userTable.data[i].UserID] ?? 0,
+      })),
+    });
+    const altInstruments = importedUserData.map((u) => u.altInstrument).filter((i) => i !== undefined);
+    // await prisma.corpsInstrument.createMany({
+    //   data: altInstruments.map((instrument: any, i) => ({
+    //     ...instrument,
+    //     corpsId: corpsIds[userTable.data[i].UserID] ?? 0,
+    //   }))
+    // });
+
+    console.log("Importing stats for users...");
+    const userStatsTable = getTable("STATISTICS_ITEM");
+    const userStats = (await Promise.all(userStatsTable.data.map(async (row: StatsItem) => {
+      const { EVENTID, USERID, Points } = row;
+
+      const gigId = gigIds[parseInt(EVENTID)];
+      const corpsId = corpsIds[parseInt(USERID)];
+      const points = parseInt(Points);
+
+      if (!corpsId) {
+        console.log("Skipping user stats for user " + USERID + " because they don't exist");
+        return undefined;
+      }
+
+      if (!gigId) {
+        if (points === 0) {
+          console.log("Skipping stats for event " + EVENTID + " because it doesn't exist and doesn't have any points");
+          return undefined;
+        }
+        if (EVENTID !== "1") {
+          console.log("Skipping stats for event " + EVENTID + " because it doesn't exist");
+          return undefined;
+        }
+        console.log(`Adding new gig with ${points} points for user ${USERID}`);
+        const newGigId = (await prisma.gig.create({
+          data: {
+            title: "Poäng för tidigare spelningar",
+            date: new Date("1970-01-01"),
+            points,
+            typeId: 1,
+            countsPositively: true,
+          }
+        })).id;
+        const gigSignup = {
+          corpsId,
+          gigId: newGigId,
+          attended: true,
+          instrumentId: instrumentIds["15"],
+          signupStatusId: 1,
+        };
+        return { gigSignup };
+      }
+
+      // console.log(`Adding gig signup for corps ${corpsId}`);
+      const gigSignup = {
+        corpsId,
+        gigId,
+        attended: true,
+        instrumentId: instrumentIds["15"],
+        signupStatusId: 1,
+      };
+      return { gigSignup };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }))).filter((u: any) => u !== undefined);
+    // await prisma.gig.createMany({
+    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //   data: userStats.map((u: any) => u.newGig).filter((u: any) => u !== undefined)
+    // });
+
+    await prisma.gigSignup.deleteMany({});
+    await prisma.gigSignup.createMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: userStats.map((u: any) => u.gigSignup),
+    });
+
   } catch (e) {
     console.error(e);
   } finally {

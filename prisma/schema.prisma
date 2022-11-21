@@ -90,7 +90,7 @@ model Corps {
   gigSignups  GigSignup[]
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   instruments CorpsInstrument[]
-  role        Role?             @relation(fields: [roleId], references: [id])
+  role        Role?             @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
 model CorpsInstrument {
@@ -132,6 +132,8 @@ model Gig {
   type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
   signups   GigSignup[]
   hiddenFor HiddenGig[]
+
+  @@index([date(sort: Desc), id])
 }
 
 model GigType {
@@ -155,6 +157,7 @@ model GigSignup {
   gig        Gig             @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
+  @@index([corpsId, gigId])
 }
 
 model GigSignupStatus {

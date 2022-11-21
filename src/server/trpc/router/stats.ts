@@ -39,18 +39,18 @@ export const statsRouter = router({
           number,
           firstName,
           lastName, 
-          SUM(CASE WHEN "attended" THEN "points" ELSE 0 END) AS "gigsAttended",
+          SUM(CASE WHEN attended THEN points ELSE 0 END) AS gigsAttended,
           SUM(
-            CASE WHEN NOT COALESCE("attended", false) AND "Gig"."countsPositively" 
+            CASE WHEN NOT COALESCE(attended, false) AND Gig.countsPositively = 1
               THEN 0
               ELSE points
             END
-          ) AS "maxPossibleGigs"
-        FROM "Gig"
-        CROSS JOIN "Corps"
-        LEFT JOIN "GigSignup" ON "gigId" = "Gig"."id" AND "corpsId" = "Corps"."id"
-        WHERE "Gig"."date" BETWEEN ${statsStart} AND ${statsEnd}
-        GROUP BY "Corps"."id"
+          ) AS maxPossibleGigs
+        FROM Gig
+        CROSS JOIN Corps
+        LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
+        WHERE Gig.date BETWEEN ${statsStart} AND ${statsEnd}
+        GROUP BY Corps.id
         ORDER BY 
           gigsAttended DESC,
           ISNULL(number), number,
@@ -73,7 +73,7 @@ export const statsRouter = router({
             maxPossibleGigs,
             attendence: maxPossibleGigs === 0 ? 1.0 : gigsAttended / maxPossibleGigs,
           };
-        })
+        }).filter(corps => corps.gigsAttended > 0),
       };
     }),
 });

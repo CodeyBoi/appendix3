@@ -13,7 +13,7 @@ const getOperatingYear = () => {
   return month >= 8 ? year : year - 1;
 }
 
-const startOperatingYear = 2021;
+const startOperatingYear = 2003;
 const operatingYears = Array.from({ length: getOperatingYear() - startOperatingYear + 1 }, (_, i) => startOperatingYear + i).reverse();
 
 const Statistics: NextPage = () => {
