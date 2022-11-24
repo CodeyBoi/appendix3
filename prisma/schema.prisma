@@ -69,7 +69,7 @@ model VerificationToken {
 
 // Custom models
 model Corps {
-  id                    Int      @id @default(autoincrement())
+  id                    String   @id @default(cuid())
   number                Int?
   bNumber               Int?
   firstName             String
@@ -90,11 +90,11 @@ model Corps {
   gigSignups  GigSignup[]
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   instruments CorpsInstrument[]
-  role        Role?             @relation(fields: [roleId], references: [id])
+  role        Role?             @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
 model CorpsInstrument {
-  corpsId          Int
+  corpsId          String
   instrumentId     Int
   isMainInstrument Boolean
   corps            Corps      @relation(fields: [corpsId], references: [id], onDelete: Cascade)
@@ -111,7 +111,7 @@ model Instrument {
 }
 
 model Gig {
-  id               Int       @id @default(autoincrement())
+  id               String    @id @default(cuid())
   title            String
   date             DateTime
   meetup           String    @default("")
@@ -132,6 +132,8 @@ model Gig {
   type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
   signups   GigSignup[]
   hiddenFor HiddenGig[]
+
+  @@index([date(sort: Desc), id])
 }
 
 model GigType {
@@ -141,8 +143,8 @@ model GigType {
 }
 
 model GigSignup {
-  corpsId        Int
-  gigId          Int
+  corpsId        String
+  gigId          String
   signupStatusId Int
   instrumentId   Int
   attended       Boolean  @default(false)
@@ -155,6 +157,7 @@ model GigSignup {
   gig        Gig             @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
+  @@index([corpsId, gigId])
 }
 
 model GigSignupStatus {
@@ -164,8 +167,8 @@ model GigSignupStatus {
 }
 
 model HiddenGig {
-  corpsId Int
-  gigId   Int
+  corpsId String
+  gigId   String
   corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   gig     Gig   @relation(fields: [gigId], references: [id], onDelete: Cascade)
 

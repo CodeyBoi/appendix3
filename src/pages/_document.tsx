@@ -27,7 +27,6 @@ export default class _Document extends Document {
             name="description"
             content="Ett internt verktyg för alla corps"
           />
-          <link rel="apple-touch-icon" href="/logo192.png" />
           <link rel="manifest" href="/manifest.json" />
         </Head>
         <body>

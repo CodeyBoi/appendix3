@@ -9,7 +9,7 @@ import { trpc } from "../../../../utils/trpc";
 import 'dayjs/locale/sv';
 
 interface FormValues {
-  gigId?: number;
+  gigId?: string;
   title: string;
   type: string;
   description: string;
@@ -48,8 +48,8 @@ const initialValues: FormValues = {
 const AdminGig = () => {
 
   const router = useRouter();
-  const gigId = parseInt(router.query.gigId as string ?? "0");
-  const newGig = router.query.gigId === "new";
+  const gigId = router.query.gigId as string;
+  const newGig = gigId === "new";
   const utils = trpc.useContext();
 
   const [loading, setLoading] = React.useState(!newGig);

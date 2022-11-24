@@ -9,7 +9,7 @@ import { z } from "zod";
 
 export const gigRouter = router({
   getWithId: protectedProcedure
-    .input(z.object({ gigId: z.number() }))
+    .input(z.object({ gigId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.gig.findUnique({
         include: {
@@ -85,7 +85,7 @@ export const gigRouter = router({
   upsert: adminProcedure
     .input(
       z.object({
-        gigId: z.number().optional(),
+        gigId: z.string().optional(),
         title: z.string(),
         date: z.date(),
         type: z.string(),
@@ -111,7 +111,7 @@ export const gigRouter = router({
         ...input,
         hiddenFor: {
           create: input.hiddenFor?.map((corpsId) => ({
-            corpsId: parseInt(corpsId),
+            corpsId,
           })),
         },
         type: {
@@ -132,8 +132,8 @@ export const gigRouter = router({
   getSignup: publicProcedure
     .input(
       z.object({
-        corpsId: z.number(),
-        gigId: z.number(),
+        corpsId: z.string(),
+        gigId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -160,12 +160,12 @@ export const gigRouter = router({
   getSignups: publicProcedure
     .input(
       z.object({
-        gigId: z.number(),
+        gigId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       interface WhosComingEntry {
-        corpsId: number;
+        corpsId: string;
         firstName: string;
         lastName: string;
         number?: number;
@@ -200,8 +200,8 @@ export const gigRouter = router({
   addSignup: protectedProcedure
     .input(
       z.object({
-        corpsId: z.number(),
-        gigId: z.number(),
+        corpsId: z.string(),
+        gigId: z.string(),
         status: z.string(),
         instrument: z.string().optional(),
       })
@@ -276,8 +276,8 @@ export const gigRouter = router({
   removeSignup: protectedProcedure
     .input(
       z.object({
-        corpsId: z.number(),
-        gigId: z.number(),
+        corpsId: z.string(),
+        gigId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -294,8 +294,8 @@ export const gigRouter = router({
   editAttendance: adminProcedure
     .input(
       z.object({
-        corpsId: z.number(),
-        gigId: z.number(),
+        corpsId: z.string(),
+        gigId: z.string(),
         attended: z.boolean(),
       })
     )

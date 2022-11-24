@@ -10,7 +10,7 @@ const LIST_WIDTH = "700px";
 
 const WhosComing = ({ isAdmin }: { isAdmin: boolean }) => {
   const router = useRouter();
-  const gigId = parseInt(router.query.gigId as string ?? "0");
+  const gigId = router.query.gigId as string;
 
   const { data: gig, status: gigStatus } =
     trpc.gig.getWithId.useQuery({ gigId }, { enabled: !!router.isReady });
