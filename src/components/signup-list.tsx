@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface SignupListProps {
   isAdmin?: boolean;
-  gigId: number;
+  gigId: string;
 }
 
 // const STEMS_PER_INSTRUMENT = {
@@ -175,7 +175,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   return (
     <Box>
       {isAdmin &&
-        <form onSubmit={form.onSubmit((values) => addSignup.mutateAsync({ corpsId: parseInt(values.corpsId), gigId, status: 'Ja' }))}>
+        <form onSubmit={form.onSubmit((values) => addSignup.mutateAsync({ corpsId: values.corpsId, gigId, status: 'Ja' }))}>
           <Space h="sm" />
           <Group position='apart'>
             <Select

@@ -12,7 +12,7 @@ export const corpsRouter = router({
           },
         },
         where: {
-          userId: ctx.session?.user.id,
+          userId: ctx.session?.user.id || undefined,
         },
       });
     }),
@@ -37,7 +37,7 @@ export const corpsRouter = router({
         },
         where: {
           userId: {
-            not: ctx.session?.user.id,
+            not: ctx.session?.user.id || undefined,
           },
         },
       });
@@ -60,7 +60,7 @@ export const corpsRouter = router({
           },
         },
         where: {
-          userId: ctx.session?.user.id,
+          userId: ctx.session?.user.id || undefined,
         },
       });
       return user?.role?.name ?? "user";
@@ -77,7 +77,7 @@ export const corpsRouter = router({
           },
         },
         where: {
-          userId: ctx.session?.user.id,
+          userId: ctx.session?.user.id || undefined,
         },
       });
       if (!corps) {

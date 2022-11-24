@@ -1,4 +1,5 @@
 import { Corps, CorpsInstrument, Gig, PrismaClient, User } from "@prisma/client";
+import cuid from "cuid";
 import fs from "fs";
 import path from "path";
 
@@ -165,8 +166,8 @@ const main = async () => {
   const prisma = new PrismaClient();
   try {
     // These objects are used to map the old database's IDs to the new ones
-    const gigIds: { [key: string]: number } = {};
-    const corpsIds: { [key: string]: number } = {};
+    const gigIds: { [key: string]: string } = {};
+    const corpsIds: { [key: string]: string } = {};
     const userIds: { [key: string]: string } = {};
 
     if (process.argv.length < 3) {
@@ -205,6 +206,7 @@ const main = async () => {
     }, {} as { [key: string]: number });
     const events = eventTable.data.map((row: EventStats) => {
       const {
+        EVENTID,
         TYPEID,
         TITLE,
         EVENTDATE,
@@ -223,7 +225,11 @@ const main = async () => {
         return undefined;
       }
 
+      const id = cuid();
+      gigIds[EVENTID] = id;
+
       return {
+        id,
         typeId: 1,
         title: TITLE,
         date: date.toString() === "Invalid Date" ? new Date("1970-01-01") : date,
@@ -236,12 +242,6 @@ const main = async () => {
     await prisma.gig.deleteMany({});
     await prisma.gig.createMany({
       data: events,
-    });
-    const importedEvents = await prisma.gig.findMany({
-      orderBy: { id: "asc" },
-    });
-    importedEvents.forEach((e, i) => {
-      gigIds[eventTable.data[i].EVENTID] = e.id;
     });
 
     console.log("Importing users...");
@@ -278,8 +278,12 @@ const main = async () => {
         return undefined;
       }
 
+      const userId = cuid();
+      const corpsId = cuid();
+
       emails[Email] = true;
       const user = {
+        id: userId,
         email: Email,
       };
       // console.log(`Importing user ${FirstName} ${LastName} with email ${Email}`);
@@ -294,12 +298,18 @@ const main = async () => {
       } : undefined;
 
       const corps = {
+        id: corpsId,
         number: Number ? parseInt(Number) : undefined,
         firstName: FirstName,
         lastName: LastName,
         bNumber: BNumber ? parseInt(BNumber.slice(1)) : undefined,
         isActive: parseInt(Status ?? "0") === 1,
+        userId,
       };
+
+      userIds[UserID] = userId;
+      corpsIds[UserID] = corpsId;
+
       return {
         user,
         corps,
@@ -310,43 +320,22 @@ const main = async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }).filter((u: any) => u !== undefined);
     await prisma.user.deleteMany({});
-    await prisma.user.createMany({
-      data: users.map((u) => u.user),
-    });
-    const importedUsers = await prisma.user.findMany({
-      orderBy: { id: "asc" },
-    });
-    importedUsers.forEach((u, i) => {
-      const oldUserId = users[i]?.oldUserId;
-      if (oldUserId === undefined || oldUserId.length === 0) {
-        return;
-      }
-      userIds[oldUserId] = u.id;
-    });
-
     await prisma.corps.deleteMany({});
-    await prisma.corps.createMany({
-      data: users.map((u, i) => ({
-        ...u.corps,
-        userId: userIds[users[i]?.oldUserId ?? ""] ?? "",
-      })),
-    });
-    const importedCorps = await prisma.corps.findMany({
-      orderBy: { id: "asc" },
-    });
-    importedCorps.forEach((c, i) => {
-      const oldUserId = users[i]?.oldUserId;
-      if (oldUserId === undefined || oldUserId.length === 0) {
-        return;
-      }
-      corpsIds[oldUserId] = c.id;
-    });
+
+    await prisma.$transaction([
+      prisma.user.createMany({
+        data: users.map((u) => u.user),
+      }),
+      prisma.corps.createMany({
+        data: users.map((u) => u.corps),
+      }),
+    ]);
 
     await prisma.corpsInstrument.deleteMany({});
     await prisma.corpsInstrument.createMany({
       data: users.map((u, i) => ({
         ...u.mainInstrument,
-        corpsId: corpsIds[users[i]?.oldUserId ?? ""] ?? 0,
+        corpsId: corpsIds[users[i]?.oldUserId ?? ""] ?? "",
       })),
     });
     const altInstruments = users.map((u) => u.altInstrument).filter((i) => i !== undefined);
@@ -419,8 +408,6 @@ const main = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: userStats.map((u: any) => u.gigSignup),
     });
-
-    console.log("Importing stats for events...");
 
   } catch (e) {
     console.error(e);

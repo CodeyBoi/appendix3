@@ -9,7 +9,7 @@ declare module "next-auth" {
     // user?: {
     //   id: string;
     // } & DefaultSession["user"];
-    user?: { id: string | null, email: string | null } & { corps: { id: number, role: { name: string } | null } | null } | null
+    user?: { id: string | null, email: string | null } & { corps: { id: string, role: { name: string } | null } | null } | null
     // & DefaultSession["user"]
     ;
   }

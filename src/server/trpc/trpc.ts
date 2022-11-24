@@ -41,7 +41,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   const role = await ctx.prisma.user.findUnique({
-    where: { id: ctx.session.user.id },
+    where: { id: ctx.session.user.id || "" },
     select: {
       corps: {
         select: {

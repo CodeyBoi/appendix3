@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -28,12 +28,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String? // @db.Text
+  access_token      String? // @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String? // @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -69,7 +69,7 @@ model VerificationToken {
 
 // Custom models
 model Corps {
-  id                    String   @id @default(cuid())
+  id                    Int      @id @default(autoincrement())
   number                Int?
   bNumber               Int?
   firstName             String
@@ -94,7 +94,7 @@ model Corps {
 }
 
 model CorpsInstrument {
-  corpsId          String
+  corpsId          Int
   instrumentId     Int
   isMainInstrument Boolean
   corps            Corps      @relation(fields: [corpsId], references: [id], onDelete: Cascade)
@@ -111,7 +111,7 @@ model Instrument {
 }
 
 model Gig {
-  id               String    @id @default(cuid())
+  id               Int       @id @default(autoincrement())
   title            String
   date             DateTime
   meetup           String    @default("")
@@ -119,7 +119,7 @@ model Gig {
   location         String    @default("")
   signupStart      DateTime?
   signupEnd        DateTime?
-  description      String    @db.Text @default("")
+  description      String    @default("")  // @db.Text
   typeId           Int
   points           Int
   countsPositively Boolean   @default(false)
@@ -143,8 +143,8 @@ model GigType {
 }
 
 model GigSignup {
-  corpsId        String
-  gigId          String
+  corpsId        Int
+  gigId          Int
   signupStatusId Int
   instrumentId   Int
   attended       Boolean  @default(false)
@@ -167,8 +167,8 @@ model GigSignupStatus {
 }
 
 model HiddenGig {
-  corpsId String
-  gigId   String
+  corpsId Int
+  gigId   Int
   corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   gig     Gig   @relation(fields: [gigId], references: [id], onDelete: Cascade)
 

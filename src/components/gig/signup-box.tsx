@@ -3,7 +3,7 @@ import React from "react";
 import { trpc } from "../../utils/trpc";
 
 interface GigSignupBoxProps {
-  gigId: number;
+  gigId: string;
 }
 
 const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
@@ -22,7 +22,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
   const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
   const { data: mainInstrument, status: mainInstrumentStatus } = trpc.corps.mainInstrument.useQuery();
   const { data: signup, status: signupStatus } =
-    trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? -1 }, { enabled: !!corps });
+    trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? "" }, { enabled: !!corps });
 
   const [instrument, setInstrument] = React.useState('');
   const [status, setStatus] = React.useState('Ej svarat');

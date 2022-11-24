@@ -76,4 +76,25 @@ export const statsRouter = router({
         }).filter(corps => corps.gigsAttended > 0),
       };
     }),
+
+  getPoints: publicProcedure
+    .input(z.object({ corpsId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const corpsId = input.corpsId ?? ctx.session?.user?.corps?.id;
+      if (!corpsId) {
+        throw new Error("Not logged in");
+      }
+      const query = await ctx.prisma.gig.aggregate({
+        _sum: { points: true },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+      });
+      return query._sum.points ?? 0;
+    }),
 });

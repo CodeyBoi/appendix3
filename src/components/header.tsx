@@ -30,7 +30,7 @@ const AppendixHeader = () => {
           {isAdmin && <AdminMenu />}
           <Button px={6} leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
           <Button px={6} leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
-          <Button px={6} leftIcon={<IconUser />} size='sm' component={NextLink} href="/me">Mina sidor</Button>
+          <Button px={6} leftIcon={<IconUser />} size='sm' component={NextLink} href="/account">Mina sidor</Button>
           <Button px={6} leftIcon={<IconLogout />} size='sm' onClick={() => signOut()}>Logga ut</Button>
         </Group>
       </Group>
