@@ -11,7 +11,7 @@ interface StatisticsTableProps {
 const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
 
   const { data: stats, status: statsStatus } =
-    trpc.stats.yearly.useQuery({ operatingYear });
+    trpc.stats.getYearly.useQuery({ operatingYear });
 
   const { nbrOfGigs, positivelyCountedGigs, corpsStats } = stats ?? {};
 

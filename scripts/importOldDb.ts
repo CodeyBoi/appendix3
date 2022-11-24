@@ -115,7 +115,7 @@ interface StatsItem {
 
 const gigTypeIds = OLD_GIG_TYPES.reduce(
   (acc: { [key: string]: number }, type, i) => {
-    acc[i] = GIG_TYPES.indexOf(type) + 1;
+    acc[i.toString()] = GIG_TYPES.indexOf(type) + 1;
     return acc;
   },
   {}
@@ -135,6 +135,11 @@ const parseDate = (date: string | null) => {
   } else if (date.includes("-")) {
     return new Date(date);
   }
+
+  else if (date.length === 10) {
+    return new Date(date);
+  }
+
   // The regexes checks that the date is only digits (otherwise e.g. `22-23/11` would match)
   else if (date.length === 8 && date.match(/^\d+$/)) {
     return new Date(
@@ -192,76 +197,57 @@ const main = async () => {
     };
 
     console.log("Importing points for events...");
-    const eventStatsTable = getTable("STATISTICS_EVENT");
+    const eventTable = getTable("STATISTICS_EVENT");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const eventPoints = eventStatsTable.data.reduce((acc: { [key: string]: number }, row: any) => {
+    const eventPoints = eventTable.data.reduce((acc: { [key: string]: number }, row: any) => {
       acc[row.EVENTID] = parseInt(row.Points);
       return acc;
     }, {} as { [key: string]: number });
-
-    console.log("Importing events...");
-    await prisma.gig.deleteMany({});
-    const eventTable = getTable("Events");
-    const events: Gig[] = eventTable.data.map((row: Event) => {
+    const events = eventTable.data.map((row: EventStats) => {
       const {
-        Id,
-        Name,
-        Description,
-        EventDate,
-        Times,
-        Other,
-        Other2,
-        EventTypeID,
-        Adress,
+        TYPEID,
+        TITLE,
+        EVENTDATE,
+        DESCRIPTION,
+        Points,
       } = row;
 
-      const date = parseDate(EventDate);
+      if (TYPEID === "1" || TYPEID === "2") {
+        console.log("Skipping event " + TITLE + " because it is a rehearsal");
+        return undefined;
+      }
+
+      const date = parseDate(EVENTDATE);
       if (date.getFullYear() >= 2023) {
-        console.log("Skipping event " + Name + " because it's in the future");
-        return undefined;
-      }
-      if (!Name) {
-        console.log("Skipping event " + Name + " because it has no title");
+        console.log("Skipping event " + TITLE + " because it's in the future");
         return undefined;
       }
 
-      // console.log("Importing event " + Name);
-
-      const timeRegex = /\d{1,2}[\.:]\d{2}/g;
-      const [meetup = undefined, start = undefined] = Array.from((Times ?? "").matchAll(timeRegex)).map((m: any) => m[0]);
-
-      const parsedEventTypeID = parseInt(EventTypeID ?? "0");
-      const eventTypeId = parsedEventTypeID ? gigTypeIds[parsedEventTypeID] : 1;
-
-      const gig = {
-        title: Name,
-        description: Description || undefined,
+      return {
+        typeId: 1,
+        title: TITLE,
         date: date.toString() === "Invalid Date" ? new Date("1970-01-01") : date,
-        meetup: meetup || undefined,
-        start: start || undefined,
-        checkbox1: Other || undefined,
-        checkbox2: Other2 || undefined,
-        location: Adress,
-        points: eventPoints[Id] || 0,
-        typeId: eventTypeId || 1,
+        description: DESCRIPTION,
+        points: parseInt(Points),
       };
-      return gig;
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }).filter((e: any) => e !== undefined);
 
+    await prisma.gig.deleteMany({});
     await prisma.gig.createMany({
-      data: events.filter((e) => e !== undefined),
+      data: events,
     });
     const importedEvents = await prisma.gig.findMany({
       orderBy: { id: "asc" },
     });
     importedEvents.forEach((e, i) => {
-      gigIds[eventTable.data[i].Id] = e.id;
+      gigIds[eventTable.data[i].EVENTID] = e.id;
     });
 
     console.log("Importing users...");
     const userTable = getTable("Users");
     const emails: { [key: string]: boolean } = {};
-    const users: { user: User, corps: Corps, mainInstrument: CorpsInstrument, altInstrument?: CorpsInstrument }[] = userTable.data.map((row: OldUser) => {
+    const users: { user: User, corps: Corps, mainInstrument: CorpsInstrument, altInstrument?: CorpsInstrument, oldUserId: string }[] = userTable.data.map((row: OldUser) => {
       const {
         UserID,
         Number,
@@ -278,7 +264,7 @@ const main = async () => {
       } = row;
 
       if (!Email) {
-        console.log("Skipping user " + UserID + " because it has no email");
+        console.log("Skipping user " + FirstName + " " + LastName + " because they have no email");
         return undefined;
       }
 
@@ -288,7 +274,7 @@ const main = async () => {
       }
 
       if (emails[Email]) {
-        console.log("Skipping user with email " + Email + " because it's already been added");
+        console.log("Skipping user " + FirstName + " " + LastName + " because their email " + Email + " has already been added");
         return undefined;
       }
 
@@ -319,42 +305,51 @@ const main = async () => {
         corps,
         mainInstrument,
         altInstrument,
+        oldUserId: UserID,
       };
-    });
-    const importedUserData = users.filter((u) => u !== undefined);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }).filter((u: any) => u !== undefined);
     await prisma.user.deleteMany({});
     await prisma.user.createMany({
-      data: importedUserData.map((u) => u.user),
+      data: users.map((u) => u.user),
     });
     const importedUsers = await prisma.user.findMany({
       orderBy: { id: "asc" },
     });
     importedUsers.forEach((u, i) => {
-      userIds[userTable.data[i].UserID] = u.id;
+      const oldUserId = users[i]?.oldUserId;
+      if (oldUserId === undefined || oldUserId.length === 0) {
+        return;
+      }
+      userIds[oldUserId] = u.id;
     });
 
     await prisma.corps.deleteMany({});
     await prisma.corps.createMany({
-      data: importedUserData.map((u, i) => ({
+      data: users.map((u, i) => ({
         ...u.corps,
-        userId: userIds[userTable.data[i].UserID] ?? ""
+        userId: userIds[users[i]?.oldUserId ?? ""] ?? "",
       })),
     });
     const importedCorps = await prisma.corps.findMany({
       orderBy: { id: "asc" },
     });
     importedCorps.forEach((c, i) => {
-      corpsIds[userTable.data[i].UserID] = c.id;
+      const oldUserId = users[i]?.oldUserId;
+      if (oldUserId === undefined || oldUserId.length === 0) {
+        return;
+      }
+      corpsIds[oldUserId] = c.id;
     });
 
     await prisma.corpsInstrument.deleteMany({});
     await prisma.corpsInstrument.createMany({
-      data: importedUserData.map((u, i) => ({
+      data: users.map((u, i) => ({
         ...u.mainInstrument,
-        corpsId: corpsIds[userTable.data[i].UserID] ?? 0,
+        corpsId: corpsIds[users[i]?.oldUserId ?? ""] ?? 0,
       })),
     });
-    const altInstruments = importedUserData.map((u) => u.altInstrument).filter((i) => i !== undefined);
+    const altInstruments = users.map((u) => u.altInstrument).filter((i) => i !== undefined);
     // await prisma.corpsInstrument.createMany({
     //   data: altInstruments.map((instrument: any, i) => ({
     //     ...instrument,
@@ -367,8 +362,8 @@ const main = async () => {
     const userStats = (await Promise.all(userStatsTable.data.map(async (row: StatsItem) => {
       const { EVENTID, USERID, Points } = row;
 
-      const gigId = gigIds[parseInt(EVENTID)];
-      const corpsId = corpsIds[parseInt(USERID)];
+      const gigId = gigIds[EVENTID];
+      const corpsId = corpsIds[USERID];
       const points = parseInt(Points);
 
       if (!corpsId) {
@@ -377,15 +372,13 @@ const main = async () => {
       }
 
       if (!gigId) {
-        if (points === 0) {
-          console.log("Skipping stats for event " + EVENTID + " because it doesn't exist and doesn't have any points");
-          return undefined;
-        }
-        if (EVENTID !== "1") {
-          console.log("Skipping stats for event " + EVENTID + " because it doesn't exist");
-          return undefined;
-        }
-        console.log(`Adding new gig with ${points} points for user ${USERID}`);
+        console.log("Skipping stats for event " + EVENTID + " because it doesn't exist");
+        return undefined;
+      }
+
+      if (eventPoints[EVENTID] !== undefined && eventPoints[EVENTID] !== points) {
+        // console.log(`Adding new gig with ${points} points for user ${USERID}`);
+        console.log("Event exists, but point values does not match for event " + EVENTID + " for user " + USERID + "!");
         const newGigId = (await prisma.gig.create({
           data: {
             title: "Poäng för tidigare spelningar",
@@ -426,6 +419,8 @@ const main = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: userStats.map((u: any) => u.gigSignup),
     });
+
+    console.log("Importing stats for events...");
 
   } catch (e) {
     console.error(e);

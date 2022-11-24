@@ -2,7 +2,7 @@ import { router, publicProcedure } from "../trpc";
 import { z } from "zod";
 
 export const statsRouter = router({
-  yearly: publicProcedure
+  getYearly: publicProcedure
     .input(z.object({ operatingYear: z.number() }))
     .query(async ({ ctx, input }) => {
       const { operatingYear } = input;
