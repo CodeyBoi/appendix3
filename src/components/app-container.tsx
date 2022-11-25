@@ -9,6 +9,7 @@ const AppContainer = ({ children }: { children: ReactElement }) => {
     <AppShell
       header={<AppendixHeader />}
       hidden={!session || session.status !== 'authenticated'}
+      padding={24}
     >
       {children}
     </AppShell>

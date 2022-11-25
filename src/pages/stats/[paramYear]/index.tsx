@@ -5,7 +5,7 @@ import Loading from "../../../components/loading";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
 
-const getOperatingYear = () => {
+export const getOperatingYear = () => {
   const date = new Date();
   const month = date.getMonth();
   const year = date.getFullYear();
@@ -35,11 +35,11 @@ const Statistics: NextPage = () => {
         <Group>
           <Title>Statistik för verksamhetsår</Title>
           <Select
-            size="xl"
-            sx={{ width: 140 }}
+            size="lg"
             defaultValue={paramYear}
+            maxDropdownHeight={500}
             data={operatingYears?.map(y => ({
-              label: `${y.toString().slice(2, 4)}/${(y + 1).toString().slice(2, 4)}`,
+              label: `${y}-${y + 1}`,
               value: y.toString()
             })) ?? []}
             onChange={(y) => {

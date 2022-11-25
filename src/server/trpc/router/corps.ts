@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 
 export const corpsRouter = router({
@@ -10,9 +11,59 @@ export const corpsRouter = router({
               instrument: true,
             },
           },
+          user: {
+            select: {
+              email: true,
+            },
+          },
         },
         where: {
           userId: ctx.session?.user.id || undefined,
+        },
+      });
+    }),
+
+  update: protectedProcedure
+    .input(z.object({
+      firstName: z.string(),
+      lastName: z.string(),
+      email: z.string(),
+      drinksAlcohol: z.boolean(),
+      vegetarian: z.boolean(),
+      vegan: z.boolean(),
+      glutenIntolerant: z.boolean(),
+      lactoseIntolerant: z.boolean(),
+      otherFoodRestrictions: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const corps = await ctx.prisma.corps.findUnique({
+        where: {
+          userId: ctx.session?.user.id || undefined,
+        },
+      });
+
+      if (corps === null) {
+        throw new Error("Not logged in");
+      }
+
+      return ctx.prisma.corps.update({
+        where: {
+          id: corps.id,
+        },
+        data: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          user: {
+            update: {
+              email: input.email,
+            },
+          },
+          drinksAlcohol: input.drinksAlcohol,
+          vegetarian: input.vegetarian,
+          vegan: input.vegan,
+          glutenIntolerant: input.glutenIntolerant,
+          lactoseIntolerant: input.lactoseIntolerant,
+          otherFoodRestrictions: input.otherFoodRestrictions,
         },
       });
     }),

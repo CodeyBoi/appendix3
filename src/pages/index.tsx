@@ -1,9 +1,19 @@
-import { Grid, Center, Group, Title, Accordion } from "@mantine/core";
+import {
+  Grid,
+  Center,
+  Group,
+  Title,
+  Accordion,
+  ActionIcon,
+  Stack,
+} from "@mantine/core";
 import { Gig } from "@prisma/client";
+import { IconRefresh } from "@tabler/icons";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import GigCalendar from "../components/gig/calendar";
 import GigInfo from "../components/gig/info";
+import Loading from "../components/loading";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { trpc } from "../utils/trpc";
 
@@ -75,14 +85,14 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
 };
 
 const Home: NextPage = () => {
-
+  const utils = trpc.useContext();
   const currentDate = new Date(
     new Date().toISOString().split("T")[0] ?? "2021-01-01"
   );
 
-  const { data: gigs } = trpc.gig.getMany.useQuery(
-    { startDate: currentDate },
-  );
+  const { data: gigs, isLoading: gigsLoading } = trpc.gig.getMany.useQuery({
+    startDate: currentDate,
+  });
 
   return (
     <Grid sx={{ flexDirection: "row-reverse" }}>
@@ -92,14 +102,23 @@ const Home: NextPage = () => {
         </Center>
       </Grid.Col>
       <Grid.Col xs={8} lg={9}>
-        <Group position="apart">
-          <Title order={1}>
-            {gigs && gigs.length === 0
-              ? "Inga kommande spelningar :("
-              : "Kommande spelningar"}
-          </Title>
-        </Group>
-        {gigs && makeGigList(gigs)}
+        <Stack>
+          <Group position="apart">
+            <Title order={1}>
+              {gigs && gigs.length === 0
+                ? "Inga kommande spelningar :("
+                : "Kommande spelningar"}
+            </Title>
+            <ActionIcon
+              variant="outline"
+              onClick={() => utils.gig.getMany.invalidate()}
+            >
+              <IconRefresh />
+            </ActionIcon>
+          </Group>
+          {gigsLoading && <Loading msg="Laddar spelningar..." />}
+          {gigs && makeGigList(gigs)}
+        </Stack>
       </Grid.Col>
     </Grid>
   );
