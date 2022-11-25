@@ -113,7 +113,7 @@ model Corps {
   vegan                 Boolean  @default(false)
   glutenIntolerant      Boolean  @default(false)
   lactoseIntolerant     Boolean  @default(false)
-  nonDrinker            Boolean  @default(false)
+  drinksAlcohol         Boolean  @default(false)
   otherFoodRestrictions String   @default("")
   userId                String   @unique
   roleId                Int?

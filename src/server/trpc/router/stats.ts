@@ -3,11 +3,14 @@ import { z } from "zod";
 
 export const statsRouter = router({
   getYearly: publicProcedure
-    .input(z.object({ operatingYear: z.number() }))
+    .input(
+      z.object({ operatingYear: z.number(), selfOnly: z.boolean().optional() })
+    )
     .query(async ({ ctx, input }) => {
-      const { operatingYear } = input;
-      const statsStart = new Date(operatingYear, 8, 1);     // September 1st
-      const statsEnd = new Date(operatingYear + 1, 7, 31);  // August 31st next year
+      const { operatingYear, selfOnly } = input;
+      const statsStart = new Date(operatingYear, 8, 1); // September 1st
+      const statsEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
+      const corpsId = ctx.session?.user?.corps?.id;
 
       const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
@@ -21,7 +24,7 @@ export const statsRouter = router({
         where: {
           date: { gte: statsStart, lte: statsEnd },
           countsPositively: true,
-        }
+        },
       });
 
       interface CorpsStats {
@@ -33,7 +36,32 @@ export const statsRouter = router({
         maxPossibleGigs: number;
       }
 
-      const corpsStatsQuery = ctx.prisma.$queryRaw<CorpsStats[]>`
+      const corpsStatsQuery = corpsId && selfOnly
+        ? ctx.prisma.$queryRaw<CorpsStats[]>`
+      SELECT 
+        Corps.id as id,
+        number,
+        firstName,
+        lastName, 
+        SUM(CASE WHEN attended THEN points ELSE 0 END) AS gigsAttended,
+        SUM(
+          CASE WHEN NOT COALESCE(attended, false) AND Gig.countsPositively = 1
+            THEN 0
+            ELSE points
+          END
+        ) AS maxPossibleGigs
+      FROM Gig
+      CROSS JOIN Corps
+      LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
+      WHERE Gig.date BETWEEN ${statsStart} AND ${statsEnd}
+      AND Corps.id = ${corpsId}
+      ORDER BY 
+        gigsAttended DESC,
+        ISNULL(number), number,
+        lastName,
+        firstName;
+    `
+        : ctx.prisma.$queryRaw<CorpsStats[]>`
         SELECT 
           Corps.id as id,
           number,
@@ -59,21 +87,28 @@ export const statsRouter = router({
       `;
 
       const [nbrOfGigs, positivelyCountedGigs, corpsStats] =
-        await ctx.prisma.$transaction([nbrOfGigsQuery, positivelyCountedGigsQuery, corpsStatsQuery]);
+        await ctx.prisma.$transaction([
+          nbrOfGigsQuery,
+          positivelyCountedGigsQuery,
+          corpsStatsQuery,
+        ]);
 
       return {
         nbrOfGigs: nbrOfGigs._sum.points ?? 0,
         positivelyCountedGigs: positivelyCountedGigs._sum.points ?? 0,
-        corpsStats: corpsStats.map(corps => {
-          const gigsAttended = Number(corps.gigsAttended ?? 0);
-          const maxPossibleGigs = Number(corps.maxPossibleGigs ?? 0);
-          return {
-            ...corps,
-            gigsAttended,
-            maxPossibleGigs,
-            attendence: maxPossibleGigs === 0 ? 1.0 : gigsAttended / maxPossibleGigs,
-          };
-        }).filter(corps => corps.gigsAttended > 0),
+        corpsStats: corpsStats
+          .map((corps) => {
+            const gigsAttended = Number(corps.gigsAttended ?? 0);
+            const maxPossibleGigs = Number(corps.maxPossibleGigs ?? 0);
+            return {
+              ...corps,
+              gigsAttended,
+              maxPossibleGigs,
+              attendence:
+                maxPossibleGigs === 0 ? 1.0 : gigsAttended / maxPossibleGigs,
+            };
+          })
+          .filter((corps) => corps.gigsAttended > 0),
       };
     }),
 
@@ -84,7 +119,7 @@ export const statsRouter = router({
       if (!corpsId) {
         throw new Error("Not logged in");
       }
-      const query = await ctx.prisma.gig.aggregate({
+      const points = await ctx.prisma.gig.aggregate({
         _sum: { points: true },
         where: {
           signups: {
@@ -95,6 +130,6 @@ export const statsRouter = router({
           },
         },
       });
-      return query._sum.points ?? 0;
+      return points._sum.points ?? 0;
     }),
 });
