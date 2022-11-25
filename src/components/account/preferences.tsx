@@ -44,7 +44,6 @@ const AccountPreferences = () => {
     if (!corps) {
       return;
     }
-    console.log("corps", corps);
     form.setValues({
       firstName: corps.firstName,
       lastName: corps.lastName,
@@ -66,7 +65,6 @@ const AccountPreferences = () => {
     },
   });
   const handleSubmit = async (values: FormValues) => {
-    console.log("values", values);
     setSubmitting(true);
     await mutation.mutateAsync(values);
   };
