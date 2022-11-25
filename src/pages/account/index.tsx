@@ -1,25 +1,8 @@
 import { Stack, Title, Center, Grid } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import React from "react";
 import AccountPreferences from "../../components/account/preferences";
 import CorpsStats from "../../components/account/stats";
 import { trpc } from "../../utils/trpc";
-
-const initialValues = {
-  firstName: "",
-  lastName: "",
-  vegetarian: false,
-  vegan: false,
-  glutenIntolerant: false,
-  lactoseIntolerant: false,
-  drinksAlcohol: false,
-  otherFoodRestrictions: "",
-  email: "",
-  mainInstrument: "",
-  otherInstruments: [] as string[],
-};
-
-type FormValues = typeof initialValues;
 
 const Account = () => {
   const { data: corps } = trpc.corps.getCorps.useQuery();
@@ -33,10 +16,10 @@ const Account = () => {
       <Stack sx={{ width: "70%" }}>
         <Title>{`Välkommen, ${corpsName}!`}</Title>
         <Grid>
-          <Grid.Col span={6}>
+          <Grid.Col sm={12} md={6}>
             <CorpsStats />
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col sm={12} md={6}>
             <AccountPreferences />
           </Grid.Col>
         </Grid>
