@@ -19,7 +19,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
     },
   });
 
-  const { data: corps, status: corpsStatus } = trpc.corps.getCorps.useQuery();
+  const { data: corps, status: corpsStatus } = trpc.corps.getSelf.useQuery();
   const { data: mainInstrument, status: mainInstrumentStatus } = trpc.corps.mainInstrument.useQuery();
   const { data: signup, status: signupStatus } =
     trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? "" }, { enabled: !!corps });

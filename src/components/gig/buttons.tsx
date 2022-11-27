@@ -24,7 +24,8 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
   const router = useRouter();
   const pathname = router.pathname;
 
-  const { data: role } = trpc.corps.getRole.useQuery();
+  const { data: corps } = trpc.corps.getSelf.useQuery();
+  const isAdmin = corps?.role?.name === "admin";
 
   const currentDate = dayjs().startOf("day");
   const showSignup =
@@ -36,8 +37,6 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
     // There is no signup end date or today is before or at the signup end date
     (!gig.signupEnd ||
       currentDate.subtract(1, "day").isBefore(gig.signupEnd, "day"));
-
-  const isAdmin = role === "admin";
 
   return (
     <Group align="start" pl={12} pb={6} spacing={20}>

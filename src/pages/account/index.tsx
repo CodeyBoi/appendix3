@@ -5,7 +5,7 @@ import CorpsStats from "../../components/account/stats";
 import { trpc } from "../../utils/trpc";
 
 const Account = () => {
-  const { data: corps } = trpc.corps.getCorps.useQuery();
+  const { data: corps } = trpc.corps.getSelf.useQuery();
   const corpsName =
     corps?.number !== null
       ? "#" + corps?.number.toString()

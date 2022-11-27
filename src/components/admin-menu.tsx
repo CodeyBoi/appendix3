@@ -20,7 +20,6 @@ const AdminMenu = () => {
         >
           Skapa användare
         </Menu.Item>
-        <Menu.Item icon={<IconLockOpen />} component={NextLink} href="/admin/permissions">Hantera behörigheter</Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>
         <Menu.Item icon={<IconFilePlus />} component={NextLink} href="/admin/gig/new">Skapa spelning</Menu.Item>

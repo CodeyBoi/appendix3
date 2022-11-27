@@ -25,7 +25,7 @@ const initialValues = {
 type FormValues = typeof initialValues;
 
 const AccountPreferences = () => {
-  const { data: corps, isLoading: corpsLoading } = trpc.corps.getCorps.useQuery();
+  const { data: corps, isLoading: corpsLoading } = trpc.corps.getSelf.useQuery();
   const utils = trpc.useContext();
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -58,9 +58,9 @@ const AccountPreferences = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
-  const mutation = trpc.corps.update.useMutation({
+  const mutation = trpc.corps.updateSelf.useMutation({
     onSuccess: () => {
-      utils.corps.getCorps.invalidate();
+      utils.corps.getSelf.invalidate();
       setSubmitting(false);
     },
   });
