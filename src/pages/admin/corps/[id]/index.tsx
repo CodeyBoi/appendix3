@@ -8,6 +8,7 @@ import {
   SimpleGrid,
   Title,
   LoadingOverlay,
+  MultiSelect,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
@@ -29,7 +30,6 @@ const CreateCorps = () => {
   const router = useRouter();
   const corpsId = router.query.id as string;
   const creatingCorps = corpsId === "new";
-  const utils = trpc.useContext();
 
   const [loading, setLoading] = React.useState(!creatingCorps);
   const [submitting, setSubmitting] = React.useState(false);
@@ -78,16 +78,26 @@ const CreateCorps = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
+  const mutation = trpc.corps.upsert.useMutation({
+    onSuccess: () => {
+      // router.push("/admin/corps");
+      setSubmitting(false);
+    },
+  });
+
   const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
-    if (creatingCorps) {
-
-    }
+    mutation.mutateAsync({
+      ...values,
+      number: parseInt(values.number),
+      bNumber: parseInt(values.bNumber),
+      id: creatingCorps ? undefined : corpsId,
+    });
   };
 
   return (
     <Box sx={{ maxWidth: 700, fontFamily: "Castellar" }} mx="auto">
-      <Title order={2}>Skapa användare</Title>
+      <Title order={2}>{`${creatingCorps ? 'Skapa' : 'Uppdatera'} corps`}</Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div>
           <LoadingOverlay visible={loading || submitting} />
@@ -110,22 +120,38 @@ const CreateCorps = () => {
             />
             <TextInput
               label="Nummer"
-              placeholder="Nummer (lämnas tomt om du inte har något)"
+              placeholder="Nummer"
+              description="Lämnas tomt om du inte har något"
               {...form.getInputProps("number")}
             />
+            <TextInput
+              label="Balettnummer"
+              placeholder="Balettnummer"
+              description="Lämnas tomt om du inte har något"
+              {...form.getInputProps("bNumber")}
+            />
             <Select
-              withAsterisk
               label="Huvudinstrument"
               placeholder="Välj instrument..."
               searchable
-              nothingFound="Inget instrument hittades"
-              data={instruments}
+              nothingFound="Instrumenten kunde inte laddas"
+              data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+              withAsterisk
               {...form.getInputProps("mainInstrument")}
+            />
+            <MultiSelect
+              label="Övriga instrument"
+              placeholder="Välj instrument..."
+              searchable
+              nothingFound="Instrumenten kunde inte laddas"
+              data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+              withAsterisk
+              {...form.getInputProps("otherInstruments")}
             />
             <TextInput
               withAsterisk
               label="Email"
-              placeholder="din@email.com"
+              placeholder="exempel@domän.se"
               {...form.getInputProps("email")}
             />
           </SimpleGrid>

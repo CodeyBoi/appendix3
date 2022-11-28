@@ -2,8 +2,6 @@ import { MantineThemeOverride } from '@mantine/core';
 
 const GLOBAL_THEME: MantineThemeOverride = {
   // colorScheme: 'dark',
-  primaryColor: 'red',
-  primaryShade: 5,
   white: '#FAFFFC',
   colors: {
     red: [
@@ -31,11 +29,13 @@ const GLOBAL_THEME: MantineThemeOverride = {
       "#331E00",
     ],
   },
+  primaryColor: 'red',
+  primaryShade: 5,
   fontFamily: 'Bahnschrift, sans-serif',
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   fontSizes: {
-    xs: 12,
-    sm: 14,
+    xs: 14,
+    sm: 15,
     md: 16,
     lg: 18,
     xl: 20,
@@ -43,24 +43,33 @@ const GLOBAL_THEME: MantineThemeOverride = {
   headings: {
     sizes: {
       h1: {
-        fontSize: 32,
+        fontSize: 48,
+        fontWeight: 600,
       },
       h2: {
-        fontSize: 24,
+        fontSize: 36,
+        fontWeight: 600,
       },
       h3: {
-        fontSize: 18,
+        fontSize: 24,
+        fontWeight: 700,
       },
       h4: {
-        fontSize: 14,
+        fontSize: 20,
+        fontWeight: 600,
       },
       h5: {
-        fontSize: 12,
+        fontSize: 16,
+        fontWeight: 600,
+      },
+      h6: {
+        fontSize: 14,
+        fontWeight: 600,
       },
     },
-    fontWeight: 500,
     fontFamily: 'Bahnschrift, sans-serif',
   },
+  cursorType: 'pointer',
   loader: "dots",
   dateFormat: "D MMMM, YYYY",
   datesLocale: "sv",

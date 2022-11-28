@@ -1,31 +1,50 @@
 import { Button, Menu } from "@mantine/core";
 import React from "react";
-import { IconFilePlus, IconSettings, IconLockOpen, IconUserPlus } from "@tabler/icons";
+import {
+  IconFilePlus,
+  IconSettings,
+  IconUser,
+  IconUserPlus,
+} from "@tabler/icons";
 import { NextLink } from "@mantine/next";
 
 const AdminMenu = () => {
-
   return (
     <Menu shadow="md">
       <Menu.Target>
-        <Button px={6} leftIcon={<IconSettings />}>Administration</Button>
+        <Button px={6} leftIcon={<IconSettings />}>
+          Administration
+        </Button>
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>Användare</Menu.Label>
+        <Menu.Label>Corpsii</Menu.Label>
+        <Menu.Item
+          icon={<IconUser />}
+          component={NextLink}
+          href="/admin/corps"
+        >
+          Se alla corpsmedlemmar
+        </Menu.Item>
         <Menu.Item
           icon={<IconUserPlus />}
           component={NextLink}
-          href="/register"
+          href="/admin/corps/new"
         >
-          Skapa användare
+          Skapa corps
         </Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>
-        <Menu.Item icon={<IconFilePlus />} component={NextLink} href="/admin/gig/new">Skapa spelning</Menu.Item>
+        <Menu.Item
+          icon={<IconFilePlus />}
+          component={NextLink}
+          href="/admin/gig/new"
+        >
+          Skapa spelning
+        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );
-}
+};
 
 export default AdminMenu;

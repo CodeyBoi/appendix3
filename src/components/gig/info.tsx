@@ -27,12 +27,12 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
             <Group position="left" spacing="xs">
               <Datebox date={dayjs(gig.date)} />
               <Stack spacing={0} align="flex-start">
-                <Title order={3} sx={{ fontWeight: 600 }}>
+                <Title order={3}>
                   {gig.title}
                 </Title>
-                <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
+                <Text size="xs">{gig.type.name}</Text>
                 {gig.meetup && (
-                  <Text sx={{ fontSize: 13 }}>{`Samling: ${gig.meetup}`}</Text>
+                  <Text size="xs">{`Samling: ${gig.meetup}`}</Text>
                 )}
               </Stack>
             </Group>
@@ -60,12 +60,12 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           <Group position="left">
             <Datebox date={dayjs(gig.date)} />
             <Stack spacing={0} align="flex-start">
-              <Title order={3} sx={{ fontWeight: 600 }}>
+              <Title order={3}>
                 {gig.title}
               </Title>
-              <Text sx={{ fontSize: 13 }}>{gig.type.name}</Text>
+              <Text size="xs">{gig.type.name}</Text>
               {gig.meetup && (
-                <Text sx={{ fontSize: 13 }}>{`Tarmen: ${gig.meetup}`}</Text>
+                <Text size="xs">{`Tarmen: ${gig.meetup}`}</Text>
               )}
             </Stack>
           </Group>

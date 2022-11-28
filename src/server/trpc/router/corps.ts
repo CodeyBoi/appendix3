@@ -76,7 +76,7 @@ export const corpsRouter = router({
 
   upsert: adminProcedure
     .input(z.object({
-      corpsId: z.string().optional(),
+      id: z.string().optional(),
       firstName: z.string(),
       lastName: z.string(),
       number: z.number().nullable(),
@@ -87,6 +87,9 @@ export const corpsRouter = router({
       role: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
+      if (input.otherInstruments.includes(input.mainInstrument)) {
+        throw new Error("Main instrument cannot be in other instruments");
+      }
       const instruments = await ctx.prisma.instrument.findMany({});
       const queryData = {
         firstName: input.firstName,
@@ -114,17 +117,17 @@ export const corpsRouter = router({
         },
       };
 
-      if (input.corpsId) {
+      if (input.id) {
         await ctx.prisma.corpsInstrument.deleteMany({
           where: {
-            corpsId: input.corpsId,
+            corpsId: input.id,
           },
         });
       }
 
       return ctx.prisma.corps.upsert({
         where: {
-          id: input.corpsId,
+          id: input.id,
 
         },
         update: {
