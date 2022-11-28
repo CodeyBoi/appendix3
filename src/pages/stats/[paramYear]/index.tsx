@@ -33,7 +33,7 @@ const Statistics: NextPage = () => {
     <Center>
       <Box>
         <Group>
-          <Title>Statistik för verksamhetsår</Title>
+          <Title order={2}>Statistik för verksamhetsår</Title>
           <Select
             size="lg"
             defaultValue={paramYear}

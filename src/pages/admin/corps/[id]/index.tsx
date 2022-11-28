@@ -97,7 +97,7 @@ const CreateCorps = () => {
 
   return (
     <Box sx={{ maxWidth: 700, fontFamily: "Castellar" }} mx="auto">
-      <Title order={2}>{`${creatingCorps ? 'Skapa' : 'Uppdatera'} corps`}</Title>
+      <Title order={2}>{`${creatingCorps ? 'Skapa' : 'Uppdatera'} corpsmedlem`}</Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div>
           <LoadingOverlay visible={loading || submitting} />

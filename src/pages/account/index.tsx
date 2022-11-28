@@ -14,7 +14,7 @@ const Account = () => {
   return (
     <Center>
       <Stack sx={{ width: "70%" }}>
-        <Title>{`Välkommen, ${corpsName}!`}</Title>
+        <Title order={2}>{`Välkommen, ${corpsName}!`}</Title>
         <Grid>
           <Grid.Col sm={12} md={6}>
             <CorpsStats />

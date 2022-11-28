@@ -24,14 +24,14 @@ const AdminMenu = () => {
           component={NextLink}
           href="/admin/corps"
         >
-          Se alla corpsmedlemmar
+          Hantera corpsmedlemmar
         </Menu.Item>
         <Menu.Item
           icon={<IconUserPlus />}
           component={NextLink}
           href="/admin/corps/new"
         >
-          Skapa corps
+          Skapa corpsmedlem
         </Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>

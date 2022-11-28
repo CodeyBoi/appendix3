@@ -21,13 +21,9 @@ const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
     value: c.id,
   })), [corpsii]);
 
-  // BUG: When the user reloads the query the selected corpsii are reset
   const onSearchChange = (value: string) => {
     console.log('onSearchChange', value);
     setSearchValue(value);
-    if (value.length === 0) {
-
-    }
     if (value.length === MIN_SEARCH_LENGTH) {
       setQueryValue(value);
     }
@@ -40,7 +36,7 @@ const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
     searchable: true,
     clearable: true,
     data: corpsiiData ?? [],
-    placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
+    placeholder: queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
     nothingFound: searchValue.length < MIN_SEARCH_LENGTH ? "Skriv minst två tecken för att söka..." : nothingFound,
     searchValue,
     onSearchChange,

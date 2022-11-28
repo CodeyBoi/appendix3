@@ -69,7 +69,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
     const month = gigs[0]?.date.getMonth() ?? -1;
     return (
       <>
-        <Title pt={6} order={2}>
+        <Title pt={6} order={3}>
           <u>{monthNames[month]}</u>
         </Title>
         <Accordion key={month}>
@@ -104,7 +104,7 @@ const Home: NextPage = () => {
       <Grid.Col xs={8} lg={9}>
         <Stack>
           <Group position="apart">
-            <Title order={1}>
+            <Title order={2}>
               {gigs && gigs.length === 0
                 ? "Inga kommande spelningar :("
                 : "Kommande spelningar"}

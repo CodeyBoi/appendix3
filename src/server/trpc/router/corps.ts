@@ -29,6 +29,37 @@ export const corpsRouter = router({
       });
     }),
 
+  get: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.corps.findUnique({
+        include: {
+          instruments: {
+            select: {
+              instrument: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              email: true,
+            },
+          },
+          role: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
   updateSelf: protectedProcedure
     .input(z.object({
       firstName: z.string(),

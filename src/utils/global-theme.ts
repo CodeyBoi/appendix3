@@ -34,9 +34,9 @@ const GLOBAL_THEME: MantineThemeOverride = {
   fontFamily: 'Bahnschrift, sans-serif',
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   fontSizes: {
-    xs: 14,
-    sm: 15,
-    md: 16,
+    xs: 12,
+    sm: 13,
+    md: 14,
     lg: 18,
     xl: 20,
   },
