@@ -30,7 +30,6 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId], map: "Account_userId_fkey")
 }
 
 model Session {
@@ -39,8 +38,6 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId], map: "Session_userId_fkey")
 }
 
 model User {
@@ -50,8 +47,8 @@ model User {
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  corps         Corps?
   sessions      Session[]
+  corps         Corps?
 }
 
 model VerificationToken {
@@ -95,7 +92,6 @@ model CorpsInstrument {
   instrument       Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, instrumentId])
-  @@index([instrumentId], map: "CorpsInstrument_instrumentId_fkey")
 }
 
 model Instrument {
@@ -166,7 +162,6 @@ model HiddenGig {
   gig     Gig   @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
-  @@index([gigId], map: "HiddenGig_gigId_fkey")
 }
 
 model Role {
