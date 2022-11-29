@@ -2,11 +2,11 @@ import React from 'react';
 import { Text, Table, Tabs, Select, Center} from '@mantine/core';
 import { NextPage } from 'next';
 import { trpc } from '../../utils/trpc';
+import { getOperatingYear } from '../stats/[paramYear]';
 
 const Gigs: NextPage = () => {
   const { data: corps } = trpc.corps.getSelf.useQuery();
   const { data: allGigs, isLoading: allGigsLoading } = trpc.gig.getMany.useQuery({});
-  // make a new query for myGigs
   const { data: myGigs, isLoading: myGigsLoading } = trpc.gig.getAttended.useQuery(
     { corpsId: corps?.id ?? "" },
     { enabled: !!corps },
@@ -37,6 +37,16 @@ const Gigs: NextPage = () => {
         </Tabs.List>
 
         <Tabs.Panel value="myGigs" pt="xs">
+          <Center>
+          <Select style={{ marginRight: "auto", marginBottom: "30px"}}
+            label="Välj År"
+            defaultValue={getOperatingYear().toString()}
+            searchable
+            nothingFound="No options"
+            maxDropdownHeight={280}
+            data={years}
+            ref={ref} />
+          </Center>
         <Table fontSize={12}>
           <thead>
             <tr>
@@ -72,7 +82,7 @@ const Gigs: NextPage = () => {
           <Center>
           <Select style={{ marginRight: "auto", marginBottom: "30px"}}
             label="Välj År"
-            placeholder="2022"
+            defaultValue={getOperatingYear().toString()}
             searchable
             nothingFound="No options"
             maxDropdownHeight={280}
