@@ -41,6 +41,7 @@ export const corpsRouter = router({
                   name: true,
                 },
               },
+              isMainInstrument: true,
             },
           },
           user: {
@@ -185,15 +186,16 @@ export const corpsRouter = router({
       search: z.string().optional(),
       role: z.string().optional(),
       instrument: z.string().optional(),
+      excludeSelf: z.boolean().optional(),
     }))
     .query(async ({ ctx, input }) => {
       const number = parseInt(input.search ?? "");
       const bNumber = parseInt(input.search ?? "");
       const corpsii = await ctx.prisma.corps.findMany({
         where: {
-          userId: {
+          userId: input.excludeSelf ? {
             not: ctx.session?.user.id || undefined,
-          },
+          } : undefined,
           OR: [
             {
               firstName: {
@@ -246,6 +248,20 @@ export const corpsRouter = router({
             },
           },
         },
+        orderBy: [
+          {
+            number: {
+              sort: "asc",
+              nulls: "last",
+            },
+          },
+          {
+            lastName: "asc",
+          },
+          {
+            firstName: "asc",
+          },
+        ],
       });
       return corpsii.map((corps) => ({
         id: corps.id,

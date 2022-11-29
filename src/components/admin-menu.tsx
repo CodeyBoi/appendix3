@@ -20,18 +20,18 @@ const AdminMenu = () => {
       <Menu.Dropdown>
         <Menu.Label>Corpsii</Menu.Label>
         <Menu.Item
-          icon={<IconUser />}
-          component={NextLink}
-          href="/admin/corps"
-        >
-          Hantera corpsmedlemmar
-        </Menu.Item>
-        <Menu.Item
           icon={<IconUserPlus />}
           component={NextLink}
           href="/admin/corps/new"
         >
           Skapa corpsmedlem
+        </Menu.Item>
+        <Menu.Item
+          icon={<IconUser />}
+          component={NextLink}
+          href="/admin/corps"
+        >
+          Hantera corpsmedlemmar
         </Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>
