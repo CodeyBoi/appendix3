@@ -273,6 +273,75 @@ export const gigRouter = router({
       });
     }),
 
+  addSignups: adminProcedure
+    .input(
+      z.object({
+        corpsIds: z.array(z.string()),
+        gigId: z.string(),
+        status: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const instruments = await ctx.prisma.corpsInstrument.findMany({
+        select: {
+          corpsId: true,
+          instrument: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          corpsId: {
+            in: input.corpsIds,
+          },
+          isMainInstrument: true,
+        },
+      });
+      return ctx.prisma.$transaction(
+        input.corpsIds.map((corpsId) =>
+          ctx.prisma.gigSignup.upsert({
+            where: {
+              corpsId_gigId: {
+                corpsId,
+                gigId: input.gigId,
+              },
+            },
+            update: {
+              status: {
+                connect: {
+                  value: input.status,
+                },
+              },
+            },
+            create: {
+              corps: {
+                connect: {
+                  id: corpsId,
+                },
+              },
+              gig: {
+                connect: {
+                  id: input.gigId,
+                },
+              },
+              status: {
+                connect: {
+                  value: input.status,
+                },
+              },
+              instrument: {
+                connect: {
+                  name: instruments.find((i) => i.corpsId === corpsId)
+                    ?.instrument.name ?? "Annat",
+                },
+              },
+            },
+          })
+        )
+      );
+    }),
+
   removeSignup: protectedProcedure
     .input(
       z.object({

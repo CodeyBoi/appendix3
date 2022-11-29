@@ -1,40 +1,69 @@
-import { Select, SelectItem, SelectProps } from "@mantine/core";
-import React from "react";
-// import { useQuery } from "@tanstack/react-query";
+import { Select, SelectProps } from "@mantine/core";
+import React, { useMemo } from "react";
+import { trpc } from "../utils/trpc";
 
-// export interface CorpsSelectData extends Corps {
-//   value: string;
-//   label: string;
-// }
+const MIN_SEARCH_LENGTH = 2;
 
-// const SelectCorps = (props: Omit<SelectProps, "data">) => {
-//   const { data: userCorps } = useQuery<Corps>(["corps"], fetchCorps);
+type SelectCorpsProps = Omit<SelectProps, "data"> & { excludeSelf?: boolean };
 
-//   const { data: corpsii, status: corpsiiStatus } = useQuery<(string | SelectItem)[]>([`selectCorpsii`], async () => {
-//     const res = await axios.get<Corps[]>('/api/corps');
-//     let corpsiiData: (string | SelectItem)[] = [];
-//     for (let i = 0; i < res.data.length; i++) {
-//       const corps = res.data[i];
-//       if (userCorps?.id !== corps.id) {
-//         corpsiiData.push({
-//           value: corps.id.toString(),
-//           label: `${corps.number ? '#' + corps.number : 'p.e.'} ${corps.firstName} ${corps.lastName}`,
-//         });
-//       }
-//     }
-//     return corpsiiData;
-//   }, { enabled: !!userCorps?.id, staleTime: Infinity });
+const SelectCorps = (props: SelectCorpsProps) => {
+  const [queryValue, setQueryValue] = React.useState("");
+  const [searchValue, setSearchValue] = React.useState("");
 
-//   const selectProps: SelectProps = {
-//     ...props,
-//     searchable: true,
-//     clearable: true,
-//     data: corpsii ?? [],
-//     placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
-//     nothingFound: "Inga corps hittades",
-//   };
+  const { data: corpsii, status: corpsiiStatus } =
+    trpc.corps.getMany.useQuery({
+      search: queryValue,
+      excludeSelf: props.excludeSelf,
+    }, {
+      enabled: queryValue.length >= MIN_SEARCH_LENGTH,
+    });
 
-//   return <Select {...selectProps} />;
-// }
+  // Here we fetch a corps if `defaultValue` is set
+  const { data: initialCorps } = trpc.corps.get.useQuery({
+    id: props.defaultValue as string,
+  }, {
+    enabled: !!props.defaultValue,
+  });
 
-// export default SelectCorps;
+  const corpsiiData = useMemo(() => {
+    const data = initialCorps ? [{
+      label: `${initialCorps.number ? '#' + initialCorps.number : 'p.e.'} ${initialCorps.firstName} ${initialCorps.lastName}`,
+      value: initialCorps.id,
+    }] : [];
+    if (corpsii) {
+      return data.concat(
+        corpsii
+          .filter((c) => !initialCorps || initialCorps.id !== c.id)
+          .map((c) => ({
+            label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
+            value: c.id,
+          }))
+      );
+    }
+    return data;
+  }, [corpsii, initialCorps]);
+
+  const onSearchChange = (value: string) => {
+    setSearchValue(value);
+    if (value.length === MIN_SEARCH_LENGTH) {
+      setQueryValue(value);
+    }
+  };
+
+  const nothingFound = corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
+
+  const selectProps: SelectProps = {
+    ...props,
+    searchable: true,
+    clearable: true,
+    data: corpsiiData ?? [],
+    placeholder: queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
+    nothingFound: searchValue.length < MIN_SEARCH_LENGTH ? "Skriv minst två tecken för att söka..." : nothingFound,
+    searchValue,
+    onSearchChange,
+  };
+
+  return <Select {...selectProps} />;
+}
+
+export default SelectCorps;

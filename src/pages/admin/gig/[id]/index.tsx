@@ -60,12 +60,12 @@ const initialValues: FormValues = {
 
 const AdminGig = () => {
   const router = useRouter();
-  const gigId = router.query.gigId as string;
+  const gigId = router.query.id as string;
   const newGig = gigId === "new";
   const utils = trpc.useContext();
 
   const [loading, setLoading] = React.useState(!newGig);
-  const [submittning, setSubmittning] = React.useState(false);
+  const [submittning, setSubmitting] = React.useState(false);
 
   const { data: gig } = trpc.gig.getWithId.useQuery(
     { gigId },
@@ -117,13 +117,13 @@ const AdminGig = () => {
     onSuccess: () => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
-      setSubmittning(false);
+      setSubmitting(false);
       router.push("/");
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
-    setSubmittning(true);
+    setSubmitting(true);
     if (newGig) {
       mutation.mutateAsync(values);
     } else {

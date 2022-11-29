@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
-import { Box, Center, Table, Checkbox, CloseButton, Tooltip, Title, Button, Group, Select, Space } from "@mantine/core";
+import { Box, Center, Table, Checkbox, CloseButton, Tooltip, Title, Button, Group, Space } from "@mantine/core";
 import { trpc } from "../utils/trpc";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 import { useQueryClient } from "@tanstack/react-query";
+import MultiSelectCorpsii from "./multi-select-corpsii";
 
 interface SignupListProps {
   isAdmin?: boolean;
@@ -39,8 +40,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const { data: signups } =
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
-  const { data: role } = trpc.corps.getRole.useQuery();
-  const isAdmin = role === "admin";
+  const { data: corps } = trpc.corps.getSelf.useQuery();
+  const isAdmin = corps?.role?.name === "admin";
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -82,24 +83,14 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const yesList = splitList?.yesList ?? [];
   const maybeList = splitList?.maybeList ?? [];
 
-  const { data: selectCorpsii } = trpc.corps.getCorpsii.useQuery();
-  const corpsii = useMemo(() => {
-    if (!selectCorpsii) return [];
-    return selectCorpsii.map((corps) => ({
-      id: corps.id,
-      value: corps.id.toString(),
-      label: `${corps.number ? '#' + corps.number : 'p.e.'} ${corps.name}`,
-    }));
-  }, [selectCorpsii]);
-
   const form = useForm({
-    initialValues: { corpsId: '' },
+    initialValues: { corpsIds: [] as string[] },
     validate: {
-      corpsId: (value) => !!value ? null : 'Du måste välja ett corps',
+      corpsIds: (value) => value.length > 0 ? null : 'Du måste välja minst ett corps',
     }
   });
 
-  const addSignup = trpc.gig.addSignup.useMutation({
+  const addSignups = trpc.gig.addSignups.useMutation({
     onMutate: async () => {
       form.reset();
     },
@@ -175,19 +166,15 @@ const SignupList = ({ gigId }: SignupListProps) => {
   return (
     <Box>
       {isAdmin &&
-        <form onSubmit={form.onSubmit((values) => addSignup.mutateAsync({ corpsId: values.corpsId, gigId, status: 'Ja' }))}>
+        <form onSubmit={form.onSubmit((values) => addSignups.mutateAsync({ corpsIds: values.corpsIds, gigId, status: 'Ja' }))}>
           <Space h="sm" />
           <Group position='apart'>
-            <Select
-              placeholder='Lägg till anmälning...'
-              searchable
+            <MultiSelectCorpsii
+              placeholder='Lägg till anmälningar...'
               limit={30}
               maxDropdownHeight={350}
-              data={corpsii?.filter((corps) => !signups?.some((signup) => signup.corpsId === corps.id))}
-              nothingFound="Inget corps hittades"
-              clearable
               icon={<IconUser />}
-              {...form.getInputProps('corpsId')}
+              {...form.getInputProps('corpsIds')}
             />
             <Button type="submit">Lägg till anmälan</Button>
           </Group>

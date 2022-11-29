@@ -20,7 +20,7 @@ const CorpsStats = () => {
   const loading = pointsLoading || statsLoading;
   return (
     <Stack>
-      <Title order={2}>Närvaro</Title>
+      <Title order={3}>Närvaro</Title>
       {loading && <Loading msg="Laddar..." />}
       {points !== undefined && (
         <Text>{`Du har totalt ${points} spelpoäng!`}</Text>

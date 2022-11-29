@@ -1,4 +1,4 @@
-import { Skeleton, Table, Text } from "@mantine/core";
+import { Table, Text } from "@mantine/core";
 import React from "react";
 import { trpc } from "../utils/trpc";
 import AlertError from "./alert-error";

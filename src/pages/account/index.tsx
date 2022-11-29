@@ -5,7 +5,7 @@ import CorpsStats from "../../components/account/stats";
 import { trpc } from "../../utils/trpc";
 
 const Account = () => {
-  const { data: corps } = trpc.corps.getCorps.useQuery();
+  const { data: corps } = trpc.corps.getSelf.useQuery();
   const corpsName =
     corps?.number !== null
       ? "#" + corps?.number.toString()
@@ -14,7 +14,7 @@ const Account = () => {
   return (
     <Center>
       <Stack sx={{ width: "70%" }}>
-        <Title>{`Välkommen, ${corpsName}!`}</Title>
+        <Title order={2}>{`Välkommen, ${corpsName}!`}</Title>
         <Grid>
           <Grid.Col sm={12} md={6}>
             <CorpsStats />

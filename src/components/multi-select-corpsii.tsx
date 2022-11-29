@@ -2,30 +2,35 @@ import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import React, { useMemo } from "react";
 import { trpc } from "../utils/trpc";
 
-const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
+type MultiSelectCorpsProps = Omit<MultiSelectProps, "data"> & { excludeSelf?: boolean };
 
-  const { data: corps } = trpc.corps.getCorps.useQuery();
+const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
   const { data: corpsii, status: corpsiiStatus } =
-    trpc.corps.getCorpsii.useQuery(undefined, {
-      enabled: !!corps,
-      staleTime: 1000 * 60 * 60 * 24
+    trpc.corps.getMany.useQuery({
+      excludeSelf: props.excludeSelf,
     });
 
-  const corpsiiData = useMemo(() => corpsii?.map(c => ({
-    label: c.number ? '#' + c.number : 'p.e.' + ' ' + c.name,
-    value: c.id.toString(),
-  })), [corpsii]);
+  // TODO: Fetch multiple corps if `defaultValue` is set
 
-  const selectProps: MultiSelectProps = {
+  const corpsiiData = useMemo(() => {
+    return corpsii?.map((c) => ({
+      label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
+      value: c.id,
+    })) ?? [];
+  }, [corpsii]);
+
+  const nothingFound = corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
+
+  const multiSelectProps: MultiSelectProps = {
     ...props,
     searchable: true,
     clearable: true,
-    data: corpsiiData ?? [],
-    placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
-    nothingFound: "Inga corps hittades",
+    data: corpsiiData,
+    placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder ?? 'Välj corps...',
+    nothingFound,
   };
 
-  return <MultiSelect {...selectProps} />;
+  return <MultiSelect {...multiSelectProps} />;
 }
 
-export default MultiSelectCorpsii;
+export default MultiSelectCorps;

@@ -25,7 +25,8 @@ const initialValues = {
 type FormValues = typeof initialValues;
 
 const AccountPreferences = () => {
-  const { data: corps, isLoading: corpsLoading } = trpc.corps.getCorps.useQuery();
+  const { data: corps, isLoading: corpsLoading } =
+    trpc.corps.getSelf.useQuery();
   const utils = trpc.useContext();
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -58,9 +59,9 @@ const AccountPreferences = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
-  const mutation = trpc.corps.update.useMutation({
+  const mutation = trpc.corps.updateSelf.useMutation({
     onSuccess: () => {
-      utils.corps.getCorps.invalidate();
+      utils.corps.getSelf.invalidate();
       setSubmitting(false);
     },
   });
@@ -71,13 +72,13 @@ const AccountPreferences = () => {
 
   return (
     <Stack>
-      <Title order={2}>Inställningar</Title>
+      <Title order={3}>Inställningar</Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div style={{ position: "relative" }}>
           <LoadingOverlay visible={submitting || corpsLoading} />
           <Stack spacing="md">
             <Stack spacing="xs">
-              <Title order={3}>Allmänt</Title>
+              <Title order={6}>Allmänt</Title>
               <TextInput
                 label="Förnamn"
                 placeholder="Förnamn"
@@ -98,25 +99,38 @@ const AccountPreferences = () => {
               />
             </Stack>
             <Stack spacing="xs">
-              <Title order={3}>Matpreferenser</Title>
+              <Title order={6}>Matpreferenser</Title>
               <Switch
+                pl="xs"
                 label="Dricker alkohol"
                 {...form.getInputProps("drinksAlcohol", { type: "checkbox" })}
               />
               <Switch
+                pl="xs"
                 label="Vegetarian"
                 {...form.getInputProps("vegetarian", { type: "checkbox" })}
               />
-              <Switch label="Vegan" {...form.getInputProps("vegan")} />
               <Switch
-                label="Glutenintolerant"
-                {...form.getInputProps("glutenIntolerant", { type: "checkbox" })}
+                pl="xs"
+                label="Vegan"
+                {...form.getInputProps("vegan", { type: "checkbox" })}
               />
               <Switch
+                pl="xs"
+                label="Glutenintolerant"
+                {...form.getInputProps("glutenIntolerant", {
+                  type: "checkbox",
+                })}
+              />
+              <Switch
+                pl="xs"
                 label="Laktosintolerant"
-                {...form.getInputProps("lactoseIntolerant", { type: "checkbox" })}
+                {...form.getInputProps("lactoseIntolerant", {
+                  type: "checkbox",
+                })}
               />
               <TextInput
+                pl="xs"
                 label="Övriga matpreferenser"
                 placeholder="Övriga matpreferenser..."
                 {...form.getInputProps("otherFoodRestrictions")}
