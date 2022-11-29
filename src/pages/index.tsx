@@ -1,17 +1,12 @@
 import {
-  Grid,
   Center,
-  Group,
   Title,
   Accordion,
-  ActionIcon,
   Stack,
 } from "@mantine/core";
 import { Gig } from "@prisma/client";
-import { IconRefresh } from "@tabler/icons";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import GigCalendar from "../components/gig/calendar";
 import GigInfo from "../components/gig/info";
 import Loading from "../components/loading";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
@@ -88,8 +83,6 @@ const Home: NextPage = () => {
   const currentDate = new Date(
     new Date().toISOString().split("T")[0] ?? "2021-01-01"
   );
-
-  console.log(currentDate, new Date().toISOString().split("T")[0]);
 
   const { data: gigs, isLoading: gigsLoading } = trpc.gig.getMany.useQuery({
     startDate: currentDate,
