@@ -31,7 +31,7 @@ const AdminMenu = () => {
           component={NextLink}
           href="/admin/corps"
         >
-          Hantera corpsmedlemmar
+          Visa/uppdatera corpsmedlemmar
         </Menu.Item>
         <Menu.Divider />
         <Menu.Label>Spelningar</Menu.Label>

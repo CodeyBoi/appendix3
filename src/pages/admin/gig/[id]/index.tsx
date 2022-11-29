@@ -3,10 +3,10 @@ import {
   Button,
   Grid,
   Group,
+  LoadingOverlay,
   NumberInput,
   Select,
   SimpleGrid,
-  Skeleton,
   Stack,
   Switch,
   Textarea,
@@ -21,26 +21,7 @@ import { useRouter } from "next/router.js";
 import { trpc } from "../../../../utils/trpc";
 import "dayjs/locale/sv";
 
-interface FormValues {
-  gigId?: string;
-  title: string;
-  type: string;
-  description: string;
-  location: string;
-  date: Date;
-  meetup: string;
-  start: string;
-  signupStart: Date | null;
-  signupEnd: Date | null;
-  isPublic: boolean;
-  points: number;
-  countsPositively: boolean;
-  checkbox1: string;
-  checkbox2: string;
-  hiddenFor: string[];
-}
-
-const initialValues: FormValues = {
+const initialValues = {
   title: "",
   type: "",
   description: "",
@@ -48,15 +29,17 @@ const initialValues: FormValues = {
   date: null as unknown as Date,
   meetup: "",
   start: "",
-  signupStart: null,
-  signupEnd: null,
+  signupStart: null as unknown as Date | null,
+  signupEnd: null as unknown as Date | null,
   isPublic: false,
   points: 1,
   countsPositively: false,
   checkbox1: "",
   checkbox2: "",
-  hiddenFor: [],
+  hiddenFor: [] as string[],
 };
+
+type FormValues = typeof initialValues;
 
 const AdminGig = () => {
   const router = useRouter();
@@ -79,7 +62,7 @@ const AdminGig = () => {
     validate: {
       title: (title) => (title ? null : "Titel måste vara ifylld"),
       type: (type) => (type ? null : "Typ måste vara ifylld"),
-      date: (date) => (date ? null : "Datum måste vara ifylld"),
+      date: (date) => (date ? null : "Datum måste vara ifyllt"),
       points: (points) =>
         points >= 0 ? null : "Spelpoäng kan inte vara negativt",
     },
@@ -102,7 +85,7 @@ const AdminGig = () => {
         countsPositively: gig.countsPositively,
         checkbox1: gig.checkbox1,
         checkbox2: gig.checkbox2,
-        hiddenFor: gig.hiddenFor.map((c) => c.corpsId.toString()),
+        hiddenFor: gig.hiddenFor.map((c) => c.corpsId),
       });
       setLoading(false);
     } else if (newGig) {
@@ -124,10 +107,14 @@ const AdminGig = () => {
 
   const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
+    const data = {
+      ...values,
+      hiddenFor: values.isPublic ? [] : values.hiddenFor,
+    };
     if (newGig) {
-      mutation.mutateAsync(values);
+      mutation.mutateAsync(data);
     } else {
-      mutation.mutateAsync({ ...values, type: values.type, gigId });
+      mutation.mutateAsync({ ...data, gigId });
     }
   };
 
@@ -139,164 +126,163 @@ const AdminGig = () => {
         ) : (
           <Title order={2}>Uppdatera spelning</Title>
         )}
-        <Skeleton visible={loading}>
-          {!loading && (
-            <form
-              style={{ maxWidth: "720px" }}
-              onSubmit={form.onSubmit(handleSubmit)}
-            >
-              <SimpleGrid cols={2} mb="md">
+        <form
+          style={{ maxWidth: "720px" }}
+          onSubmit={form.onSubmit(handleSubmit)}
+        >
+          <div style={{ position: "relative" }}>
+            <LoadingOverlay visible={loading} />
+            <SimpleGrid cols={2} mb="md">
+              <TextInput
+                label="Titel"
+                placeholder="Titel"
+                withAsterisk
+                spellCheck={false}
+                {...form.getInputProps("title")}
+              />
+              <Select
+                withAsterisk
+                label="Spelningstyp"
+                placeholder="Välj typ..."
+                data={
+                  gigTypes?.map((type) => ({
+                    value: type.name,
+                    label: type.name,
+                  })) ?? []
+                }
+                {...form.getInputProps("type")}
+              />
+              <DatePicker
+                withAsterisk
+                label="Spelningsdatum"
+                placeholder="Välj datum..."
+                icon={<IconCalendar />}
+                clearable={false}
+                {...form.getInputProps("date")}
+              />
+              <NumberInput
+                withAsterisk
+                label="Spelpoäng"
+                {...form.getInputProps("points")}
+              />
+            </SimpleGrid>
+            <Grid mb="xs">
+              <Grid.Col span={6}>
                 <TextInput
-                  label="Titel"
-                  placeholder="Titel"
-                  withAsterisk
+                  label="Plats"
+                  placeholder="Plats"
                   spellCheck={false}
-                  {...form.getInputProps("title")}
+                  {...form.getInputProps("location")}
                 />
-                <Select
-                  withAsterisk
-                  label="Spelningstyp"
-                  placeholder="Välj typ..."
-                  data={
-                    gigTypes?.map((type) => ({
-                      value: type.name,
-                      label: type.name,
-                    })) ?? []
-                  }
-                  {...form.getInputProps("type")}
-                />
-                <DatePicker
-                  withAsterisk
-                  label="Spelningsdatum"
-                  placeholder="Välj datum..."
-                  icon={<IconCalendar />}
-                  clearable={false}
-                  {...form.getInputProps("date")}
-                />
-                <NumberInput
-                  withAsterisk
-                  label="Spelpoäng"
-                  {...form.getInputProps("points")}
-                />
-              </SimpleGrid>
-              <Grid mb="xs">
-                <Grid.Col span={6}>
-                  <TextInput
-                    label="Plats"
-                    placeholder="Plats"
-                    spellCheck={false}
-                    {...form.getInputProps("location")}
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TextInput
-                    icon={<IconClock />}
-                    label="Samlingstid"
-                    placeholder="Samlingstid"
-                    spellCheck="false"
-                    {...form.getInputProps("meetup")}
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TextInput
-                    icon={<IconClock />}
-                    label="Spelningstart"
-                    placeholder="Spelningstart"
-                    spellCheck="false"
-                    {...form.getInputProps("start")}
-                  />
-                </Grid.Col>
-              </Grid>
-              <Textarea
-                mb="md"
-                autosize
-                label="Beskrivning"
-                placeholder="Beskrivning"
-                {...form.getInputProps("description")}
-              />
-              <MultiSelectCorpsii
-                mb="md"
-                maxDropdownHeight={260}
-                label="Dölj spelning"
-                disabled={form.values.isPublic}
-                defaultValue={form.values.hiddenFor}
-                description="Spelningsanmälan kommer inte att synas för dessa corps"
-                placeholder="Välj corps..."
-                {...form.getInputProps("hiddenFor")}
-              />
-              <SimpleGrid cols={2} mb="md">
-                <DatePicker
-                  label="Anmälningsstart"
-                  description="Lämna tom för att tillåta anmälan omedelbart"
-                  placeholder="Välj datum..."
-                  icon={<IconCalendar />}
-                  clearable={true}
-                  {...form.getInputProps("signupStart")}
-                />
-                <DatePicker
-                  label="Anmälningsstopp"
-                  description="Lämna tom för att tillåta anmälan tills spelningen börjar"
-                  placeholder="Välj datum..."
-                  icon={<IconCalendar />}
-                  clearable={true}
-                  {...form.getInputProps("signupEnd")}
-                />
+              </Grid.Col>
+              <Grid.Col span={3}>
                 <TextInput
-                  label="Kryssruta 1"
-                  placeholder="Kryssruta 1"
-                  description="Lämna tom för att inte visa kryssruta"
-                  {...form.getInputProps("checkbox1")}
+                  icon={<IconClock />}
+                  label="Samlingstid"
+                  placeholder="Samlingstid"
+                  spellCheck="false"
+                  {...form.getInputProps("meetup")}
                 />
+              </Grid.Col>
+              <Grid.Col span={3}>
                 <TextInput
-                  label="Kryssruta 2"
-                  placeholder="Kryssruta 2"
-                  description="Lämna tom för att inte visa kryssruta"
-                  {...form.getInputProps("checkbox2")}
+                  icon={<IconClock />}
+                  label="Spelningstart"
+                  placeholder="Spelningstart"
+                  spellCheck="false"
+                  {...form.getInputProps("start")}
                 />
-              </SimpleGrid>
-              <Group position="apart">
-                <Group position="left">
-                  <Switch
-                    label="Allmän spelning?"
-                    radius="xl"
-                    {...form.getInputProps("isPublic", { type: "checkbox" })}
-                  />
-                  <Switch
-                    label="Räknas positivt?"
-                    radius="xl"
-                    {...form.getInputProps("countsPositively", {
-                      type: "checkbox",
-                    })}
-                  />
-                </Group>
-                <Group position="right">
-                  {!newGig && (
-                    <Button
-                      variant="outline"
-                      compact
-                      uppercase
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Detta kommer att radera spelningen och går inte att ångra. Är du säker?"
-                          )
-                        ) {
-                          // TODO: Delete gig
-                          router.push("/");
-                        }
-                      }}
-                    >
-                      Radera spelning
-                    </Button>
-                  )}
-                  <Button type="submit" loading={submittning}>
-                    {newGig ? "Skapa spelning" : "Spara ändringar"}
-                  </Button>
-                </Group>
+              </Grid.Col>
+            </Grid>
+            <Textarea
+              mb="md"
+              autosize
+              label="Beskrivning"
+              placeholder="Beskrivning"
+              {...form.getInputProps("description")}
+            />
+            <SimpleGrid cols={2} mb="md">
+              <DatePicker
+                label="Anmälningsstart"
+                description="Lämna tom för att tillåta anmälan omedelbart"
+                placeholder="Välj datum..."
+                icon={<IconCalendar />}
+                clearable={true}
+                {...form.getInputProps("signupStart")}
+              />
+              <DatePicker
+                label="Anmälningsstopp"
+                description="Lämna tom för att tillåta anmälan tills spelningen börjar"
+                placeholder="Välj datum..."
+                icon={<IconCalendar />}
+                clearable={true}
+                {...form.getInputProps("signupEnd")}
+              />
+              <TextInput
+                label="Kryssruta 1"
+                placeholder="Kryssruta 1"
+                description="Lämna tom för att inte visa kryssruta"
+                {...form.getInputProps("checkbox1")}
+              />
+              <TextInput
+                label="Kryssruta 2"
+                placeholder="Kryssruta 2"
+                description="Lämna tom för att inte visa kryssruta"
+                {...form.getInputProps("checkbox2")}
+              />
+            </SimpleGrid>
+            <MultiSelectCorpsii
+              mb="md"
+              maxDropdownHeight={260}
+              label="Dölj spelning"
+              disabled={form.values.isPublic}
+              defaultValue={form.values.hiddenFor}
+              description="Spelningsanmälan kommer inte att synas för dessa corps"
+              placeholder="Välj corps..."
+              {...form.getInputProps("hiddenFor")}
+            />
+            <Group position="apart">
+              <Group position="left">
+                <Switch
+                  label="Allmän spelning?"
+                  radius="xl"
+                  {...form.getInputProps("isPublic", { type: "checkbox" })}
+                />
+                <Switch
+                  label="Räknas positivt?"
+                  radius="xl"
+                  {...form.getInputProps("countsPositively", {
+                    type: "checkbox",
+                  })}
+                />
               </Group>
-            </form>
-          )}
-        </Skeleton>
+              <Group position="right">
+                {!newGig && (
+                  <Button
+                    variant="outline"
+                    compact
+                    uppercase
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Detta kommer att radera spelningen och går inte att ångra. Är du säker?"
+                        )
+                      ) {
+                        // TODO: Delete gig
+                        router.push("/");
+                      }
+                    }}
+                  >
+                    Radera spelning
+                  </Button>
+                )}
+                <Button type="submit" loading={submittning}>
+                  {newGig ? "Skapa spelning" : "Spara ändringar"}
+                </Button>
+              </Group>
+            </Group>
+          </div>
+        </form>
       </Stack>
     </Group>
   );

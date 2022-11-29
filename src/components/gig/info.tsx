@@ -25,15 +25,22 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
         <Box sx={{ display: "flex" }}>
           <Accordion.Control sx={{ width: "auto", flexGrow: 1 }}>
             <Group position="left" spacing="xs">
-              <Datebox date={dayjs(gig.date)} />
               <Stack spacing={0} align="flex-start">
-                <Title order={3}>
-                  {gig.title}
-                </Title>
-                <Text size="xs">{gig.type.name}</Text>
-                {gig.meetup && (
-                  <Text size="xs">{`Samling: ${gig.meetup}`}</Text>
-                )}
+                <Title order={4}>{gig.title}</Title>
+                <Group position="left">
+                  <Datebox date={dayjs(gig.date)} />
+                  <Stack spacing={0}>
+                    <Text size="xs">
+                      <i>{gig.type.name}</i>
+                    </Text>
+                    {gig.location && (
+                      <Text size="xs">{`Plats: ${gig.location}`}</Text>
+                    )}
+                    {gig.meetup && (
+                      <Text size="xs">{`Samling: ${gig.meetup}`}</Text>
+                    )}
+                  </Stack>
+                </Group>
               </Stack>
             </Group>
           </Accordion.Control>
@@ -60,13 +67,9 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           <Group position="left">
             <Datebox date={dayjs(gig.date)} />
             <Stack spacing={0} align="flex-start">
-              <Title order={3}>
-                {gig.title}
-              </Title>
+              <Title order={4}>{gig.title}</Title>
               <Text size="xs">{gig.type.name}</Text>
-              {gig.meetup && (
-                <Text size="xs">{`Tarmen: ${gig.meetup}`}</Text>
-              )}
+              {gig.meetup && <Text size="xs">{`Tarmen: ${gig.meetup}`}</Text>}
             </Stack>
           </Group>
           <GigButtons gig={gig} />

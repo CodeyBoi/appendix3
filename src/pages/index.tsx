@@ -70,7 +70,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
     return (
       <>
         <Title pt={6} order={3}>
-          <u>{monthNames[month]}</u>
+          {monthNames[month]}
         </Title>
         <Accordion key={month}>
           {gigs.map((gig) => (
@@ -85,42 +85,28 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
 };
 
 const Home: NextPage = () => {
-  const utils = trpc.useContext();
   const currentDate = new Date(
     new Date().toISOString().split("T")[0] ?? "2021-01-01"
   );
+
+  console.log(currentDate, new Date().toISOString().split("T")[0]);
 
   const { data: gigs, isLoading: gigsLoading } = trpc.gig.getMany.useQuery({
     startDate: currentDate,
   });
 
   return (
-    <Grid sx={{ flexDirection: "row-reverse" }}>
-      <Grid.Col xs={4} lg={3}>
-        <Center>
-          <GigCalendar gigs={gigs} />
-        </Center>
-      </Grid.Col>
-      <Grid.Col xs={8} lg={9}>
-        <Stack>
-          <Group position="apart">
-            <Title order={2}>
-              {gigs && gigs.length === 0
-                ? "Inga kommande spelningar :("
-                : "Kommande spelningar"}
-            </Title>
-            <ActionIcon
-              variant="outline"
-              onClick={() => utils.gig.getMany.invalidate()}
-            >
-              <IconRefresh />
-            </ActionIcon>
-          </Group>
-          {gigsLoading && <Loading msg="Laddar spelningar..." />}
-          {gigs && makeGigList(gigs)}
-        </Stack>
-      </Grid.Col>
-    </Grid>
+    <Center>
+      <Stack sx={{ width: "70%" }}>
+        <Title order={2}>
+          {gigs && gigs.length === 0
+            ? "Inga kommande spelningar :("
+            : "Kommande spelningar"}
+        </Title>
+        {gigsLoading && <Loading msg="Laddar spelningar..." />}
+        {gigs && makeGigList(gigs)}
+      </Stack>
+    </Center>
   );
 };
 
