@@ -1,13 +1,10 @@
 import { Select, SelectProps } from "@mantine/core";
 import React, { useMemo } from "react";
-import { TypeOf } from "zod";
 import { trpc } from "../utils/trpc";
 
 const MIN_SEARCH_LENGTH = 2;
 
 type SelectCorpsProps = Omit<SelectProps, "data"> & { excludeSelf?: boolean };
-
-
 
 const SelectCorps = (props: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState("");
@@ -21,6 +18,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
       enabled: queryValue.length >= MIN_SEARCH_LENGTH,
     });
 
+  // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery({
     id: props.defaultValue as string,
   }, {
@@ -45,7 +43,6 @@ const SelectCorps = (props: SelectCorpsProps) => {
     return data;
   }, [corpsii, initialCorps]);
 
-  // BUG: When the user reloads the query the selected corpsii are reset
   const onSearchChange = (value: string) => {
     setSearchValue(value);
     if (value.length === MIN_SEARCH_LENGTH) {

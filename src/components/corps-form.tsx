@@ -7,7 +7,6 @@ import {
   SimpleGrid,
   LoadingOverlay,
   MultiSelect,
-  Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { trpc } from "../utils/trpc";

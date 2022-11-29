@@ -2,47 +2,35 @@ import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import React, { useMemo } from "react";
 import { trpc } from "../utils/trpc";
 
-const MIN_SEARCH_LENGTH = 2;
+type MultiSelectCorpsProps = Omit<MultiSelectProps, "data"> & { excludeSelf?: boolean };
 
-const MultiSelectCorpsii = (props: Omit<MultiSelectProps, "data">) => {
-  const [queryValue, setQueryValue] = React.useState("");
-  const [searchValue, setSearchValue] = React.useState("");
-
+const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
   const { data: corpsii, status: corpsiiStatus } =
     trpc.corps.getMany.useQuery({
-      search: queryValue,
-    }, {
-      enabled: queryValue.length >= MIN_SEARCH_LENGTH,
-      staleTime: 1000 * 60 * 60 * 24
+      excludeSelf: props.excludeSelf,
     });
 
-  const corpsiiData = useMemo(() => corpsii?.map(c => ({
-    label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
-    value: c.id,
-  })), [corpsii]);
+  // TODO: Fetch multiple corps if `defaultValue` is set
 
-  const onSearchChange = (value: string) => {
-    console.log('onSearchChange', value);
-    setSearchValue(value);
-    if (value.length === MIN_SEARCH_LENGTH) {
-      setQueryValue(value);
-    }
-  };
+  const corpsiiData = useMemo(() => {
+    return corpsii?.map((c) => ({
+      label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
+      value: c.id,
+    })) ?? [];
+  }, [corpsii]);
 
   const nothingFound = corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
 
-  const selectProps: MultiSelectProps = {
+  const multiSelectProps: MultiSelectProps = {
     ...props,
     searchable: true,
     clearable: true,
-    data: corpsiiData ?? [],
-    placeholder: queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder,
-    nothingFound: searchValue.length < MIN_SEARCH_LENGTH ? "Skriv minst två tecken för att söka..." : nothingFound,
-    searchValue,
-    onSearchChange,
+    data: corpsiiData,
+    placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder ?? 'Välj corps...',
+    nothingFound,
   };
 
-  return <MultiSelect {...selectProps} />;
+  return <MultiSelect {...multiSelectProps} />;
 }
 
-export default MultiSelectCorpsii;
+export default MultiSelectCorps;
