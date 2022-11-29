@@ -4,17 +4,20 @@ import { NextPage } from 'next';
 import { trpc } from '../../utils/trpc';
 
 const Gigs: NextPage = () => {
+  const { data: corps } = trpc.corps.getSelf.useQuery();
   const { data: allGigs, isLoading: allGigsLoading } = trpc.gig.getMany.useQuery({});
   // make a new query for myGigs
-  const { data: myGigs, isLoading: myGigsLoading } = trpc.gig.getMany.useQuery({});
+  const { data: myGigs, isLoading: myGigsLoading } = trpc.gig.getAttended.useQuery(
+    { corpsId: corps?.id ?? "" },
+    { enabled: !!corps },
+  );
 
   const loading = allGigsLoading || myGigsLoading;
   const ref = React.useRef<HTMLInputElement>(null);
 
-  let startYear = 1950;
+  let startYear = 2010;
   const endDate = new Date().getFullYear();
   const years = [];
-  
 
   for (let i = startYear; i <= endDate; i++) {
     const year = { value: startYear.toString(), label: startYear.toString() };

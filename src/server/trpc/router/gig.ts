@@ -387,35 +387,22 @@ export const gigRouter = router({
       });
     }),
 
-  getAttendance: publicProcedure
+  getAttended: publicProcedure
     .input(z.object({
       corpsId: z.string(),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.gigSignup.findMany({
-        select: {
-          status: {
-            select: {
-              value: true,
-            },
-          },
-          gig: {
-            select: {
-              title: true,
-              date: true,
-              description: true,
-              id: true,
-            },
-          },
-          instrument: {
-            select: {
-              name: true,
+      return ctx.prisma.gig.findMany({
+        where: {
+          signups: {
+            some: {
+              corpsId: input.corpsId,
+              attended: true,
             },
           },
         },
-        where: {
-          corpsId: input.corpsId,
-          attended: true,
+        orderBy: {
+          date: "desc",
         },
       });
     }),

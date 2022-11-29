@@ -119,6 +119,7 @@ model Gig {
   checkbox2        String      @default("")
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
+
   type             GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
   signups          GigSignup[]
   hiddenFor        HiddenGig[]
