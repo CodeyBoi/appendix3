@@ -271,7 +271,7 @@ export const corpsRouter = router({
       }));
     }),
 
-  mainInstrument: protectedProcedure
+  getMainInstrument: protectedProcedure
     .query(async ({ ctx }) => {
       const corps = await ctx.prisma.corps.findUnique({
         include: {

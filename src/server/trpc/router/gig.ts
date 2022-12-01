@@ -6,7 +6,6 @@ import {
   adminProcedure,
 } from "../trpc";
 import { z } from "zod";
-import cuid from 'cuid';
 
 export const gigRouter = router({
   getWithId: protectedProcedure
