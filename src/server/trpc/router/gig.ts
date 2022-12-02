@@ -35,6 +35,7 @@ export const gigRouter = router({
       z.object({
         startDate: z.date().optional(),
         endDate: z.date().optional(),
+        dateOrder: z.enum(["asc", "desc"]).optional(),
       })
     )
     .query(({ ctx, input }) => {
@@ -77,7 +78,7 @@ export const gigRouter = router({
           ...visibilityFilter,
         },
         orderBy: {
-          date: "asc",
+          date: input.dateOrder ?? "asc",
         },
       });
     }),
@@ -383,6 +384,35 @@ export const gigRouter = router({
         },
         data: {
           attended: input.attended,
+        },
+      });
+    }),
+
+  getAttended: publicProcedure
+    .input(z.object({
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const corpsId = ctx.session?.user?.corps?.id;
+      if (!corpsId) {
+        throw new Error("Not logged in");
+      }
+      return ctx.prisma.gig.findMany({
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+          date: {
+            gte: input.startDate,
+            lte: input.endDate,
+          },
+        },
+        orderBy: {
+          date: "desc",
         },
       });
     }),

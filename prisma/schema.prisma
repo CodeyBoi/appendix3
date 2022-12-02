@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["orderByNulls", "interactiveTransactions"]
@@ -8,10 +5,6 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
 
@@ -21,7 +14,6 @@ model Example {
   updatedAt DateTime @updatedAt
 }
 
-// Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -67,7 +59,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Custom models
 model Corps {
   id                    String   @id @default(cuid())
   number                Int?
@@ -83,14 +74,14 @@ model Corps {
   otherFoodRestrictions String   @default("")
   userId                String   @unique
   roleId                Int?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
-  hiddenGigs  HiddenGig[]
-  gigSignups  GigSignup[]
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  instruments CorpsInstrument[]
-  role        Role?             @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  role                  Role?             @relation(fields: [roleId], references: [id])
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments           CorpsInstrument[]
+  gigSignups            GigSignup[]
+  hiddenGigs            HiddenGig[]
 }
 
 model CorpsInstrument {
@@ -119,19 +110,19 @@ model Gig {
   location         String    @default("")
   signupStart      DateTime?
   signupEnd        DateTime?
-  description      String    @db.Text @default("")
+  description      String      @default("") @db.Text
   typeId           Int
   points           Int
-  countsPositively Boolean   @default(false)
-  isPublic         Boolean   @default(false)
-  checkbox1        String    @default("")
-  checkbox2        String    @default("")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  countsPositively Boolean     @default(false)
+  isPublic         Boolean     @default(false)
+  checkbox1        String      @default("")
+  checkbox2        String      @default("")
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
-  type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  signups   GigSignup[]
-  hiddenFor HiddenGig[]
+  type             GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  signups          GigSignup[]
+  hiddenFor        HiddenGig[]
 
   @@index([date(sort: Desc), id])
 }
@@ -147,14 +138,13 @@ model GigSignup {
   gigId          String
   signupStatusId Int
   instrumentId   Int
-  attended       Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  instrument Instrument      @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  status     GigSignupStatus @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
-  corps      Corps           @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  gig        Gig             @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  attended       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  corps          Corps           @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  gig            Gig             @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  instrument     Instrument      @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  status         GigSignupStatus @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
   @@index([corpsId, gigId])
@@ -176,8 +166,7 @@ model HiddenGig {
 }
 
 model Role {
-  id   Int    @id
-  name String @unique
-
+  id    Int     @id
+  name  String  @unique
   corps Corps[]
 }
