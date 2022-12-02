@@ -1,126 +1,135 @@
-import React from 'react';
-import { Text, Table, Tabs, Select, Center} from '@mantine/core';
-import { NextPage } from 'next';
-import { trpc } from '../../utils/trpc';
-import { getOperatingYear } from '../stats/[paramYear]';
+import React, { useState } from "react";
+import {
+  Table,
+  Tabs,
+  Select,
+  Center,
+  Group,
+  Title,
+  Stack,
+} from "@mantine/core";
+import { NextPage } from "next";
+import { trpc } from "../../utils/trpc";
+import { getOperatingYear } from "../stats/[paramYear]";
+import Link from "next/link";
+import Loading from "../../components/loading";
 
 const Gigs: NextPage = () => {
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-  const { data: allGigs, isLoading: allGigsLoading } = trpc.gig.getMany.useQuery({});
-  const { data: myGigs, isLoading: myGigsLoading } = trpc.gig.getAttended.useQuery(
-    { corpsId: corps?.id ?? "" },
-    { enabled: !!corps },
-  );
+  const [year, setYear] = useState(getOperatingYear());
+  const [activeTab, setActiveTab] = useState<string | null>("my-gigs-tab");
+  // TODO: FIX THIS (I HATE DATES (this gets the day before the current day))
+  const startDate = new Date(year, 8, 1);
+  const endDate = new Date(year + 1, 7, 31);
+  const { data: allGigs, isLoading: allGigsLoading } =
+    trpc.gig.getMany.useQuery(
+      { startDate, endDate, dateOrder: "desc" },
+      { enabled: activeTab === "all-gigs-tab" }
+    );
+  const { data: myGigs, isLoading: myGigsLoading } =
+    trpc.gig.getAttended.useQuery(
+      { startDate, endDate },
+      { enabled: activeTab === "my-gigs-tab" }
+    );
 
-  const loading = allGigsLoading || myGigsLoading;
-  const ref = React.useRef<HTMLInputElement>(null);
+  const loading =
+    (allGigsLoading && activeTab === "all-gigs-tab") ||
+    (myGigsLoading && activeTab === "my-gigs-tab");
 
   let startYear = 2010;
-  const endDate = new Date().getFullYear();
-  const years = [];
+  const endYear = new Date().getFullYear();
 
-  for (let i = startYear; i <= endDate; i++) {
-    const year = { value: startYear.toString(), label: startYear.toString() };
+  const years = [];
+  for (let i = startYear; i <= endYear; i++) {
+    const year = {
+      value: startYear.toString(),
+      label: startYear.toString() + "-" + (startYear + 1).toString(),
+    };
     years.unshift(year);
     startYear++;
   }
 
   let lastGigMonth: number;
 
+  const currentGigs = activeTab === "my-gigs-tab" ? myGigs : allGigs;
+
+  const gigTable = loading ? (
+    <Loading msg="Laddar spelningar..." />
+  ) : currentGigs && currentGigs.length > 0 ? (
+    <Table fontSize={12} highlightOnHover>
+      <tbody>
+        {currentGigs.map((gig) => {
+          const gigMonth = gig.date.getMonth();
+          let shouldAddMonth = false;
+          if (gigMonth !== lastGigMonth) {
+            lastGigMonth = gigMonth;
+            shouldAddMonth = true;
+          }
+          return (
+            <>
+              {shouldAddMonth && (
+                // We set color to unset to get rid of the highlightOnHover for the month
+                <tr style={{ backgroundColor: "unset" }}>
+                  <td colSpan={12}>
+                    <Title order={4}>
+                      {gig.date.toLocaleString("sv-SE", { month: "long" })}
+                    </Title>
+                  </td>
+                </tr>
+              )}
+              <Link href={`/gig/${gig.id}`} key={gig.id}>
+                <tr style={{ cursor: "pointer" }}>
+                  <td>{gig.date.toLocaleDateString()}</td>
+                  <td
+                    style={{
+                      whiteSpace: "nowrap",
+                      maxWidth: "350px",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {gig.title}
+                  </td>
+                  <td>{gig.description}</td>
+                </tr>
+              </Link>
+            </>
+          );
+        })}
+      </tbody>
+    </Table>
+  ) : (
+    <Title order={4}>Här fanns inget att se :/</Title>
+  );
+
   return (
-    <>
-      <Tabs color="gray" variant="outline" defaultValue="myGigs">
-
-        <Tabs.List >
-          <Tabs.Tab value="myGigs" style={{ marginLeft: "auto"}}>Mina Spelningar</Tabs.Tab>
-          <Tabs.Tab value="allGigs" style={{ marginRight: "auto"}}>Alla Spelningar</Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="myGigs" pt="xs">
-          <Center>
-          <Select style={{ marginRight: "auto", marginBottom: "30px"}}
-            label="Välj År"
+    <Center>
+      <Stack sx={{ width: "70%" }}>
+        <Group position="left">
+          <Select
+            label="Välj år:"
             defaultValue={getOperatingYear().toString()}
-            searchable
-            nothingFound="No options"
             maxDropdownHeight={280}
             data={years}
-            ref={ref} />
-          </Center>
-        <Table fontSize={12}>
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Spelning</th>
-              <th>Beskrivning</th>
-            </tr>
-          </thead>
-          <tbody>
-            {myGigs?.map((gig) => {
-              const gigMonth = gig.date.getMonth();
-              let shouldAddMonth = false;
-              if (gigMonth !== lastGigMonth) {
-                lastGigMonth = gigMonth;
-                shouldAddMonth = true;
-              }
-              return (
-                <>
-                  {shouldAddMonth && <tr><td style={{ fontSize: "14px", fontWeight: "bold" }} colSpan={3}>{gig.date.toLocaleString('sv-SE', { month: 'long' })}</td></tr>}
-                  <tr key={gig.id}>
-                    <td><Text>{gig.date.toLocaleDateString()}</Text></td>
-                    <td style={{ minWidth: "20%" }}><Text>{gig.title}</Text></td>
-                    <td><Text>{gig.description}</Text></td>
-                  </tr>
-                </>
-              );
-            })}
-          </tbody>
-        </Table>
-        </Tabs.Panel>
+            value={year.toString()}
+            onChange={(value) => setYear(parseInt(value as string))}
+          />
+        </Group>
+        <Tabs value={activeTab} onTabChange={setActiveTab}>
+          <Tabs.List pl={8}>
+            <Tabs.Tab value="my-gigs-tab">Mina spelningar</Tabs.Tab>
+            <Tabs.Tab value="all-gigs-tab">Alla spelningar</Tabs.Tab>
+          </Tabs.List>
 
-        <Tabs.Panel value="allGigs" pt="xs" >
-          <Center>
-          <Select style={{ marginRight: "auto", marginBottom: "30px"}}
-            label="Välj År"
-            defaultValue={getOperatingYear().toString()}
-            searchable
-            nothingFound="No options"
-            maxDropdownHeight={280}
-            data={years}
-            ref={ref} />
-          </Center>
-        <Table fontSize={12}>
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Spelning</th>
-              <th>Beskrivning</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allGigs?.map((gig) => {
-              const gigMonth = gig.date.getMonth();
-              let shouldAddMonth = false;
-              if (gigMonth !== lastGigMonth) {
-                lastGigMonth = gigMonth;
-                shouldAddMonth = true;
-              }
-              return (
-                <>
-                  {shouldAddMonth && <tr><td style={{ fontSize: "14px", fontWeight: "bold" }} colSpan={3}>{gig.date.toLocaleString('sv-SE', { month: 'long' })}</td></tr>}
-                  <tr key={gig.id}>
-                    <td><Text>{gig.date.toLocaleDateString()}</Text></td>
-                    <td style={{ minWidth: "20%" }}><Text>{gig.title}</Text></td>
-                    <td><Text>{gig.description}</Text></td>
-                  </tr>
-                </>
-              );
-            })}
-          </tbody>
-        </Table>
-        </Tabs.Panel>
-      </Tabs>
-    </>
+          <Tabs.Panel value="my-gigs-tab" pt="xs">
+            {gigTable}
+          </Tabs.Panel>
+
+          <Tabs.Panel value="all-gigs-tab" pt="xs">
+            {gigTable}
+          </Tabs.Panel>
+        </Tabs>
+      </Stack>
+    </Center>
   );
 };
 
