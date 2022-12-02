@@ -68,6 +68,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       email: corps.user.email ?? "",
       mainInstrument,
       otherInstruments,
+      role: corps.role?.name ?? "user",
     });
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,7 +159,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           />
         </SimpleGrid>
         <Group position="right" mt="md">
-          <Button type="submit">{creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}</Button>
+          <Button disabled={!form.isDirty()} type="submit">{creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}</Button>
         </Group>
       </div>
     </form>

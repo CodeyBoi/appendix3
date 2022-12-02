@@ -137,7 +137,7 @@ const AccountPreferences = () => {
               />
             </Stack>
             <Group position="right">
-              <Button type="submit">Spara</Button>
+              <Button disabled={!form.isDirty()} type="submit">Spara</Button>
             </Group>
           </Stack>
         </div>
