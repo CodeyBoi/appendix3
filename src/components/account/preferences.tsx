@@ -1,7 +1,6 @@
 import {
   Button,
   Group,
-  LoadingOverlay,
   Stack,
   Switch,
   TextInput,
@@ -10,6 +9,7 @@ import {
 import { useForm } from "@mantine/form";
 import React, { useEffect } from "react";
 import { trpc } from "../../utils/trpc";
+import FormLoadingOverlay from "../form-loading-overlay";
 
 const initialValues = {
   firstName: "",
@@ -63,6 +63,7 @@ const AccountPreferences = () => {
     onSuccess: () => {
       utils.corps.getSelf.invalidate();
       setSubmitting(false);
+      form.resetDirty();
     },
   });
   const handleSubmit = async (values: FormValues) => {
@@ -74,9 +75,8 @@ const AccountPreferences = () => {
     <Stack>
       <Title order={3}>Inställningar</Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <div style={{ position: "relative" }}>
-          <LoadingOverlay visible={submitting || corpsLoading} />
-          <Stack spacing="md">
+        <Stack spacing="md">
+          <FormLoadingOverlay visible={submitting || corpsLoading}>
             <Stack spacing="xs">
               <Title order={6}>Allmänt</Title>
               <TextInput
@@ -98,6 +98,7 @@ const AccountPreferences = () => {
                 {...form.getInputProps("email")}
               />
             </Stack>
+            <br />
             <Stack spacing="xs">
               <Title order={6}>Matpreferenser</Title>
               <Switch
@@ -130,17 +131,22 @@ const AccountPreferences = () => {
                 })}
               />
               <TextInput
-                pl="xs"
                 label="Övriga matpreferenser"
                 placeholder="Övriga matpreferenser..."
                 {...form.getInputProps("otherFoodRestrictions")}
               />
             </Stack>
-            <Group position="right">
-              <Button type="submit">Spara</Button>
-            </Group>
-          </Stack>
-        </div>
+          </FormLoadingOverlay>
+          <Group position="right">
+            <Button
+              disabled={!form.isDirty()}
+              loading={submitting}
+              type="submit"
+            >
+              Spara
+            </Button>
+          </Group>
+        </Stack>
       </form>
     </Stack>
   );

@@ -3,7 +3,6 @@ import {
   Button,
   Grid,
   Group,
-  LoadingOverlay,
   NumberInput,
   Select,
   SimpleGrid,
@@ -20,7 +19,7 @@ import MultiSelectCorpsii from "../../../../components/multi-select-corpsii";
 import { useRouter } from "next/router.js";
 import { trpc } from "../../../../utils/trpc";
 import "dayjs/locale/sv";
-import dayjs from "dayjs";
+import FormLoadingOverlay from "../../../../components/form-loading-overlay";
 
 const initialValues = {
   title: "",
@@ -49,7 +48,7 @@ const AdminGig = () => {
   const utils = trpc.useContext();
 
   const [loading, setLoading] = React.useState(!newGig);
-  const [submittning, setSubmitting] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
 
   const { data: gig } = trpc.gig.getWithId.useQuery(
     { gigId },
@@ -134,8 +133,7 @@ const AdminGig = () => {
           style={{ maxWidth: "720px" }}
           onSubmit={form.onSubmit(handleSubmit)}
         >
-          <div style={{ position: "relative" }}>
-            <LoadingOverlay visible={loading} />
+          <FormLoadingOverlay visible={loading || submitting}>
             <SimpleGrid cols={2} mb="md">
               <TextInput
                 label="Titel"
@@ -280,12 +278,12 @@ const AdminGig = () => {
                     Radera spelning
                   </Button>
                 )}
-                <Button type="submit" loading={submittning}>
+                <Button type="submit" disabled={!form.isDirty()}>
                   {newGig ? "Skapa spelning" : "Spara ändringar"}
                 </Button>
               </Group>
             </Group>
-          </div>
+          </FormLoadingOverlay>
         </form>
       </Stack>
     </Group>

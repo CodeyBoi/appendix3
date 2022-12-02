@@ -5,11 +5,11 @@ import {
   Group,
   Select,
   SimpleGrid,
-  LoadingOverlay,
   MultiSelect,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { trpc } from "../utils/trpc";
+import FormLoadingOverlay from "./form-loading-overlay";
 
 const initialValues = {
   firstName: "",
@@ -48,9 +48,10 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         value.length > 0 ? null : "Förnamn måste vara ifyllt",
       lastName: (value) =>
         value.length > 0 ? null : "Efternamn måste vara ifyllt",
-      number: (value) => isNumber(value) ? null : "Ogitligt nummer",
-      bNumber: (value) => isNumber(value) ? null : "Ogitligt balettnummer",
-      email: (value) => /^\S+@\S+$/.test(value) ? null : "Ogiltig emailadress",
+      number: (value) => (isNumber(value) ? null : "Ogitligt nummer"),
+      bNumber: (value) => (isNumber(value) ? null : "Ogitligt balettnummer"),
+      email: (value) =>
+        /^\S+@\S+$/.test(value) ? null : "Ogiltig emailadress",
     },
   });
 
@@ -58,8 +59,11 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     if (!corps) {
       return;
     }
-    const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)?.instrument.name;
-    const otherInstruments = corps.instruments.filter((i) => !i.isMainInstrument).map((i) => i.instrument.name);
+    const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
+      ?.instrument.name;
+    const otherInstruments = corps.instruments
+      .filter((i) => !i.isMainInstrument)
+      .map((i) => i.instrument.name);
     form.setValues({
       firstName: corps.firstName,
       lastName: corps.lastName,
@@ -68,6 +72,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       email: corps.user.email ?? "",
       mainInstrument,
       otherInstruments,
+      role: corps.role?.name ?? "user",
     });
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,6 +83,8 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       // router.push("/admin/corps");
       utils.corps.get.invalidate({ id: corpsId });
       setSubmitting(false);
+      form.resetDirty();
+      form.resetTouched();
     },
   });
 
@@ -95,8 +102,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <div style={{ position: "relative" }}>
-        <LoadingOverlay visible={loading || submitting} />
+      <FormLoadingOverlay visible={loading || submitting}>
         <SimpleGrid
           cols={2}
           spacing="lg"
@@ -131,7 +137,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             placeholder="Välj instrument..."
             searchable
             nothingFound="Instrument kunde inte laddas"
-            data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+            data={
+              instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
             withAsterisk
             {...form.getInputProps("mainInstrument")}
           />
@@ -139,6 +147,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             label="Övriga instrument"
             placeholder="Välj instrument..."
             searchable
+            clearable
             nothingFound="Instrument kunde inte laddas"
             data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}
             {...form.getInputProps("otherInstruments")}
@@ -157,10 +166,12 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             {...form.getInputProps("role")}
           />
         </SimpleGrid>
-        <Group position="right" mt="md">
-          <Button type="submit">{creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}</Button>
-        </Group>
-      </div>
+      </FormLoadingOverlay>
+      <Group position="right" mt="md">
+        <Button disabled={!(form.isDirty() || form.isTouched("otherInstruments"))} type="submit" loading={loading || submitting}>
+          {creatingCorps ? "Skapa corpsmedlem" : "Spara ändringar"}
+        </Button>
+      </Group>
     </form>
   );
 };
