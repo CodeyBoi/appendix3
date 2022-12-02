@@ -3,7 +3,6 @@ import {
   Button,
   Grid,
   Group,
-  LoadingOverlay,
   NumberInput,
   Select,
   SimpleGrid,
@@ -20,6 +19,7 @@ import MultiSelectCorpsii from "../../../../components/multi-select-corpsii";
 import { useRouter } from "next/router.js";
 import { trpc } from "../../../../utils/trpc";
 import "dayjs/locale/sv";
+import FormLoadingOverlay from "../../../../components/form-loading-overlay";
 
 const initialValues = {
   title: "",
@@ -133,8 +133,7 @@ const AdminGig = () => {
           style={{ maxWidth: "720px" }}
           onSubmit={form.onSubmit(handleSubmit)}
         >
-          <div style={{ position: "relative" }}>
-            <LoadingOverlay visible={loading || submitting} />
+          <FormLoadingOverlay visible={loading || submitting}>
             <SimpleGrid cols={2} mb="md">
               <TextInput
                 label="Titel"
@@ -284,7 +283,7 @@ const AdminGig = () => {
                 </Button>
               </Group>
             </Group>
-          </div>
+          </FormLoadingOverlay>
         </form>
       </Stack>
     </Group>
