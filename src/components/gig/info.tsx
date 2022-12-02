@@ -5,7 +5,6 @@ import {
   Stack,
   Box,
   Group,
-  Space,
 } from "@mantine/core";
 import React from "react";
 import Datebox from "./datebox";
@@ -42,15 +41,12 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
           <GigButtons gig={gig} />
         </Box>
         <Accordion.Panel>
-          {gig.start && (
-            <>
-              <Text>
-                <i>{`Spelningen börjar ${gig.start}.`}</i>
-              </Text>
-              <Space h="xs" />
-            </>
-          )}
-          <Text>{gig.description}</Text>
+          <Text>
+            {gig.start && (
+              <i>{`Spelningen börjar ${gig.start}.`}<br /><br /></i>
+            )}
+            {gig.description}
+          </Text>
         </Accordion.Panel>
       </Accordion.Item>
     );
@@ -65,8 +61,7 @@ const GigInfo = ({ gig, inAccordion }: GigProps) => {
               <Title order={4}>{gig.title}</Title>
               <Text size="xs">{gig.type.name}</Text>
               {gig.meetup && <Text size="xs">{`Tarmen: ${gig.meetup}`}</Text>}
-            </Stack>
-          </Group>
+            </Stack> </Group>
           <GigButtons gig={gig} />
         </Group>
         {gig.start && (
