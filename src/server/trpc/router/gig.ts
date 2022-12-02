@@ -107,6 +107,11 @@ export const gigRouter = router({
       if (input.points < 0) {
         throw new Error("Points cannot be negative");
       }
+      await ctx.prisma.hiddenGig.deleteMany({
+        where: {
+          gigId: input.gigId,
+        },
+      });
       const { gigId, ...data } = {
         ...input,
         hiddenFor: {
@@ -122,7 +127,7 @@ export const gigRouter = router({
       };
       return ctx.prisma.gig.upsert({
         where: {
-          id: gigId,
+          id: gigId ?? "",
         },
         update: data,
         create: data,

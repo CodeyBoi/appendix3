@@ -113,7 +113,7 @@ model Instrument {
 model Gig {
   id               String    @id @default(cuid())
   title            String
-  date             DateTime
+  date             DateTime  @db.Date
   meetup           String    @default("")
   start            String    @default("")
   location         String    @default("")

@@ -28,6 +28,7 @@ const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
     data: corpsiiData,
     placeholder: corpsiiStatus === 'loading' ? 'Laddar corps...' : props.placeholder ?? 'Välj corps...',
     nothingFound,
+    limit: props.limit ?? 30,
   };
 
   return <MultiSelect {...multiSelectProps} />;
