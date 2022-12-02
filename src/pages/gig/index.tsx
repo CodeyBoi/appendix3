@@ -78,7 +78,7 @@ const Gigs: NextPage = () => {
               )}
               <Link href={`/gig/${gig.id}`} key={gig.id}>
                 <tr style={{ cursor: "pointer" }}>
-                  <td>{gig.date.toLocaleDateString()}</td>
+                  <td style={{ whiteSpace: "nowrap" }}>{gig.date.toLocaleDateString()}</td>
                   <td
                     style={{
                       whiteSpace: "nowrap",

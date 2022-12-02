@@ -159,8 +159,7 @@ export const corpsRouter = router({
 
       return ctx.prisma.corps.upsert({
         where: {
-          id: input.id,
-
+          id: input.id ?? "",
         },
         update: {
           ...queryData,
@@ -173,8 +172,13 @@ export const corpsRouter = router({
         create: {
           ...queryData,
           user: {
-            create: {
-              email: input.email,
+            connectOrCreate: {
+              where: {
+                email: input.email,
+              },
+              create: {
+                email: input.email,
+              },
             },
           },
         },
