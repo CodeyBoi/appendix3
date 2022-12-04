@@ -255,7 +255,8 @@ export const corpsRouter = router({
         orderBy: [
           {
             number: {
-              sort: "asc",
+              // Numbers are sorted descending, so that more recent corps members are at the top
+              sort: "desc",
               nulls: "last",
             },
           },

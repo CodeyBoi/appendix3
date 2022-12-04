@@ -1,6 +1,7 @@
-import { LoadingOverlay, Select, Stack } from "@mantine/core";
+import { Select, Stack } from "@mantine/core";
 import React, { useEffect } from "react";
 import { trpc } from "../../utils/trpc";
+import FormLoadingOverlay from "../form-loading-overlay";
 
 interface GigSignupBoxProps {
   gigId: string;
@@ -44,8 +45,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
 
   return (
     <Stack spacing={2}>
-      <div style={{ position: 'relative' }}>
-        <LoadingOverlay visible={loading} />
+      <FormLoadingOverlay visible={loading}>
         <Select
           mr={8}
           size="xs"
@@ -81,7 +81,7 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
             data={corps?.instruments.map(i => ({ label: i.instrument.name, value: i.instrument.name })) ?? []}
           />
         )}
-      </div>
+      </FormLoadingOverlay>
     </Stack>
   );
 }

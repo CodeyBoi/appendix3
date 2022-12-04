@@ -7,7 +7,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import MultiSelectCorpsii from "./multi-select-corpsii";
 
 interface SignupListProps {
-  isAdmin?: boolean;
   gigId: string;
 }
 

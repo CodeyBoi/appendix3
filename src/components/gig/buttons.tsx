@@ -43,14 +43,14 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
       {showSignup && <GigSignupBox gigId={gig.id} />}
       <Stack spacing={0}>
         {/* Only show this button if the user isn't at the `/gig/:id/signups` page */}
-        {!pathname.endsWith("/signups") && (
+        {!pathname.match('/gig/[a-zA-Z0-9]*') && (
           <Tooltip label="Visa anmälningar">
             <ActionIcon
               size={30}
               mt={25}
               sx={{
-                color: theme.colors.red[5],
-                borderColor: theme.colors.gray[4],
+                color: theme?.colors?.red?.[5],
+                borderColor: theme?.colors?.gray?.[4],
               }}
               variant="outline"
               component={NextLink}
@@ -66,8 +66,8 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
               size={30}
               // mt={27}
               sx={{
-                color: theme.colors.red[5],
-                borderColor: theme.colors.gray[4],
+                color: theme?.colors?.red?.[5],
+                borderColor: theme?.colors?.gray?.[4],
               }}
               variant="outline"
               component={NextLink}

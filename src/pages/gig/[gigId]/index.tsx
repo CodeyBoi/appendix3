@@ -8,7 +8,7 @@ import { trpc } from '../../../utils/trpc';
 
 const LIST_WIDTH = "700px";
 
-const WhosComing = ({ isAdmin }: { isAdmin: boolean }) => {
+const WhosComing = () => {
   const router = useRouter();
   const gigId = router.query.gigId as string;
 
@@ -23,7 +23,7 @@ const WhosComing = ({ isAdmin }: { isAdmin: boolean }) => {
         <Title order={1}>Anmälningar</Title>
         {gig ? <GigInfo gig={gig} /> : <Loading msg='Laddar spelning...'  />}
         {loading && <Box sx={{ maxWidth: "fit-content" }}><Loading msg='Laddar anmälningar...' /></Box>}
-        {!loading && <SignupList isAdmin={isAdmin} gigId={gigId} />}
+        {!loading && <SignupList gigId={gigId} />}
       </Box>
     </Center>
   );

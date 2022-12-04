@@ -61,13 +61,14 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
   }, [] as (Gig & { type: { name: string } })[][]);
 
   const gigList = gigsByMonth.map((gigs) => {
-    const month = gigs[0]?.date.getMonth() ?? -1;
+    const gigDate = gigs[0]?.date;
+    const month = gigDate?.toLocaleDateString("sv-SE", { month: "long" });
     return (
       <>
         <Title pt={6} order={3}>
-          {monthNames[month]}
+          {month}
         </Title>
-        <Accordion key={month}>
+        <Accordion key={`${month}-${gigDate?.getFullYear()}`}>
           {gigs.map((gig) => (
             <GigInfo key={gig.id} gig={gig} inAccordion />
           ))}

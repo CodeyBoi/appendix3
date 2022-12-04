@@ -88,6 +88,7 @@ const AdminGig = () => {
         hiddenFor: gig.hiddenFor.map((c) => c.corpsId),
       });
       setLoading(false);
+      form.resetDirty();
     } else if (newGig) {
       // Needed if user is editing an existing gig and then clicks "New gig"
       form.reset();
