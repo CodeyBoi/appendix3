@@ -1,14 +1,12 @@
-import React from "react";
-import { Header, Group, Button } from "@mantine/core";
+import React, { useState } from "react";
+import { Header, Group, Button, Burger, useMantineTheme } from "@mantine/core";
 import Logo from "./logo";
-import AdminMenu from "./admin-menu";
-import { IconLogout, IconUser } from "@tabler/icons";
-import { signOut, useSession } from "next-auth/react";
-import { NextLink } from "@mantine/next";
+import { IconLogout } from "@tabler/icons";
+import { signOut } from "next-auth/react";
 
 const AppendixHeader = () => {
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.corps?.role?.name === "admin";
+  const [navbarOpen, setNavbarOpen] = useState(false);
+  const theme = useMantineTheme();
 
   return (
     <Header
@@ -18,12 +16,13 @@ const AppendixHeader = () => {
         backgroundColor: theme?.colors?.red?.[5],
         color: theme.white,
         zIndex: 516,
+        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.3)",
+        border: 0,
       })}
     >
       <Group position="apart">
         <Logo />
         <Group spacing={0}>
-          {isAdmin && <AdminMenu />}
           <Button
             px={6}
             leftIcon={<IconLogout />}
@@ -32,6 +31,17 @@ const AppendixHeader = () => {
           >
             Logga ut
           </Button>
+          <Burger
+            opened={navbarOpen}
+            onClick={() => setNavbarOpen(!navbarOpen)}
+            title="Open navigation menu"
+            sx={(theme) => ({
+              color: theme.white,
+              [theme.fn.largerThan("sm")]: {
+                display: "none",
+              },
+            })}
+          />
         </Group>
       </Group>
     </Header>

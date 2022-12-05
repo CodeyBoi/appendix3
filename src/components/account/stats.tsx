@@ -23,18 +23,21 @@ const CorpsStats = () => {
       <Title order={3}>Närvaro</Title>
       {loading && <Loading msg="Laddar..." />}
       {points !== undefined && (
-        <Text>{`Du har totalt ${points} spelpoäng!`}</Text>
+        <Title order={5}>{`Du har totalt ${points} spelpoäng!`}</Title>
       )}
       {corpsStats && (
-        <Text>
-          {`Närvaro för nuvarande verksamhetsår (${currentOperatingYear}-${
-            currentOperatingYear + 1
-          }):`}
-          <br />
-          {`Spelpoäng: ${corpsStats.gigsAttended}`}
-          <br />
-          {`Spelningar: ${Math.round(corpsStats.attendence * 100)}%`}
-        </Text>
+        <Stack spacing={0}>
+          <Title order={6}>
+            {`Nuvarande verksamhetsår (${currentOperatingYear}-${
+              currentOperatingYear + 1
+            }):`}
+          </Title>
+          <Text>
+            {`Spelpoäng: ${corpsStats.gigsAttended}`}
+            <br />
+            {`Spelningar: ${Math.round(corpsStats.attendence * 100)}%`}
+          </Text>
+        </Stack>
       )}
     </Stack>
   );

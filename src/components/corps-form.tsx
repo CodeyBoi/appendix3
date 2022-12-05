@@ -106,7 +106,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         <SimpleGrid
           cols={2}
           spacing="lg"
-          breakpoints={[{ maxWidth: 600, cols: 1 }]}
+          breakpoints={[{ maxWidth: "md", cols: 1 }]}
         >
           <TextInput
             withAsterisk
