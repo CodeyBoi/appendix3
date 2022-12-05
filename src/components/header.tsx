@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import { Header, Group, Button, Burger, useMantineTheme } from "@mantine/core";
+import { Header, Group, Burger, Drawer } from "@mantine/core";
 import Logo from "./logo";
-import { IconLogout } from "@tabler/icons";
-import { signOut } from "next-auth/react";
+import NavbarContent from "./navbar";
 
 const AppendixHeader = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const theme = useMantineTheme();
-
   return (
     <Header
       height={60}
@@ -22,15 +19,7 @@ const AppendixHeader = () => {
     >
       <Group position="apart">
         <Logo />
-        <Group spacing={0}>
-          <Button
-            px={6}
-            leftIcon={<IconLogout />}
-            size="sm"
-            onClick={() => signOut()}
-          >
-            Logga ut
-          </Button>
+        <Group>
           <Burger
             opened={navbarOpen}
             onClick={() => setNavbarOpen(!navbarOpen)}
@@ -44,6 +33,25 @@ const AppendixHeader = () => {
           />
         </Group>
       </Group>
+      <Drawer
+        withCloseButton={false}
+        size={300}
+        opened={navbarOpen}
+        onClose={() => setNavbarOpen(false)}
+        position="right"
+        sx={(theme) => ({
+          [theme.fn.largerThan("sm")]: {
+            display: "none",
+          },
+        })}
+        styles={{
+          drawer: {
+            paddingTop: "var(--mantine-header-height) !important",
+          },
+        }}
+      >
+        <NavbarContent />
+      </Drawer>
     </Header>
   );
 };
