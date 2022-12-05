@@ -135,7 +135,7 @@ export const gigRouter = router({
       });
     }),
 
-  getSignup: publicProcedure
+  getSignup: protectedProcedure
     .input(
       z.object({
         corpsId: z.string(),
@@ -163,7 +163,7 @@ export const gigRouter = router({
       });
     }),
 
-  getSignups: publicProcedure
+  getSignups: protectedProcedure
     .input(
       z.object({
         gigId: z.string(),
@@ -348,6 +348,7 @@ export const gigRouter = router({
       );
     }),
 
+  // TODO: Add a protectedProcedure to remove your own signup, and an adminProcedure to remove any signup
   removeSignup: protectedProcedure
     .input(
       z.object({
@@ -388,7 +389,7 @@ export const gigRouter = router({
       });
     }),
 
-  getAttended: publicProcedure
+  getAttended: protectedProcedure
     .input(z.object({
       startDate: z.date().optional(),
       endDate: z.date().optional(),
