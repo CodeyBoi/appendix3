@@ -4,11 +4,12 @@ import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import type { AppType } from "next/app";
 import { trpc } from "../utils/trpc";
-import { ColorSchemeProvider, MantineProvider, ColorScheme } from "@mantine/core";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
+import { useHotkeys } from "@mantine/hooks";
 import { GLOBAL_THEME } from "../utils/global-theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppContainer } from "../components/app-container";
+import useColorScheme from "../hooks/use-color-scheme";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,14 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
 
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: 'mantine-color-scheme',
-    defaultValue: 'light',
-    getInitialValueInEffect: true,
-  });
-  const toggleColorScheme = (value?: ColorScheme) => {
-    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
-  }
+  const { colorScheme, toggleColorScheme } = useColorScheme();
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
 
   return (

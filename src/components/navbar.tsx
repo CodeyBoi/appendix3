@@ -45,8 +45,6 @@ const useStyles = createStyles((theme) => ({
   },
   link: {
     ...theme.fn.focusStyles(),
-    color: theme.white,
-    fontWeight: 500,
     backgroundColor: theme.colors.red[6],
 
     "&:hover": {
@@ -130,7 +128,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   }, [router.asPath]);
 
   const links = tabs[activeTab].map((tab) => (
-    <Stack key={tab.title} spacing="xs">
+    <Stack key={tab.links.toString()} spacing="xs">
       {tab.title && <Divider label={tab.title} color="white" />}
       {tab.links.map((link) => (
         <Button

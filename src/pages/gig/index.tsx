@@ -6,11 +6,13 @@ import {
   Group,
   Title,
   Stack,
+  Accordion,
 } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { getOperatingYear } from "../stats/[paramYear]";
 import Link from "next/link";
 import Loading from "../../components/loading";
+import dayjs from "dayjs";
 
 type Tab = "all-gigs-tab" | "my-gigs-tab";
 interface GigsProps {
@@ -81,18 +83,10 @@ const Gigs = ({ initialTab = "my-gigs-tab" }: GigsProps) => {
               )}
               <Link href={`/gig/${gig.id}`} key={gig.id}>
                 <tr style={{ cursor: "pointer" }}>
-                  <td style={{ whiteSpace: "nowrap" }}>{gig.date.toLocaleDateString()}</td>
-                  <td
-                    style={{
-                      whiteSpace: "nowrap",
-                      maxWidth: "350px",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {gig.title}
+                  <td style={{ whiteSpace: "nowrap" }}>
+                    {dayjs(gig.date).format("YYYY-MM-DD")}
                   </td>
-                  <td>{gig.description}</td>
+                  <td>{gig.title}</td>
                 </tr>
               </Link>
             </React.Fragment>
@@ -105,7 +99,7 @@ const Gigs = ({ initialTab = "my-gigs-tab" }: GigsProps) => {
   );
 
   return (
-    <Stack sx={{ maxWidth: 700 }}>
+    <Stack sx={{ maxWidth: 500 }}>
       <Title order={2}>Gamla spelningar</Title>
       <Group position="left">
         <Select
