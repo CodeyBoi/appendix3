@@ -18,5 +18,5 @@ jobs:
         run: |
           yarn install  
           yarn run build    
-          pm2 reload appendix-service
+          pm2 reload bleckhornen-appendix-service
     
