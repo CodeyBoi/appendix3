@@ -1,8 +1,9 @@
-import { router, publicProcedure } from "../trpc";
+import { protectedProcedure } from './../trpc';
+import { router } from "../trpc";
 import { z } from "zod";
 
 export const statsRouter = router({
-  getYearly: publicProcedure
+  getYearly: protectedProcedure
     .input(
       z.object({ operatingYear: z.number(), selfOnly: z.boolean().optional() })
     )
@@ -112,7 +113,7 @@ export const statsRouter = router({
       };
     }),
 
-  getPoints: publicProcedure
+  getPoints: protectedProcedure
     .input(z.object({ corpsId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const corpsId = input.corpsId ?? ctx.session?.user?.corps?.id;
