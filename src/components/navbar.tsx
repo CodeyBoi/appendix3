@@ -21,6 +21,7 @@ import { NextLink } from "@mantine/next";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
+import cuid from "cuid";
 
 interface LinkItem {
   label: string;
@@ -128,7 +129,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   }, [router.asPath]);
 
   const links = tabs[activeTab].map((tab) => (
-    <Stack key={tab.links.toString()} spacing="xs">
+    <Stack key={tab.title || cuid()} spacing="xs">
       {tab.title && <Divider label={tab.title} color="white" />}
       {tab.links.map((link) => (
         <Button
