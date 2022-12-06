@@ -1,12 +1,8 @@
-import {
-  Title,
-  Accordion,
-  Stack,
-} from "@mantine/core";
+import { Title, Stack } from "@mantine/core";
 import { Gig } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import GigInfo from "../components/gig/info";
+import GigCard from "../components/gig/card";
 import Loading from "../components/loading";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { trpc } from "../utils/trpc";
@@ -47,17 +43,16 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
     const month = gigDate?.toLocaleDateString("sv-SE", { month: "long" });
+    const year = gigDate?.getFullYear();
     return (
-      <>
+      <React.Fragment key={`${month} ${year}`}>
         <Title pt={6} order={3}>
-          {month}
+          {`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}
         </Title>
-        <Accordion key={`${month}-${gigDate?.getFullYear()}`}>
-          {gigs.map((gig) => (
-            <GigInfo key={gig.id} gig={gig} inAccordion />
-          ))}
-        </Accordion>
-      </>
+        {gigs.map((gig) => (
+          <GigCard key={gig.id} gig={gig} />
+        ))}
+      </React.Fragment>
     );
   });
 
@@ -74,15 +69,15 @@ const Home: NextPage = () => {
   });
 
   return (
-      <Stack sx={{ maxWidth: 700 }}>
-        <Title order={2}>
-          {gigs && gigs.length === 0
-            ? "Inga kommande spelningar :("
-            : "Kommande spelningar"}
-        </Title>
-        {gigsLoading && <Loading msg="Laddar spelningar..." />}
-        {gigs && makeGigList(gigs)}
-      </Stack>
+    <Stack sx={{ maxWidth: 800 }}>
+      <Title order={2}>
+        {gigs && gigs.length === 0
+          ? "Inga kommande spelningar :("
+          : "Kommande spelningar"}
+      </Title>
+      {gigsLoading && <Loading msg="Laddar spelningar..." />}
+      {gigs && makeGigList(gigs)}
+    </Stack>
   );
 };
 

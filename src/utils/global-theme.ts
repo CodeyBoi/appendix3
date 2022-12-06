@@ -86,6 +86,7 @@ const GLOBAL_THEME: MantineThemeOverride = {
       styles: {
         root: {
           variant: "outline",
+          fontWeight: 500,
         },
       },
     },

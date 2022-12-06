@@ -86,6 +86,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     onSuccess: () => {
       // router.push("/admin/corps");
       utils.corps.get.invalidate({ id: corpsId });
+      utils.corps.getSelf.invalidate();
       setSubmitting(false);
       form.resetDirty();
       form.resetTouched();

@@ -47,7 +47,6 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
     <Stack spacing={2}>
       <FormLoadingOverlay visible={loading}>
         <Select
-          mr={8}
           size="xs"
           value={status}
           label="Jag deltar:"
@@ -67,7 +66,6 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
         />
         {(corps?.instruments.length ?? 0) > 1 && (
           <Select
-            mr={8}
             size="xs"
             label="Instrument:"
             value={instrument}

@@ -21,11 +21,11 @@ const AppendixHeader = () => {
         <Logo />
         <Group>
           <Burger
+            color="white"
             opened={navbarOpen}
             onClick={() => setNavbarOpen(!navbarOpen)}
             title="Open navigation menu"
             sx={(theme) => ({
-              color: theme.white,
               [theme.fn.largerThan("sm")]: {
                 display: "none",
               },

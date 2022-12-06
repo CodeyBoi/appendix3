@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React, { useEffect } from "react";
+import useColorScheme from "../../hooks/use-color-scheme";
 import { trpc } from "../../utils/trpc";
 import FormLoadingOverlay from "../form-loading-overlay";
 
@@ -30,14 +31,16 @@ const AccountPreferences = () => {
   const utils = trpc.useContext();
   const [submitting, setSubmitting] = React.useState(false);
 
+  const { colorScheme, toggleColorScheme } = useColorScheme();
+
   const form = useForm<FormValues>({
     initialValues,
     validate: {
       firstName: (firstName) =>
-        firstName.length > 0 ? null : "Förnamn måste anges",
+        firstName.length > 0 ? null : "Ange förnamn",
       lastName: (lastName) =>
-        lastName.length > 0 ? null : "Efternamn måste anges",
-      email: (email) => (email.length > 0 ? null : "E-post måste anges"),
+        lastName.length > 0 ? null : "Ange efternamn",
+      email: (email) => (email.length > 0 ? null : "Ange e-postadress"),
     },
   });
 
@@ -79,6 +82,14 @@ const AccountPreferences = () => {
           <FormLoadingOverlay visible={submitting || corpsLoading}>
             <Stack spacing="xs">
               <Title order={6}>Allmänt</Title>
+              <Switch
+                pl="xs"
+                mb="md"
+                label="Mörkt tema"
+                checked={colorScheme === "dark"}
+                onChange={() => toggleColorScheme()}
+              />
+              <Title order={6}>Kontaktuppgifter</Title>
               <TextInput
                 label="Förnamn"
                 placeholder="Förnamn"
