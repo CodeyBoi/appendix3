@@ -135,6 +135,16 @@ export const gigRouter = router({
       });
     }),
 
+  remove: adminProcedure
+    .input(z.object({ gigId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gig.delete({
+        where: {
+          id: input.gigId,
+        },
+      });
+    }),
+
   getSignup: protectedProcedure
     .input(
       z.object({

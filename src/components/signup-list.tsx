@@ -107,6 +107,12 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const editAttendance = trpc.gig.editAttendance.useMutation();
 
+  const handleDelete = (corpsId: string) => {
+    if (window.confirm('Är du säker på att du vill ta bort anmälningen?')) {
+      removeSignup.mutateAsync({ corpsId, gigId });
+    }
+  };
+
   /** Code from here on is absolutely horrible, but it works. 
    *  Travelers beware.
    */
@@ -142,10 +148,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
                       <Tooltip label="Ta bort anmälan">
                         <CloseButton
                           color="red"
-                          onClick={async () => removeSignup.mutateAsync({
-                            gigId,
-                            corpsId: signup.corpsId
-                          })}
+                          onClick={() => handleDelete(signup.corpsId)}
                         />
                       </Tooltip>
                     </Center>

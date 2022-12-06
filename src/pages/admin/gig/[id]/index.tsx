@@ -102,7 +102,16 @@ const AdminGig = () => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      router.push("/");
+      router.push("/admin/gig");
+    },
+  });
+
+  const removeGig = trpc.gig.remove.useMutation({
+    onSuccess: () => {
+      utils.gig.getWithId.invalidate({ gigId });
+      utils.gig.getMany.invalidate();
+      setSubmitting(false);
+      router.push("/admin/gig");
     },
   });
 
@@ -271,8 +280,7 @@ const AdminGig = () => {
                           "Detta kommer att radera spelningen och går inte att ångra. Är du säker?"
                         )
                       ) {
-                        // TODO: Delete gig
-                        router.push("/");
+                        removeGig.mutateAsync({ gigId });
                       }
                     }}
                   >
