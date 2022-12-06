@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   Button,
@@ -34,8 +34,8 @@ interface AdminCorpsProps {
 const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   const utils = trpc.useContext();
   const creatingCorps = corpsId === "new";
-  const [loading, setLoading] = React.useState(!creatingCorps);
-  const [submitting, setSubmitting] = React.useState(false);
+  const [loading, setLoading] = useState(!creatingCorps);
+  const [submitting, setSubmitting] = useState(false);
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   const { data: corps } = trpc.corps.get.useQuery({ id: corpsId });
@@ -45,36 +45,40 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     initialValues,
     validate: {
       firstName: (value) =>
-        value.length > 0 ? null : "Förnamn måste vara ifyllt",
+        value.length > 0 ? null : "Fyll i förnamn",
       lastName: (value) =>
-        value.length > 0 ? null : "Efternamn måste vara ifyllt",
+        value.length > 0 ? null : "Fyll i efternamn",
       number: (value) => (isNumber(value) ? null : "Ogitligt nummer"),
       bNumber: (value) => (isNumber(value) ? null : "Ogitligt balettnummer"),
       email: (value) =>
         /^\S+@\S+$/.test(value) ? null : "Ogiltig emailadress",
+      mainInstrument: (value) => (value ? null : "Välj ett huvudinstrument"),
+      otherInstruments: (value, values) => value.includes(values.mainInstrument) ? "Huvudinstrument kan inte väljas som övrigt instrument" : null,
     },
   });
 
   useEffect(() => {
-    if (!corps) {
-      return;
+    if (corps) {
+      const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
+        ?.instrument.name;
+      const otherInstruments = corps.instruments
+        .filter((i) => !i.isMainInstrument)
+        .map((i) => i.instrument.name);
+      form.setValues({
+        firstName: corps.firstName,
+        lastName: corps.lastName,
+        number: corps.number?.toString() || "",
+        bNumber: corps.bNumber?.toString() || "",
+        email: corps.user.email ?? "",
+        mainInstrument,
+        otherInstruments,
+        role: corps.role?.name ?? "user",
+      });
+      setLoading(false);
+    } else if (creatingCorps) {
+      form.reset();
+      setLoading(false);
     }
-    const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
-      ?.instrument.name;
-    const otherInstruments = corps.instruments
-      .filter((i) => !i.isMainInstrument)
-      .map((i) => i.instrument.name);
-    form.setValues({
-      firstName: corps.firstName,
-      lastName: corps.lastName,
-      number: corps.number?.toString() || "",
-      bNumber: corps.bNumber?.toString() || "",
-      email: corps.user.email ?? "",
-      mainInstrument,
-      otherInstruments,
-      role: corps.role?.name ?? "user",
-    });
-    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
@@ -104,9 +108,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={loading || submitting}>
         <SimpleGrid
-          cols={2}
+          cols={1}
           spacing="lg"
-          breakpoints={[{ maxWidth: "md", cols: 1 }]}
+          breakpoints={[{ minWidth: "md", cols: 2 }]}
         >
           <TextInput
             withAsterisk
@@ -135,7 +139,6 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <Select
             label="Huvudinstrument"
             placeholder="Välj instrument..."
-            searchable
             nothingFound="Instrument kunde inte laddas"
             data={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
@@ -146,7 +149,6 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <MultiSelect
             label="Övriga instrument"
             placeholder="Välj instrument..."
-            searchable
             clearable
             nothingFound="Instrument kunde inte laddas"
             data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}

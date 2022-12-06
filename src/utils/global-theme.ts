@@ -89,11 +89,16 @@ const GLOBAL_THEME: MantineThemeOverride = {
         },
       },
     },
-    Select: {
-      defaultProps: {
-        dropdownComponent: "div",
-      },
-    },
+    // Select: {
+    //   defaultProps: {
+    //     dropdownComponent: "div",
+    //   },
+    // },
+    // MultiSelect: {
+    //   defaultProps: {
+    //     dropdownComponent: "div",
+    //   },
+    // },
     Checkbox: {
       defaultProps: {
         radius: "xl",

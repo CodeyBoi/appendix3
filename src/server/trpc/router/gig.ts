@@ -135,7 +135,17 @@ export const gigRouter = router({
       });
     }),
 
-  getSignup: publicProcedure
+  remove: adminProcedure
+    .input(z.object({ gigId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gig.delete({
+        where: {
+          id: input.gigId,
+        },
+      });
+    }),
+
+  getSignup: protectedProcedure
     .input(
       z.object({
         corpsId: z.string(),
@@ -163,7 +173,7 @@ export const gigRouter = router({
       });
     }),
 
-  getSignups: publicProcedure
+  getSignups: protectedProcedure
     .input(
       z.object({
         gigId: z.string(),
@@ -348,7 +358,7 @@ export const gigRouter = router({
       );
     }),
 
-  removeSignup: protectedProcedure
+  removeSignup: adminProcedure
     .input(
       z.object({
         corpsId: z.string(),
@@ -388,7 +398,7 @@ export const gigRouter = router({
       });
     }),
 
-  getAttended: publicProcedure
+  getAttended: protectedProcedure
     .input(z.object({
       startDate: z.date().optional(),
       endDate: z.date().optional(),
