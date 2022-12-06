@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [staging]
+    branches: [prod]
 
 jobs:
   build:
