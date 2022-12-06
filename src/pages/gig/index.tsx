@@ -105,7 +105,7 @@ const Gigs = ({ initialTab = "my-gigs-tab" }: GigsProps) => {
   );
 
   return (
-    <Stack>
+    <Stack sx={{ maxWidth: 700 }}>
       <Title order={2}>Gamla spelningar</Title>
       <Group position="left">
         <Select

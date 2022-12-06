@@ -74,7 +74,7 @@ const Home: NextPage = () => {
   });
 
   return (
-      <Stack>
+      <Stack sx={{ maxWidth: 700 }}>
         <Title order={2}>
           {gigs && gigs.length === 0
             ? "Inga kommande spelningar :("

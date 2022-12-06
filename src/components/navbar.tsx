@@ -109,7 +109,12 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   ],
 };
 
-const NavbarContent = () => {
+interface NavbarContentProps {
+  // Used to close the navbar on mobile when a link is clicked
+  onLinkClicked?: (value?: string) => void;
+}
+
+const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("");
   const [activeTab, setActiveTab] = useState<TabLabel>("user");
@@ -135,7 +140,10 @@ const NavbarContent = () => {
           })}
           component={NextLink}
           href={link.href}
-          onClick={() => setActive(link.href)}
+          onClick={() => {
+            setActive(link.href);
+            onLinkClicked?.(link.href);
+          }}
           leftIcon={link.icon}
           styles={{ inner: { justifyContent: "flex-start" } }}
         >

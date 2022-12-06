@@ -50,7 +50,7 @@ const AppendixHeader = () => {
           },
         }}
       >
-        <NavbarContent />
+        <NavbarContent onLinkClicked={() => setNavbarOpen(false)} />
       </Drawer>
     </Header>
   );
