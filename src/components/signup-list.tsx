@@ -127,14 +127,15 @@ const SignupList = ({ gigId }: SignupListProps) => {
         {signups.map((signup) => {
           return (
             <tr key={signup.corpsId}>
-              <td style={{ border: 0, padding: 0 }}>{signup.instrument}</td>
-              <td style={{ border: 0, padding: 0 }}><Center>{signup.number ?? 'p.e.'}</Center></td>
-              <td style={{ border: 0, padding: 0 }}>{signup.firstName + ' ' + signup.lastName}</td>
+              <td style={{ paddingTop: 0, paddingBottom: 0 }}>{signup.instrument}</td>
+              <td style={{ paddingTop: 0, paddingBottom: 0 }}>{signup.number ?? 'p.e.'}</td>
+              <td style={{ paddingTop: 0, paddingBottom: 0 }}>{signup.firstName + ' ' + signup.lastName}</td>
               {isAdmin &&
                 <>
-                  <td style={{ border: 0, padding: 0 }}>
+                  <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                     <Center>
                       <Checkbox
+                        styles={{ root: { display: "flex" } }}
                         defaultChecked={signup.attended}
                         onChange={(event) => editAttendance.mutateAsync({
                           gigId,
@@ -143,7 +144,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
                         })} />
                     </Center>
                   </td>
-                  <td style={{ border: 0, padding: 0 }}>
+                  <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                     <Center>
                       <Tooltip label="Ta bort anmälan">
                         <CloseButton
@@ -194,9 +195,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
         <thead>
           <tr>
             <th>Instrument</th>
-            <th><Center>Nummer</Center></th>
+            <th>Nummer</th>
             <th>Namn</th>
             {isAdmin && <th><Center>Närvaro</Center></th>}
+            {isAdmin && <th></th>}
           </tr>
         </thead>
         {yesTable}
@@ -210,9 +212,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
             <thead>
               <tr>
                 <th>Instrument</th>
-                <th><Center>Nummer</Center></th>
+                <th>Nummer</th>
                 <th>Namn</th>
-                {isAdmin && <th><Center>Närvaro</Center></th>}
+                {isAdmin && <th>Närvaro</th>}
               </tr>
             </thead>
             {maybeTable}

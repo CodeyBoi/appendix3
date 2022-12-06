@@ -3,20 +3,23 @@ import {
   Table,
   Tabs,
   Select,
-  Center,
   Group,
   Title,
   Stack,
 } from "@mantine/core";
-import { NextPage } from "next";
 import { trpc } from "../../utils/trpc";
 import { getOperatingYear } from "../stats/[paramYear]";
 import Link from "next/link";
 import Loading from "../../components/loading";
 
-const Gigs: NextPage = () => {
+type Tab = "all-gigs-tab" | "my-gigs-tab";
+interface GigsProps {
+  initialTab?: Tab;
+}
+
+const Gigs = ({ initialTab = "my-gigs-tab" }: GigsProps) => {
   const [year, setYear] = useState(getOperatingYear());
-  const [activeTab, setActiveTab] = useState<string | null>("my-gigs-tab");
+  const [activeTab, setActiveTab] = useState<string | null>(initialTab);
   // TODO: FIX THIS (I HATE DATES (this gets the day before the current day))
   const startDate = new Date(year, 8, 1);
   const endDate = new Date(year + 1, 7, 31);
@@ -65,7 +68,7 @@ const Gigs: NextPage = () => {
             shouldAddMonth = true;
           }
           return (
-            <>
+            <React.Fragment key={gig.id}>
               {shouldAddMonth && (
                 // We set color to unset to get rid of the highlightOnHover for the month
                 <tr style={{ backgroundColor: "unset" }}>
@@ -92,7 +95,7 @@ const Gigs: NextPage = () => {
                   <td>{gig.description}</td>
                 </tr>
               </Link>
-            </>
+            </React.Fragment>
           );
         })}
       </tbody>
@@ -102,34 +105,33 @@ const Gigs: NextPage = () => {
   );
 
   return (
-    <Center>
-      <Stack sx={{ width: "70%" }}>
-        <Group position="left">
-          <Select
-            label="Välj år:"
-            defaultValue={getOperatingYear().toString()}
-            maxDropdownHeight={280}
-            data={years}
-            value={year.toString()}
-            onChange={(value) => setYear(parseInt(value as string))}
-          />
-        </Group>
-        <Tabs value={activeTab} onTabChange={setActiveTab}>
-          <Tabs.List pl={8}>
-            <Tabs.Tab value="my-gigs-tab">Mina spelningar</Tabs.Tab>
-            <Tabs.Tab value="all-gigs-tab">Alla spelningar</Tabs.Tab>
-          </Tabs.List>
+    <Stack sx={{ maxWidth: 700 }}>
+      <Title order={2}>Gamla spelningar</Title>
+      <Group position="left">
+        <Select
+          label="Verksamhetsår"
+          defaultValue={getOperatingYear().toString()}
+          maxDropdownHeight={280}
+          data={years}
+          value={year.toString()}
+          onChange={(value) => setYear(parseInt(value as string))}
+        />
+      </Group>
+      <Tabs value={activeTab} onTabChange={setActiveTab}>
+        <Tabs.List pl={8}>
+          <Tabs.Tab value="my-gigs-tab">Mina spelningar</Tabs.Tab>
+          <Tabs.Tab value="all-gigs-tab">Alla spelningar</Tabs.Tab>
+        </Tabs.List>
 
-          <Tabs.Panel value="my-gigs-tab" pt="xs">
-            {gigTable}
-          </Tabs.Panel>
+        <Tabs.Panel value="my-gigs-tab" pt="xs">
+          {gigTable}
+        </Tabs.Panel>
 
-          <Tabs.Panel value="all-gigs-tab" pt="xs">
-            {gigTable}
-          </Tabs.Panel>
-        </Tabs>
-      </Stack>
-    </Center>
+        <Tabs.Panel value="all-gigs-tab" pt="xs">
+          {gigTable}
+        </Tabs.Panel>
+      </Tabs>
+    </Stack>
   );
 };
 

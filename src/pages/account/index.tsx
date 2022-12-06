@@ -1,4 +1,4 @@
-import { Stack, Title, Center, Grid } from "@mantine/core";
+import { Stack, Title, Grid } from "@mantine/core";
 import React from "react";
 import AccountPreferences from "../../components/account/preferences";
 import CorpsStats from "../../components/account/stats";
@@ -12,19 +12,17 @@ const Account = () => {
       : "p.e. " + corps?.lastName;
 
   return (
-    <Center>
-      <Stack sx={{ width: "70%" }}>
-        <Title order={2}>{`Välkommen${corps ? ', ' + corpsName : '' }!`}</Title>
-        <Grid>
-          <Grid.Col sm={12} md={6}>
-            <CorpsStats />
-          </Grid.Col>
-          <Grid.Col sm={12} md={6}>
-            <AccountPreferences />
-          </Grid.Col>
-        </Grid>
-      </Stack>
-    </Center>
+    <Stack sx={{ maxWidth: 800 }}>
+      <Title order={2}>{`Välkommen${corps ? ", " + corpsName : ""}!`}</Title>
+      <Grid>
+        <Grid.Col span={12} md={6}>
+          <CorpsStats />
+        </Grid.Col>
+        <Grid.Col span={12} md={6}>
+          <AccountPreferences />
+        </Grid.Col>
+      </Grid>
+    </Stack>
   );
 };
 

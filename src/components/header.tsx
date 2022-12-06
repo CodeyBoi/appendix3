@@ -1,41 +1,59 @@
-import React from 'react';
-import { Header, Group, Button } from '@mantine/core';
-import Logo from './logo';
-import AdminMenu from './admin-menu';
-import { IconClipboard, IconLogout, IconUser, IconSpeakerphone } from '@tabler/icons';
-import { signOut, useSession } from 'next-auth/react';
-import { NextLink } from '@mantine/next';
-
-const getOperatingYear = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  // If month is September or later, return current year, else return previous year
-  return date.getMonth() >= 8 ? year : year - 1;
-}
+import React, { useState } from "react";
+import { Header, Group, Burger, Drawer } from "@mantine/core";
+import Logo from "./logo";
+import NavbarContent from "./navbar";
 
 const AppendixHeader = () => {
-
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.corps?.role?.name === 'admin';
-
+  const [navbarOpen, setNavbarOpen] = useState(false);
   return (
-    <Header height={60} p="sm" sx={(theme) => ({
-      backgroundColor: theme?.colors?.red?.[5],
-      color: theme.white,
-      zIndex: 516,
-    })}>
+    <Header
+      height={60}
+      p="sm"
+      sx={(theme) => ({
+        backgroundColor: theme?.colors?.red?.[5],
+        color: theme.white,
+        zIndex: 516,
+        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.3)",
+        border: 0,
+      })}
+    >
       <Group position="apart">
         <Logo />
-        <Group spacing={0}>
-          {isAdmin && <AdminMenu />}
-          <Button px={6} leftIcon={<IconSpeakerphone />} component={NextLink} href='/gig'>Spelningar</Button>
-          <Button px={6} leftIcon={<IconClipboard />} size="sm" component={NextLink} href={`/stats/${getOperatingYear()}`}>Statistik</Button>
-          <Button px={6} leftIcon={<IconUser />} size='sm' component={NextLink} href="/account">Mina sidor</Button>
-          <Button px={6} leftIcon={<IconLogout />} size='sm' onClick={() => signOut()}>Logga ut</Button>
+        <Group>
+          <Burger
+            opened={navbarOpen}
+            onClick={() => setNavbarOpen(!navbarOpen)}
+            title="Open navigation menu"
+            sx={(theme) => ({
+              color: theme.white,
+              [theme.fn.largerThan("sm")]: {
+                display: "none",
+              },
+            })}
+          />
         </Group>
       </Group>
+      <Drawer
+        withCloseButton={false}
+        size={300}
+        opened={navbarOpen}
+        onClose={() => setNavbarOpen(false)}
+        position="right"
+        sx={(theme) => ({
+          [theme.fn.largerThan("sm")]: {
+            display: "none",
+          },
+        })}
+        styles={{
+          drawer: {
+            paddingTop: "var(--mantine-header-height) !important",
+          },
+        }}
+      >
+        <NavbarContent onLinkClicked={() => setNavbarOpen(false)} />
+      </Drawer>
     </Header>
   );
-}
+};
 
 export default AppendixHeader;

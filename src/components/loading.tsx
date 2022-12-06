@@ -1,5 +1,5 @@
 import React from "react";
-import { Loader, Center, Text, Stack } from "@mantine/core";
+import { Loader, Center } from "@mantine/core";
 
 interface LoadingProps {
   msg?: string;
@@ -7,12 +7,12 @@ interface LoadingProps {
 
 const Loading = ({ msg }: LoadingProps) => {
   return (
-    <Center sx={{ width: "100%", height: "100%" }}>
-      <Stack>
-        <Text>{msg}</Text>
+    <div style={{ width: "fit-content", padding: "10px" }}>
+      <p style={{ marginTop: 0 }}>{msg}</p>
+      <Center>
         <Loader m="auto" />
-      </Stack>
-    </Center>
+      </Center>
+    </div>
   );
 }
 

@@ -132,7 +132,6 @@ const AdminGig = () => {
   };
 
   return (
-    <Group position="center">
       <Stack align={"flex-start"}>
         {newGig ? (
           <Title order={2}>Skapa spelning</Title>
@@ -144,7 +143,7 @@ const AdminGig = () => {
           onSubmit={form.onSubmit(handleSubmit)}
         >
           <FormLoadingOverlay visible={loading || submitting}>
-            <SimpleGrid cols={2} mb="md">
+            <SimpleGrid cols={1 } breakpoints={[{ minWidth: "md", cols: 2 } ]} mb="md">
               <TextInput
                 label="Titel"
                 placeholder="Titel"
@@ -164,6 +163,11 @@ const AdminGig = () => {
                 }
                 {...form.getInputProps("type")}
               />
+              <NumberInput
+                withAsterisk
+                label="Spelpoäng"
+                {...form.getInputProps("points")}
+              />
               <DatePicker
                 withAsterisk
                 label="Spelningsdatum"
@@ -172,14 +176,9 @@ const AdminGig = () => {
                 clearable={false}
                 {...form.getInputProps("date")}
               />
-              <NumberInput
-                withAsterisk
-                label="Spelpoäng"
-                {...form.getInputProps("points")}
-              />
             </SimpleGrid>
             <Grid mb="xs">
-              <Grid.Col span={6}>
+              <Grid.Col span={12} md={6}>
                 <TextInput
                   label="Plats"
                   placeholder="Plats"
@@ -187,7 +186,7 @@ const AdminGig = () => {
                   {...form.getInputProps("location")}
                 />
               </Grid.Col>
-              <Grid.Col span={3}>
+              <Grid.Col span={6} md={3}>
                 <TextInput
                   icon={<IconClock />}
                   label="Samlingstid"
@@ -196,7 +195,7 @@ const AdminGig = () => {
                   {...form.getInputProps("meetup")}
                 />
               </Grid.Col>
-              <Grid.Col span={3}>
+              <Grid.Col span={6} md={3}>
                 <TextInput
                   icon={<IconClock />}
                   label="Spelningstart"
@@ -213,7 +212,7 @@ const AdminGig = () => {
               placeholder="Beskrivning"
               {...form.getInputProps("description")}
             />
-            <SimpleGrid cols={2} mb="md">
+            <SimpleGrid cols={1} mb="md" breakpoints={[{ minWidth: "md", cols: 2 }]}>
               <DatePicker
                 label="Anmälningsstart"
                 description="Lämna tom för att tillåta anmälan omedelbart"
@@ -295,7 +294,6 @@ const AdminGig = () => {
           </FormLoadingOverlay>
         </form>
       </Stack>
-    </Group>
   );
 };
 

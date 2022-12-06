@@ -1,5 +1,4 @@
 import {
-  Center,
   Title,
   Accordion,
   Stack,
@@ -30,21 +29,6 @@ export const getServerSideProps: GetServerSideProps = async (
     },
   };
 };
-
-const monthNames = [
-  "Januari",
-  "Februari",
-  "Mars",
-  "April",
-  "Maj",
-  "Juni",
-  "Juli",
-  "Augusti",
-  "September",
-  "Oktober",
-  "November",
-  "December",
-];
 
 const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
   let lastMonth = -1;
@@ -90,8 +74,7 @@ const Home: NextPage = () => {
   });
 
   return (
-    <Center>
-      <Stack sx={{ width: "70%" }}>
+      <Stack sx={{ maxWidth: 700 }}>
         <Title order={2}>
           {gigs && gigs.length === 0
             ? "Inga kommande spelningar :("
@@ -100,7 +83,6 @@ const Home: NextPage = () => {
         {gigsLoading && <Loading msg="Laddar spelningar..." />}
         {gigs && makeGigList(gigs)}
       </Stack>
-    </Center>
   );
 };
 
