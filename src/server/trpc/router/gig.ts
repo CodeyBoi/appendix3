@@ -348,8 +348,7 @@ export const gigRouter = router({
       );
     }),
 
-  // TODO: Add a protectedProcedure to remove your own signup, and an adminProcedure to remove any signup
-  removeSignup: protectedProcedure
+  removeSignup: adminProcedure
     .input(
       z.object({
         corpsId: z.string(),
