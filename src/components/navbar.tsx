@@ -11,6 +11,7 @@ import {
 import {
   IconClipboard,
   IconFilePlus,
+  IconHome,
   IconLogout,
   IconSpeakerphone,
   IconUser,
@@ -38,7 +39,7 @@ type TabLabel = "user" | "admin";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
-    backgroundColor: theme.colors.red[6],
+    backgroundColor: theme?.colors?.red?.[6],
     border: 0,
     height: "100%",
     display: "flex",
@@ -46,17 +47,17 @@ const useStyles = createStyles((theme) => ({
   },
   link: {
     ...theme.fn.focusStyles(),
-    backgroundColor: theme.colors.red[6],
+    backgroundColor: theme?.colors?.red?.[6],
 
     "&:hover": {
-      backgroundColor: theme.colors.red[7],
+      backgroundColor: theme?.colors?.red?.[7],
     },
   },
   activeLink: {
-    backgroundColor: theme.colors.red[7],
+    backgroundColor: theme?.colors?.red?.[7],
   },
   control: {
-    backgroundColor: theme.colors.red[6],
+    backgroundColor: theme?.colors?.red?.[6],
   },
 }));
 
@@ -64,6 +65,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   user: [
     {
       links: [
+        { label: "Huvudsida", href: "/", icon: <IconHome /> },
         { label: "Mina sidor", href: "/account", icon: <IconUser /> },
         {
           label: "Statistik",
@@ -158,15 +160,15 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         <Navbar.Section pt="sm" mx="sm">
           <SegmentedControl
             className={classes.control}
-            color={theme.colors.red[6]}
+            color={theme?.colors?.red?.[6]}
             fullWidth
             value={activeTab}
             onChange={(value: TabLabel) => setActiveTab(value)}
             transitionTimingFunction="ease"
             styles={{
-              active: { backgroundColor: theme.colors.red[7] },
+              active: { backgroundColor: theme?.colors?.red?.[7] },
               label: {
-                color: theme.colors.gray[4],
+                color: theme?.colors?.gray?.[4],
                 ":hover": { color: theme.white },
               },
             }}
