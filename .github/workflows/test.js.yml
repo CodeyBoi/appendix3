@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          clean: "false"
+          path: "/prod"
+      - name: Building and running nextjs app...
+        shell: bash
+        run: echo "Hello World"
+
+      #   run: |
+      #     # yarn install  
+      #     # yarn run build    
+      #     # pm2 reload bleckhornen-appendix-service
+    
