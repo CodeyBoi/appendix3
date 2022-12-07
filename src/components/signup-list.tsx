@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Center,
@@ -47,7 +47,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
-  const { data: signups } = trpc.gig.getSignups.useQuery(
+  const { data: signups, isInitialLoading: signupsLoading } = trpc.gig.getSignups.useQuery(
     { gigId },
     { enabled: !!gigId }
   );
@@ -70,25 +70,25 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const signupsSorted = useMemo(
     () =>
       signups?.sort((a, b) => {
-        if (a.instrument === b.instrument) {
-          if (!a.number && !b.number) {
-            if (a.lastName === b.lastName) {
-              return a.firstName.localeCompare(b.firstName);
-            } else {
-              return a.lastName.localeCompare(b.lastName);
-            }
-          } else {
-            return (a.number ?? Infinity) - (b.number ?? Infinity);
-          }
-        } else {
-          if (!instrumentPrecedence) {
-            return 0;
-          }
-          return (
-            (instrumentPrecedence[a.instrument] ?? Infinity) -
-            (instrumentPrecedence[b.instrument] ?? Infinity)
-          );
+        // Compare instrument precedence
+        if (a.instrument !== b.instrument) {
+          const aPrio = instrumentPrecedence[a.instrument] ?? Infinity;
+          const bPrio = instrumentPrecedence[b.instrument] ?? Infinity;
+          return aPrio - bPrio;
         }
+
+        // Compare numbers
+        if (a.number || b.number) {
+          return (a.number || Infinity) - (b.number || Infinity);
+        }
+
+        // Compare last name
+        if (a.lastName !== b.lastName) {
+          return a.lastName.localeCompare(b.lastName);
+        }
+
+        // Compare first name
+        return a.firstName.localeCompare(b.firstName);
       }) ?? [],
     [signups, instrumentPrecedence]
   );
@@ -129,14 +129,14 @@ const SignupList = ({ gigId }: SignupListProps) => {
     },
   });
 
+  const editAttendance = trpc.gig.editAttendance.useMutation();
+
   const removeSignup = trpc.gig.removeSignup.useMutation({
     onSuccess: async () => {
       await utils.gig.getSignup.invalidate();
       await utils.gig.getSignups.invalidate();
     },
   });
-
-  const editAttendance = trpc.gig.editAttendance.useMutation();
 
   const handleDelete = (corpsId: string) => {
     if (window.confirm("Är du säker på att du vill ta bort anmälningen?")) {
@@ -152,7 +152,6 @@ const SignupList = ({ gigId }: SignupListProps) => {
     if (signups.length === 0) {
       return;
     }
-
     return (
       <tbody>
         {signups.map((signup) => {
@@ -206,8 +205,6 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const yesTable = signupsToTable(yesList);
   const maybeTable = signupsToTable(maybeList);
 
-  console.log(signups);
-
   return (
     <Box>
       {isAdmin && (
@@ -238,34 +235,35 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </form>
       )}
       <Space h="sm" />
-      {!yesList && <Loading msg="Laddar spelningsstatistik..." />}
-      {yesList && (
+      {signupsLoading && <Loading msg="Laddar anmälningar..." />}
+      {!signupsLoading && (
         <>
-          {yesList.length > 0 && <Title order={3}>Dessa är anmälda:</Title>}
-          {yesList.length == 0 && (
+          {yesList.length === 0 ? (
             <Title order={3}>
               <i>Ingen är anmäld än. Kanske kan du bli den första?</i>
             </Title>
+          ) : (
+            <>
+              <Title order={3}>Dessa är anmälda:</Title>
+              <Table sx={{ tableLayout: "fixed" }}>
+                <thead>
+                  <tr>
+                    <th>Instrument</th>
+                    <th>Nummer</th>
+                    <th>Namn</th>
+                    {isAdmin && (
+                      <th>
+                        <Center>Närvaro</Center>
+                      </th>
+                    )}
+                    {isAdmin && <th></th>}
+                  </tr>
+                </thead>
+                {yesTable}
+              </Table>
+            </>
           )}
         </>
-      )}
-      {yesList.length > 0 && (
-        <Table sx={{ tableLayout: "fixed" }}>
-          <thead>
-            <tr>
-              <th>Instrument</th>
-              <th>Nummer</th>
-              <th>Namn</th>
-              {isAdmin && (
-                <th>
-                  <Center>Närvaro</Center>
-                </th>
-              )}
-              {isAdmin && <th></th>}
-            </tr>
-          </thead>
-          {yesTable}
-        </Table>
       )}
       <br />
       {maybeList && maybeList.length > 0 && (
