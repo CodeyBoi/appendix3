@@ -15,9 +15,10 @@ jobs:
           clean: "false"
           path: "staging"
       - name: Building and deploying app to staging...
-        shell: "bash --login pipefail {0}"
+        shell: "bash"
         run: |
           cd staging
+          bash --login
           whoami
           node -v
           yarn install  
