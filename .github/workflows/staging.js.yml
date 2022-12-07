@@ -18,6 +18,7 @@ jobs:
         shell: bash
         run: |
           cd staging
+          nvm use 16
           yarn install  
           yarn run build    
           pm2 reload staging-service
