@@ -1,0 +1,22 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          clean: "false"
+          path: "staging"
+      - name: Building and deploying app to staging...
+        shell: bash
+        run: |
+          yarn install  
+          yarn run build    
+          pm2 reload staging-service
