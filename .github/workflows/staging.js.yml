@@ -15,10 +15,9 @@ jobs:
           clean: "false"
           path: "staging"
       - name: Building and deploying app to staging...
-        shell: "bash"
+        shell: "bash -ileo pipefall {0}"
         run: |
           cd staging
-          bash --login
           whoami
           node -v
           yarn install  
