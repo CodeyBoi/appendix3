@@ -15,7 +15,7 @@ jobs:
           clean: "false"
           path: "staging"
       - name: Building and deploying app to staging...
-        shell: "bash -ile pipefail {0}"
+        shell: "bash -leo pipefail {0}"
         run: |
           cd staging
           whoami
