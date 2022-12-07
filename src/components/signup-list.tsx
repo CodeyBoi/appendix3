@@ -16,6 +16,7 @@ import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import MultiSelectCorpsii from "./multi-select-corpsii";
+import Loading from "./loading";
 
 interface SignupListProps {
   gigId: string;
@@ -108,8 +109,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
     }
   );
 
-  const yesList = splitList?.yesList ?? [];
-  const maybeList = splitList?.maybeList ?? [];
+  const yesList = splitList?.yesList;
+  const maybeList = splitList?.maybeList;
 
   const form = useForm({
     initialValues: { corpsIds: [] as string[] },
@@ -237,6 +238,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </form>
       )}
       <Space h="sm" />
+      {!yesList && <Loading msg="Laddar spelningsstatistik..." />}
       {yesList && (
         <>
           {yesList.length > 0 && <Title order={3}>Dessa är anmälda:</Title>}
@@ -266,7 +268,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </Table>
       )}
       <br />
-      {maybeList.length > 0 && (
+      {maybeList && maybeList.length > 0 && (
         <>
           <Title order={3}>Dessa kanske kommer:</Title>
           <Table sx={{ tableLayout: "fixed" }}>
