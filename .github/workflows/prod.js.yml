@@ -1,4 +1,4 @@
-on:
+  on:
   workflow_dispatch:
   push:
     branches: [prod]
@@ -15,8 +15,8 @@ jobs:
           clean: "false"
           path: "prod"
       - name: Building and deploying app to production...
-        shell: bash
         run: |
-          yarn install  
-          yarn run build    
+          cd prod
+          yarn install
+          yarn run build
           pm2 reload prod-service

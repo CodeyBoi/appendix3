@@ -15,11 +15,8 @@ jobs:
           clean: "false"
           path: "staging"
       - name: Building and deploying app to staging...
-        shell: bash
         run: |
           cd staging
-          whoami
-          node -v
-          yarn install  
-          yarn run build    
+          yarn install
+          yarn run build
           pm2 reload staging-service
