@@ -15,6 +15,7 @@ jobs:
           clean: "false"
           path: "prod"
       - name: Building and deploying app to production...
+        shell: "bash -ieo pipefail {0}"
         run: |
           cd prod
           yarn install

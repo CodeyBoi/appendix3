@@ -15,6 +15,7 @@ jobs:
           clean: "false"
           path: "staging"
       - name: Building and deploying app to staging...
+        shell: "bash -ieo pipefail {0}"
         run: |
           cd staging
           yarn install
