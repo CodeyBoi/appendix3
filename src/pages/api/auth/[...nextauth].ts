@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    redirect({ url, baseUrl }) {
+    redirect({ baseUrl }) {
       return baseUrl;
     }
   },
