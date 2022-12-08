@@ -1,4 +1,5 @@
-import { Title, Stack } from "@mantine/core";
+import { Title, Stack, useMantineTheme } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { Gig } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
@@ -46,7 +47,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
-        <Title pt={6} order={3}>
+        <Title pt={6} order={4}>
           {`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}
         </Title>
         {gigs.map((gig) => (
@@ -68,9 +69,12 @@ const Home: NextPage = () => {
     startDate: currentDate,
   });
 
+  const theme = useMantineTheme();
+  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
+
   return (
-    <Stack sx={{ maxWidth: 800 }}>
-      <Title order={2}>
+    <Stack sx={{ maxWidth: 800 }} spacing="xs">
+      <Title order={onMobile ? 3 : 2}>
         {gigs && gigs.length === 0
           ? "Inga kommande spelningar :("
           : "Kommande spelningar"}

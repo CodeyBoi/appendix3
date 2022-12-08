@@ -1,5 +1,5 @@
-import { Select, Stack } from "@mantine/core";
-import React, { useEffect } from "react";
+import { SegmentedControl, Select, Stack } from "@mantine/core";
+import React, { useEffect, useState } from "react";
 import { trpc } from "../../utils/trpc";
 import FormLoadingOverlay from "../form-loading-overlay";
 
@@ -17,19 +17,21 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
         await utils.gig.getSignup.invalidate({ gigId, corpsId: corps.id });
       }
       await utils.gig.getSignups.invalidate({ gigId });
+      setSubmitting(false);
     },
   });
 
   const { data: corps } = trpc.corps.getSelf.useQuery();
   const { data: mainInstrument} = trpc.corps.getMainInstrument.useQuery();
-  const { data: signup, isLoading: signupLoading } =
+  const { data: signup, isInitialLoading: signupInitLoad, isRefetching: signupRefetching } =
     trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? "" }, { enabled: !!corps });
 
-  const [instrument, setInstrument] = React.useState('');
-  const [status, setStatus] = React.useState('Ej svarat');
+  const [instrument, setInstrument] = useState('');
+  const [status, setStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!mainInstrument || signupLoading) {
+    if (!mainInstrument || signupInitLoad) {
       return;
     }
     if (!signup) {
@@ -39,21 +41,23 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
       setStatus(signup.status.value);
       setInstrument(signup.instrument.name);
     }
-  }, [mainInstrument, signupLoading, signup]);
+  }, [mainInstrument, signupInitLoad, signup]);
 
-  const loading = !corps || !mainInstrument || signupLoading;
+  const loading = !corps || !mainInstrument || signupInitLoad;
 
   return (
     <Stack spacing={2}>
       <FormLoadingOverlay visible={loading}>
-        <Select
+        <SegmentedControl
+          disabled={signupRefetching || submitting}
           size="xs"
           value={status}
-          label="Jag deltar:"
-          onChange={s => {
+          fullWidth
+          onChange={(s) => {
             if (!s || !corps) {
               return;
             }
+            setSubmitting(true);
             setStatus(s);
             addSignup.mutateAsync({ gigId, corpsId: corps.id, status: s, instrument: instrument });
           }}
