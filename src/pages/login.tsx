@@ -35,7 +35,7 @@ const Login = () => {
   const [email, setEmail] = React.useState<string>("");
   const [error, setError] = React.useState<string | null>(null);
   const theme = useMantineTheme();
-  const isBlindtarmenNew = dateWhenTheNewBlindtarmenIsntNewAnymore > new Date();
+  const isTheNewBlindtarmenStillNew = dateWhenTheNewBlindtarmenIsntNewAnymore > new Date();
 
   trpc.auth.checkIfEmailInUse.useQuery(email, {
     onSuccess: (data) => {
@@ -71,7 +71,7 @@ const Login = () => {
         >
           <Stack>
             <Title order={isMobile ? 2 : 1} color="white" align="center">
-              {`Välkommen till ${isBlindtarmenNew ? "nya " : ""}`}
+              {`Välkommen till ${isTheNewBlindtarmenStillNew ? "nya " : ""}`}
               <span style={{ color: theme.colors.red[5] }}>Blindtarmen</span>!
             </Title>
             <Group align="baseline">
@@ -91,7 +91,6 @@ const Login = () => {
                 onSubmit={(e) => setEmail(e.currentTarget.value)}
                 error={error}
               />
-              {/* TODO: Add loading spinner when loading */}
               <Button
                 mx="sm"
                 fullWidth={isMobile}
