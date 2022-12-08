@@ -50,10 +50,6 @@ const Login = () => {
 
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
 
-  useEffect(() => {
-    console.log("isMobile", isMobile);
-  }, [isMobile]);
-
   return (
     <div
       style={{

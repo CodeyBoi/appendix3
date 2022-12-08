@@ -1,12 +1,12 @@
 import { Theme } from "next-auth"
 import { SendVerificationRequestParams } from "next-auth/providers"
 import { createTransport } from "nodemailer"
-
+import { prisma } from "../server/db/client"
 
 const sendVerificationRequest = async (params: SendVerificationRequestParams) => {
   const { identifier, url, provider, theme } = params
 
-  const user = await prisma?.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: identifier },
     select: {
       id: true,
