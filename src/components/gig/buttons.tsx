@@ -3,7 +3,6 @@ import {
   Button,
   MediaQuery,
   Stack,
-  Tooltip,
 } from "@mantine/core";
 import { IconEdit } from "@tabler/icons";
 import GigSignupBox from "./signup-box";

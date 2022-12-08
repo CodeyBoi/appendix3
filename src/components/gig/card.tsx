@@ -16,14 +16,14 @@ const GigCard = ({ gig, showDescription }: GigProps) => {
     <Card shadow="sm" p="md" withBorder style={{ overflow: "visible" }}>
       <Stack spacing="sm">
         <Grid>
-          <Grid.Col span={12} md={9}>
+          <Grid.Col span={12} md={8}>
             <UnstyledButton
               component={NextLink}
               href={`/gig/${gig.id}`}
               style={{ flexGrow: 1 }}
             >
               <Stack spacing="sm">
-                <Title order={4}>{gig.title}</Title>
+                <Title order={5}>{gig.title}</Title>
                 <Group position="left">
                   <Datebox date={dayjs(gig.date)} />
                   <Text size="xs">
@@ -39,7 +39,7 @@ const GigCard = ({ gig, showDescription }: GigProps) => {
               </Stack>
             </UnstyledButton>
           </Grid.Col>
-          <Grid.Col span={12} md={3}>
+          <Grid.Col span={12} md={4}>
             <GigButtons gig={gig} />
           </Grid.Col>
         </Grid>
