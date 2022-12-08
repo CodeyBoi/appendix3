@@ -1,4 +1,4 @@
-import { Corps, Prisma, User } from "@prisma/client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
@@ -9,9 +9,11 @@ declare module "next-auth" {
     // user?: {
     //   id: string;
     // } & DefaultSession["user"];
-    user?: { id: string | null, email: string | null } & { corps: { id: string, role: { name: string } | null } | null } | null
+    user?:
+      | ({ id: string; email: string | null } & {
+          corps: { id: string; role: { name: string } | null } | null;
+        })
+      | null;
     // & DefaultSession["user"]
-    ;
   }
 }
-
