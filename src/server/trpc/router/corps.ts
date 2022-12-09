@@ -22,6 +22,7 @@ export const corpsRouter = router({
               name: true,
             },
           },
+          foodPrefs: true,
         },
         where: {
           userId: ctx.session?.user.id || undefined,
@@ -69,9 +70,9 @@ export const corpsRouter = router({
       drinksAlcohol: z.boolean(),
       vegetarian: z.boolean(),
       vegan: z.boolean(),
-      glutenIntolerant: z.boolean(),
-      lactoseIntolerant: z.boolean(),
-      otherFoodRestrictions: z.string().optional(),
+      glutenFree: z.boolean(),
+      lactoseFree: z.boolean(),
+      otherFoodPrefs: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const corps = await ctx.prisma.corps.findUnique({
@@ -83,6 +84,15 @@ export const corpsRouter = router({
       if (corps === null) {
         throw new Error("Not logged in");
       }
+
+      const foodPrefs = {
+        drinksAlcohol: input.drinksAlcohol,
+        vegetarian: input.vegetarian,
+        vegan: input.vegan,
+        glutenFree: input.glutenFree,
+        lactoseFree: input.lactoseFree,
+        other: input.otherFoodPrefs,
+      };
 
       return ctx.prisma.corps.update({
         where: {
@@ -96,12 +106,12 @@ export const corpsRouter = router({
               email: input.email,
             },
           },
-          drinksAlcohol: input.drinksAlcohol,
-          vegetarian: input.vegetarian,
-          vegan: input.vegan,
-          glutenIntolerant: input.glutenIntolerant,
-          lactoseIntolerant: input.lactoseIntolerant,
-          otherFoodRestrictions: input.otherFoodRestrictions,
+          foodPrefs: {
+            upsert: {
+              create: foodPrefs,
+              update: foodPrefs,
+            },
+          },
         },
       });
     }),

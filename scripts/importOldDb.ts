@@ -1,18 +1,18 @@
-import { Corps, CorpsInstrument, Gig, PrismaClient, User } from "@prisma/client";
+import { Corps, CorpsInstrument, PrismaClient, User } from "@prisma/client";
 import cuid from "cuid";
 import fs from "fs";
 import path from "path";
 
-const GIG_TYPES = [
-  "Ospecificerat!",
-  "Pärmspelning!",
-  "Marschspelning!",
-  "Party-marsch-spelning!",
-  "Julkoncert!",
-  "Vårkoncert!",
-  "Fest!",
-  "Repa!",
-];
+// const GIG_TYPES = [
+//   "Ospecificerat!",
+//   "Pärmspelning!",
+//   "Marschspelning!",
+//   "Party-marsch-spelning!",
+//   "Julkoncert!",
+//   "Vårkoncert!",
+//   "Fest!",
+//   "Repa!",
+// ];
 
 const INSTRUMENTS = [
   "Piccolo",
@@ -36,17 +36,17 @@ const INSTRUMENTS = [
   "Annat",
 ];
 
-// These lists are used to map the old database's index values to the new ones
-const OLD_GIG_TYPES = [
-  // New type,                 // Old type (index)
-  "Ospecificerat!", // 0 => Ospecificerat
-  "Pärmspelning!", // 1 => Pärmspelning
-  "Marschspelning!", // 2 => Marschspelning
-  "Ospecificerat!", // 3 => Resa
-  "Fest!", // 4 => Fest
-  "Repa!", // 5 => Repa
-  "Party-marsch-spelning!", // 6 => Festspelning
-];
+// // These lists are used to map the old database's index values to the new ones
+// const OLD_GIG_TYPES = [
+//   // New type,                 // Old type (index)
+//   "Ospecificerat!", // 0 => Ospecificerat
+//   "Pärmspelning!", // 1 => Pärmspelning
+//   "Marschspelning!", // 2 => Marschspelning
+//   "Ospecificerat!", // 3 => Resa
+//   "Fest!", // 4 => Fest
+//   "Repa!", // 5 => Repa
+//   "Party-marsch-spelning!", // 6 => Festspelning
+// ];
 
 const OLD_INSTRUMENTS = [
   "Dirigent", // 1  => Dirigent
@@ -73,17 +73,17 @@ const OLD_INSTRUMENTS = [
 //   "STATISTICS_ITEM",
 // ];
 
-interface Event {
-  Id: string;
-  Name: string;
-  Description: string;
-  EventDate: string;
-  Times: string;
-  Other: string;
-  Other2: string;
-  EventTypeID: string;
-  Adress: string;
-}
+// interface Event {
+//   Id: string;
+//   Name: string;
+//   Description: string;
+//   EventDate: string;
+//   Times: string;
+//   Other: string;
+//   Other2: string;
+//   EventTypeID: string;
+//   Adress: string;
+// }
 
 interface OldUser {
   UserID: string;
@@ -114,13 +114,22 @@ interface StatsItem {
   Points: string;
 }
 
-const gigTypeIds = OLD_GIG_TYPES.reduce(
-  (acc: { [key: string]: number }, type, i) => {
-    acc[i.toString()] = GIG_TYPES.indexOf(type) + 1;
-    return acc;
-  },
-  {}
-);
+interface FoodPrefs {
+  UserID: string;
+  Vegetarian: string;
+  Lactos: string;
+  Gluten: string;
+  Nykterist: string;
+  Text: string;
+}
+
+// const gigTypeIds = OLD_GIG_TYPES.reduce(
+//   (acc: { [key: string]: number }, type, i) => {
+//     acc[i.toString()] = GIG_TYPES.indexOf(type) + 1;
+//     return acc;
+//   },
+//   {}
+// );
 
 const instrumentIds = OLD_INSTRUMENTS.reduce(
   (acc: { [key: string]: number }, instrument, i) => {
@@ -169,6 +178,7 @@ const main = async () => {
     const gigIds: { [key: string]: string } = {};
     const corpsIds: { [key: string]: string } = {};
     const userIds: { [key: string]: string } = {};
+    const corpsInstrumentIds: { [key: string]: number } = {};
 
     if (process.argv.length < 3) {
       console.log("Usage: node importOldDb.mjs <old-db-dir-path>");
@@ -309,6 +319,7 @@ const main = async () => {
 
       userIds[UserID] = userId;
       corpsIds[UserID] = corpsId;
+      corpsInstrumentIds[UserID] = mainInstrument.instrumentId ?? 19;
 
       return {
         user,
@@ -317,8 +328,7 @@ const main = async () => {
         altInstrument,
         oldUserId: UserID,
       };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }).filter((u: any) => u !== undefined);
+    }).filter((u: unknown) => u !== undefined);
     await prisma.user.deleteMany({});
     await prisma.corps.deleteMany({});
 
@@ -338,7 +348,7 @@ const main = async () => {
         corpsId: corpsIds[users[i]?.oldUserId ?? ""] ?? "",
       })),
     });
-    const altInstruments = users.map((u) => u.altInstrument).filter((i) => i !== undefined);
+    // const altInstruments = users.map((u) => u.altInstrument).filter((i) => i !== undefined);
     // await prisma.corpsInstrument.createMany({
     //   data: altInstruments.map((instrument: any, i) => ({
     //     ...instrument,
@@ -347,8 +357,10 @@ const main = async () => {
     // });
 
     console.log("Importing stats for users...");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newGigs: any[] = [];
     const userStatsTable = getTable("STATISTICS_ITEM");
-    const userStats = (await Promise.all(userStatsTable.data.map(async (row: StatsItem) => {
+    const userStats = userStatsTable.data.map((row: StatsItem) => {
       const { EVENTID, USERID, Points } = row;
 
       const gigId = gigIds[EVENTID];
@@ -366,47 +378,68 @@ const main = async () => {
       }
 
       if (eventPoints[EVENTID] !== undefined && eventPoints[EVENTID] !== points) {
-        // console.log(`Adding new gig with ${points} points for user ${USERID}`);
         console.log("Event exists, but point values does not match for event " + EVENTID + " for user " + USERID + "!");
-        const newGigId = (await prisma.gig.create({
-          data: {
-            title: "Poäng för tidigare spelningar",
-            date: new Date("1970-01-01"),
-            points,
-            typeId: 1,
-            countsPositively: true,
-          }
-        })).id;
-        const gigSignup = {
+        const newGigId = cuid();
+        gigIds[EVENTID] = newGigId;
+        newGigs.push({
+          id: newGigId,
+          title: "Poäng för tidigare spelningar",
+          date: new Date("1970-01-01"),
+          points,
+          typeId: 1,
+          countsPositively: true,
+        });
+        return {
           corpsId,
           gigId: newGigId,
           attended: true,
-          instrumentId: instrumentIds["15"],
+          instrumentId: corpsInstrumentIds[USERID] ?? 19,
           signupStatusId: 1,
         };
-        return { gigSignup };
       }
 
       // console.log(`Adding gig signup for corps ${corpsId}`);
-      const gigSignup = {
+      return {
         corpsId,
         gigId,
         attended: true,
-        instrumentId: instrumentIds["15"],
+        instrumentId: corpsInstrumentIds[USERID] ?? 19,
         signupStatusId: 1,
       };
-      return { gigSignup };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }))).filter((u: any) => u !== undefined);
-    // await prisma.gig.createMany({
-    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //   data: userStats.map((u: any) => u.newGig).filter((u: any) => u !== undefined)
-    // });
+    }).filter((u: unknown) => u !== undefined);
 
+    console.log("Saving gig signups...");
+    await prisma.gig.createMany({
+      data: newGigs,
+    });
     await prisma.gigSignup.deleteMany({});
-    await prisma.gigSignup.createMany({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: userStats.map((u: any) => u.gigSignup),
+
+    for (let i = 0; i < userStats.length; i += 1000) {
+      await prisma.gigSignup.createMany({
+        data: userStats.slice(i, i + 1000),
+      });
+    }
+
+    console.log("Importing food preferences for users...");
+    const foodPrefs = getTable("UserMiffo");
+    await prisma.corpsFoodPrefs.deleteMany({});
+    await prisma.corpsFoodPrefs.createMany({
+      data: foodPrefs.data.map((row: FoodPrefs) => {
+        const { UserID, Vegetarian, Lactos, Gluten, Nykterist, Text } = row;
+        const corpsId = corpsIds[UserID];
+        if (!corpsId) {
+          console.log("Skipping food prefs for user " + UserID + " because they don't exist");
+          return undefined;
+        }
+        return {
+          corpsId,
+          vegetarian: Vegetarian === "1",
+          lactoseFree: Lactos === "1",
+          glutenFree: Gluten === "1",
+          drinksAlcohol: Nykterist !== "1",
+          other: Text,
+        };
+      }).filter((u: unknown) => u !== undefined),
     });
 
   } catch (e) {
