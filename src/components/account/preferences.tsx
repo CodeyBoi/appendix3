@@ -56,7 +56,7 @@ const AccountPreferences = () => {
       glutenFree: corps.foodPrefs?.glutenFree ?? false,
       lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
       drinksAlcohol: corps.foodPrefs?.drinksAlcohol ?? false,
-      otherFoodPrefs: corps.foodPrefs?.otherFoodPrefs ?? "",
+      otherFoodPrefs: corps.foodPrefs?.other ?? "",
       email: corps.user.email || undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

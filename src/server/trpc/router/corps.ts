@@ -72,7 +72,7 @@ export const corpsRouter = router({
       vegan: z.boolean(),
       glutenFree: z.boolean(),
       lactoseFree: z.boolean(),
-      otherFoodRestrictions: z.string().optional(),
+      otherFoodPrefs: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const corps = await ctx.prisma.corps.findUnique({
@@ -91,7 +91,7 @@ export const corpsRouter = router({
         vegan: input.vegan,
         glutenFree: input.glutenFree,
         lactoseFree: input.lactoseFree,
-        otherFoodRestrictions: input.otherFoodRestrictions,
+        other: input.otherFoodPrefs,
       };
 
       return ctx.prisma.corps.update({

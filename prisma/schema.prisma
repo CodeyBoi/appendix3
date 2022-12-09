@@ -96,7 +96,7 @@ model CorpsFoodPrefs {
   glutenFree        Boolean  @default(false)
   lactoseFree       Boolean  @default(false)
   drinksAlcohol     Boolean  @default(false)
-  otherFoodPrefs    String   @default("")
+  other             String   @default("") @db.Text
 
   corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 
