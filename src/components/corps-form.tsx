@@ -44,16 +44,17 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   const form = useForm<FormValues>({
     initialValues,
     validate: {
-      firstName: (value) =>
-        value.length > 0 ? null : "Fyll i förnamn",
-      lastName: (value) =>
-        value.length > 0 ? null : "Fyll i efternamn",
+      firstName: (value) => (value.length > 0 ? null : "Fyll i förnamn"),
+      lastName: (value) => (value.length > 0 ? null : "Fyll i efternamn"),
       number: (value) => (isNumber(value) ? null : "Ogitligt nummer"),
       bNumber: (value) => (isNumber(value) ? null : "Ogitligt balettnummer"),
       email: (value) =>
         /^\S+@\S+$/.test(value) ? null : "Ogiltig emailadress",
       mainInstrument: (value) => (value ? null : "Välj ett huvudinstrument"),
-      otherInstruments: (value, values) => value.includes(values.mainInstrument) ? "Huvudinstrument kan inte väljas som övrigt instrument" : null,
+      otherInstruments: (value, values) =>
+        value.includes(values.mainInstrument)
+          ? "Huvudinstrument kan inte väljas som övrigt instrument"
+          : null,
     },
   });
 
@@ -152,7 +153,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             placeholder="Välj instrument..."
             clearable
             nothingFound="Instrument kunde inte laddas"
-            data={instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+            data={
+              instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
             {...form.getInputProps("otherInstruments")}
           />
           <TextInput
@@ -171,7 +174,17 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         </SimpleGrid>
       </FormLoadingOverlay>
       <Group position="right" mt="md">
-        <Button disabled={!(form.isDirty() || form.isTouched("otherInstruments"))} type="submit" loading={loading || submitting}>
+        <Button
+          disabled={
+            !(
+              form.isDirty() ||
+              form.isTouched("otherInstruments") ||
+              form.isTouched("role")
+            )
+          }
+          type="submit"
+          loading={loading || submitting}
+        >
           {creatingCorps ? "Skapa corpsmedlem" : "Spara ändringar"}
         </Button>
       </Group>
