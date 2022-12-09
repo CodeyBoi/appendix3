@@ -9,7 +9,8 @@
     "lint": "next lint",
     "start": "next start",
     "importolddb": "ts-node ./scripts/importOldDb",
-    "startstaging": "next start -p 5160"
+    "startstaging": "next start -p 5160",
+    "stage": "git checkout staging && git fetch origin main && git reset --hard FETCH_HEAD && git clean -df && git push -f && git checkout main"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
