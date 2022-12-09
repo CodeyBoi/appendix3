@@ -17,10 +17,10 @@ const initialValues = {
   lastName: "",
   vegetarian: false,
   vegan: false,
-  glutenIntolerant: false,
-  lactoseIntolerant: false,
+  glutenFree: false,
+  lactoseFree: false,
   drinksAlcohol: false,
-  otherFoodRestrictions: "",
+  otherFoodPrefs: "",
   email: "",
 };
 type FormValues = typeof initialValues;
@@ -51,12 +51,12 @@ const AccountPreferences = () => {
     form.setValues({
       firstName: corps.firstName,
       lastName: corps.lastName,
-      vegetarian: corps.vegetarian,
-      vegan: corps.vegan,
-      glutenIntolerant: corps.glutenIntolerant,
-      lactoseIntolerant: corps.lactoseIntolerant,
-      drinksAlcohol: corps.drinksAlcohol,
-      otherFoodRestrictions: corps.otherFoodRestrictions,
+      vegetarian: corps.foodPrefs?.vegetarian ?? false,
+      vegan: corps.foodPrefs?.vegan ?? false,
+      glutenFree: corps.foodPrefs?.glutenFree ?? false,
+      lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
+      drinksAlcohol: corps.foodPrefs?.drinksAlcohol ?? false,
+      otherFoodPrefs: corps.foodPrefs?.otherFoodPrefs ?? "",
       email: corps.user.email || undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,22 +129,22 @@ const AccountPreferences = () => {
               />
               <Switch
                 pl="xs"
-                label="Glutenintolerant"
-                {...form.getInputProps("glutenIntolerant", {
+                label="Glutenfritt"
+                {...form.getInputProps("glutenFree", {
                   type: "checkbox",
                 })}
               />
               <Switch
                 pl="xs"
-                label="Laktosintolerant"
-                {...form.getInputProps("lactoseIntolerant", {
+                label="Laktosfritt"
+                {...form.getInputProps("lactoseFree", {
                   type: "checkbox",
                 })}
               />
               <TextInput
                 label="Övriga matpreferenser"
                 placeholder="Övriga matpreferenser..."
-                {...form.getInputProps("otherFoodRestrictions")}
+                {...form.getInputProps("otherFoodPrefs")}
               />
             </Stack>
           </FormLoadingOverlay>
