@@ -297,12 +297,32 @@ export const corpsRouter = router({
           },
         },
         where: {
-          userId: ctx.session?.user.id || undefined,
+          userId: ctx.session?.user.id,
         },
       });
       if (!corps) {
         return null;
       }
       return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
+    }),
+
+  getRole: protectedProcedure
+    .query(async ({ ctx }) => {
+      const corps = await ctx.prisma.corps.findUnique({
+        select: {
+          role: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          userId: ctx.session?.user.id,
+        },
+      });
+      if (!corps) {
+        return null;
+      }
+      return corps.role?.name ?? "user";
     }),
 });

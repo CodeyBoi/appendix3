@@ -1,22 +1,12 @@
-import React, { useMemo, useState } from "react";
-import {
-  Box,
-  Center,
-  Table,
-  Checkbox,
-  CloseButton,
-  Tooltip,
-  Title,
-  Button,
-  Group,
-  Space,
-} from "@mantine/core";
-import { trpc } from "../utils/trpc";
+import React, { useMemo } from "react";
+import { Box, Table, Title, Button, Group, Space } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 import { useQueryClient } from "@tanstack/react-query";
-import MultiSelectCorpsii from "./multi-select-corpsii";
-import Loading from "./loading";
+import { trpc } from "../../utils/trpc";
+import MultiSelectCorpsii from "../multi-select-corpsii";
+import Loading from "../loading";
+import Entry from "./entry";
 
 interface SignupListProps {
   gigId: string;
@@ -47,13 +37,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
-  const { data: signups, isInitialLoading: signupsLoading } = trpc.gig.getSignups.useQuery(
-    { gigId },
-    { enabled: !!gigId }
-  );
+  const { data: signups, isInitialLoading: signupsLoading } =
+    trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-  const isAdmin = corps?.role?.name === "admin";
+  const { data: role } = trpc.corps.getRole.useQuery();
+  const isAdmin = role === "admin";
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -153,52 +141,38 @@ const SignupList = ({ gigId }: SignupListProps) => {
       return;
     }
     return (
-      <tbody>
-        {signups.map((signup) => {
-          return (
+      <Table sx={{ width: "unset" }}>
+        <thead>
+          <tr>
+            <th style={{ width: "120px", borderBottom: isAdmin ? undefined : 0 }}>Instrument</th>
+            <th style={{ borderBottom: isAdmin ? undefined : 0 }}>Namn</th>
+            {isAdmin && (
+              <>
+                <th align="center">Närvaro</th>
+                <th align="center">Ta bort</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {signups.map((signup) => (
             <tr key={signup.corpsId}>
-              <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                {signup.instrument}
-              </td>
-              <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                {signup.number ?? "p.e."}
-              </td>
-              <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                {signup.firstName + " " + signup.lastName}
-              </td>
-              {isAdmin && (
-                <>
-                  <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                    <Center>
-                      <Checkbox
-                        styles={{ root: { display: "flex" } }}
-                        defaultChecked={signup.attended}
-                        onChange={(event) =>
-                          editAttendance.mutateAsync({
-                            gigId,
-                            corpsId: signup.corpsId,
-                            attended: event.target.checked,
-                          })
-                        }
-                      />
-                    </Center>
-                  </td>
-                  <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                    <Center>
-                      <Tooltip label="Ta bort anmälan">
-                        <CloseButton
-                          color="red"
-                          onClick={() => handleDelete(signup.corpsId)}
-                        />
-                      </Tooltip>
-                    </Center>
-                  </td>
-                </>
-              )}
+              <Entry
+                signup={signup}
+                isAdmin={isAdmin}
+                setAttendance={(attended) =>
+                  editAttendance.mutate({
+                    corpsId: signup.corpsId,
+                    gigId,
+                    attended,
+                  })
+                }
+                handleDelete={() => handleDelete(signup.corpsId)}
+              />
             </tr>
-          );
-        })}
-      </tbody>
+          ))}
+        </tbody>
+      </Table>
     );
   };
 
@@ -245,22 +219,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
           ) : (
             <>
               <Title order={3}>Dessa är anmälda:</Title>
-              <Table sx={{ tableLayout: "fixed" }}>
-                <thead>
-                  <tr>
-                    <th>Instrument</th>
-                    <th>Nummer</th>
-                    <th>Namn</th>
-                    {isAdmin && (
-                      <th>
-                        <Center>Närvaro</Center>
-                      </th>
-                    )}
-                    {isAdmin && <th></th>}
-                  </tr>
-                </thead>
-                {yesTable}
-              </Table>
+              {yesTable}
             </>
           )}
         </>
@@ -269,17 +228,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
       {maybeList && maybeList.length > 0 && (
         <>
           <Title order={3}>Dessa kanske kommer:</Title>
-          <Table sx={{ tableLayout: "fixed" }}>
-            <thead>
-              <tr>
-                <th>Instrument</th>
-                <th>Nummer</th>
-                <th>Namn</th>
-                {isAdmin && <th>Närvaro</th>}
-              </tr>
-            </thead>
-            {maybeTable}
-          </Table>
+          {maybeTable}
         </>
       )}
     </Box>
