@@ -34,5 +34,5 @@ const command = `
     && git checkout ${currentCheckout}
 `;
 console.log(command);
-const output = execSync(command);
+const output = execSync(command, { stdio: "inherit" });
 console.log(output.toString());
