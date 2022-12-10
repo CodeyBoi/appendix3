@@ -1,6 +1,7 @@
 import { protectedProcedure } from './../trpc';
 import { router } from "../trpc";
 import { z } from "zod";
+import { Prisma } from '@prisma/client';
 
 export const statsRouter = router({
   getYearly: protectedProcedure
@@ -29,8 +30,8 @@ export const statsRouter = router({
       });
 
       interface CorpsStats {
-        id: number;
-        number: number;
+        id: string;
+        number: number | null;
         firstName: string;
         lastName: string;
         gigsAttended: number;
@@ -116,21 +117,37 @@ export const statsRouter = router({
   getPoints: protectedProcedure
     .input(z.object({ corpsId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
-      const corpsId = input.corpsId ?? ctx.session?.user?.corps?.id;
-      if (!corpsId) {
-        throw new Error("Not logged in");
-      }
-      const points = await ctx.prisma.gig.aggregate({
-        _sum: { points: true },
-        where: {
-          signups: {
-            some: {
-              corpsId,
-              attended: true,
-            },
-          },
-        },
-      });
-      return points._sum.points ?? 0;
+      const corpsId = input.corpsId ?? ctx.session.user.corps.id;
+      const pointsQuery = await ctx.prisma.$queryRaw<{ points: number }[]>`
+        SELECT SUM(points) AS points
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        WHERE attended = true
+        AND corpsId = ${corpsId}
+      `;
+      return pointsQuery?.[0]?.points ?? 0;
+    }),
+
+  getManyPoints: protectedProcedure
+    .input(z.object({ corpsIds: z.array(z.string()).optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const corpsIds = input?.corpsIds ?? [];
+      console.log(corpsIds);
+      
+      const pointsQuery = await ctx.prisma.$queryRaw<{ corpsId: string, points: number }[]>`
+        SELECT corpsId, SUM(points) AS points
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        WHERE attended = true
+        AND corpsId IN (${Prisma.join(corpsIds)})
+        GROUP BY corpsId
+      `;
+      const result = pointsQuery.reduce((acc, { corpsId, points }) => {
+        acc[corpsId] = points;
+        return acc;
+      }, {} as Record<string, number>);
+      console.log(result);
+      
+      return result;
     }),
 });
