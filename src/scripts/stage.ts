@@ -33,5 +33,6 @@ const command = `
     && git push -f
     && git checkout ${currentCheckout}
 `;
-
-execSync(command);
+console.log(command);
+const output = execSync(command);
+console.log(output.toString());
