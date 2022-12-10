@@ -35,4 +35,4 @@ if (source === "staging") {
 const command = `git checkout staging && git fetch origin ${source} && git reset --hard FETCH_HEAD && git clean -df && git push -f && git checkout ${currentCheckout}`;
 console.log(command);
 const output = execSync(command);
-console.log(output.toString());
+process.stdout.write(output.toString());
