@@ -180,15 +180,10 @@ const main = async () => {
     const userIds: { [key: string]: string } = {};
     const corpsInstrumentIds: { [key: string]: number } = {};
 
-    if (process.argv.length < 3) {
-      console.log("Usage: node importOldDb.mjs <old-db-dir-path>");
-      process.exit(1);
-    }
-
     const dirPath = process.argv[2];
     if (!dirPath) {
       console.log("Usage: node importOldDb.mjs <old-db-dir-path>");
-      process.exit(1);
+      process.exit();
     }
 
     console.log("Importing old db dump from directory " + dirPath + "...");

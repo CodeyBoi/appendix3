@@ -8,9 +8,9 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "importolddb": "ts-node ./scripts/importOldDb",
+    "importolddb": "ts-node ./src/scripts/importOldDb",
     "startstaging": "next start -p 5160",
-    "stage": "git checkout staging && git fetch origin main && git reset --hard FETCH_HEAD && git clean -df && git push -f && git checkout main"
+    "stage": "ts-node ./src/scripts/stage"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
