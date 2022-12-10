@@ -7,17 +7,24 @@ if (process.argv.length > 3) {
 
 if (process.argv[2] === "--help" || process.argv[2] === "-h") {
   console.log("Usage: yarn stage [source]");
-  console.log("Pushes the current branch or the specified source branch to the staging branch.");
+  console.log(
+    "Pushes the current branch or the specified source branch to the staging branch."
+  );
   process.exit();
 }
 
-const hasUncommittedChanges = execSync("git status --porcelain").toString().trim().length > 0;
+const hasUncommittedChanges =
+  execSync("git status --porcelain").toString().trim().length > 0;
 if (hasUncommittedChanges) {
-  console.log("You have uncommitted changes. Please commit or stash them before staging.");
+  console.log(
+    "You have uncommitted changes. Please commit or stash them before staging."
+  );
   process.exit();
 }
 
-const currentCheckout = execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
+const currentCheckout = execSync("git rev-parse --abbrev-ref HEAD")
+  .toString()
+  .trim();
 
 const source = process.argv[2] ? process.argv[2] : currentCheckout;
 if (source === "staging") {
@@ -25,14 +32,7 @@ if (source === "staging") {
   process.exit();
 }
 
-const command = `
-  git checkout staging
-    && git fetch origin ${source}
-    && git reset --hard FETCH_HEAD
-    && git clean -df
-    && git push -f
-    && git checkout ${currentCheckout}
-`;
+const command = `git checkout staging && git fetch origin ${source} && git reset --hard FETCH_HEAD && git clean -df && git push -f && git checkout ${currentCheckout}`;
 console.log(command);
 const output = execSync(command);
 console.log(output.toString());
