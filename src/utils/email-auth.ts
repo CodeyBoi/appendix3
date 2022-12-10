@@ -44,59 +44,61 @@ const sendVerificationRequest = async (params: SendVerificationRequestParams) =>
  * @note We don't add the email address to avoid needing to escape it, if you do, remember to sanitize it!
  */
  function html(params: { url: string; host: string; theme: Theme }) {
-  const { url } = params
+  const { url } = params;
   return `
-    <body style="background: linear-gradient(215deg, #810300 0%, #210000 100%); border-radius: 32px; min-height: 400px; display: flex; align-items: center;">
+    <body style="display: flex; flex-direction: column; align-items: center;">
       <table
         width="100%"
         border="0"
-        cellspacing="20"
-        cellpadding="0"
-        style="max-width: 600px; margin: auto; border-radius: 10px; font-family: Helvetica, sans-serif;"
+        style="max-width: fit-content;"
       >
         <tr>
-          <td
-            align="center"
-            style="padding: 10px 0px; font-size: 22px; font-family: Helvetica, sans-serif; color: white"
-          >
-            Välkommen till <strong style="color: #ce0c00;">Blindtarmen</strong>!
+          <td>
+            <h1 style="text-align: center;">Välkommen till Blindtarmen!</h1>
           </td>
         </tr>
         <tr>
-          <td
-            align="center"
-            style="padding: 10px 0px; font-size: 16px; font-family: Helvetica, sans-serif; color: white"
-          >
-            Klicka på knappen nedan för att slutföra inloggningsprocessen.
+          <td>
+            <p style="margin-top: 0;">Klicka på knappen nedan för att slutföra inloggningen:</p>
           </td>
         </tr>
-        <td align="center" style="padding: 20px 0">
-          <table border="0" cellspacing="0" cellpadding="0">
-            <tr>
-              <td
-                align="center"
-                style="
-                  border-radius: 5px;
-                  background-image: linear-gradient(
-                    185deg,
-                    #ce0c00 0%,
-                    darkred 100%
-                  );
-                "
-              >
-                <a
-                  href="${url}"
-                  target="_blank"
-                  style="font-size: 18px; font-family: Helvetica, Arial, sans-serif; color: #FFFFFF; text-decoration: none; border-radius: 5px; padding: 10px 20px; border: 0; display: inline-block; font-weight: bold;"
-                  >Logga in</a
-                >
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>`
+        <tr>
+          <td align="center">
+            <a
+              href="${url}"
+              target="_blank"
+              style="background-image: linear-gradient(
+                185deg,
+                #ce0c00 0%,
+                darkred 100%
+              ); width: fit-content; font-size: 18px; font-family: Helvetica, Arial, sans-serif; color: #FFFFFF; text-decoration: none; border-radius: 8px; padding: 10px 20px; border: 0; display: inline-block; font-weight: bold;"
+            >
+              Logga in
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>
+              Uppkommer några problem, kopiera och klistra in följande länk i din webbläsare:<br>
+              <a href="${url}" target="_blank">${url}</a>
+            </p>
+            <p style="margin-top: 0;">
+              Funkar det fortfarande inte, kontakta oss på <a href="mailto:itk@bleckhornen.org">
+                itk@bleckhornen.org
+              </a>
+            </p>
+            <p style="margin-top: 0; margin-bottom: 0;">
+              Vänliga hälsningar,
+            </p>
+            <p style="margin-top: 0;">
+              ITK
+            </p>
+          </td>
+        </tr>
+      </table>
+    </body>
+  `;
 }
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
