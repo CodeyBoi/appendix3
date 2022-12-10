@@ -132,8 +132,6 @@ export const statsRouter = router({
     .input(z.object({ corpsIds: z.array(z.string()).optional() }).optional())
     .query(async ({ ctx, input }) => {
       const corpsIds = input?.corpsIds ?? [];
-      console.log(corpsIds);
-      
       const pointsQuery = await ctx.prisma.$queryRaw<{ corpsId: string, points: number }[]>`
         SELECT corpsId, SUM(points) AS points
         FROM GigSignup
@@ -146,8 +144,6 @@ export const statsRouter = router({
         acc[corpsId] = points;
         return acc;
       }, {} as Record<string, number>);
-      console.log(result);
-      
       return result;
     }),
 });

@@ -13,11 +13,14 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
     operatingYear,
   });
 
-  const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery({
-    corpsIds: stats?.corpsStats.map((c) => c.id),
-  }, {
-    enabled: !!stats,
-  });
+  const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery(
+    {
+      corpsIds: stats?.corpsStats.map((c) => c.id),
+    },
+    {
+      enabled: !!stats,
+    }
+  );
 
   const { nbrOfGigs, positivelyCountedGigs, corpsStats } = stats ?? {};
 
@@ -29,7 +32,7 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
       ? `Av dessa har ${positivelyCountedGigs} räknats positivt.`
       : "";
 
-  if (statsStatus === "loading") {
+  if (!corpsStats || !corpsPoints) {
     return <Loading msg="Laddar statistik..." />;
   }
 
@@ -39,9 +42,10 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
 
   return (
     <>
-      {corpsStats?.length === 0 ? (
+      {corpsStats && corpsStats.length === 0 && (
         <Text>Det finns inga statistikuppgifter för detta år.</Text>
-      ) : (
+      )}
+      {corpsPoints && corpsStats && (
         <>
           <Text>{nbrOfGigsString + " " + positiveGigsString}</Text>
           <Table>
@@ -55,12 +59,14 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
               </tr>
             </thead>
             <tbody>
-              {corpsPoints && corpsStats && corpsStats?.map((stat) => (
+              {corpsStats.map((stat) => (
                 <tr key={stat.id}>
                   <td>{stat.number ?? "p.e."}</td>
                   <td>{`${stat.firstName} ${stat.lastName}`}</td>
                   <td align="center">{stat.gigsAttended}</td>
-                  <td align="center">{`${Math.round(stat.attendence * 100)}%`}</td>
+                  <td align="center">{`${Math.round(
+                    stat.attendence * 100
+                  )}%`}</td>
                   <td align="center">{corpsPoints[stat.id]}</td>
                 </tr>
               ))}
