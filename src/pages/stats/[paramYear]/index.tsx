@@ -34,7 +34,7 @@ const Statistics: NextPage = () => {
   }
 
   return (
-    <Stack sx={{ maxWidth: 500 }}>
+    <Stack sx={{ maxWidth: 700 }}>
       <Title order={2}>Statistik</Title>
       <Group position="left">
         <Select

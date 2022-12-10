@@ -21,13 +21,18 @@ export const publicProcedure = t.procedure;
  * users are logged in
  */
 const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user || !ctx.session.user.corps?.id) {
+  const user = ctx.session?.user;
+  const corps = ctx.session?.user?.corps;
+  if (!ctx.session || !user || !corps) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      session: {
+        ...ctx.session,
+        user: { ...ctx.session.user, corps },
+      },
     },
   });
 });
@@ -37,34 +42,21 @@ const isAuthed = t.middleware(({ ctx, next }) => {
  * user is admin
  */
 const isAdmin = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  const role = await ctx.prisma.user.findUnique({
-    where: { id: ctx.session.user.id || "" },
-    select: {
-      corps: {
-        select: {
-          role: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
-  if (role?.corps?.role?.name !== "admin") {
+  const user = ctx.session?.user;
+  const corps = ctx.session?.user?.corps;
+  if (!ctx.session || !user || !corps || corps.role?.name !== "admin") {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      session: {
+        ...ctx.session,
+        user: { ...ctx.session.user, corps },
+      },
     },
   });
 });
-
 
 /**
  * Protected procedure

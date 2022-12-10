@@ -9,54 +9,67 @@ interface StatisticsTableProps {
 }
 
 const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
+  const { data: stats, status: statsStatus } = trpc.stats.getYearly.useQuery({
+    operatingYear,
+  });
 
-  const { data: stats, status: statsStatus } =
-    trpc.stats.getYearly.useQuery({ operatingYear });
+  const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery({
+    corpsIds: stats?.corpsStats.map((c) => c.id),
+  }, {
+    enabled: !!stats,
+  });
 
   const { nbrOfGigs, positivelyCountedGigs, corpsStats } = stats ?? {};
 
-  const nbrOfGigsString =
-    `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}.`;
+  const nbrOfGigsString = `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${
+    nbrOfGigs === 1 ? "" : "ar"
+  }.`;
   const positiveGigsString =
-    (positivelyCountedGigs ?? 0) > 0 ? `Av dessa har ${positivelyCountedGigs} räknats positivt.` : "";
+    (positivelyCountedGigs ?? 0) > 0
+      ? `Av dessa har ${positivelyCountedGigs} räknats positivt.`
+      : "";
 
-  if (statsStatus === 'loading') {
+  if (statsStatus === "loading") {
     return <Loading msg="Laddar statistik..." />;
   }
 
-  if (statsStatus === 'error') {
+  if (statsStatus === "error") {
     return <AlertError msg="Kunde inte hämta spelningsstatistik." />;
   }
 
   return (
     <>
-      {corpsStats?.length === 0 ? <Text>Det finns inga statistikuppgifter för detta år.</Text> :
+      {corpsStats?.length === 0 ? (
+        <Text>Det finns inga statistikuppgifter för detta år.</Text>
+      ) : (
         <>
-          <Text>{nbrOfGigsString + ' ' + positiveGigsString}</Text>
+          <Text>{nbrOfGigsString + " " + positiveGigsString}</Text>
           <Table>
             <thead>
               <tr>
                 <th>Nummer</th>
                 <th>Namn</th>
-                <th>Spelpoäng</th>
-                <th>Procent</th>
+                <th style={{ textAlign: "center" }}>Spelpoäng</th>
+                <th style={{ textAlign: "center" }}>Procent</th>
+                <th style={{ textAlign: "center" }}>Totala spelpoäng</th>
               </tr>
             </thead>
             <tbody>
-              {corpsStats?.map(stat => (
+              {corpsPoints && corpsStats && corpsStats?.map((stat) => (
                 <tr key={stat.id}>
-                  <td>{stat.number ?? 'p.e.'}</td>
+                  <td>{stat.number ?? "p.e."}</td>
                   <td>{`${stat.firstName} ${stat.lastName}`}</td>
-                  <td>{stat.gigsAttended}</td>
-                  <td>{`${Math.round(stat.attendence * 100)}%`}</td>
+                  <td align="center">{stat.gigsAttended}</td>
+                  <td align="center">{`${Math.round(stat.attendence * 100)}%`}</td>
+                  <td align="center">{corpsPoints[stat.id]}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
         </>
-      }
+      )}
     </>
   );
-}
+};
 
 export default StatisticsTable;
