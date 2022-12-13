@@ -94,14 +94,13 @@ export const statsRouter = router({
     .input(z.object({ corpsIds: z.array(z.string()).optional() }).optional())
     .query(async ({ ctx, input }) => {
       const corpsIds = input?.corpsIds ?? [];
-      const pointsQuery = await ctx.prisma.$queryRaw<
-        { corpsId: string; points: number }[]
-      >`
+      type Entry = { corpsId: string; points: number };
+      const pointsQuery = await ctx.prisma.$queryRaw<Entry[]>`
         SELECT corpsId, SUM(points) AS points
         FROM GigSignup
         JOIN Gig ON Gig.id = GigSignup.gigId
         WHERE attended = true
-        AND corpsId IN (${Prisma.join(corpsIds)})
+        AND (${corpsIds.length === 0} OR corpsId IN (${Prisma.join(corpsIds)}))
         GROUP BY corpsId
       `;
       const points = pointsQuery.reduce((acc, { corpsId, points }) => {
