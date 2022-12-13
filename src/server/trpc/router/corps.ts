@@ -325,4 +325,17 @@ export const corpsRouter = router({
       }
       return corps.role?.name ?? "user";
     }),
+
+  getPoints: protectedProcedure
+    .query(async ({ ctx }) => {
+      const corpsId = ctx.session.user.corps.id;
+      const pointsQuery = await ctx.prisma.$queryRaw<{ points: number }[]>`
+        SELECT SUM(points) AS points
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        WHERE attended = true
+        AND corpsId = ${corpsId}
+      `;
+      return pointsQuery?.[0]?.points ?? 0;
+    }),
 });

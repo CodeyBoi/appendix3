@@ -133,7 +133,9 @@ model Gig {
   signups          GigSignup[]
   hiddenFor        HiddenGig[]
 
-  @@index([date(sort: Desc), id])
+  @@index([date(sort: Desc)])
+  @@index([countsPositively])
+  @@index([isPublic])
 }
 
 model GigType {
@@ -156,7 +158,8 @@ model GigSignup {
   status         GigSignupStatus @relation(fields: [signupStatusId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
-  @@index([corpsId, gigId])
+  @@index([attended])
+  @@index([signupStatusId])
 }
 
 model GigSignupStatus {

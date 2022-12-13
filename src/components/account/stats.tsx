@@ -8,14 +8,14 @@ const CorpsStats = () => {
 
   const currentOperatingYear = getOperatingYear();
   const { data: points, isLoading: pointsLoading } =
-    trpc.stats.getPoints.useQuery({});
+    trpc.corps.getPoints.useQuery();
   const { data: stats, isLoading: statsLoading } =
     trpc.stats.getYearly.useQuery({
       operatingYear: currentOperatingYear,
       selfOnly: true,
     });
 
-  const corpsStats = stats?.corpsStats[0];
+  const corpsStats = stats?.corpsStats[stats.corpsIds[0] as string];
   
   const loading = pointsLoading || statsLoading;
   return (
