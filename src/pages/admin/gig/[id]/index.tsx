@@ -117,9 +117,7 @@ const AdminGig = () => {
 
   const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
-    console.log(values.date);
     values.date.setMinutes(values.date.getMinutes() - values.date.getTimezoneOffset());
-    console.log(values.date);
     const data = {
       ...values,
       hiddenFor: values.isPublic ? [] : values.hiddenFor,

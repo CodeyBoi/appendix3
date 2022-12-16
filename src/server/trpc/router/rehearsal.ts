@@ -2,35 +2,63 @@ import { z } from "zod";
 import { router, adminProcedure } from "../trpc";
 
 export const rehearsalRouter = router({
-  get: adminProcedure
+  getWithId: adminProcedure
     .input(z.string().cuid("Invalid CUID"))
     .query(async ({ ctx, input }) => {
       const rehearsal = await ctx.prisma.rehearsal.findUnique({
         where: { id: input },
+        include: {
+          corpsii: {
+            select: {
+              corps: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
       });
-      return rehearsal;
+      
+      if (!rehearsal) {
+        throw new Error("Rehearsal not found");
+      }
+
+      const corpsIds = rehearsal.corpsii.map((corps) => corps.corps.id) ?? [];
+      return {
+        id: rehearsal.id,
+        title: rehearsal.title,
+        date: rehearsal.date,
+        corpsIds,
+      };
     }),
 
-  create: adminProcedure
+  upsert: adminProcedure
     .input(z.object({
+      id: z.string().cuid("Invalid CUID").optional(),
       title: z.string(),
       date: z.date(),
       corpsIds: z.array(z.string().cuid("Invalid CUID")).optional(),
     }))
-    .query(async ({ ctx, input }) => {
-      const { title, date, corpsIds } = input;
-      const rehearsal = await ctx.prisma.rehearsal.create({
-        data: {
-          title,
-          date,
-          corpsii: {
-            createMany: {
-              data: corpsIds?.map((corpsId) => ({
-                corpsId,
-              })) ?? [],
-            },
-          },
+    .mutation(async ({ ctx, input }) => {
+      const { id, title, date, corpsIds } = input;
+      // Remove all corpsRehearsals for this rehearsal if updating an existing rehearsal
+      if (id) {
+        await ctx.prisma.corpsRehearsal.deleteMany({
+          where: { rehearsalId: id },
+        });
+      }
+      const data = {
+        title,
+        date,
+        corps: {
+          connect: corpsIds?.map((corpsId) => ({ id: corpsId })) ?? [],
         },
+      };
+      const rehearsal = await ctx.prisma.rehearsal.upsert({
+        where: { id: id ?? "" },
+        create: data,
+        update: data,
       });
       return rehearsal;
     }),
@@ -40,7 +68,7 @@ export const rehearsalRouter = router({
       rehearsalId: z.string().cuid("Invalid CUID"),
       corpsIds: z.array(z.string().cuid("Invalid CUID")),
     }))
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { rehearsalId, corpsIds } = input;
       await ctx.prisma.corpsRehearsal.deleteMany({
         where: { rehearsalId },
