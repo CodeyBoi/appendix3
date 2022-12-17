@@ -15,10 +15,9 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconCalendar, IconClock } from "@tabler/icons";
-import MultiSelectCorpsii from "../../../../components/multi-select-corpsii";
+import MultiSelectCorpsii from "../../../../components/multi-select-corps";
 import { useRouter } from "next/router.js";
 import { trpc } from "../../../../utils/trpc";
-import "dayjs/locale/sv";
 import FormLoadingOverlay from "../../../../components/form-loading-overlay";
 
 const initialValues = {
@@ -102,7 +101,7 @@ const AdminGig = () => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      router.push("/admin/gig");
+      router.push(`/gig/${gigId}`);
     },
   });
 

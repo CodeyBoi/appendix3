@@ -188,7 +188,9 @@ model Rehearsal {
   id              String    @id @default(cuid())
   title           String
   date            DateTime  @db.Date
+  typeId          Int
 
+  type            RehearsalType @relation(fields: [typeId], references: [id], onDelete: Cascade)
   corpsii         CorpsRehearsal[]
 }
 
@@ -201,4 +203,10 @@ model CorpsRehearsal {
   @@unique([corpsId, rehearsalId])
   @@index([corpsId])
   @@index([rehearsalId])
+}
+
+model RehearsalType {
+  id   Int    @id
+  name String @unique
+  rehearsals Rehearsal[]
 }

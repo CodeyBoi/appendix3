@@ -10,9 +10,11 @@ import {
 } from "@mantine/core";
 import {
   IconClipboard,
-  IconFilePlus,
   IconHome,
   IconLogout,
+  IconMusic,
+  IconPencil,
+  IconPencilPlus,
   IconSpeakerphone,
   IconUser,
   IconUserPlus,
@@ -23,6 +25,7 @@ import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import cuid from "cuid";
+import IconMusicPlus from "./icons/music-plus";
 
 interface LinkItem {
   label: string;
@@ -98,15 +101,30 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
         {
           label: "Skapa spelning",
           href: "/admin/gig/new",
-          icon: <IconFilePlus />,
+          icon: <IconMusicPlus />,
         },
         {
           label: "Visa alla spelningar",
           href: "/admin/gig",
-          icon: <IconSpeakerphone />,
+          icon: <IconMusic />,
         },
       ],
     },
+    {
+      title: "Repor",
+      links: [
+        {
+          label: "Skapa rep",
+          href: "/admin/rehearsal/new",
+          icon: <IconPencilPlus />,
+        },
+        {
+          label: "Visa alla rep",
+          href: "/admin/rehearsal",
+          icon: <IconClipboard />,
+        },
+      ],
+    }
   ],
 };
 

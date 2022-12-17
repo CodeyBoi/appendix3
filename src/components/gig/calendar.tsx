@@ -1,6 +1,5 @@
 import { Calendar } from "@mantine/dates";
 import React from "react";
-import "dayjs/locale/sv";
 import { Indicator } from "@mantine/core";
 import dayjs from "dayjs";
 import { Gig } from "@prisma/client";

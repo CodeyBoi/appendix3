@@ -8,6 +8,11 @@ export const rehearsalRouter = router({
       const rehearsal = await ctx.prisma.rehearsal.findUnique({
         where: { id: input },
         include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
           corpsii: {
             select: {
               corps: {
@@ -29,6 +34,7 @@ export const rehearsalRouter = router({
         id: rehearsal.id,
         title: rehearsal.title,
         date: rehearsal.date,
+        type: rehearsal.type.name,
         corpsIds,
       };
     }),
@@ -38,10 +44,11 @@ export const rehearsalRouter = router({
       id: z.string().cuid("Invalid CUID").optional(),
       title: z.string(),
       date: z.date(),
+      type: z.string(),
       corpsIds: z.array(z.string().cuid("Invalid CUID")).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { id, title, date, corpsIds } = input;
+      const { id, title, date, type, corpsIds } = input;
       // Remove all corpsRehearsals for this rehearsal if updating an existing rehearsal
       if (id) {
         await ctx.prisma.corpsRehearsal.deleteMany({
@@ -51,8 +58,15 @@ export const rehearsalRouter = router({
       const data = {
         title,
         date,
-        corps: {
-          connect: corpsIds?.map((corpsId) => ({ id: corpsId })) ?? [],
+        corpsii: {
+          create: corpsIds?.map((corpsId) => ({
+            corps: {
+              connect: { id: corpsId },
+            }
+          })),
+        },
+        type: {
+          connect: { name: type },
         },
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
@@ -83,5 +97,11 @@ export const rehearsalRouter = router({
         where: { id: rehearsalId },
       });
       return rehearsal;
+    }),
+
+  getTypes: adminProcedure
+    .query(async ({ ctx }) => {
+      const types = await ctx.prisma.rehearsalType.findMany();
+      return types.map((type) => type.name);
     }),
 });

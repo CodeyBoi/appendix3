@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { trpc } from "../../utils/trpc";
-import MultiSelectCorpsii from "../multi-select-corpsii";
+import MultiSelectCorps from "../multi-select-corps";
 import Loading from "../loading";
 import Entry from "./entry";
 
@@ -193,18 +193,17 @@ const SignupList = ({ gigId }: SignupListProps) => {
         >
           <Space h="sm" />
           <Group position="apart" noWrap>
-            <MultiSelectCorpsii
-              placeholder="Lägg till anmälningar..."
+            <MultiSelectCorps
+              sx={{ width: "100%" }}
+              searchable
+              placeholder="Välj corps..."
               limit={30}
               maxDropdownHeight={350}
               icon={<IconUser />}
-              filter={(_value, selected, item) =>
-                !selected &&
-                (!signups || !signups.some((s) => s.corpsId === item.value))
-              }
+              excludeIds={signups?.map((s) => s.corpsId) ?? []}
               {...form.getInputProps("corpsIds")}
             />
-            <Button type="submit">Lägg till anmälan</Button>
+            <Button type="submit">Lägg till anmälningar</Button>
           </Group>
         </form>
       )}
