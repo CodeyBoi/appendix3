@@ -5,7 +5,6 @@ import {
   Stack,
   Title,
   Text,
-  UnstyledButton,
 } from "@mantine/core";
 import { NextLink } from "@mantine/next";
 import dayjs from "dayjs";
@@ -57,6 +56,9 @@ const Rehearsals = () => {
           </Card>
         ))}
       </Stack>
+      {rehearsals && rehearsals.length === 0 && (
+        <Text>Inga rep finns registrerade detta år</Text>
+      )}
     </Stack>
   );
 };

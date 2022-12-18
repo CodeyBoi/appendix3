@@ -85,12 +85,12 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
 
   const mutation = trpc.corps.upsert.useMutation({
     onSuccess: () => {
-      // router.push("/admin/corps");
       utils.corps.get.invalidate({ id: corpsId });
       utils.corps.getSelf.invalidate();
       setSubmitting(false);
       form.resetDirty();
       form.resetTouched();
+      // router.push("/admin/corps");
     },
   });
 
@@ -175,13 +175,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       </FormLoadingOverlay>
       <Group position="right" mt="md">
         <Button
-          disabled={
-            !(
-              form.isDirty() ||
-              form.isTouched("otherInstruments") ||
-              form.isTouched("role")
-            )
-          }
+          disabled={!form.isTouched() || submitting || !form.isValid()}
           type="submit"
           loading={loading || submitting}
         >
