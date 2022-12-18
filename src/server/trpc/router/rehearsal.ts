@@ -39,6 +39,39 @@ export const rehearsalRouter = router({
       };
     }),
 
+  getMany: adminProcedure
+    .input(z.object({
+      start: z.date().optional(),
+      end: z.date().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { start, end } = input;
+      const rehearsals = await ctx.prisma.rehearsal.findMany({
+        where: {
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          date: "asc",
+        },
+      });
+      return rehearsals.map((rehearsal) => ({
+        id: rehearsal.id,
+        title: rehearsal.title,
+        date: rehearsal.date,
+        type: rehearsal.type.name,
+      }));
+    }),
+
   upsert: adminProcedure
     .input(z.object({
       id: z.string().cuid("Invalid CUID").optional(),

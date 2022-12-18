@@ -43,7 +43,7 @@ const AdminRehearsal = () => {
   const create = trpc.rehearsal.upsert.useMutation({
     onSuccess: () => {
       utils.rehearsal.getWithId.invalidate(rehearsalId);
-      // router.push("/admin/rehearsal");
+      router.push("/admin/rehearsal");
     },
   });
 

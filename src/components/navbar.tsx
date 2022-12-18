@@ -121,7 +121,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
         {
           label: "Visa alla rep",
           href: "/admin/rehearsal",
-          icon: <IconClipboard />,
+          icon: <IconPencil />,
         },
       ],
     }
