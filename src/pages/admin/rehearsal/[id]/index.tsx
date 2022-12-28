@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import Loading from "../../../../components/loading";
 import { trpc } from "../../../../utils/trpc";
-import EditRehearsal from "./edit-rehearsal";
+import RehearsalForm from "../../../../components/rehearsal-form";
 
 const AdminRehearsal = () => {
   const router = useRouter();
@@ -18,10 +18,10 @@ const AdminRehearsal = () => {
       <Title order={2}>{(newRehearsal ? 'Skapa' : 'Uppdatera') + ' repa'}</Title>
       {!newRehearsal && !rehearsal && <Loading msg="Laddar repa..." />}
       {!newRehearsal && rehearsal && (
-        <EditRehearsal rehearsal={rehearsal} />
+        <RehearsalForm rehearsal={rehearsal} />
       )}
       {newRehearsal && (
-        <EditRehearsal />
+        <RehearsalForm />
       )}
     </Stack>
   );

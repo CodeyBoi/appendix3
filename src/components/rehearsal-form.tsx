@@ -4,8 +4,8 @@ import { useForm } from "@mantine/form";
 import { IconCalendar } from "@tabler/icons";
 import { useRouter } from "next/router";
 import React from "react";
-import MultiSelectCorps from "../../../../components/multi-select-corps";
-import { trpc } from "../../../../utils/trpc";
+import MultiSelectCorps from "./multi-select-corps";
+import { trpc } from "../utils/trpc";
 
 const defaultValues = {
   title: "",
@@ -14,11 +14,11 @@ const defaultValues = {
   corpsIds: [] as string[],
 };
 type FormValues = typeof defaultValues;
-type EditRehearsalProps = {
+type RehearsalFormProps = {
   rehearsal?: FormValues & { id: string },
 };
 
-const EditRehearsal = ({ rehearsal }: EditRehearsalProps) => {
+const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
   const router = useRouter();
   const utils = trpc.useContext();
 
@@ -98,4 +98,4 @@ const EditRehearsal = ({ rehearsal }: EditRehearsalProps) => {
   );
 };
 
-export default EditRehearsal;
+export default RehearsalForm;
