@@ -89,7 +89,7 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
           {...form.getInputProps("corpsIds")}
         />
         <Group position="right">
-          <Button type="submit" disabled={!form.isValid}>
+          <Button type="submit">
             {(rehearsal ? 'Skapa' : 'Uppdatera') + ' repa'}
           </Button>
         </Group>
