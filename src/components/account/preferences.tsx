@@ -72,6 +72,7 @@ const AccountPreferences = () => {
   const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
     await mutation.mutateAsync(values);
+    form.resetTouched();
   };
 
   return (
@@ -150,7 +151,7 @@ const AccountPreferences = () => {
           </FormLoadingOverlay>
           <Group position="right">
             <Button
-              disabled={!form.isDirty()}
+              disabled={!form.isTouched() || !form.isValid() || submitting}
               loading={submitting}
               type="submit"
             >

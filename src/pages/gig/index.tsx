@@ -6,7 +6,6 @@ import {
   Group,
   Title,
   Stack,
-  Accordion,
 } from "@mantine/core";
 import { trpc } from "../../utils/trpc";
 import { getOperatingYear } from "../stats/[paramYear]";
@@ -104,7 +103,7 @@ const Gigs = ({ initialTab = "my-gigs-tab" }: GigsProps) => {
       <Group position="left">
         <Select
           label="Verksamhetsår"
-          defaultValue={getOperatingYear().toString()}
+          defaultValue={year.toString()}
           maxDropdownHeight={280}
           data={years}
           value={year.toString()}

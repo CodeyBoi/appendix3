@@ -10,6 +10,7 @@ import { GLOBAL_THEME } from "../utils/global-theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppContainer } from "../components/app-container";
 import useColorScheme from "../hooks/use-color-scheme";
+import "dayjs/locale/sv";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

@@ -77,6 +77,7 @@ model Corps {
   gigSignups            GigSignup[]
   hiddenGigs            HiddenGig[]
   foodPrefs             CorpsFoodPrefs?
+  rehearsals            CorpsRehearsal[]
 }
 
 model CorpsInstrument {
@@ -181,4 +182,31 @@ model Role {
   id    Int     @id
   name  String  @unique
   corps Corps[]
+}
+
+model Rehearsal {
+  id              String    @id @default(cuid())
+  title           String
+  date            DateTime  @db.Date
+  typeId          Int
+
+  type            RehearsalType @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  corpsii         CorpsRehearsal[]
+}
+
+model CorpsRehearsal {
+  corpsId       String
+  rehearsalId   String
+  corps         Corps        @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  rehearsal     Rehearsal    @relation(fields: [rehearsalId], references: [id], onDelete: Cascade)
+
+  @@unique([corpsId, rehearsalId])
+  @@index([corpsId])
+  @@index([rehearsalId])
+}
+
+model RehearsalType {
+  id   Int    @id
+  name String @unique
+  rehearsals Rehearsal[]
 }
