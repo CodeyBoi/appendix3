@@ -1,4 +1,4 @@
-import { Group, Select, Stack, Tabs, Title } from "@mantine/core";
+import { Group, Select, SelectItem, Stack, Tabs, Title } from "@mantine/core";
 import React, { useMemo, useState } from "react";
 import Loading from "../../../components/loading";
 import RehearsalList from "../../../components/rehearsal/list";
@@ -13,7 +13,7 @@ const Rehearsals = () => {
   const startYear = 2010;
   const endYear = new Date().getFullYear();
 
-  const years = [];
+  const years = [] as SelectItem[];
   for (let i = endYear; i >= startYear; i--) {
     years.push({
       value: i.toString(),
@@ -38,7 +38,7 @@ const Rehearsals = () => {
       end,
     });
 
-  const isInitialLoading = rehearsalsLoading || orchestraStatsLoading;
+  const isInitialLoading = rehearsalsLoading || orchestraStatsLoading || balletStatsLoading;
 
   type SplitRehearsals = {
     orchestra: typeof rehearsals;
