@@ -102,7 +102,7 @@ const GLOBAL_THEME: MantineThemeOverride = {
     // },
     Checkbox: {
       defaultProps: {
-        radius: "xl",
+        radius: "sm",
       }
     }
   }

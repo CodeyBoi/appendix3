@@ -39,7 +39,6 @@ const Entry = ({
           <td style={tdStyle}>
             <Center>
               <Checkbox
-                size="md"
                 styles={{ root: { display: "flex" } }}
                 defaultChecked={signup.attended}
                 onChange={(event) => setAttendance(event.target.checked)}

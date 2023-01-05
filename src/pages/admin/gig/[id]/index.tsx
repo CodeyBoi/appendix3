@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import {
   Button,
+  Checkbox,
   Grid,
   Group,
   NumberInput,
   Select,
   SimpleGrid,
   Stack,
-  Switch,
   Textarea,
   TextInput,
   Title,
@@ -251,12 +251,12 @@ const AdminGig = () => {
             />
             <Group position="apart">
               <Group position="left">
-                <Switch
+                <Checkbox
                   label="Allmän spelning?"
                   radius="xl"
                   {...form.getInputProps("isPublic", { type: "checkbox" })}
                 />
-                <Switch
+                <Checkbox
                   label="Räknas positivt?"
                   radius="xl"
                   {...form.getInputProps("countsPositively", {
