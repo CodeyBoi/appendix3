@@ -23,14 +23,15 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
   const utils = trpc.useContext();
 
   const { data: rehearsalTypes } = trpc.rehearsal.getTypes.useQuery();
+  const newRehearsal = !rehearsal;
 
   const form = useForm<FormValues>({
-    initialValues: rehearsal ? {
+    initialValues: newRehearsal ? defaultValues : {
       title: rehearsal.title,
       date: rehearsal.date,
       type: rehearsal.type,
       corpsIds: rehearsal.corpsIds,
-    } : defaultValues,
+    },
     validate: {
       title: (title) => (title ? null : "Fyll i titel"),
       date: (date) => (date ? null : "Välj datum"),
@@ -51,7 +52,7 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
   const handleSubmit = async (values: FormValues) => {
     console.log(values);
     values.date.setMinutes(values.date.getMinutes() - values.date.getTimezoneOffset());
-    if (!rehearsal) {
+    if (newRehearsal) {
       await mutation.mutateAsync(values);
     } else {
       await mutation.mutateAsync({ ...values, id: rehearsal.id });
@@ -93,7 +94,7 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
         />
         <Group position="right">
           <Button type="submit">
-            {(rehearsal ? 'Uppdatera' : 'Skapa') + ' repa'}
+            {(newRehearsal ? 'Skapa' : 'Uppdatera') + ' repa'}
           </Button>
         </Group>
       </Stack>
