@@ -1,5 +1,6 @@
-import { Table, Text } from "@mantine/core";
+import { Stack, Table, Text } from "@mantine/core";
 import React from "react";
+import { getOperatingYear } from "../pages/stats/[paramYear]";
 import { trpc } from "../utils/trpc";
 import AlertError from "./alert-error";
 import Loading from "./loading";
@@ -15,18 +16,35 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
 
+  const { data: corps } = trpc.corps.getSelf.useQuery();
+
   const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery(
     { corpsIds },
     { enabled: !!corpsIds }
   );
 
-  const nbrOfGigsString = `Detta verksamhetsår har vi haft ${nbrOfGigs} spelning${
+  const isCurrentYear = operatingYear === getOperatingYear();
+
+  const nbrOfGigsString = `Detta verksamhetsår ${isCurrentYear ? 'har vi hittills haft' : 'hade vi'} ${nbrOfGigs} spelning${
     nbrOfGigs === 1 ? "" : "ar"
-  }.`;
+  }`;
   const positiveGigsString =
     (positivelyCountedGigs ?? 0) > 0
-      ? `Av dessa har ${positivelyCountedGigs} räknats positivt.`
-      : "";
+      ? `, där ${positivelyCountedGigs} ${isCurrentYear ? 'räknats' : 'räknades'} positivt.`
+      : ".";
+
+  const ownPoints =
+    corps && stats ? stats.corpsStats[corps.id]?.gigsAttended : undefined;
+  const ownAttendence =
+    corps && stats ? stats.corpsStats[corps.id]?.attendence : undefined;
+  const ownPointsString =
+    ownPoints && ownAttendence
+      ? `Du ${isCurrentYear ? 'har varit' : 'var'} med på ${ownPoints} spelning${
+          ownPoints === 1 ? "" : "ar"
+        }, vilket ${isCurrentYear ? 'motsvarar' : 'motsvarade'} ${Math.round(
+          ownAttendence * 100
+        )}%.`
+      : undefined;
 
   if (!corpsStats || !corpsPoints) {
     return <Loading msg="Laddar statistik..." />;
@@ -42,15 +60,16 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
         <Text>Det finns inga statistikuppgifter för detta år.</Text>
       )}
       {corpsPoints && corpsStats && corpsIds && (
-        <>
-          <Text>{nbrOfGigsString + " " + positiveGigsString}</Text>
+        <Stack>
+          <Text>{nbrOfGigsString + positiveGigsString}</Text>
+          {ownPointsString && <Text>{ownPointsString}</Text>}
           <Table>
             <thead>
               <tr>
                 <th>Nummer</th>
                 <th>Namn</th>
                 <th style={{ textAlign: "center" }}>Spelpoäng</th>
-                <th style={{ textAlign: "center" }}>Procent</th>
+                <th style={{ textAlign: "center" }}>Närvaro</th>
                 <th style={{ textAlign: "center" }}>Totala spelpoäng</th>
               </tr>
             </thead>
@@ -72,7 +91,7 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
               })}
             </tbody>
           </Table>
-        </>
+        </Stack>
       )}
     </>
   );

@@ -22,7 +22,11 @@ const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
   const nothingFound = corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
 
   const multiSelectProps: MultiSelectProps = {
-    ...props,
+    ...{
+      ...props,
+      excludeSelf: undefined,
+      excludeIds: undefined,
+    },
     searchable: true,
     clearable: true,
     data: corpsiiData,
@@ -31,7 +35,7 @@ const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
     limit: props.limit ?? 30,
   };
 
-  return <MultiSelect {...multiSelectProps} />;
+  return <MultiSelect { ...multiSelectProps } />;
 }
 
 export default MultiSelectCorps;
