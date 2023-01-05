@@ -4,8 +4,8 @@ import { useForm } from "@mantine/form";
 import { IconCalendar } from "@tabler/icons";
 import { useRouter } from "next/router";
 import React from "react";
-import MultiSelectCorps from "./multi-select-corps";
-import { trpc } from "../utils/trpc";
+import MultiSelectCorps from "../multi-select-corps";
+import { trpc } from "../../utils/trpc";
 
 const defaultValues = {
   title: "",
@@ -41,6 +41,9 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
   const mutation = trpc.rehearsal.upsert.useMutation({
     onSuccess: () => {
       utils.rehearsal.getWithId.invalidate(rehearsal?.id ?? "");
+      utils.rehearsal.getMany.invalidate();
+      utils.rehearsal.getOrchestraStats.invalidate();
+      utils.rehearsal.getBalletStats.invalidate();
       router.push("/admin/rehearsal");
     },
   });
@@ -90,7 +93,7 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
         />
         <Group position="right">
           <Button type="submit">
-            {(rehearsal ? 'Skapa' : 'Uppdatera') + ' repa'}
+            {(rehearsal ? 'Uppdatera' : 'Skapa') + ' repa'}
           </Button>
         </Group>
       </Stack>

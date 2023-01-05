@@ -1,14 +1,8 @@
-import {
-  Card,
-  Group,
-  Select,
-  Stack,
-  Title,
-  Text,
-} from "@mantine/core";
-import { NextLink } from "@mantine/next";
-import dayjs from "dayjs";
-import React, { useState } from "react";
+import { Group, Select, Stack, Tabs, Title } from "@mantine/core";
+import React, { useMemo, useState } from "react";
+import Loading from "../../../components/loading";
+import RehearsalList from "../../../components/rehearsal/list";
+import RehearsalStats from "../../../components/rehearsal/stats";
 import { trpc } from "../../../utils/trpc";
 import { getOperatingYear } from "../../stats/[paramYear]";
 
@@ -27,10 +21,40 @@ const Rehearsals = () => {
     });
   }
 
-  const { data: rehearsals } = trpc.rehearsal.getMany.useQuery({
-    start,
-    end,
-  });
+  const { data: rehearsals, isInitialLoading: rehearsalsLoading } =
+    trpc.rehearsal.getMany.useQuery({
+      start,
+      end,
+    });
+  const { data: orchestraStats, isInitialLoading: orchestraStatsLoading } =
+    trpc.rehearsal.getOrchestraStats.useQuery({
+      start,
+      end,
+    });
+
+  const { data: balletStats, isInitialLoading: balletStatsLoading } =
+    trpc.rehearsal.getBalletStats.useQuery({
+      start,
+      end,
+    });
+
+  const isInitialLoading = rehearsalsLoading || orchestraStatsLoading;
+
+  type SplitRehearsals = {
+    orchestra: typeof rehearsals;
+    ballet: typeof rehearsals;
+  };
+  const splitRehearsals = useMemo(() => {
+    if (!rehearsals) return null;
+    return rehearsals.reduce((acc, rehearsal) => {
+      if (rehearsal.type === 'Orkesterrepa') {
+        acc.orchestra?.push(rehearsal);
+      } else if (rehearsal.type === 'Balettrepa') {
+        acc.ballet?.push(rehearsal);
+      }
+      return acc;
+    }, { orchestra: [], ballet: [] } as SplitRehearsals);
+  }, [rehearsals]);
 
   return (
     <Stack align="flex-start">
@@ -41,24 +65,51 @@ const Rehearsals = () => {
         onChange={(value) => setYear(parseInt(value as string))}
         data={years}
       />
-      <Stack spacing="xs">
-        {rehearsals?.map((rehearsal) => (
-          <Card
-            key={rehearsal.id}
-            shadow="sm"
-            component={NextLink}
-            href={`/admin/rehearsal/${rehearsal.id}`}
-          >
-            <Group position="left">
-              <Text>{dayjs(rehearsal.date).format("YYYY-MM-DD")}</Text>
-              <Text>{rehearsal.title}</Text>
+      <Tabs defaultValue="all-rehearsals">
+        <Tabs.List mb={12}>
+          <Tabs.Tab value="all-rehearsals">Alla repor</Tabs.Tab>
+          <Tabs.Tab value="stats">Statistik</Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="all-rehearsals">
+          {isInitialLoading && <Loading msg="Laddar repor..." />}
+          {splitRehearsals && (
+            <Group position="left" align="baseline">
+              <Stack>
+                <Title order={3}>Orkesterrepor</Title>
+                <RehearsalList rehearsals={splitRehearsals.orchestra ?? []} />
+              </Stack>
+              <Stack>
+                <Title order={3}>Balettrepor</Title>
+                <RehearsalList rehearsals={splitRehearsals.ballet ?? []} />
+              </Stack>
             </Group>
-          </Card>
-        ))}
-      </Stack>
-      {rehearsals && rehearsals.length === 0 && (
-        <Text>Inga rep finns registrerade detta år</Text>
-      )}
+          )}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="stats">
+          {isInitialLoading && <Loading msg="Laddar repstatistik..." />}
+          {orchestraStats && balletStats && (
+            <Group position="left" align="baseline">
+            <Stack>
+              <Title order={3}>Orkesterrepor</Title>
+              <RehearsalStats
+                stats={orchestraStats.stats}
+                totalRehearsals={orchestraStats.rehearsalCount}
+              />
+            </Stack>
+            <Stack>
+              <Title order={3}>Balettrepor</Title>
+              <RehearsalStats
+                stats={balletStats.stats}
+                totalRehearsals={balletStats.rehearsalCount}
+              />
+            </Stack>
+          </Group>
+            
+          )}
+        </Tabs.Panel>
+      </Tabs>
     </Stack>
   );
 };

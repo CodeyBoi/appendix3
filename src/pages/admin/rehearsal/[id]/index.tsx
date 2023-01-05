@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import Loading from "../../../../components/loading";
 import { trpc } from "../../../../utils/trpc";
-import RehearsalForm from "../../../../components/rehearsal-form";
+import RehearsalForm from "../../../../components/rehearsal/form";
 import AlertError from "../../../../components/alert-error";
 
 const MAX_TRIES = 3;
