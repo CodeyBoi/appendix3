@@ -23,13 +23,17 @@ export default class _Document extends Document {
           <title>Blindtarmen</title>
           <meta property='og:title' content='Blindtarmen' key='title' />
           <meta charSet="utf-8" />
-          <link rel="icon" href="/favicons/48x48.png" />
-          <meta name="theme-color" content="#ce0c00" />
           <meta
             name="description"
             content="Ett internt verktyg för alla corps"
           />
           <link rel="manifest" href="/manifest.json" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ce0c00" />
+          <meta name="msapplication-TileColor" content="#ce0c00" />
+          <meta name="theme-color" content="#ffffff" />
         </Head>
         <body>
           <Main />
