@@ -23,8 +23,8 @@ export default class _Document extends Document {
           <title>Blindtarmen</title>
           <meta property='og:title' content='Blindtarmen' key='title' />
           <meta charSet="utf-8" />
-          <link rel="icon" href="/AMCBleckhornenLOGO.png" />
-          <meta name="theme-color" content="#000000" />
+          <link rel="icon" href="/favicons/48x48.png" />
+          <meta name="theme-color" content="#ce0c00" />
           <meta
             name="description"
             content="Ett internt verktyg för alla corps"
