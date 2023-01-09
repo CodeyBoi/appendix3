@@ -11,6 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppContainer } from "../components/app-container";
 import useColorScheme from "../hooks/use-color-scheme";
 import "dayjs/locale/sv";
+import Head from "next/head";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -25,6 +26,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider withGlobalStyles withNormalizeCSS theme={{ ...GLOBAL_THEME, colorScheme }}>
         <SessionProvider session={session}>
+          <Head>
+            <title>Blindtarmen</title>
+            <meta property='og:title' content='Blindtarmen' key='title' />
+          </Head>
           <AppContainer>
             <Component {...pageProps} />
           </AppContainer>

@@ -20,8 +20,6 @@ export default class _Document extends Document {
     return (
       <Html>
         <Head>
-          <title>Blindtarmen</title>
-          <meta property='og:title' content='Blindtarmen' key='title' />
           <meta charSet="utf-8" />
           <meta
             name="description"
