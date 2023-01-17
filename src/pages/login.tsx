@@ -93,7 +93,7 @@ const Login = () => {
                 !
               </Title>
               {!success && (
-              <Group align="baseline">
+              <Group>
                 <TextInput
                   name="email"
                   type="email"
