@@ -75,6 +75,8 @@ const AccountPreferences = () => {
     form.resetTouched();
   };
 
+  const darkThemeMessage = "VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?";
+
   return (
     <Stack>
       <Title order={3}>Inställningar</Title>
@@ -86,11 +88,19 @@ const AccountPreferences = () => {
               <Switch
                 pl="xs"
                 mb="md"
-                label="Mörkt tema"
+                label={colorScheme === "dark" ? "AK-tema" : "Mörkt tema"}
                 checked={colorScheme === "dark"}
-                onChange={() => toggleColorScheme()}
+                onChange={() => {
+                  if (colorScheme !== "dark") {
+                    if (confirm(darkThemeMessage)) {
+                      toggleColorScheme();
+                    }
+                  } else {
+                    toggleColorScheme();
+                  }
+                }}
               />
-              <Title order={6}>Kontaktuppgifter</Title>
+              <Title order={6} > Kontaktuppgifter</Title>
               <TextInput
                 label="Förnamn"
                 placeholder="Förnamn"
@@ -159,8 +169,8 @@ const AccountPreferences = () => {
             </Button>
           </Group>
         </Stack>
-      </form>
-    </Stack>
+      </form >
+    </Stack >
   );
 };
 
