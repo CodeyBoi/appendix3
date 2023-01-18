@@ -2,7 +2,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
 
-export function test(p: PrismaClient): Adapter {
+export function CustomPrismaAdapter(p: PrismaClient): Adapter {
   return {
     ...PrismaAdapter(p),
     async useVerificationToken(identifier_token) {

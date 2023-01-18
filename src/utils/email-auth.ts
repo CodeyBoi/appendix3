@@ -7,9 +7,6 @@ const sendVerificationRequest = async (
   params: SendVerificationRequestParams
 ) => {
   const { identifier, url, provider, theme } = params;
-
-  console.log('HERE!!!!!!!!!!!!!!: ' + url);
-
   const user = await prisma.user.findUnique({
     where: { email: identifier },
     select: {

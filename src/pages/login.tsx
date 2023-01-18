@@ -44,7 +44,11 @@ const Login = () => {
   trpc.auth.checkIfEmailInUse.useQuery(email, {
     onSuccess: (data) => {
       if (data) {
-        signIn('email', { email, redirect: true });
+        signIn('email', {
+          email,
+          redirect: true,
+          callbackUrl: '/verified',
+        });
 
         setSuccess(true);
       } else {
@@ -116,12 +120,6 @@ const Login = () => {
                     Logga in
                   </Button>
                 </Group>
-              )}
-              {success && (
-                <Title order={4} color='white' align='center'>
-                  En inloggningslänk har skickats till{' '}
-                  <span style={{ textDecoration: 'underline' }}>{email}</span>.{' '}
-                </Title>
               )}
             </Stack>
           </form>
