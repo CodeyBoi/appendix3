@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["orderByNulls"]
 }
 
@@ -59,25 +59,30 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Corps {
-  id                    String   @id @default(cuid())
-  number                Int?
-  bNumber               Int?
-  firstName             String
-  lastName              String
-  isActive              Boolean  @default(true)
-  userId                String   @unique
-  roleId                Int?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+model VerifiedToken {
+  identifier String
+  token      String @unique
+}
 
-  role                  Role?             @relation(fields: [roleId], references: [id])
-  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  instruments           CorpsInstrument[]
-  gigSignups            GigSignup[]
-  hiddenGigs            HiddenGig[]
-  foodPrefs             CorpsFoodPrefs?
-  rehearsals            CorpsRehearsal[]
+model Corps {
+  id        String   @id @default(cuid())
+  number    Int?
+  bNumber   Int?
+  firstName String
+  lastName  String
+  isActive  Boolean  @default(true)
+  userId    String   @unique
+  roleId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role        Role?             @relation(fields: [roleId], references: [id])
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments CorpsInstrument[]
+  gigSignups  GigSignup[]
+  hiddenGigs  HiddenGig[]
+  foodPrefs   CorpsFoodPrefs?
+  rehearsals  CorpsRehearsal[]
 }
 
 model CorpsInstrument {
@@ -91,15 +96,15 @@ model CorpsInstrument {
 }
 
 model CorpsFoodPrefs {
-  corpsId           String
-  vegetarian        Boolean  @default(false)
-  vegan             Boolean  @default(false)
-  glutenFree        Boolean  @default(false)
-  lactoseFree       Boolean  @default(false)
-  drinksAlcohol     Boolean  @default(false)
-  other             String   @default("") @db.Text
+  corpsId       String
+  vegetarian    Boolean @default(false)
+  vegan         Boolean @default(false)
+  glutenFree    Boolean @default(false)
+  lactoseFree   Boolean @default(false)
+  drinksAlcohol Boolean @default(false)
+  other         String  @default("") @db.Text
 
-  corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 
   @@id([corpsId])
 }
@@ -120,19 +125,19 @@ model Gig {
   location         String    @default("")
   signupStart      DateTime?
   signupEnd        DateTime?
-  description      String      @default("") @db.Text
+  description      String    @default("") @db.Text
   typeId           Int
   points           Int
-  countsPositively Boolean     @default(false)
-  isPublic         Boolean     @default(false)
-  checkbox1        String      @default("")
-  checkbox2        String      @default("")
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  countsPositively Boolean   @default(false)
+  isPublic         Boolean   @default(false)
+  checkbox1        String    @default("")
+  checkbox2        String    @default("")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  type             GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  signups          GigSignup[]
-  hiddenFor        HiddenGig[]
+  type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  signups   GigSignup[]
+  hiddenFor HiddenGig[]
 
   @@index([date(sort: Desc)])
   @@index([countsPositively])
@@ -172,8 +177,8 @@ model GigSignupStatus {
 model HiddenGig {
   corpsId String
   gigId   String
-  corps   Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  gig     Gig   @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  corps   Corps  @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  gig     Gig    @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
 }
@@ -185,20 +190,20 @@ model Role {
 }
 
 model Rehearsal {
-  id              String    @id @default(cuid())
-  title           String
-  date            DateTime  @db.Date
-  typeId          Int
+  id     String   @id @default(cuid())
+  title  String
+  date   DateTime @db.Date
+  typeId Int
 
-  type            RehearsalType @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  corpsii         CorpsRehearsal[]
+  type    RehearsalType    @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  corpsii CorpsRehearsal[]
 }
 
 model CorpsRehearsal {
-  corpsId       String
-  rehearsalId   String
-  corps         Corps        @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  rehearsal     Rehearsal    @relation(fields: [rehearsalId], references: [id], onDelete: Cascade)
+  corpsId     String
+  rehearsalId String
+  corps       Corps     @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  rehearsal   Rehearsal @relation(fields: [rehearsalId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, rehearsalId])
   @@index([corpsId])
@@ -206,7 +211,7 @@ model CorpsRehearsal {
 }
 
 model RehearsalType {
-  id   Int    @id
-  name String @unique
+  id         Int         @id
+  name       String      @unique
   rehearsals Rehearsal[]
 }
