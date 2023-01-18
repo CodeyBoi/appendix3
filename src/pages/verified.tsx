@@ -13,24 +13,34 @@ const VerifyRequest = () => {
   return (
     <div
       style={{
+        padding: 24,
         height: '100vh',
         background: theme.fn.linearGradient(
           215,
           theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9]
+          theme?.colors?.red?.[9],
         ),
       }}
     >
       <Center>
         <div style={{ marginTop: onMobile ? '25vh' : '35vh' }}>
-          <Title order={4} color='white' align='center'>
-            Din inloggning har blivit verifierad och du kan nu återgå till
-            appen.
-            <br />
-            Eller klicka på länken nedan för att komma direkt till appen.
+          <Title
+            order={4}
+            color='white'
+            align='center'
+            style={{ maxWidth: 800 }}
+          >
+            Din inloggning har blivit bekräftad! Du kan nu återgå till din
+            föregående flik, eller klicka på länken nedan för att komma direkt
+            till startsidan.
           </Title>
           <Center>
-            <Button style={{ marginTop: 12 }} component={NextLink} href='/'>
+            <Button
+              style={{ marginTop: 12 }}
+              component={NextLink}
+              href='/'
+              gradient={{ from: 'red', to: 'darkred', deg: 185 }}
+            >
               Till startsidan
             </Button>
           </Center>

@@ -26,11 +26,11 @@ export const authRouter = router({
         where: { token: hashedToken },
       });
 
-      await ctx.prisma.verifiedToken.delete({
-        where: { token: hashedToken },
-      });
-
       if (!!verifiedtoken) {
+        await ctx.prisma.verifiedToken.delete({
+          where: { token: hashedToken },
+        });
+
         const user = await ctx.prisma.user.findUnique({
           where: { email: verifiedtoken.identifier },
         });

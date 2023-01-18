@@ -6,7 +6,7 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
 
 export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
+  ctx: GetServerSidePropsContext,
 ) => {
   const unverifiedToken = ctx.req.cookies.unverifiedToken;
   const email = 'no email supplied yet (not working)'; //ctx.req.cookies.email;
@@ -48,22 +48,25 @@ const VerifyRequest = ({
   return (
     <div
       style={{
+        padding: 24,
         height: '100vh',
         background: theme.fn.linearGradient(
           215,
           theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9]
+          theme?.colors?.red?.[9],
         ),
       }}
     >
       <Center>
         <div style={{ marginTop: onMobile ? '25vh' : '35vh' }}>
-          <Title order={4} color='white' align='center'>
-            En inloggningslänk har skickats till din mailadress.
-            <br />
-            Klicka på den för att logga in.
-            <br />
-            Efter det kan du återvända till denna sida.
+          <Title
+            order={4}
+            color='white'
+            align='center'
+            style={{ maxWidth: 800 }}
+          >
+            En inloggningslänk har skickats till din mailadress, när du klickat
+            på den kan du återvända till denna flik.
           </Title>
         </div>
       </Center>
