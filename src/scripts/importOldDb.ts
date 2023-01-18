@@ -1,4 +1,4 @@
-import { Corps, CorpsInstrument, PrismaClient, User } from "@prisma/client";
+import { Corps, CorpsInstrument, CorpsRehearsal, PrismaClient, Rehearsal, User } from "@prisma/client";
 import cuid from "cuid";
 import fs from "fs";
 import path from "path";
@@ -209,6 +209,8 @@ const main = async () => {
       acc[row.EVENTID] = parseInt(row.Points);
       return acc;
     }, {} as { [key: string]: number });
+    const rehearsals: Rehearsal[] = [];
+    const rehearsalIds: { [key: string]: string } = {};
     const events = eventTable.data.map((row: EventStats) => {
       const {
         EVENTID,
@@ -219,18 +221,24 @@ const main = async () => {
         Points,
       } = row;
 
-      if (TYPEID === "1" || TYPEID === "2") {
-        console.log("Skipping event " + TITLE + " because it is a rehearsal");
-        return undefined;
-      }
-
       const date = parseDate(EVENTDATE);
-      if (date.getFullYear() >= 2023) {
+      if (date.getFullYear() >= 2023 && date.getMonth() >= 3) {
         console.log("Skipping event " + TITLE + " because it's in the future");
         return undefined;
       }
 
       const id = cuid();
+
+      if (TYPEID === "1" || TYPEID === "2") {
+        rehearsalIds[EVENTID] = id;
+        rehearsals.push({
+          id,
+          title: TITLE,
+          date: date.toString() === "Invalid Date" ? new Date("1970-01-01") : date,
+          typeId: parseInt(TYPEID),
+        });
+        return undefined;
+      }
       gigIds[EVENTID] = id;
 
       return {
@@ -248,6 +256,11 @@ const main = async () => {
     await prisma.gig.createMany({
       data: events,
     });
+
+    await prisma.rehearsal.deleteMany({});
+    await prisma.rehearsal.createMany({
+      data: rehearsals,
+    }); 
 
     console.log("Importing users...");
     const userTable = getTable("Users");
@@ -354,11 +367,13 @@ const main = async () => {
     console.log("Importing stats for users...");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newGigs: any[] = [];
+    const rehearsalSignups: CorpsRehearsal[] = [];
     const userStatsTable = getTable("STATISTICS_ITEM");
     const userStats = userStatsTable.data.map((row: StatsItem) => {
       const { EVENTID, USERID, Points } = row;
 
       const gigId = gigIds[EVENTID];
+      const rehearsalId = rehearsalIds[EVENTID];
       const corpsId = corpsIds[USERID];
       const points = parseInt(Points);
 
@@ -367,40 +382,48 @@ const main = async () => {
         return undefined;
       }
 
-      if (!gigId) {
+      if (!gigId && !rehearsalId) {
         console.log("Skipping stats for event " + EVENTID + " because it doesn't exist");
         return undefined;
       }
 
-      if (eventPoints[EVENTID] !== undefined && eventPoints[EVENTID] !== points) {
-        console.log("Event exists, but point values does not match for event " + EVENTID + " for user " + USERID + "!");
-        const newGigId = cuid();
-        gigIds[EVENTID] = newGigId;
-        newGigs.push({
-          id: newGigId,
-          title: "Poäng för tidigare spelningar",
-          date: new Date("1970-01-01"),
-          points,
-          typeId: 1,
-          countsPositively: true,
-        });
+      if (gigId) {
+        if (eventPoints[EVENTID] !== undefined && eventPoints[EVENTID] !== points) {
+          console.log("Event exists, but point values does not match for event " + EVENTID + " for user " + USERID + "!");
+          const newGigId = cuid();
+          gigIds[EVENTID] = newGigId;
+          newGigs.push({
+            id: newGigId,
+            title: "Poäng för tidigare spelningar",
+            date: new Date("1970-01-01"),
+            points,
+            typeId: 1,
+            countsPositively: true,
+          });
+          return {
+            corpsId,
+            gigId: newGigId,
+            attended: true,
+            instrumentId: corpsInstrumentIds[USERID] ?? 19,
+            signupStatusId: 1,
+          };
+        }
+
+        // console.log(`Adding gig signup for corps ${corpsId}`);
         return {
           corpsId,
-          gigId: newGigId,
+          gigId,
           attended: true,
           instrumentId: corpsInstrumentIds[USERID] ?? 19,
           signupStatusId: 1,
         };
+      } else if (rehearsalId) {
+        rehearsalSignups.push({
+          corpsId,
+          rehearsalId,
+        });
+        return undefined;
       }
-
-      // console.log(`Adding gig signup for corps ${corpsId}`);
-      return {
-        corpsId,
-        gigId,
-        attended: true,
-        instrumentId: corpsInstrumentIds[USERID] ?? 19,
-        signupStatusId: 1,
-      };
     }).filter((u: unknown) => u !== undefined);
 
     console.log("Saving gig signups...");
@@ -412,6 +435,13 @@ const main = async () => {
     for (let i = 0; i < userStats.length; i += 1000) {
       await prisma.gigSignup.createMany({
         data: userStats.slice(i, i + 1000),
+      });
+    }
+
+    await prisma.corpsRehearsal.deleteMany({});
+    for (let i = 0; i < rehearsalSignups.length; i += 1000) {
+      await prisma.corpsRehearsal.createMany({
+        data: rehearsalSignups.slice(i, i + 1000),
       });
     }
 
