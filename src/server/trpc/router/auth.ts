@@ -42,16 +42,14 @@ export const authRouter = router({
         };
 
         const session = await ctx.prisma.session.create({ data });
-        //const secure = process.env.NODE_ENV === 'production';
 
         const secure = ctx.req.headers['x-forwarded-proto'] ?? false;
-        console.log(secure); //!MIGHT WORK!!! verify in staging!!!!!!!!!
         const cookiePrefix = secure ? '__Secure-' : '';
         ctx.res.setHeader(
           'Set-Cookie',
           `${cookiePrefix}next-auth.session-token=${
             session.sessionToken ?? ''
-          }; Path=/; SameSite=lax; HttpOnly; ${secure ? 'Secure;' : ''}; `
+          }; Path=/; SameSite=lax; HttpOnly; ${secure ? 'Secure;' : ''}; `,
         );
         return true;
       }
