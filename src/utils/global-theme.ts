@@ -35,8 +35,8 @@ const GLOBAL_THEME: MantineThemeOverride = {
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   fontSizes: {
     xs: 12,
-    sm: 13,
-    md: 14,
+    sm: 14,
+    md: 16,
     lg: 18,
     xl: 20,
   },
@@ -90,11 +90,11 @@ const GLOBAL_THEME: MantineThemeOverride = {
         },
       },
     },
-    // Select: {
-    //   defaultProps: {
-    //     dropdownComponent: "div",
-    //   },
-    // },
+     Select: {
+       defaultProps: {
+        size: "md",
+       },
+     },
     // MultiSelect: {
     //   defaultProps: {
     //     dropdownComponent: "div",
