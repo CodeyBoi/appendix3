@@ -18,7 +18,15 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(
+    props.colorScheme,
+  );
+  const toggleColorScheme = (value?: ColorScheme) => {
+    const newColorScheme =
+      value || (colorScheme === 'light' ? 'dark' : 'light');
+    setColorScheme(newColorScheme);
+    setCookie('mantine-color-scheme', newColorScheme);
+  };
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
 
   return (
@@ -45,5 +53,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
     </ColorSchemeProvider>
   );
 };
+
+MyApp.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+  colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
+});
 
 export default trpc.withTRPC(MyApp);
