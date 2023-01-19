@@ -44,11 +44,11 @@ const GLOBAL_THEME: MantineThemeOverride = {
     sizes: {
       h1: {
         fontSize: 48,
-        fontWeight: 600,
+        fontWeight: 700,
       },
       h2: {
         fontSize: 36,
-        fontWeight: 600,
+        fontWeight: 700,
       },
       h3: {
         fontSize: 24,

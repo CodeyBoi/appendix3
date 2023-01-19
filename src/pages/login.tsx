@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Group,
@@ -75,7 +76,12 @@ const Login = () => {
       }}
     >
       <Center>
-        <div style={{ marginTop: onMobile ? "25vh" : "35vh" }}>
+        <Box sx={(theme) => ({
+          marginTop: "35vh",
+          [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+            marginTop: "25vh",
+          }})}
+        >
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -125,7 +131,7 @@ const Login = () => {
               )}
             </Stack>
           </form>
-        </div>
+        </Box>
       </Center>
     </div>
   );

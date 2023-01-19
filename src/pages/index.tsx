@@ -1,5 +1,4 @@
-import { Title, Stack, useMantineTheme } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { Title, Stack } from "@mantine/core";
 import { Gig } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
@@ -69,12 +68,14 @@ const Home: NextPage = () => {
     startDate: currentDate,
   });
 
-  const theme = useMantineTheme();
-  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
-
   return (
     <Stack sx={{ maxWidth: 800 }} spacing="xs">
-      <Title order={onMobile ? 3 : 2}>
+      <Title sx={(theme) => ({
+        fontSize: theme.headings.sizes.h2.fontSize,
+        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+          fontSize: theme.headings.sizes.h3.fontSize,
+        },
+      })}>
         {gigs && gigs.length === 0
           ? "Inga kommande spelningar :("
           : "Kommande spelningar"}
