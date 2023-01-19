@@ -1,3 +1,4 @@
+<<<<<<< staging
 import { Title, Stack, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Gig } from '@prisma/client';
@@ -7,6 +8,16 @@ import GigCard from '../components/gig/card';
 import Loading from '../components/loading';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
+=======
+import { Title, Stack } from "@mantine/core";
+import { Gig } from "@prisma/client";
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
+import React from "react";
+import GigCard from "../components/gig/card";
+import Loading from "../components/loading";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
+import { trpc } from "../utils/trpc";
+>>>>>>> Made media queries static (#75)
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -68,9 +79,6 @@ const Home: NextPage = () => {
   const { data: gigs, isLoading: gigsLoading } = trpc.gig.getMany.useQuery({
     startDate: currentDate,
   });
-
-  const theme = useMantineTheme();
-  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
 
   return (
     <Stack sx={{ maxWidth: 800 }} spacing='xs'>

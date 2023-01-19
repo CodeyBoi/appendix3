@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Group,
@@ -123,7 +124,7 @@ const Login = () => {
               )}
             </Stack>
           </form>
-        </div>
+        </Box>
       </Center>
     </div>
   );
