@@ -28,6 +28,7 @@
     "@trpc/next": "10.0.0-proxy-beta.17",
     "@trpc/react": "10.0.0-proxy-beta.17",
     "@trpc/server": "10.0.0-proxy-beta.17",
+    "cookies-next": "^2.1.1",
     "cuid": "^2.1.8",
     "dayjs": "^1.11.6",
     "next": "12.3.1",
