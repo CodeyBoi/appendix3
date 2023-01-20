@@ -55,11 +55,7 @@ export default class _Document extends Document {
             content='width=device-width, initial-scale=1, viewport-fit=cover'
           />
           <meta name='apple-mobile-web-app-capable' content='yes' />
-          <meta
-            name='theme-color'
-            content='#ce0c00'
-            media='(prefers-color-scheme: dark)'
-          ></meta>
+          <meta name='theme-color' content='#B80900'></meta>
         </Head>
         <body>
           <Main />

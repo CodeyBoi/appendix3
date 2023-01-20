@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 import { randomUUID } from 'crypto';
 import { AdapterSession } from 'next-auth/adapters';
-import { HashToken } from '../../utils/CHW';
+import { HashToken } from '../../utils/token';
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {

@@ -8,11 +8,11 @@ import { prisma } from '../../../server/db/client';
 import sendVerificationRequest from '../../../utils/email-auth';
 import { createHash, randomBytes } from 'crypto';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { GenerateToken } from '../../../server/utils/CHW';
+import { GenerateToken } from '../../../server/utils/token';
 
 type NextAuthOptionsCallback = (
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) => NextAuthOptions;
 
 export const authOptions: NextAuthOptionsCallback = (req, res) => {
