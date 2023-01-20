@@ -1,24 +1,24 @@
-import { Title, Stack, useMantineTheme } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { Gig } from "@prisma/client";
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import React from "react";
-import GigCard from "../components/gig/card";
-import Loading from "../components/loading";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
+import { Title, Stack, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { Gig } from '@prisma/client';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import React from 'react';
+import GigCard from '../components/gig/card';
+import Loading from '../components/loading';
+import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { trpc } from '../utils/trpc';
 
 export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
+  ctx: GetServerSidePropsContext,
 ) => {
   const session = await getServerAuthSession(ctx);
   if (!session) {
-    return {
-      redirect: {
-        destination: "api/auth/signin",
-        permanent: false,
-      },
-    };
+    // return {
+    //   redirect: {
+    //     destination: "api/auth/signin",
+    //     permanent: false,
+    //   },
+    // };
   }
   return {
     props: {
@@ -43,7 +43,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
-    const month = gigDate?.toLocaleDateString("sv-SE", { month: "long" });
+    const month = gigDate?.toLocaleDateString('sv-SE', { month: 'long' });
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
@@ -62,7 +62,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
 
 const Home: NextPage = () => {
   const currentDate = new Date(
-    new Date().toISOString().split("T")[0] ?? "2021-01-01"
+    new Date().toISOString().split('T')[0] ?? '2021-01-01',
   );
 
   const { data: gigs, isLoading: gigsLoading } = trpc.gig.getMany.useQuery({
@@ -73,13 +73,13 @@ const Home: NextPage = () => {
   const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
 
   return (
-    <Stack sx={{ maxWidth: 800 }} spacing="xs">
+    <Stack sx={{ maxWidth: 800 }} spacing='xs'>
       <Title order={onMobile ? 3 : 2}>
         {gigs && gigs.length === 0
-          ? "Inga kommande spelningar :("
-          : "Kommande spelningar"}
+          ? 'Inga kommande spelningar :('
+          : 'Kommande spelningar'}
       </Title>
-      {gigsLoading && <Loading msg="Laddar spelningar..." />}
+      {gigsLoading && <Loading msg='Laddar spelningar...' />}
       {gigs && makeGigList(gigs)}
     </Stack>
   );
