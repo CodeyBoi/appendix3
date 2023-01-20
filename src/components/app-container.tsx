@@ -18,7 +18,7 @@ const AppContainer = ({ children }: { children: ReactElement }) => {
           <NavbarContent />
         </Navbar>
       }
-      //hidden={!session || session.status !== 'authenticated' || verifiedPage}
+      hidden={!session || session.status !== 'authenticated' || verifiedPage}
       padding={24}
     >
       {children}

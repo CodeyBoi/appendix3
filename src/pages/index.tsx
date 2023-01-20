@@ -13,12 +13,12 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
   const session = await getServerAuthSession(ctx);
   if (!session) {
-    // return {
-    //   redirect: {
-    //     destination: "api/auth/signin",
-    //     permanent: false,
-    //   },
-    // };
+    return {
+      redirect: {
+        destination: 'api/auth/signin',
+        permanent: false,
+      },
+    };
   }
   return {
     props: {
