@@ -5,23 +5,23 @@ import {
   Switch,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import React, { useEffect } from "react";
-import useColorScheme from "../../hooks/use-color-scheme";
-import { trpc } from "../../utils/trpc";
-import FormLoadingOverlay from "../form-loading-overlay";
+  useMantineColorScheme,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import React, { useEffect } from 'react';
+import { trpc } from '../../utils/trpc';
+import FormLoadingOverlay from '../form-loading-overlay';
 
 const initialValues = {
-  firstName: "",
-  lastName: "",
+  firstName: '',
+  lastName: '',
   vegetarian: false,
   vegan: false,
   glutenFree: false,
   lactoseFree: false,
   drinksAlcohol: false,
-  otherFoodPrefs: "",
-  email: "",
+  otherFoodPrefs: '',
+  email: '',
 };
 type FormValues = typeof initialValues;
 
@@ -31,16 +31,14 @@ const AccountPreferences = () => {
   const utils = trpc.useContext();
   const [submitting, setSubmitting] = React.useState(false);
 
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   const form = useForm<FormValues>({
     initialValues,
     validate: {
-      firstName: (firstName) =>
-        firstName.length > 0 ? null : "Ange förnamn",
-      lastName: (lastName) =>
-        lastName.length > 0 ? null : "Ange efternamn",
-      email: (email) => (email.length > 0 ? null : "Ange e-postadress"),
+      firstName: (firstName) => (firstName.length > 0 ? null : 'Ange förnamn'),
+      lastName: (lastName) => (lastName.length > 0 ? null : 'Ange efternamn'),
+      email: (email) => (email.length > 0 ? null : 'Ange e-postadress'),
     },
   });
 
@@ -56,7 +54,7 @@ const AccountPreferences = () => {
       glutenFree: corps.foodPrefs?.glutenFree ?? false,
       lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
       drinksAlcohol: corps.foodPrefs?.drinksAlcohol ?? false,
-      otherFoodPrefs: corps.foodPrefs?.other ?? "",
+      otherFoodPrefs: corps.foodPrefs?.other ?? '',
       email: corps.user.email || undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,23 +73,24 @@ const AccountPreferences = () => {
     form.resetTouched();
   };
 
-  const darkThemeMessage = "VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?";
+  const darkThemeMessage =
+    'VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?';
 
   return (
     <Stack>
       <Title order={3}>Inställningar</Title>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack spacing="md">
+        <Stack spacing='md'>
           <FormLoadingOverlay visible={submitting || corpsLoading}>
-            <Stack spacing="xs">
+            <Stack spacing='xs'>
               <Title order={6}>Allmänt</Title>
               <Switch
-                pl="xs"
-                mb="md"
-                label={colorScheme === "dark" ? "AK-tema" : "Mörkt tema"}
-                checked={colorScheme === "dark"}
+                pl='xs'
+                mb='md'
+                label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
+                checked={colorScheme === 'dark'}
                 onChange={() => {
-                  if (colorScheme !== "dark") {
+                  if (colorScheme !== 'dark') {
                     if (confirm(darkThemeMessage)) {
                       toggleColorScheme();
                     }
@@ -100,77 +99,77 @@ const AccountPreferences = () => {
                   }
                 }}
               />
-              <Title order={6} > Kontaktuppgifter</Title>
+              <Title order={6}> Kontaktuppgifter</Title>
               <TextInput
-                label="Förnamn"
-                placeholder="Förnamn"
+                label='Förnamn'
+                placeholder='Förnamn'
                 withAsterisk
-                {...form.getInputProps("firstName")}
+                {...form.getInputProps('firstName')}
               />
               <TextInput
-                label="Efternamn"
-                placeholder="Efternamn"
+                label='Efternamn'
+                placeholder='Efternamn'
                 withAsterisk
-                {...form.getInputProps("lastName")}
+                {...form.getInputProps('lastName')}
               />
               <TextInput
-                label="E-post"
-                placeholder="E-post"
+                label='E-post'
+                placeholder='E-post'
                 withAsterisk
-                {...form.getInputProps("email")}
+                {...form.getInputProps('email')}
               />
             </Stack>
             <br />
-            <Stack spacing="xs">
+            <Stack spacing='xs'>
               <Title order={6}>Matpreferenser</Title>
               <Switch
-                pl="xs"
-                label="Dricker alkohol"
-                {...form.getInputProps("drinksAlcohol", { type: "checkbox" })}
+                pl='xs'
+                label='Dricker alkohol'
+                {...form.getInputProps('drinksAlcohol', { type: 'checkbox' })}
               />
               <Switch
-                pl="xs"
-                label="Vegetarian"
-                {...form.getInputProps("vegetarian", { type: "checkbox" })}
+                pl='xs'
+                label='Vegetarian'
+                {...form.getInputProps('vegetarian', { type: 'checkbox' })}
               />
               <Switch
-                pl="xs"
-                label="Vegan"
-                {...form.getInputProps("vegan", { type: "checkbox" })}
+                pl='xs'
+                label='Vegan'
+                {...form.getInputProps('vegan', { type: 'checkbox' })}
               />
               <Switch
-                pl="xs"
-                label="Glutenfritt"
-                {...form.getInputProps("glutenFree", {
-                  type: "checkbox",
+                pl='xs'
+                label='Glutenfritt'
+                {...form.getInputProps('glutenFree', {
+                  type: 'checkbox',
                 })}
               />
               <Switch
-                pl="xs"
-                label="Laktosfritt"
-                {...form.getInputProps("lactoseFree", {
-                  type: "checkbox",
+                pl='xs'
+                label='Laktosfritt'
+                {...form.getInputProps('lactoseFree', {
+                  type: 'checkbox',
                 })}
               />
               <TextInput
-                label="Övriga matpreferenser"
-                placeholder="Övriga matpreferenser..."
-                {...form.getInputProps("otherFoodPrefs")}
+                label='Övriga matpreferenser'
+                placeholder='Övriga matpreferenser...'
+                {...form.getInputProps('otherFoodPrefs')}
               />
             </Stack>
           </FormLoadingOverlay>
-          <Group position="right">
+          <Group position='right'>
             <Button
               disabled={!form.isTouched() || !form.isValid() || submitting}
               loading={submitting}
-              type="submit"
+              type='submit'
             >
               Spara
             </Button>
           </Group>
         </Stack>
-      </form >
-    </Stack >
+      </form>
+    </Stack>
   );
 };
 
