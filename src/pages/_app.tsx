@@ -52,6 +52,10 @@ const MyApp = (props: AppProps & { session: Session }) => {
           <Head>
             <title>Blindtarmen</title>
             <meta property='og:title' content='Blindtarmen' key='title' />
+            <meta
+              name='viewport'
+              content='width=device-width, initial-scale=1, viewport-fit=cover'
+            />
           </Head>
           <AppContainer>
             <Component {...pageProps} />
