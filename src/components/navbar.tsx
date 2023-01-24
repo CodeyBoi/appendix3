@@ -21,12 +21,12 @@ import {
   IconUserPlus,
 } from '@tabler/icons';
 import { getOperatingYear } from '../pages/stats/[paramYear]';
-import { NextLink } from '@mantine/next';
 import { trpc } from '../utils/trpc';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
 import cuid from 'cuid';
 import IconMusicPlus from './icons/music-plus';
+import Link from 'next/link';
 
 interface LinkItem {
   label: string;
@@ -158,7 +158,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           className={cx(classes.link, {
             [classes.activeLink]: active === link.href,
           })}
-          component={NextLink}
+          component={Link}
           href={link.href}
           onClick={() => {
             setActive(link.href);

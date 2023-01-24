@@ -1,7 +1,7 @@
-import { Stack, Card, Group, Text } from "@mantine/core";
-import { NextLink } from "@mantine/next";
-import dayjs from "dayjs";
-import React from "react";
+import { Stack, Card, Group, Text } from '@mantine/core';
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import React from 'react';
 
 type Rehearsal = {
   id: string;
@@ -15,16 +15,16 @@ type RehearsalsProps = {
 const RehearsalList = ({ rehearsals }: RehearsalsProps) => {
   return (
     <>
-      <Stack spacing="xs">
+      <Stack spacing='xs'>
         {rehearsals?.map((rehearsal) => (
           <Card
             key={rehearsal.id}
-            shadow="sm"
-            component={NextLink}
+            shadow='sm'
+            component={Link}
             href={`/admin/rehearsal/${rehearsal.id}`}
           >
-            <Group position="left">
-              <Text>{dayjs(rehearsal.date).format("YYYY-MM-DD")}</Text>
+            <Group position='left'>
+              <Text>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</Text>
               <Text>{rehearsal.title}</Text>
             </Group>
           </Card>

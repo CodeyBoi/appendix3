@@ -1,7 +1,7 @@
 import { Button, Center, Title, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { NextLink } from '@mantine/next';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
@@ -37,7 +37,7 @@ const VerifyRequest = () => {
           <Center>
             <Button
               style={{ marginTop: 12 }}
-              component={NextLink}
+              component={Link}
               href='/'
               gradient={{ from: 'red', to: 'darkred', deg: 185 }}
             >
