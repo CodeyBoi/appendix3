@@ -1,4 +1,3 @@
-<<<<<<< staging
 import { Title, Stack, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Gig } from '@prisma/client';
@@ -8,16 +7,6 @@ import GigCard from '../components/gig/card';
 import Loading from '../components/loading';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
-=======
-import { Title, Stack } from "@mantine/core";
-import { Gig } from "@prisma/client";
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import React from "react";
-import GigCard from "../components/gig/card";
-import Loading from "../components/loading";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
->>>>>>> Made media queries static (#75)
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -82,7 +71,14 @@ const Home: NextPage = () => {
 
   return (
     <Stack sx={{ maxWidth: 800 }} spacing='xs'>
-      <Title order={onMobile ? 3 : 2}>
+      <Title
+        sx={(theme) => ({
+          fontSize: theme.headings.sizes.h2.fontSize,
+          [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+            fontSize: theme.headings.sizes.h3.fontSize,
+          },
+        })}
+      >
         {gigs && gigs.length === 0
           ? 'Inga kommande spelningar :('
           : 'Kommande spelningar'}

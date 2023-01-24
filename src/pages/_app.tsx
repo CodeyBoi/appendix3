@@ -12,11 +12,33 @@ import { AppContainer } from '../components/app-container';
 import useColorScheme from '../hooks/use-color-scheme';
 import 'dayjs/locale/sv';
 import Head from 'next/head';
+import '../styles/globals.css';
+import { SessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
+import type { AppProps } from 'next/app';
+import { trpc } from '../utils/trpc';
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+} from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
+import { GLOBAL_THEME } from '../utils/global-theme';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { AppContainer } from '../components/app-container';
+import 'dayjs/locale/sv';
+import Head from 'next/head';
+import { GetServerSidePropsContext } from 'next';
+import { getCookie, setCookie } from 'cookies-next';
+import { useState } from 'react';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+const MyApp = (props: AppProps & { colorScheme: ColorScheme, session: Session }) => {
+  const { Component, pageProps, session } = props;
+
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme,
@@ -53,6 +75,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
     </ColorSchemeProvider>
   );
 };
+
+MyApp.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+  colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
+});
 
 MyApp.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
