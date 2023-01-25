@@ -60,5 +60,14 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true,
+    "printWidth": 80,
+    "endOfLine": "lf"
   }
 }
