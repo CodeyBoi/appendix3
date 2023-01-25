@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
 
-const VerifyRequest = () => {
+const Verified = () => {
   const theme = useMantineTheme();
 
   const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
@@ -50,4 +50,4 @@ const VerifyRequest = () => {
   );
 };
 
-export default VerifyRequest;
+export default Verified;
