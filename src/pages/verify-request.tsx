@@ -9,7 +9,6 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
 ) => {
   const unverifiedToken = ctx.req.cookies.unverifiedToken;
-  const email = 'no email supplied yet (not working)'; //ctx.req.cookies.email;
 
   const session = await getServerAuthSession(ctx);
   // Redirects to home if user is already logged in
@@ -21,15 +20,13 @@ export const getServerSideProps: GetServerSideProps = async (
       },
     };
   }
-  return { props: { unverifiedToken, email } };
+  return { props: { unverifiedToken } };
 };
 
 const VerifyRequest = ({
   unverifiedToken,
-  email,
 }: {
   unverifiedToken: string;
-  email: string;
 }) => {
   const router = useRouter();
   const theme = useMantineTheme();
