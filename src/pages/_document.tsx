@@ -50,10 +50,6 @@ export default class _Document extends Document {
           <link rel='manifest' href='/site.webmanifest' />
           <link rel='mask-icon' href='/safari-pinned-tab.svg' color='#ce0c00' />
           <meta name='msapplication-TileColor' content='#ce0c00' />
-          <meta
-            name='viewport'
-            content='width=device-width, initial-scale=1, viewport-fit=cover'
-          />
           <meta name='apple-mobile-web-app-capable' content='yes' />
           <meta name='theme-color' content='#B80900'></meta>
         </Head>
