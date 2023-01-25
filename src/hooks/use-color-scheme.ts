@@ -1,5 +1,4 @@
 import { ColorScheme } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
 import { getCookie, setCookie } from 'cookies-next';
 import { useState } from 'react';
 
