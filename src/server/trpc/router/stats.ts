@@ -11,7 +11,9 @@ export const statsRouter = router({
     .query(async ({ ctx, input }) => {
       const { operatingYear, selfOnly } = input;
       const statsStart = new Date(operatingYear, 8, 1); // September 1st
-      const statsEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
+      const currentDate = new Date();
+      const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
+      const statsEnd = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
       const corpsId = ctx.session.user.corps.id;
 
       const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
