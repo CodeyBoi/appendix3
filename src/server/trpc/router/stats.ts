@@ -16,7 +16,6 @@ export const statsRouter = router({
       // If we're in the same year, we want to show the stats up to today
       const statsEnd = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
       const corpsId = ctx.session.user.corps.id;
-
       const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
         where: {
