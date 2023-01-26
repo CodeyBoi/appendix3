@@ -13,6 +13,7 @@ export const statsRouter = router({
       const statsStart = new Date(operatingYear, 8, 1); // September 1st
       const currentDate = new Date();
       const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
+      // If we're in the same year, we want to show the stats up to today
       const statsEnd = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
       const corpsId = ctx.session.user.corps.id;
 
