@@ -7,16 +7,16 @@ import {
   TextInput,
   Title,
   useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { trpc } from '../utils/trpc';
 
-const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date("2023-03-01");
+const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date('2023-03-01');
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (session) {
     return {
       redirect: {
-        destination: "/",
+        destination: '/',
         permanent: true,
       },
     };
@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
 };
 
 const Login = () => {
-  const [email, setEmail] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const theme = useMantineTheme();
@@ -45,29 +45,34 @@ const Login = () => {
   trpc.auth.checkIfEmailInUse.useQuery(email, {
     onSuccess: (data) => {
       if (data) {
-        signIn("email", { email, redirect: false });
+        signIn('email', {
+          email,
+          redirect: true,
+          callbackUrl: '/verified',
+        });
+
         setSuccess(true);
       } else {
-        setError("Denna mailadress är inte registrerad");
+        setError('Denna mailadress är inte registrerad');
       }
     },
     enabled: !!email,
   });
-  
+
   const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
 
   const router = useRouter();
   const { data: session } = useSession();
   useEffect(() => {
     if (session) {
-      router.push("/");
+      router.push('/');
     }
   }, [router, session]);
 
   return (
     <div
       style={{
-        height: "100vh",
+        height: '100vh',
         background: theme.fn.linearGradient(
           215,
           theme?.colors?.red?.[7],
@@ -89,45 +94,38 @@ const Login = () => {
             }}
           >
             <Stack>
-              <Title order={onMobile ? 2 : 1} color="white" align="center">
-                {`Välkommen till ${
-                  isTheNewBlindtarmenStillNew ? "nya " : ""
-                }`}
+              <Title order={onMobile ? 2 : 1} color='white' align='center'>
+                {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
                 <span style={{ color: theme?.colors?.red?.[5] }}>
                   Blindtarmen
                 </span>
                 !
               </Title>
               {!success && (
-              <Group>
-                <TextInput
-                  name="email"
-                  type="email"
-                  spellCheck="false"
-                  style={{ flexGrow: 1 }}
-                  mx="sm"
-                  size={onMobile ? "lg" : "xl"}
-                  placeholder="Mailadress"
-                  onChange={() => error && setError(null)}
-                  onSubmit={(e) => setEmail(e.currentTarget.value)}
-                  error={error}
-                />
-                <Button
-                  mx="sm"
-                  fullWidth={onMobile}
-                  size={onMobile ? "lg" : "xl"}
-                  type="submit"
-                  variant="gradient"
-                  gradient={{ from: "red", to: "darkred", deg: 185 }}
-                >
-                  Logga in
-                </Button>
-              </Group>
-              )}
-              {success && (
-                <Title order={4} color="white" align="center">
-                  En inloggningslänk har skickats till <span style={{ textDecoration: "underline" }}>{email}</span>.{" "}
-                </Title>
+                <Group align='baseline'>
+                  <TextInput
+                    name='email'
+                    type='email'
+                    spellCheck='false'
+                    style={{ flexGrow: 1 }}
+                    mx='sm'
+                    size={onMobile ? 'lg' : 'xl'}
+                    placeholder='Mailadress'
+                    onChange={() => error && setError(null)}
+                    onSubmit={(e) => setEmail(e.currentTarget.value)}
+                    error={error}
+                  />
+                  <Button
+                    mx='sm'
+                    fullWidth={onMobile}
+                    size={onMobile ? 'lg' : 'xl'}
+                    type='submit'
+                    variant='gradient'
+                    gradient={{ from: 'red', to: 'darkred', deg: 185 }}
+                  >
+                    Logga in
+                  </Button>
+                </Group>
               )}
             </Stack>
           </form>
@@ -136,5 +134,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;

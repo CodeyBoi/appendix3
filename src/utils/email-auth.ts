@@ -1,11 +1,12 @@
-import { Theme } from "next-auth"
-import { SendVerificationRequestParams } from "next-auth/providers"
-import { createTransport } from "nodemailer"
-import { prisma } from "../server/db/client"
+import { Theme } from 'next-auth';
+import { SendVerificationRequestParams } from 'next-auth/providers';
+import { createTransport } from 'nodemailer';
+import { prisma } from '../server/db/client';
 
-const sendVerificationRequest = async (params: SendVerificationRequestParams) => {
-  const { identifier, url, provider, theme } = params
-
+const sendVerificationRequest = async (
+  params: SendVerificationRequestParams
+) => {
+  const { identifier, url, provider, theme } = params;
   const user = await prisma.user.findUnique({
     where: { email: identifier },
     select: {
@@ -15,23 +16,23 @@ const sendVerificationRequest = async (params: SendVerificationRequestParams) =>
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
-  const { host } = new URL(url)
-  const transport = createTransport(provider.server)
+  const { host } = new URL(url);
+  const transport = createTransport(provider.server);
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
     subject: `Inloggningslänk till Blindtarmen`,
     text: text({ url }),
     html: html({ url, host, theme }),
-  })
-  const failed = result.rejected.concat(result.pending).filter(Boolean)
+  });
+  const failed = result.rejected.concat(result.pending).filter(Boolean);
   if (failed.length) {
-    throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`)
+    throw new Error(`Email(s) (${failed.join(', ')}) could not be sent`);
   }
-}
+};
 
 /**
  * Email HTML body
@@ -41,7 +42,7 @@ const sendVerificationRequest = async (params: SendVerificationRequestParams) =>
  *
  * @note We don't add the email address to avoid needing to escape it, if you do, remember to sanitize it!
  */
- function html(params: { url: string; host: string; theme: Theme }) {
+function html(params: { url: string; host: string; theme: Theme }) {
   const { url } = params;
 
   return `
@@ -135,7 +136,7 @@ const sendVerificationRequest = async (params: SendVerificationRequestParams) =>
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
 function text({ url }: { url: string }) {
-  return `Välkommen till Blindtarmen!\n\nBesök följande länk för att logga in:\n${url}\n\n`
+  return `Välkommen till Blindtarmen!\n\nBesök följande länk för att logga in:\n${url}\n\n`;
 }
 
 export default sendVerificationRequest;

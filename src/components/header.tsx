@@ -1,33 +1,34 @@
-import React, { useState } from "react";
-import { Header, Group, Burger, Drawer } from "@mantine/core";
-import Logo from "./logo";
-import NavbarContent from "./navbar";
+import React, { useState } from 'react';
+import { Header, Group, Burger, Drawer } from '@mantine/core';
+import Logo from './logo';
+import NavbarContent from './navbar';
 
 const AppendixHeader = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
   return (
     <Header
       height={60}
-      p="sm"
+      p='sm'
       sx={(theme) => ({
         backgroundColor: theme?.colors?.red?.[5],
         color: theme.white,
         zIndex: 516,
-        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.3)",
+        boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.3)',
         border: 0,
       })}
+      style={{}}
     >
-      <Group position="apart">
+      <Group position='apart'>
         <Logo />
         <Group>
           <Burger
-            color="white"
+            color='white'
             opened={navbarOpen}
             onClick={() => setNavbarOpen(!navbarOpen)}
-            title="Open navigation menu"
+            title='Open navigation menu'
             sx={(theme) => ({
-              [theme.fn.largerThan("sm")]: {
-                display: "none",
+              [theme.fn.largerThan('sm')]: {
+                display: 'none',
               },
             })}
           />
@@ -38,15 +39,15 @@ const AppendixHeader = () => {
         size={300}
         opened={navbarOpen}
         onClose={() => setNavbarOpen(false)}
-        position="right"
+        position='right'
         sx={(theme) => ({
-          [theme.fn.largerThan("sm")]: {
-            display: "none",
+          [theme.fn.largerThan('sm')]: {
+            display: 'none',
           },
         })}
         styles={{
           drawer: {
-            paddingTop: "var(--mantine-header-height) !important",
+            paddingTop: 'var(--mantine-header-height) !important',
           },
         }}
       >
