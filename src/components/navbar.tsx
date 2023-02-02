@@ -177,15 +177,11 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   return (
     <Box
       style={{ height: '100%' }}
-      sx={(theme) => ({
-        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-          paddingBottom: 24,
-        },
-      })}
+      pb='md'
       className={classes.navbar}
     >
       {isAdmin && (
-        <Navbar.Section pt='sm' mx='sm' sx={{ paddingBottom: 24 }}>
+        <Navbar.Section pt='sm' mx='sm'>
           <SegmentedControl
             className={classes.control}
             color={theme?.colors?.red?.[6]}
