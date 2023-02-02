@@ -49,8 +49,8 @@ const VerifyRequest = ({
         height: '100vh',
         background: theme.fn.linearGradient(
           215,
-          theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9],
+          theme?.colors?.red?.[7] as string,
+          theme?.colors?.red?.[9] as string,
         ),
       }}
     >

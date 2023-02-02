@@ -12,6 +12,7 @@ import {
 import {
   IconClipboard,
   IconHome,
+  IconInfoSquare,
   IconLogout,
   IconMusic,
   IconPencil,
@@ -76,7 +77,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
           href: `/stats/${getOperatingYear()}`,
           icon: <IconClipboard />,
         },
-        { label: 'Gamla spelningar', href: '/gig', icon: <IconSpeakerphone /> },
+        { label: 'Spelningar', href: '/gig', icon: <IconSpeakerphone /> },
       ],
     },
   ],
@@ -210,6 +211,17 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         <Stack>{links}</Stack>
       </Navbar.Section>
       <Navbar.Section pb='sm' mx='sm'>
+        <Button
+          px={6}
+          leftIcon={<IconInfoSquare />}
+          component={NextLink}
+          href='/about'
+          className={classes.link}
+          styles={{ inner: { justifyContent: 'flex-start' } }}
+          style={{ width: '100%' }}
+        >
+          Om sidan
+        </Button>
         <Button
           px={6}
           leftIcon={<IconLogout />}
