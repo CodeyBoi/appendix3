@@ -20,7 +20,7 @@ const WhosComing = () => {
   return (
     <Box sx={{ maxWidth: LIST_WIDTH }}>
       <Title order={2}>Anmälningar</Title>
-      {gig ? <GigCard gig={gig} showDescription /> : <Loading msg='Laddar spelning...'  />}
+      {gig ? <GigCard gig={gig} /> : <Loading msg='Laddar spelning...'  />}
       {loading && <Box sx={{ maxWidth: "fit-content" }}><Loading msg='Laddar anmälningar...' /></Box>}
       {!loading && <SignupList gigId={gigId} />}
     </Box>
