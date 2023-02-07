@@ -8,10 +8,9 @@ import { NextLink } from "@mantine/next";
 
 interface GigProps {
   gig: Gig & { type: { name: string } };
-  showDescription?: boolean;
 }
 
-const GigCard = ({ gig, showDescription }: GigProps) => {
+const GigCard = ({ gig }: GigProps) => {
   return (
     <Card shadow="sm" p="md" withBorder style={{ overflow: "visible" }}>
       <Stack spacing="sm">
@@ -43,7 +42,7 @@ const GigCard = ({ gig, showDescription }: GigProps) => {
             <GigButtons gig={gig} />
           </Grid.Col>
         </Grid>
-        {showDescription && <Text size="sm">{gig.description}</Text>}
+        <Text size="sm">{gig.description}</Text>
       </Stack>
     </Card>
   );
