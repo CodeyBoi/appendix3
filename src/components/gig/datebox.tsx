@@ -8,11 +8,16 @@ interface DateboxProps {
 
 const Datebox = ({ date }: DateboxProps) => (
   <div className={styles.datebox}>
-    <div className={styles.date}>
-      {date.date()}
+    <div className={styles.datemonth}>
+      <div className={styles.month}>
+        {date.toDate().toLocaleDateString('sv-SE', { month: 'short' }).slice(0, 3).toUpperCase()}
+      </div>
+      <div className={styles.date}>
+        {date.date()}
+      </div>
     </div>
     <div className={styles.day}>
-      {date.toDate().toLocaleDateString('sv-SE', { weekday: 'short' }).toUpperCase()}
+      {date.toDate().toLocaleDateString('sv-SE', { weekday: 'short' }).slice(0, 3).toUpperCase()}
     </div>
   </div>
 );
