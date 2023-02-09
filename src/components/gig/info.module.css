@@ -1,5 +1,5 @@
 .datebox {
-  width: min-content;
+  width: 60px;
   height: min-content;
   display: flex;
   flex-direction: column;
