@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Table, Title, Button, Group, Space } from "@mantine/core";
+import { Box, Table, Title, Button, Group, Space, Switch } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconUser } from "@tabler/icons";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import Entry from "./entry";
 
 interface SignupListProps {
   gigId: string;
+  gigHasHappened?: boolean;
 }
 
 // const STEMS_PER_INSTRUMENT = {
@@ -33,7 +34,7 @@ interface SignupListProps {
 //   Annat: 0,
 // };
 
-const SignupList = ({ gigId }: SignupListProps) => {
+const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
@@ -42,6 +43,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const { data: role } = trpc.corps.getRole.useQuery();
   const isAdmin = role === "admin";
+
+  const [editMode, setEditMode] = React.useState(false);
+
+  const showAdminTools = isAdmin && editMode;
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -53,11 +58,13 @@ const SignupList = ({ gigId }: SignupListProps) => {
       }, {}) ?? [],
     [instruments]
   );
+  // Hack to make sure the conductor is always first
+  instrumentPrecedence["Dirigent"] = -1;
 
   // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
   const signupsSorted = useMemo(
     () =>
-      signups?.sort((a, b) => {
+      signups?.filter((signup) => !gigHasHappened || showAdminTools || signup.attended).sort((a, b) => {
         // Compare instrument precedence
         if (a.instrument !== b.instrument) {
           const aPrio = instrumentPrecedence[a.instrument] ?? Infinity;
@@ -78,7 +85,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         // Compare first name
         return a.firstName.localeCompare(b.firstName);
       }) ?? [],
-    [signups, instrumentPrecedence]
+    [signups, instrumentPrecedence, gigHasHappened, showAdminTools]
   );
 
   // Divide the list of corpsii into people who answered yes and people who answered maybe
@@ -140,13 +147,14 @@ const SignupList = ({ gigId }: SignupListProps) => {
     if (signups.length === 0) {
       return;
     }
+    let lastInstrument = signups[0]?.instrument ?? "";
     return (
       <Table sx={{ width: "unset" }}>
         <thead>
           <tr>
-            <th style={{ width: "120px", borderBottom: isAdmin ? undefined : 0 }}>Instrument</th>
-            <th style={{ borderBottom: isAdmin ? undefined : 0 }}>Namn</th>
-            {isAdmin && (
+            <th style={{ width: "120px", borderBottom: showAdminTools ? undefined : 0 }}>Instrument</th>
+            <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>Namn</th>
+            {showAdminTools && (
               <>
                 <th align="center">Närvaro</th>
                 <th align="center">Ta bort</th>
@@ -155,22 +163,29 @@ const SignupList = ({ gigId }: SignupListProps) => {
           </tr>
         </thead>
         <tbody>
-          {signups.map((signup) => (
-            <tr key={signup.corpsId}>
-              <Entry
-                signup={signup}
-                isAdmin={isAdmin}
-                setAttendance={(attended) =>
-                  editAttendance.mutate({
-                    corpsId: signup.corpsId,
-                    gigId,
-                    attended,
-                  })
-                }
-                handleDelete={() => handleDelete(signup.corpsId)}
-              />
-            </tr>
-          ))}
+          {signups.map((signup) => {
+            const addNewline = signup.instrument !== lastInstrument;
+            lastInstrument = signup.instrument;
+            return (
+              <React.Fragment key={signup.corpsId}>
+                {addNewline && <tr key={signup.corpsId + "newline"}><td colSpan={showAdminTools ? 4 : 2} style={{ borderBottom: 0 }} /></tr>}
+                <tr>
+                  <Entry
+                    signup={signup}
+                    isAdmin={showAdminTools}
+                    setAttendance={(attended) =>
+                      editAttendance.mutate({
+                        corpsId: signup.corpsId,
+                        gigId,
+                        attended,
+                      })
+                    }
+                    handleDelete={() => handleDelete(signup.corpsId)}
+                  />
+                </tr>
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </Table>
     );
@@ -182,6 +197,16 @@ const SignupList = ({ gigId }: SignupListProps) => {
   return (
     <Box>
       {isAdmin && (
+        <Switch
+          label="Redigera anmälningar"
+          checked={editMode}
+          onChange={(event) => {
+            setEditMode(event.currentTarget.checked);
+            utils.gig.getSignups.invalidate({ gigId });
+          }}
+        />
+      )}
+      {showAdminTools && (
         <form
           onSubmit={form.onSubmit((values) =>
             addSignups.mutateAsync({
@@ -217,7 +242,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
             </Title>
           ) : (
             <>
-              <Title order={3}>Dessa är anmälda:</Title>
+              <Title order={3}>{gigHasHappened ? 'Dessa var med:' : 'Dessa är anmälda:'}</Title>
               {yesTable}
             </>
           )}

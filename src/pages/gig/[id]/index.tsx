@@ -16,13 +16,14 @@ const WhosComing = () => {
     trpc.gig.getWithId.useQuery({ gigId }, { enabled: !!router.isReady });
 
   const loading = gigStatus === "loading";
+  const gigHasHappened = gig ? gig.date.getTime() < new Date().getTime() - 1000 * 60 * 60 * 24 : false;
 
   return (
     <Box sx={{ maxWidth: LIST_WIDTH }}>
       <Title order={2}>Anmälningar</Title>
       {gig ? <GigCard gig={gig} /> : <Loading msg='Laddar spelning...'  />}
       {loading && <Box sx={{ maxWidth: "fit-content" }}><Loading msg='Laddar anmälningar...' /></Box>}
-      {!loading && <SignupList gigId={gigId} />}
+      {!loading && <SignupList gigId={gigId} gigHasHappened={gigHasHappened} />}
     </Box>
   );
 
