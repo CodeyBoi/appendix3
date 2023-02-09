@@ -32,8 +32,8 @@ const Entry = ({
 
   return (
     <>
-      <td style={tdStyle}>{signup.instrument}</td>
-      <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{name}</td>
+      <td style={{ ...tdStyle, width: "40px" }}>{signup.instrument}</td>
+      <td style={{ ...tdStyle, whiteSpace: isAdmin ? "break-spaces" : "nowrap" }}>{name}</td>
       {isAdmin && (
         <>
           <td style={tdStyle}>

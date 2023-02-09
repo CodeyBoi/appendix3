@@ -152,19 +152,19 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
       <Table sx={{ width: "unset" }}>
         <thead>
           <tr>
-            <th style={{ width: "120px", borderBottom: showAdminTools ? undefined : 0 }}>Instrument</th>
+            <th style={{ width: "75px", borderBottom: showAdminTools ? undefined : 0 }}>Instrument</th>
             <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>Namn</th>
             {showAdminTools && (
               <>
-                <th align="center">Närvaro</th>
-                <th align="center">Ta bort</th>
+                <th align="center" style={{ paddingLeft: "0px", paddingRight: "6px" }}>Närvaro</th>
+                <th align="center" style={{ paddingLeft: "0px", paddingRight: "0px" }}>Ta bort</th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
           {signups.map((signup) => {
-            const addNewline = signup.instrument !== lastInstrument;
+            const addNewline = !showAdminTools && signup.instrument !== lastInstrument;
             lastInstrument = signup.instrument;
             return (
               <React.Fragment key={signup.corpsId}>
