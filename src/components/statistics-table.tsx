@@ -1,9 +1,9 @@
-import { Stack, Table, Text } from "@mantine/core";
-import React from "react";
-import { getOperatingYear } from "../pages/stats/[paramYear]";
-import { trpc } from "../utils/trpc";
-import AlertError from "./alert-error";
-import Loading from "./loading";
+import { Stack, Table, Text } from '@mantine/core';
+import React from 'react';
+import { getOperatingYear } from '../pages/stats/[paramYear]';
+import { trpc } from '../utils/trpc';
+import AlertError from './alert-error';
+import Loading from './loading';
 
 interface StatisticsTableProps {
   operatingYear: number;
@@ -20,18 +20,20 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
 
   const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery(
     { corpsIds },
-    { enabled: !!corpsIds }
+    { enabled: !!corpsIds },
   );
 
   const isCurrentYear = operatingYear === getOperatingYear();
 
-  const nbrOfGigsString = `Detta verksamhetsår ${isCurrentYear ? 'har vi hittills haft' : 'hade vi'} ${nbrOfGigs} spelning${
-    nbrOfGigs === 1 ? "" : "ar"
-  }`;
+  const nbrOfGigsString = `Detta verksamhetsår ${
+    isCurrentYear ? 'har vi hittills haft' : 'hade vi'
+  } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`;
   const positiveGigsString =
     (positivelyCountedGigs ?? 0) > 0
-      ? `, där ${positivelyCountedGigs} ${isCurrentYear ? 'räknats' : 'räknades'} positivt.`
-      : ".";
+      ? `, där ${positivelyCountedGigs} ${
+          isCurrentYear ? 'räknats' : 'räknades'
+        } positivt.`
+      : '.';
 
   const ownPoints =
     corps && stats ? stats.corpsStats[corps.id]?.gigsAttended : undefined;
@@ -39,19 +41,19 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
     corps && stats ? stats.corpsStats[corps.id]?.attendence : undefined;
   const ownPointsString =
     ownPoints && ownAttendence
-      ? `Du ${isCurrentYear ? 'har varit' : 'var'} med på ${ownPoints} spelning${
-          ownPoints === 1 ? "" : "ar"
-        }, vilket ${isCurrentYear ? 'motsvarar' : 'motsvarade'} ${Math.round(
-          ownAttendence * 100
-        )}%.`
+      ? `Du ${
+          isCurrentYear ? 'har varit' : 'var'
+        } med på ${ownPoints} spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
+          isCurrentYear ? 'motsvarar' : 'motsvarade'
+        } ${Math.round(ownAttendence * 100)}%.`
       : undefined;
 
   if (!corpsStats || !corpsPoints) {
-    return <Loading msg="Laddar statistik..." />;
+    return <Loading msg='Laddar statistik...' />;
   }
 
-  if (statsStatus === "error") {
-    return <AlertError msg="Kunde inte hämta spelningsstatistik." />;
+  if (statsStatus === 'error') {
+    return <AlertError msg='Kunde inte hämta spelningsstatistik.' />;
   }
 
   return (
@@ -66,11 +68,25 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
           <Table>
             <thead>
               <tr>
-                <th>Nummer</th>
+                <th>
+                  #
+                </th>
                 <th>Namn</th>
-                <th style={{ textAlign: "center" }}>Spelpoäng</th>
-                <th style={{ textAlign: "center" }}>Närvaro</th>
-                <th style={{ textAlign: "center" }}>Totala spelpoäng</th>
+                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
+                  Poäng
+                </th>
+                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
+                  Närvaro
+                </th>
+                <th
+                  style={{
+                    textAlign: 'center',
+                    paddingLeft: '0px',
+                    paddingRight: '0px',
+                  }}
+                >
+                  Totala poäng
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -79,13 +95,21 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
                 if (!stat) return null;
                 return (
                   <tr key={id}>
-                    <td>{stat.number ?? "p.e."}</td>
+                    <td
+                      align='center'
+                      style={{ paddingLeft: '0px', paddingRight: '0px' }}
+                    >
+                      {stat.number ?? 'p.e.'}
+                    </td>
                     <td>{`${stat.firstName} ${stat.lastName}`}</td>
-                    <td align="center">{stat.gigsAttended}</td>
-                    <td align="center">{`${Math.round(
-                      stat.attendence * 100
-                    )}%`}</td>
-                    <td align="center">{corpsPoints.points[id]}</td>
+                    <td align='center' style={{ paddingLeft: '0px' }}>
+                      {stat.gigsAttended}
+                    </td>
+                    <td
+                      align='center'
+                      style={{ paddingLeft: '0px' }}
+                    >{`${Math.round(stat.attendence * 100)}%`}</td>
+                    <td align='center'>{corpsPoints.points[id]}</td>
                   </tr>
                 );
               })}
