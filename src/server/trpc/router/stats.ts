@@ -114,4 +114,38 @@ export const statsRouter = router({
         corpsIds: Object.keys(points),
       };
     }),
+
+  getCorpsBuddy: protectedProcedure
+    .query(async ({ ctx }) => {
+      const corpsId = ctx.session.user.corps.id;
+      type Entry = {
+        firstName: string;
+        lastName: string;
+        number: number | null;
+        points: number;
+      };
+      const result = await ctx.prisma.$queryRaw<Entry[]>`
+        SELECT
+          number,
+          firstName,
+          lastName,
+          SUM(points) AS points
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        JOIN Corps ON Corps.id = GigSignup.corpsId
+        WHERE gigId IN (
+          SELECT gigId
+          FROM GigSignup
+          WHERE corpsId = ${corpsId}
+          AND attended = true
+        )
+        AND corpsId != ${corpsId}
+        AND attended = true
+        GROUP BY corpsId
+        ORDER BY points DESC
+        LIMIT 1
+      `;
+      return result[0];
+    }),
+
 });

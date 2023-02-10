@@ -1,5 +1,5 @@
-import { Group, Select, Stack, Title } from "@mantine/core";
 import React from "react";
+import { Group, Select, Stack, Title } from "@mantine/core";
 import StatisticsTable from "../../../components/statistics-table";
 import Loading from "../../../components/loading";
 import { useRouter } from "next/router";
@@ -22,14 +22,14 @@ const operatingYears = Array.from(
 const Statistics: NextPage = () => {
   const currentOperatingYear = getOperatingYear();
 
-  const { query, isReady } = useRouter();
-  const { paramYear } = query as { paramYear: string };
+  const router = useRouter();
+  const { paramYear } = router.query as { paramYear: string };
 
   const [year, setYear] = React.useState<number>(
     parseInt(paramYear) || currentOperatingYear
   );
 
-  if (!isReady) {
+  if (!router.isReady) {
     return <Loading msg="Laddar statistik..." />;
   }
 
@@ -55,6 +55,7 @@ const Statistics: NextPage = () => {
             if (year) {
               setYear(year);
             }
+            router.push(`/stats/${y}`);
           }}
         />
       </Group>
