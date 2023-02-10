@@ -63,7 +63,6 @@ const Statistics: NextPage = () => {
       </Group>
       <StatisticsTable operatingYear={year} />
       <Button
-        
         component={NextLink}
         href="/stats/for/nerds"
         leftIcon={<IconMoodNerd />}
