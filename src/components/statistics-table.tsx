@@ -1,4 +1,6 @@
-import { Stack, Table, Text } from '@mantine/core';
+import { Button, Stack, Table, Text } from '@mantine/core';
+import { NextLink } from '@mantine/next';
+import { IconMoodNerd } from '@tabler/icons';
 import React from 'react';
 import { getOperatingYear } from '../pages/stats/[paramYear]';
 import { trpc } from '../utils/trpc';
@@ -115,6 +117,13 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
               })}
             </tbody>
           </Table>
+          <Button
+            component={NextLink}
+            href="/stats/for/nerds"
+            leftIcon={<IconMoodNerd />}
+          >
+            Statistik för nördar
+          </Button>
         </Stack>
       )}
     </>
