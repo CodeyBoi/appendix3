@@ -30,6 +30,20 @@ const StatsForNerds = () => {
           </Stack>
         </Grid.Col>
       </Grid>
+      <Text>
+        <i>
+          <b>
+            DENNA SIDA ÄR UNDER KONSTRUKTION. SNART I EN BLINDTARM NÄRA DIG!
+          </b>
+          <br />
+          (har du några förslag på vad som skulle kunna finnas på denna sida?
+          skicka ett mail till{' '}
+          <a style={{ color: 'blue' }} href='mailto:itk@bleckhornen.org'>
+            <u>itk@bleckhornen.org</u>
+          </a>
+          )
+        </i>
+      </Text>
     </Stack>
   );
 };
