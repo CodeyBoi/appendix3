@@ -27,10 +27,6 @@ export const authOptions: NextAuthOptionsCallback = (req, res) => {
         }
       },
       async redirect({ url, baseUrl }) {
-        if (url.includes('login')) {
-          console.log(url);
-        }
-
         // Allows relative callback URLs
         if (url.startsWith('/')) return `${baseUrl}${url}`;
         // Allows callback URLs on the same origin
@@ -76,7 +72,6 @@ export const authOptions: NextAuthOptionsCallback = (req, res) => {
 
             return token;
           } catch (error: any) {
-            console.log(error);
             throw Error(error);
           }
         },
