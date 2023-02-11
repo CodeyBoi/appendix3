@@ -116,36 +116,59 @@ export const statsRouter = router({
     }),
 
   getCorpsBuddy: protectedProcedure
-    .query(async ({ ctx }) => {
+    .input(z.object({
+      start: z.date().optional(),
+      end: z.date().optional()
+    }))
+    .query(async ({ ctx, input }) => {
+      const { start, end } = input;
       const corpsId = ctx.session.user.corps.id;
       type Entry = {
+        corpsId: string;
         firstName: string;
         lastName: string;
         number: number | null;
-        points: number;
+        commonGigs: number;
+        similarity: number;
       };
       const result = await ctx.prisma.$queryRaw<Entry[]>`
+        WITH attendedGigs AS (
+          SELECT corpsId, sum(points) AS points
+          FROM GigSignup
+          JOIN Gig ON Gig.id = GigSignup.gigId
+          WHERE attended = true
+          ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
+          ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
+          GROUP BY corpsId
+        )
         SELECT
+          GigSignup.corpsId AS corpsId,
           number,
           firstName,
           lastName,
-          SUM(points) AS points
+          SUM(Gig.points) AS commonGigs,
+          SUM(Gig.points) / (attendedGigs.points + (SELECT points FROM attendedGigs WHERE corpsId = ${corpsId} LIMIT 1) - SUM(Gig.points)) AS similarity
         FROM GigSignup
         JOIN Gig ON Gig.id = GigSignup.gigId
         JOIN Corps ON Corps.id = GigSignup.corpsId
+        JOIN attendedGigs ON attendedGigs.corpsId = GigSignup.corpsId
         WHERE gigId IN (
           SELECT gigId
           FROM GigSignup
           WHERE corpsId = ${corpsId}
           AND attended = true
         )
-        AND corpsId != ${corpsId}
+        AND GigSignup.corpsId != ${corpsId}
         AND attended = true
-        GROUP BY corpsId
-        ORDER BY points DESC
-        LIMIT 1
+        ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
+        ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
+        GROUP BY GigSignup.corpsId
+        ORDER BY similarity DESC
       `;
-      return result[0];
+      return {
+        corpsBuddy: result[0],
+        corpsEnemy: result[result.length - 1],
+      };
     }),
 
 });
