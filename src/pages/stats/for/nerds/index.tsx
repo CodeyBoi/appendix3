@@ -78,9 +78,9 @@ const encouragements = [
 const hash = (str: string) => {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
-    hash = (((hash << 5) + hash) + str.charCodeAt(i)) % 0x1000000000000;
+    hash = (((hash << 5) + hash) + str.charCodeAt(i));
   }
-  return hash;
+  return Math.abs(hash);
 };
 
 const getEncouragement = (corpsId1: string, corpsId2: string) => {
