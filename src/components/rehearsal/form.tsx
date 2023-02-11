@@ -50,7 +50,6 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
   });
 
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
     values.date.setMinutes(values.date.getMinutes() - values.date.getTimezoneOffset());
     if (newRehearsal) {
       await mutation.mutateAsync(values);
