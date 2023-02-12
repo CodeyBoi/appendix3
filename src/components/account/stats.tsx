@@ -1,11 +1,10 @@
-import { Stack, Title, Text } from "@mantine/core";
-import React from "react";
-import { getOperatingYear } from "../../pages/stats/[paramYear]";
-import { trpc } from "../../utils/trpc";
-import Loading from "../loading";
+import { Stack, Title, Text } from '@mantine/core';
+import React from 'react';
+import { getOperatingYear } from '../../pages/stats/[paramYear]';
+import { trpc } from '../../utils/trpc';
+import Loading from '../loading';
 
 const CorpsStats = () => {
-
   const currentOperatingYear = getOperatingYear();
   const { data: points, isLoading: pointsLoading } =
     trpc.corps.getPoints.useQuery();
@@ -14,31 +13,68 @@ const CorpsStats = () => {
       operatingYear: currentOperatingYear,
       selfOnly: true,
     });
-
+  const statsStart = new Date(currentOperatingYear, 8, 1); // September 1st
+  const operatingYearEnd = new Date(currentOperatingYear + 1, 7, 31); // August 31st next year
+  const {
+    data: orchestraRehearsalAttendance,
+    isLoading: orchestraAttendanceLoading,
+  } = trpc.rehearsal.getOwnOrchestraAttendance.useQuery({
+    start: statsStart,
+    end: operatingYearEnd,
+  });
+  const {
+    data: balletRehearsalAttendance,
+    isLoading: balletAttendanceLoading,
+  } = trpc.rehearsal.getOwnBalletAttendance.useQuery({
+    start: statsStart,
+    end: operatingYearEnd,
+  });
   const corpsStats = stats?.corpsStats[stats.corpsIds[0] as string];
-  
-  const loading = pointsLoading || statsLoading;
+
+  const loading =
+    pointsLoading ||
+    statsLoading ||
+    orchestraAttendanceLoading ||
+    balletAttendanceLoading;
   return (
     <Stack>
       <Title order={3}>Närvaro</Title>
-      {loading && <Loading msg="Laddar..." />}
+      {loading && <Loading msg='Laddar...' />}
       {points !== undefined && (
         <Title order={5}>{`Du har totalt ${points} spelpoäng!`}</Title>
       )}
-      {corpsStats && (
-        <Stack spacing={0}>
-          <Title order={6}>
-            {`Nuvarande verksamhetsår (${currentOperatingYear}-${
-              currentOperatingYear + 1
-            }):`}
-          </Title>
-          <Text>
-            {`Spelpoäng: ${corpsStats.gigsAttended}`}
-            <br />
-            {`Spelningar: ${Math.round(corpsStats.attendence * 100)}%`}
-          </Text>
-        </Stack>
-      )}
+      {corpsStats &&
+        orchestraRehearsalAttendance !== undefined &&
+        balletRehearsalAttendance !== undefined && (
+          <Stack spacing={0}>
+            <Title order={6}>
+              {`Nuvarande verksamhetsår (${currentOperatingYear}-${
+                currentOperatingYear + 1
+              }):`}
+            </Title>
+            <Text>
+              {`Spelpoäng: ${corpsStats.gigsAttended}`}
+              <br />
+              {`Spelningar: ${Math.round(corpsStats.attendence * 100)}%`}
+              {orchestraRehearsalAttendance !== 0 && (
+                <>
+                  <br />
+                  {`Orkesterrepor: ${Math.round(
+                    orchestraRehearsalAttendance * 100,
+                  )}%`}
+                </>
+              )}
+              {balletRehearsalAttendance !== 0 && (
+                <>
+                  <br />
+                  {`Balettrepor: ${Math.round(
+                    balletRehearsalAttendance * 100,
+                  )}%`}
+                </>
+              )}
+            </Text>
+          </Stack>
+        )}
     </Stack>
   );
 };
