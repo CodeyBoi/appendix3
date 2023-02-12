@@ -60,7 +60,7 @@ This will install all dependencies for the project.
 We will now define some environment variables. Copy the `.env.example` file to `.env` via
 
 ```bash
-cp .env.example .env
+cp .env-example .env
 ```
 
 Then, open the `.env` file and fill in the values. `NEXTAUTH_SECRET` should be set to any random value. Do this by running
