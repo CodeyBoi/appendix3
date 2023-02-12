@@ -1,10 +1,11 @@
-import { Corps } from "@prisma/client";
-import { z } from "zod";
-import { router, adminProcedure } from "../trpc";
+import { Corps } from '@prisma/client';
+import { start } from 'repl';
+import { z } from 'zod';
+import { router, adminProcedure, protectedProcedure } from '../trpc';
 
 export const rehearsalRouter = router({
   getWithId: adminProcedure
-    .input(z.string().cuid("Invalid CUID"))
+    .input(z.string().cuid('Invalid CUID'))
     .query(async ({ ctx, input }) => {
       const rehearsal = await ctx.prisma.rehearsal.findUnique({
         where: { id: input },
@@ -27,7 +28,7 @@ export const rehearsalRouter = router({
       });
 
       if (!rehearsal) {
-        throw new Error("Rehearsal not found");
+        throw new Error('Rehearsal not found');
       }
 
       const corpsIds = rehearsal.corpsii.map((corps) => corps.corps.id) ?? [];
@@ -45,7 +46,7 @@ export const rehearsalRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
@@ -64,7 +65,7 @@ export const rehearsalRouter = router({
           },
         },
         orderBy: {
-          date: "asc",
+          date: 'asc',
         },
       });
       return rehearsals.map((rehearsal) => ({
@@ -78,12 +79,12 @@ export const rehearsalRouter = router({
   upsert: adminProcedure
     .input(
       z.object({
-        id: z.string().cuid("Invalid CUID").optional(),
+        id: z.string().cuid('Invalid CUID').optional(),
         title: z.string(),
         date: z.date(),
         type: z.string(),
-        corpsIds: z.array(z.string().cuid("Invalid CUID")).optional(),
-      })
+        corpsIds: z.array(z.string().cuid('Invalid CUID')).optional(),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, title, date, type, corpsIds } = input;
@@ -108,7 +109,7 @@ export const rehearsalRouter = router({
         },
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
-        where: { id: id ?? "" },
+        where: { id: id ?? '' },
         create: data,
         update: data,
       });
@@ -118,9 +119,9 @@ export const rehearsalRouter = router({
   updateAttendance: adminProcedure
     .input(
       z.object({
-        rehearsalId: z.string().cuid("Invalid CUID"),
-        corpsIds: z.array(z.string().cuid("Invalid CUID")),
-      })
+        rehearsalId: z.string().cuid('Invalid CUID'),
+        corpsIds: z.array(z.string().cuid('Invalid CUID')),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { rehearsalId, corpsIds } = input;
@@ -144,7 +145,7 @@ export const rehearsalRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
@@ -154,7 +155,7 @@ export const rehearsalRouter = router({
           lte: end,
         },
         type: {
-          name: "Orkesterrepa",
+          name: 'Orkesterrepa',
         },
       };
       const rehearsals = await ctx.prisma.rehearsal.aggregate({
@@ -164,7 +165,7 @@ export const rehearsalRouter = router({
         },
       });
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
-        by: ["corpsId"],
+        by: ['corpsId'],
         where: {
           rehearsal: whereRehearsal,
         },
@@ -180,7 +181,7 @@ export const rehearsalRouter = router({
         },
         orderBy: {
           _count: {
-            rehearsalId: "desc",
+            rehearsalId: 'desc',
           },
         },
       });
@@ -211,7 +212,7 @@ export const rehearsalRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
@@ -221,7 +222,7 @@ export const rehearsalRouter = router({
           lte: end,
         },
         type: {
-          name: "Balettrepa",
+          name: 'Balettrepa',
         },
       };
       const rehearsals = await ctx.prisma.rehearsal.aggregate({
@@ -231,7 +232,7 @@ export const rehearsalRouter = router({
         },
       });
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
-        by: ["corpsId"],
+        by: ['corpsId'],
         where: {
           rehearsal: whereRehearsal,
         },
@@ -247,7 +248,7 @@ export const rehearsalRouter = router({
         },
         orderBy: {
           _count: {
-            rehearsalId: "desc",
+            rehearsalId: 'desc',
           },
         },
       });
@@ -277,4 +278,70 @@ export const rehearsalRouter = router({
     const types = await ctx.prisma.rehearsalType.findMany();
     return types.map((type) => type.name);
   }),
+
+  getOwnOrchestraAttendance: protectedProcedure
+    .input(z.object({ start: z.date(), end: z.date() }))
+    .query(async ({ ctx, input }) => {
+      const { start, end } = input;
+      const corpsId = ctx.session.user.corps.id;
+      const attendance = await ctx.prisma.corpsRehearsal.count({
+        where: {
+          corpsId,
+          rehearsal: {
+            type: {
+              name: 'Orkesterrepa',
+            },
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+      });
+      const allRehearsals = await ctx.prisma.rehearsal.count({
+        where: {
+          type: {
+            name: 'Orkesterrepa',
+          },
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+      });
+      return attendance / allRehearsals;
+    }),
+
+    getOwnBalletAttendance: protectedProcedure
+    .input(z.object({ start: z.date(), end: z.date() }))
+    .query(async ({ ctx, input }) => {
+      const { start, end } = input;
+      const corpsId = ctx.session.user.corps.id;
+      const attendance = await ctx.prisma.corpsRehearsal.count({
+        where: {
+          corpsId,
+          rehearsal: {
+            type: {
+              name: 'Balettrepa',
+            },
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+      });
+      const allRehearsals = await ctx.prisma.rehearsal.count({
+        where: {
+          type: {
+            name: 'Balettrepa',
+          },
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+      });
+      return attendance / allRehearsals;
+    }),
 });
