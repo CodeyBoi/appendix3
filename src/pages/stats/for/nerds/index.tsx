@@ -1,13 +1,25 @@
 import React, { useMemo } from 'react';
-import { Stack, Title, Text, useMantineTheme } from '@mantine/core';
+import {
+  Stack,
+  Title,
+  Text,
+  useMantineTheme,
+  Group,
+  Grid,
+} from '@mantine/core';
 import { trpc } from '../../../../utils/trpc';
 import { getOperatingYear } from '../../[paramYear]/index';
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Line,
   LineChart,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -100,6 +112,40 @@ const getEncouragement = (corpsId1: string, corpsId2: string) => {
   return encouragements[hash(combinedIndex) % encouragements.length];
 };
 
+const gigInstruments = [
+  {
+    name: 'Slagverk',
+    value: 130,
+  },
+  {
+    name: 'Trombon',
+    value: 4,
+  },
+];
+
+const statPoints = [
+  {
+    name: 'Musicerande',
+    value: 7.6,
+  },
+  {
+    name: 'Koreografi',
+    value: 2.6,
+  },
+  {
+    name: 'Velighet',
+    value: 3.6,
+  },
+  {
+    name: 'Dansande',
+    value: 8.6,
+  },
+  {
+    name: 'Corpsighet',
+    value: 9.6,
+  },
+];
+
 const StatsForNerds = () => {
   const operatingYear = getOperatingYear();
   const { data: self } = trpc.corps.getSelf.useQuery();
@@ -129,7 +175,7 @@ const StatsForNerds = () => {
             .toUpperCase() +
           ' ' +
           item.month.getFullYear(),
-        spelningar: item.points,
+        points: item.points,
       })),
     [monthlyStats],
   );
@@ -158,15 +204,18 @@ const StatsForNerds = () => {
 
   return (
     <Stack sx={{ maxWidth: 700 }}>
-      <Title order={2}>Statistik för nördar</Title>
+      <Title order={2}>Statistik för nördar 🤓</Title>
       <Stack>
         <Stack>
-          <Title order={3}>Personlig statistik</Title>
+          <Title order={4}>
+            Graf över hur cool du varit från månad till månad 😎
+          </Title>
           <ResponsiveContainer width='100%' height={400}>
             <LineChart data={chartData} style={{ marginLeft: '-35px' }}>
               <Line
+                name='Spelningar'
                 type='monotone'
-                dataKey='spelningar'
+                dataKey='points'
                 stroke={`${theme.colors.red?.[5]}`}
               />
               <CartesianGrid stroke='#ccc' strokeDasharray='5 5' />
@@ -175,6 +224,45 @@ const StatsForNerds = () => {
               <Tooltip />
             </LineChart>
           </ResponsiveContainer>
+          <Grid>
+            <Grid.Col span={6}>
+              <Title order={4}>Vilka instrument du spelat 🎶</Title>
+              <ResponsiveContainer width='100%' height={210}>
+                <PieChart>
+                  <Pie
+                    data={gigInstruments}
+                    dataKey='value'
+                    outerRadius={80}
+                    fill={`${theme.colors.red?.[5]}`}
+                    fillOpacity={0.6}
+                  />
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Title order={4}>Dina corpsegenskaper 📋</Title>
+              <ResponsiveContainer width='100%' height={210}>
+                <RadarChart outerRadius={80} data={statPoints}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey='name' />
+                  <Radar
+                    name='Värde'
+                    dataKey='value'
+                    stroke={`${theme.colors.red?.[5]}`}
+                    fill={`${theme.colors.red?.[5]}`}
+                    fillOpacity={0.6}
+                    max={10}
+                  />
+                  <Tooltip />
+                </RadarChart>
+              </ResponsiveContainer>
+              <Text>
+                (detta är bara placeholders. har du en kul idé kontakta oss!)
+              </Text>
+            </Grid.Col>
+          </Grid>
+          <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
           <Text>
             {corpsBuddy && `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
             <br />
