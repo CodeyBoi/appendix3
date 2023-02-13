@@ -2,7 +2,6 @@ import { Button, Stack, Table, Text } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { IconMoodNerd } from '@tabler/icons';
 import React from 'react';
-import { getOperatingYear } from '../pages/stats/[paramYear]';
 import { trpc } from '../utils/trpc';
 import AlertError from './alert-error';
 import Loading from './loading';
@@ -27,15 +26,17 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     { enabled: !!corpsIds },
   );
 
-  const isCurrentYear = start.getFullYear() === getOperatingYear();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isNow = today <= end;
 
-  const nbrOfGigsString = `Denna period ${
-    isCurrentYear ? 'har vi hittills haft' : 'hade vi'
-  } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`;
+  const nbrOfGigsString = nbrOfGigs !== 0 ? `Denna period ${
+    isNow ? 'har vi hittills haft' : 'hade vi'
+  } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}` : '';
   const positiveGigsString =
     (positivelyCountedGigs ?? 0) > 0
       ? `, där ${positivelyCountedGigs} ${
-          isCurrentYear ? 'räknats' : 'räknades'
+          isNow ? 'räknats' : 'räknades'
         } positivt.`
       : '.';
 
@@ -43,13 +44,14 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     corps && stats ? stats.corpsStats[corps.id]?.gigsAttended : undefined;
   const ownAttendence =
     corps && stats ? stats.corpsStats[corps.id]?.attendence : undefined;
+  // Somehow ownPoints is a string, so == is used instead of ===
   const ownPointsString =
-    ownPoints && ownAttendence
+    ownPoints && ownAttendence && nbrOfGigs !== 0
       ? `Du ${
-          isCurrentYear ? 'har varit' : 'var'
-        } med på ${ownPoints} spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
-          isCurrentYear ? 'motsvarar' : 'motsvarade'
-        } ${Math.round(ownAttendence * 100)}%.`
+          isNow ? 'har varit' : 'var'
+        } med på ${ownPoints} spelning${ownPoints == 1 ? '' : 'ar'}, vilket ${
+          isNow ? 'motsvarar' : 'motsvarade'
+        } ${Math.round(ownAttendence * 100)}% närvaro.`
       : undefined;
 
   if (!corpsStats || !corpsPoints) {
@@ -63,11 +65,11 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
   return (
     <>
       {corpsIds && corpsIds.length === 0 && (
-        <Text>Det finns inga statistikuppgifter för detta år.</Text>
+        <Text>Det finns inga statistikuppgifter för denna period.</Text>
       )}
       {corpsPoints && corpsStats && corpsIds && (
         <Stack>
-          <Text>{nbrOfGigsString + positiveGigsString}</Text>
+          <Text>{nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}</Text>
           {ownPointsString && <Text>{ownPointsString}</Text>}
           <Table>
             <thead>
