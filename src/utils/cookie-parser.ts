@@ -5,9 +5,9 @@ interface ObjectType {
 const cookieParser = (cookieString: string) => {
   if (cookieString === '') return {};
 
-  let pairs = cookieString.split(';');
+  const pairs = cookieString.split(';');
 
-  let splittedPairs = pairs.map((cookie) => cookie.split('='));
+  const splittedPairs = pairs.map((cookie) => cookie.split('='));
 
   const cookieObj = splittedPairs.reduce(
     (obj: ObjectType, cookie: string[]) => {
