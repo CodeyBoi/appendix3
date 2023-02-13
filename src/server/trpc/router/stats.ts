@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
 export const statsRouter = router({
-  get: protectedProcedure
+  getYearly: protectedProcedure
     .input(
       z.object({
         start: z.date().optional(),
@@ -177,40 +177,4 @@ export const statsRouter = router({
         corpsEnemy: result[result.length - 1],
       };
     }),
-
-  getMonthly: protectedProcedure
-    .input(
-      z.object({
-        start: z.date().optional(),
-        end: z.date().optional(),
-        corpsId: z.string().optional(),
-      }).optional(),
-    )
-    .query(async ({ ctx, input }) => {
-      const ownCorpsId = ctx.session.user.corps.id;
-      const { start, end, corpsId = ownCorpsId } = input ?? {};
-      type Entry = {
-        month: Date;
-        points: string;
-      };
-      const data = await ctx.prisma.$queryRaw<Entry[]>`
-        SELECT
-          DATE_FORMAT(date, '%Y-%m-01') AS month,
-          SUM(points) AS points
-        FROM GigSignup
-        JOIN Gig ON Gig.id = GigSignup.gigId
-        WHERE attended = true
-        AND corpsId = ${corpsId}
-        ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
-        ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
-        GROUP BY month
-        ORDER BY month
-      `;
-      return data.map((entry) => ({
-        points: parseInt(entry.points),
-        month: new Date(entry.month),
-      }));
-    }),
-
-
 });

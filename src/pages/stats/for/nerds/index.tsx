@@ -1,18 +1,7 @@
-import React, { useMemo } from 'react';
-import { Stack, Title, Text, useMantineTheme } from '@mantine/core';
+import React from 'react';
+import { Stack, Title, Text } from '@mantine/core';
 import { trpc } from '../../../../utils/trpc';
 import { getOperatingYear } from '../../[paramYear]/index';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 
 const encouragements = [
   'Ni är verkligen ett bra team!',
@@ -89,50 +78,24 @@ const encouragements = [
 const hash = (str: string) => {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) + hash + str.charCodeAt(i);
+    hash = (((hash << 5) + hash) + str.charCodeAt(i));
   }
   return Math.abs(hash);
 };
 
 const getEncouragement = (corpsId1: string, corpsId2: string) => {
-  const combinedIndex =
-    corpsId1 > corpsId2 ? corpsId1 + corpsId2 : corpsId2 + corpsId1;
+  const combinedIndex = corpsId1 > corpsId2 ? corpsId1 + corpsId2 : corpsId2 + corpsId1;
   return encouragements[hash(combinedIndex) % encouragements.length];
 };
 
 const StatsForNerds = () => {
   const operatingYear = getOperatingYear();
   const { data: self } = trpc.corps.getSelf.useQuery();
-
-  const theme = useMantineTheme();
-
+ 
   const start = new Date(operatingYear, 8, 1);
   const end = new Date(operatingYear + 1, 7, 31);
-  const { data: corpsRelations } = trpc.stats.getCorpsBuddy.useQuery({
-    start,
-    end,
-  });
+  const { data: corpsRelations } = trpc.stats.getCorpsBuddy.useQuery({ start, end });
   const { corpsBuddy, corpsEnemy } = corpsRelations ?? {};
-
-  const { data: monthlyStats } = trpc.stats.getMonthly.useQuery({
-    start: new Date(2010, 0, 1),
-    end,
-  });
-
-  const chartData = useMemo(
-    () =>
-      monthlyStats?.map((item) => ({
-        name:
-          item.month
-            .toLocaleDateString('sv-SE', { month: 'short' })
-            .slice(0, 3)
-            .toUpperCase() +
-          ' ' +
-          item.month.getFullYear(),
-        spelningar: item.points,
-      })),
-    [monthlyStats],
-  );
 
   const corpsBuddyName = `${
     corpsBuddy?.number !== null ? '#' + corpsBuddy?.number.toString() : 'p.e. '
@@ -141,20 +104,19 @@ const StatsForNerds = () => {
     corpsEnemy?.number !== null ? '#' + corpsEnemy?.number.toString() : 'p.e. '
   } ${corpsEnemy?.firstName} ${corpsEnemy?.lastName}`;
 
-  const encouragement = getEncouragement(
-    self?.id ?? '',
-    corpsBuddy?.corpsId ?? '',
-  );
+  const encouragement = getEncouragement(self?.id ?? '', corpsBuddy?.corpsId ?? '');
 
-  const corpsBuddyText = `Din corpsbästis för året är ${corpsBuddyName} med hela ${corpsBuddy?.commonGigs} gemensamma spelningar! ${encouragement}`;
+  const corpsBuddyText = `Din corpsbästis för året är ${
+    corpsBuddyName
+  } med hela ${
+    corpsBuddy?.commonGigs
+  } gemensamma spelningar! ${encouragement}`;
 
-  const corpsEnemyText = `Du och ${corpsEnemyName} har dock ${
-    corpsEnemy?.commonGigs === 0
-      ? 'inte varit på en enda spelning'
-      : `bara varit på ${corpsEnemy?.commonGigs} ${
-          (corpsEnemy?.commonGigs ?? 2) > 1 ? 'spelningar' : 'spelning'
-        }`
-  } tillsammans. Försöker ni undvika varandra?`;
+  const corpsEnemyText = `Du och ${corpsEnemyName} har dock ${corpsEnemy?.commonGigs === 0
+    ? 'inte varit på en enda spelning'
+    : `bara varit på ${corpsEnemy?.commonGigs} ${(corpsEnemy?.commonGigs ?? 2) > 1    
+      ? 'spelningar'
+      : 'spelning'}`} tillsammans. Försöker ni undvika varandra?`;
 
   return (
     <Stack sx={{ maxWidth: 700 }}>
@@ -162,19 +124,6 @@ const StatsForNerds = () => {
       <Stack>
         <Stack>
           <Title order={3}>Personlig statistik</Title>
-          <ResponsiveContainer width='100%' height={400}>
-            <LineChart data={chartData} style={{ marginLeft: '-35px' }}>
-              <Line
-                type='monotone'
-                dataKey='spelningar'
-                stroke={`${theme.colors.red?.[5]}`}
-              />
-              <CartesianGrid stroke='#ccc' strokeDasharray='5 5' />
-              <XAxis dataKey='name' />
-              <YAxis />
-              <Tooltip />
-            </LineChart>
-          </ResponsiveContainer>
           <Text>
             {corpsBuddy && `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
             <br />
