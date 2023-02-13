@@ -26,7 +26,7 @@ const MyApp = ({
   pageProps: { session, colorScheme: fetchedColorScheme, ...pageProps },
 }: AppProps<CustomAppProps>) => {
   const { colorScheme, toggleColorScheme } = useColorScheme(
-    fetchedColorScheme ?? 'dark',
+    fetchedColorScheme ?? 'light',
   );
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
@@ -65,12 +65,7 @@ MyApp.getInitialProps = async (context: AppContext) => {
   const appProps = await App.getInitialProps(context);
   const cookie = ctx.req?.headers.cookie;
   if (cookie) {
-    // const isProd = process.env.NODE_ENV !== 'development';
     const cookies = cookieParser(cookie);
-    // const sessionToken =
-    //   cookies[
-    //     isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
-    //   ];
     const colorScheme = cookies['mantine-color-scheme'];
     appProps.pageProps['colorScheme'] = colorScheme;
   }
