@@ -6,7 +6,7 @@ const getColorScheme = () => {
   const savedColorScheme = getCookie('mantine-color-scheme');
 
   if (savedColorScheme !== 'light' && savedColorScheme !== 'dark')
-    return 'light';
+    return 'dark';
   return savedColorScheme;
 };
 
