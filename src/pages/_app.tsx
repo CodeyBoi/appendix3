@@ -12,14 +12,11 @@ import { AppContainer } from '../components/app-container';
 import useColorScheme from '../hooks/use-color-scheme';
 import 'dayjs/locale/sv';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  const [mounted, setMounted] = useState(false);
-
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
   const { colorScheme, toggleColorScheme } = useColorScheme();
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
