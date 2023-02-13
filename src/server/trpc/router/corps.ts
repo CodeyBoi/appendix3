@@ -1,34 +1,34 @@
 import { adminProcedure } from './../trpc';
-import { z } from "zod";
-import { router, protectedProcedure } from "../trpc";
+import { z } from 'zod';
+import { setCookie } from 'cookies-next';
+import { router, protectedProcedure } from '../trpc';
 
 export const corpsRouter = router({
-  getSelf: protectedProcedure
-    .query(async ({ ctx }) => {
-      return ctx.prisma.corps.findUnique({
-        include: {
-          instruments: {
-            include: {
-              instrument: true,
-            },
+  getSelf: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.corps.findUnique({
+      include: {
+        instruments: {
+          include: {
+            instrument: true,
           },
-          user: {
-            select: {
-              email: true,
-            },
-          },
-          role: {
-            select: {
-              name: true,
-            },
-          },
-          foodPrefs: true,
         },
-        where: {
-          userId: ctx.session?.user.id || undefined,
+        user: {
+          select: {
+            email: true,
+          },
         },
-      });
-    }),
+        role: {
+          select: {
+            name: true,
+          },
+        },
+        foodPrefs: true,
+      },
+      where: {
+        userId: ctx.session?.user.id || undefined,
+      },
+    });
+  }),
 
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -63,17 +63,19 @@ export const corpsRouter = router({
     }),
 
   updateSelf: protectedProcedure
-    .input(z.object({
-      firstName: z.string(),
-      lastName: z.string(),
-      email: z.string(),
-      drinksAlcohol: z.boolean(),
-      vegetarian: z.boolean(),
-      vegan: z.boolean(),
-      glutenFree: z.boolean(),
-      lactoseFree: z.boolean(),
-      otherFoodPrefs: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
+        drinksAlcohol: z.boolean(),
+        vegetarian: z.boolean(),
+        vegan: z.boolean(),
+        glutenFree: z.boolean(),
+        lactoseFree: z.boolean(),
+        otherFoodPrefs: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const corps = await ctx.prisma.corps.findUnique({
         where: {
@@ -82,7 +84,7 @@ export const corpsRouter = router({
       });
 
       if (corps === null) {
-        throw new Error("Not logged in");
+        throw new Error('Not logged in');
       }
 
       const foodPrefs = {
@@ -117,20 +119,22 @@ export const corpsRouter = router({
     }),
 
   upsert: adminProcedure
-    .input(z.object({
-      id: z.string().optional(),
-      firstName: z.string(),
-      lastName: z.string(),
-      number: z.number().nullable(),
-      bNumber: z.number().nullable(),
-      email: z.string(),
-      mainInstrument: z.string(),
-      otherInstruments: z.array(z.string()),
-      role: z.string(),
-    }))
+    .input(
+      z.object({
+        id: z.string().optional(),
+        firstName: z.string(),
+        lastName: z.string(),
+        number: z.number().nullable(),
+        bNumber: z.number().nullable(),
+        email: z.string(),
+        mainInstrument: z.string(),
+        otherInstruments: z.array(z.string()),
+        role: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (input.otherInstruments.includes(input.mainInstrument)) {
-        throw new Error("Main instrument cannot be in other instruments");
+        throw new Error('Main instrument cannot be in other instruments');
       }
       const instruments = await ctx.prisma.instrument.findMany({});
       const queryData = {
@@ -142,11 +146,15 @@ export const corpsRouter = router({
           createMany: {
             data: [
               {
-                instrumentId: instruments.find((instrument) => instrument.name === input.mainInstrument)?.id ?? 19,
+                instrumentId:
+                  instruments.find(
+                    (instrument) => instrument.name === input.mainInstrument,
+                  )?.id ?? 19,
                 isMainInstrument: true,
               },
               ...input.otherInstruments.map((instrument) => ({
-                instrumentId: instruments.find((i) => i.name === instrument)?.id ?? 19,
+                instrumentId:
+                  instruments.find((i) => i.name === instrument)?.id ?? 19,
                 isMainInstrument: false,
               })),
             ],
@@ -169,7 +177,7 @@ export const corpsRouter = router({
 
       return ctx.prisma.corps.upsert({
         where: {
-          id: input.id ?? "",
+          id: input.id ?? '',
         },
         update: {
           ...queryData,
@@ -196,20 +204,24 @@ export const corpsRouter = router({
     }),
 
   getMany: protectedProcedure
-    .input(z.object({
-      search: z.string().optional(),
-      role: z.string().optional(),
-      instrument: z.string().optional(),
-      excludeSelf: z.boolean().optional(),
-    }))
+    .input(
+      z.object({
+        search: z.string().optional(),
+        role: z.string().optional(),
+        instrument: z.string().optional(),
+        excludeSelf: z.boolean().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const number = parseInt(input.search ?? "");
-      const bNumber = parseInt(input.search ?? "");
+      const number = parseInt(input.search ?? '');
+      const bNumber = parseInt(input.search ?? '');
       const corpsii = await ctx.prisma.corps.findMany({
         where: {
-          userId: input.excludeSelf ? {
-            not: ctx.session?.user.id || undefined,
-          } : undefined,
+          userId: input.excludeSelf
+            ? {
+                not: ctx.session?.user.id || undefined,
+              }
+            : undefined,
           OR: [
             {
               firstName: {
@@ -266,76 +278,86 @@ export const corpsRouter = router({
           {
             number: {
               // Numbers are sorted descending, so that more recent corps members are at the top
-              sort: "desc",
-              nulls: "last",
+              sort: 'desc',
+              nulls: 'last',
             },
           },
           {
-            lastName: "asc",
+            lastName: 'asc',
           },
           {
-            firstName: "asc",
+            firstName: 'asc',
           },
         ],
       });
       return corpsii.map((corps) => ({
         id: corps.id,
-        name: corps.firstName + " " + corps.lastName,
+        name: corps.firstName + ' ' + corps.lastName,
         number: corps.number,
-        instruments: corps.instruments.map((instrument) => instrument.instrument.name),
+        instruments: corps.instruments.map(
+          (instrument) => instrument.instrument.name,
+        ),
       }));
     }),
 
-  getMainInstrument: protectedProcedure
-    .query(async ({ ctx }) => {
-      const corps = await ctx.prisma.corps.findUnique({
-        include: {
-          instruments: {
-            include: {
-              instrument: true,
-            },
+  getMainInstrument: protectedProcedure.query(async ({ ctx }) => {
+    const corps = await ctx.prisma.corps.findUnique({
+      include: {
+        instruments: {
+          include: {
+            instrument: true,
           },
         },
-        where: {
-          userId: ctx.session?.user.id,
-        },
-      });
-      if (!corps) {
-        return null;
-      }
-      return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
-    }),
+      },
+      where: {
+        userId: ctx.session?.user.id,
+      },
+    });
+    if (!corps) {
+      return null;
+    }
+    return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
+  }),
 
-  getRole: protectedProcedure
-    .query(async ({ ctx }) => {
-      const corps = await ctx.prisma.corps.findUnique({
-        select: {
-          role: {
-            select: {
-              name: true,
-            },
+  getRole: protectedProcedure.query(async ({ ctx }) => {
+    const corps = await ctx.prisma.corps.findUnique({
+      select: {
+        role: {
+          select: {
+            name: true,
           },
         },
-        where: {
-          userId: ctx.session?.user.id,
-        },
-      });
-      if (!corps) {
-        return null;
-      }
-      return corps.role?.name ?? "user";
-    }),
+      },
+      where: {
+        userId: ctx.session?.user.id,
+      },
+    });
+    if (!corps) {
+      return null;
+    }
+    return corps.role?.name ?? 'user';
+  }),
 
-  getPoints: protectedProcedure
-    .query(async ({ ctx }) => {
-      const corpsId = ctx.session.user.corps.id;
-      const pointsQuery = await ctx.prisma.$queryRaw<{ points: number }[]>`
+  getPoints: protectedProcedure.query(async ({ ctx }) => {
+    const corpsId = ctx.session.user.corps.id;
+    const pointsQuery = await ctx.prisma.$queryRaw<{ points: number }[]>`
         SELECT SUM(points) AS points
         FROM GigSignup
         JOIN Gig ON Gig.id = GigSignup.gigId
         WHERE attended = true
         AND corpsId = ${corpsId}
       `;
-      return pointsQuery?.[0]?.points ?? 0;
-    }),
+    return pointsQuery?.[0]?.points ?? 0;
+  }),
+
+  // setColorScheme: protectedProcedure
+  //   .input(z.string())
+  //   .query(async ({ ctx, input }) => {
+  //     const { req, res } = { req: ctx.req, res: ctx.res };
+
+  //     console.log(req);
+
+  //     setCookie('mantine-color-scheme', input, { req, res });
+  //     return {};
+  //   }),
 });
