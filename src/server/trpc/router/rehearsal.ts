@@ -280,7 +280,7 @@ export const rehearsalRouter = router({
   }),
 
   getOwnOrchestraAttendance: protectedProcedure
-    .input(z.object({ start: z.date(), end: z.date() }))
+    .input(z.object({ start: z.date().optional(), end: z.date().optional() }))
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
       const corpsId = ctx.session.user.corps.id;
@@ -312,8 +312,8 @@ export const rehearsalRouter = router({
       return attendance / allRehearsals;
     }),
 
-    getOwnBalletAttendance: protectedProcedure
-    .input(z.object({ start: z.date(), end: z.date() }))
+  getOwnBalletAttendance: protectedProcedure
+    .input(z.object({ start: z.date().optional(), end: z.date().optional() }))
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
       const corpsId = ctx.session.user.corps.id;

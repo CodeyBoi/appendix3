@@ -1,32 +1,31 @@
-import { protectedProcedure } from "./../trpc";
-import { router } from "../trpc";
-import { z } from "zod";
-import { Prisma } from "@prisma/client";
+import { protectedProcedure } from './../trpc';
+import { router } from '../trpc';
+import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 
 export const statsRouter = router({
   getYearly: protectedProcedure
     .input(
-      z.object({ operatingYear: z.number(), selfOnly: z.boolean().optional() })
+      z.object({
+        start: z.date().optional(),
+        end: z.date().optional(),
+        selfOnly: z.boolean().optional(),
+      }),
     )
     .query(async ({ ctx, input }) => {
-      const { operatingYear, selfOnly } = input;
-      const statsStart = new Date(operatingYear, 8, 1); // September 1st
-      const currentDate = new Date();
-      const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
-      // If we're in the same year, we want to show the stats up to today
-      const statsEnd = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
+      const { start, end, selfOnly } = input;
       const corpsId = ctx.session.user.corps.id;
       const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
         where: {
-          date: { gte: statsStart, lte: statsEnd },
+          date: { gte: start, lte: end },
         },
       });
 
       const positivelyCountedGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
         where: {
-          date: { gte: statsStart, lte: statsEnd },
+          date: { gte: start, lte: end },
           countsPositively: true,
         },
       });
@@ -57,7 +56,7 @@ export const statsRouter = router({
         FROM Gig
         CROSS JOIN Corps
         LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
-        WHERE Gig.date BETWEEN ${statsStart} AND ${statsEnd}
+        WHERE Gig.date BETWEEN ${start} AND ${end}
         AND (Corps.id = ${corpsId} OR ${!selfOnly})
         GROUP BY Corps.id
         HAVING gigsAttended > 0 OR ${selfOnly}
@@ -116,10 +115,12 @@ export const statsRouter = router({
     }),
 
   getCorpsBuddy: protectedProcedure
-    .input(z.object({
-      start: z.date().optional(),
-      end: z.date().optional()
-    }))
+    .input(
+      z.object({
+        start: z.date().optional(),
+        end: z.date().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
       const corpsId = ctx.session.user.corps.id;
@@ -170,5 +171,4 @@ export const statsRouter = router({
         corpsEnemy: result[result.length - 1],
       };
     }),
-
 });
