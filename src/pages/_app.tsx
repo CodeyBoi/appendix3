@@ -12,25 +12,23 @@ import { AppContainer } from '../components/app-container';
 import useColorScheme from '../hooks/use-color-scheme';
 import 'dayjs/locale/sv';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
 import App from 'next/app';
 import cookieParser from '../utils/cookie-parser';
+import { ColorScheme } from '@mantine/core';
 
 interface CustomAppProps {
   session: Session | null;
-  colorScheme: string;
+  colorScheme: ColorScheme;
 }
 
 const MyApp = ({
   Component,
   pageProps: { session, colorScheme: fetchedColorScheme, ...pageProps },
 }: AppProps<CustomAppProps>) => {
-  const [mounted, setMounted] = useState(false);
-
-  console.log(fetchedColorScheme);
-
+  const { colorScheme, toggleColorScheme } = useColorScheme(
+    fetchedColorScheme ?? 'dark',
+  );
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
-  const { colorScheme, toggleColorScheme } = useColorScheme();
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
 
   return (
@@ -67,26 +65,17 @@ MyApp.getInitialProps = async (context: AppContext) => {
   const appProps = await App.getInitialProps(context);
   const cookie = ctx.req?.headers.cookie;
   if (cookie) {
-    const isProd = process.env.NODE_ENV !== 'development';
+    // const isProd = process.env.NODE_ENV !== 'development';
     const cookies = cookieParser(cookie);
-    const sessionToken =
-      cookies[
-        isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
-      ];
+    // const sessionToken =
+    //   cookies[
+    //     isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
+    //   ];
     const colorScheme = cookies['mantine-color-scheme'];
-    console.log(colorScheme);
-    console.log(prisma?.user.findUnique({ where: { id: '1' } }));
-
     appProps.pageProps['colorScheme'] = colorScheme;
   }
 
   return { ...appProps };
 };
-
-// MyApp.getInitialProps = async (ctx: AppContext) => {
-//   //const cookies = req?.cookies;
-//   console.log(ctx);
-//   return {};
-// };
 
 export default trpc.withTRPC(MyApp);
