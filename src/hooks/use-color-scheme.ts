@@ -1,7 +1,6 @@
 import { ColorScheme } from '@mantine/core';
 import { setCookie } from 'cookies-next';
 import { useState } from 'react';
-import { trpc } from '../utils/trpc';
 
 const useColorScheme = (initialColorScheme: ColorScheme) => {
   const [colorScheme, setColorScheme] =
