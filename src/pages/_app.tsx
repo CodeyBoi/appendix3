@@ -24,14 +24,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const { colorScheme, toggleColorScheme } = useColorScheme();
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
