@@ -5,29 +5,34 @@ import { trpc } from '../../utils/trpc';
 import Loading from '../loading';
 
 const CorpsStats = () => {
-  const currentOperatingYear = getOperatingYear();
+  const operatingYear = getOperatingYear();
+  const start = new Date(operatingYear, 8, 1); // September 1st
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
+  // If we're in the same year, we want to show the stats up to today
+  const end = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
   const { data: points, isLoading: pointsLoading } =
     trpc.corps.getPoints.useQuery();
   const { data: stats, isLoading: statsLoading } =
     trpc.stats.getYearly.useQuery({
-      operatingYear: currentOperatingYear,
+      start,
+      end,
       selfOnly: true,
     });
-  const statsStart = new Date(currentOperatingYear, 8, 1); // September 1st
-  const operatingYearEnd = new Date(currentOperatingYear + 1, 7, 31); // August 31st next year
   const {
     data: orchestraRehearsalAttendance,
     isLoading: orchestraAttendanceLoading,
   } = trpc.rehearsal.getOwnOrchestraAttendance.useQuery({
-    start: statsStart,
-    end: operatingYearEnd,
+    start,
+    end,
   });
   const {
     data: balletRehearsalAttendance,
     isLoading: balletAttendanceLoading,
   } = trpc.rehearsal.getOwnBalletAttendance.useQuery({
-    start: statsStart,
-    end: operatingYearEnd,
+    start,
+    end,
   });
   const corpsStats = stats?.corpsStats[stats.corpsIds[0] as string];
 
@@ -48,8 +53,8 @@ const CorpsStats = () => {
         balletRehearsalAttendance !== undefined && (
           <Stack spacing={0}>
             <Title order={6}>
-              {`Nuvarande verksamhetsår (${currentOperatingYear}-${
-                currentOperatingYear + 1
+              {`Nuvarande verksamhetsår (${operatingYear}-${
+                operatingYear + 1
               }):`}
             </Title>
             <Text>

@@ -8,12 +8,14 @@ import AlertError from './alert-error';
 import Loading from './loading';
 
 interface StatisticsTableProps {
-  operatingYear: number;
+  start: Date;
+  end: Date;
 }
 
-const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
+const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
   const { data: stats, status: statsStatus } = trpc.stats.getYearly.useQuery({
-    operatingYear,
+    start,
+    end,
   });
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
@@ -25,9 +27,9 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
     { enabled: !!corpsIds },
   );
 
-  const isCurrentYear = operatingYear === getOperatingYear();
+  const isCurrentYear = start.getFullYear() === getOperatingYear();
 
-  const nbrOfGigsString = `Detta verksamhetsår ${
+  const nbrOfGigsString = `Denna period ${
     isCurrentYear ? 'har vi hittills haft' : 'hade vi'
   } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`;
   const positiveGigsString =
@@ -70,9 +72,7 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
           <Table>
             <thead>
               <tr>
-                <th>
-                  #
-                </th>
+                <th>#</th>
                 <th>Namn</th>
                 <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
                   Poäng
@@ -119,7 +119,7 @@ const StatisticsTable = ({ operatingYear }: StatisticsTableProps) => {
           </Table>
           <Button
             component={NextLink}
-            href="/stats/for/nerds"
+            href='/stats/for/nerds'
             leftIcon={<IconMoodNerd />}
           >
             Statistik för nördar
