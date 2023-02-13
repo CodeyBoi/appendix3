@@ -94,7 +94,13 @@ export const statsRouter = router({
   getManyPoints: protectedProcedure
     .input(z.object({ corpsIds: z.array(z.string()).optional() }).optional())
     .query(async ({ ctx, input }) => {
-      const corpsIds = input?.corpsIds ?? [];
+      const { corpsIds } = input ?? {};
+      if (!corpsIds || corpsIds.length === 0) {
+        return {
+          points: {},
+          corpsIds: [],
+        };
+      }
       type Entry = { corpsId: string; points: number };
       const pointsQuery = await ctx.prisma.$queryRaw<Entry[]>`
         SELECT corpsId, SUM(points) AS points

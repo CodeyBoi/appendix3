@@ -86,6 +86,7 @@ const Statistics: NextPage = () => {
             onChange={setStatsInterval}
             label='Tidsintervall'
             placeholder='Välj intervall...'
+            maxDate={new Date()}
             sx={{ width: '100%', maxWidth: 300 }}
           />
         )}
