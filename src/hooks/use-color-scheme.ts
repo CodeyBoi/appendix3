@@ -1,20 +1,18 @@
 import { ColorScheme } from '@mantine/core';
 import { setCookie } from 'cookies-next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { trpc } from '../utils/trpc';
 
 const useColorScheme = (initialColorScheme: ColorScheme) => {
   const [colorScheme, setColorScheme] =
     useState<ColorScheme>(initialColorScheme);
   const toggleColorScheme = (value?: ColorScheme) => {
+    console.log(colorScheme);
     const newColorScheme =
       value || (colorScheme === 'light' ? 'dark' : 'light');
     setColorScheme(newColorScheme);
-    setCookie('mantine-color-scheme', newColorScheme, {
-      secure: true,
-      sameSite: 'lax',
-      httpOnly: true,
-    });
   };
+  trpc.corps.setColorScheme.useQuery(colorScheme);
   return {
     colorScheme,
     toggleColorScheme,

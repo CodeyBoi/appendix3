@@ -15,6 +15,7 @@ import Head from 'next/head';
 import App from 'next/app';
 import cookieParser from '../utils/cookie-parser';
 import { ColorScheme } from '@mantine/core';
+import { useEffect } from 'react';
 
 interface CustomAppProps {
   session: Session | null;
@@ -64,6 +65,10 @@ MyApp.getInitialProps = async (context: AppContext) => {
   const { ctx } = context;
   const appProps = await App.getInitialProps(context);
   const cookie = ctx.req?.headers.cookie;
+  if (ctx.req?.headers.cookie === undefined) {
+    return { ...appProps };
+  }
+
   if (cookie) {
     const cookies = cookieParser(cookie);
     const colorScheme = cookies['mantine-color-scheme'];
