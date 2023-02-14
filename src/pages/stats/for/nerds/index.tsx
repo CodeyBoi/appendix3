@@ -3,6 +3,10 @@ import { Stack, Title, Text, useMantineTheme, Grid } from '@mantine/core';
 import { trpc } from '../../../../utils/trpc';
 import { getOperatingYear } from '../../[paramYear]/index';
 import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   Line,
   LineChart,
@@ -171,6 +175,7 @@ const StatsForNerds = () => {
           ' ' +
           item.month.getFullYear(),
         points: item.points,
+        maxGigs: item.maxGigs,
       })),
     [monthlyStats],
   );
@@ -199,25 +204,34 @@ const StatsForNerds = () => {
 
   return (
     <Stack sx={{ maxWidth: 700 }}>
-      <Title order={2}>Statistik för nördar 🤓</Title>
+      <Title order={2}>Statistik för nördar</Title>
       <Stack>
         <Stack>
           <Title align='center' order={4}>
             Graf över hur cool du varit från månad till månad 😎
           </Title>
           <ResponsiveContainer width='100%' height={150}>
-            <LineChart data={chartData} style={{ marginLeft: '-35px' }}>
-              <Line
-                name='Spelningar'
+            <AreaChart data={chartData} style={{ marginLeft: '-35px' }}>
+              <Area
+                name='Dina spelningar'
                 type='monotone'
                 dataKey='points'
-                stroke={primaryColor}
+                stroke='none'
+                fill={primaryColor}
+                fillOpacity={0.9}
               />
-              <CartesianGrid stroke={strokeColor} strokeDasharray='5 5' />
+              <Area
+                name='Corpsets spelningar'
+                type='monotone'
+                dataKey='maxGigs'
+                stroke={primaryColor}
+                strokeDasharray='3 3'
+                fill='none'
+              />
               <XAxis dataKey='name' />
               <YAxis />
               <Tooltip />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
           <Grid>
             <Grid.Col md={6}>
@@ -240,7 +254,7 @@ const StatsForNerds = () => {
                 </RadarChart>
               </ResponsiveContainer>
             </Grid.Col>
-            <Grid.Col md={6}>
+            {/* <Grid.Col md={6}>
               <Title align='center' order={4}>
                 Vilka sorters spelningar du gillar 🎶
               </Title>
@@ -255,7 +269,7 @@ const StatsForNerds = () => {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
-            </Grid.Col>
+            </Grid.Col> */}
           </Grid>
           <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
           <Text>

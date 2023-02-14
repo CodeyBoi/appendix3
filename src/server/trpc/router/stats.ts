@@ -190,10 +190,14 @@ export const statsRouter = router({
       const ownCorpsId = ctx.session.user.corps.id;
       const { start, end, corpsId = ownCorpsId } = input ?? {};
       type Entry = {
-        month: Date;
+        month: string;
         points: string;
       };
-      const data = await ctx.prisma.$queryRaw<Entry[]>`
+      type MaxGigsEntry = {
+        month: string;
+        maxGigs: string;
+      };
+      const monthlyDataQuery = ctx.prisma.$queryRaw<Entry[]>`
         SELECT
           DATE_FORMAT(date, '%Y-%m-01') AS month,
           SUM(points) AS points
@@ -206,9 +210,36 @@ export const statsRouter = router({
         GROUP BY month
         ORDER BY month
       `;
-      return data.map((entry) => ({
-        points: parseInt(entry.points),
-        month: new Date(entry.month),
+      const monthlyMaxGigsQuery = ctx.prisma.$queryRaw<MaxGigsEntry[]>`
+        SELECT
+          DATE_FORMAT(date, '%Y-%m-01') AS month,
+          SUM(points) AS maxGigs
+          FROM Gig
+          WHERE 1 = 1
+          ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
+          ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
+          GROUP BY month
+      `;
+
+      const [monthlyData, monthlyMaxGigs] = await ctx.prisma.$transaction([
+        monthlyDataQuery,
+        monthlyMaxGigsQuery,
+      ]);
+      console.log(typeof monthlyMaxGigs[0]?.month);
+      const monthlyDataMap = monthlyData.reduce(
+        (acc, { month, points }) => {
+          acc[new Date(month).toISOString()] = parseInt(points);
+          return acc;
+        }, {} as Record<string, number>,
+      );
+
+      const startMonth = new Date(monthlyData[0]?.month ?? new Date());
+      return monthlyMaxGigs.filter(
+        ({ month }) => startMonth <= new Date(month)
+        ).map(({ month, maxGigs }) => ({
+        points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
+        month: new Date(month),
+        maxGigs: parseInt(maxGigs),
       }));
     }),
 
