@@ -15,7 +15,7 @@ const CorpsStats = () => {
   const { data: points, isLoading: pointsLoading } =
     trpc.corps.getPoints.useQuery();
   const { data: stats, isLoading: statsLoading } =
-    trpc.stats.getYearly.useQuery({
+    trpc.stats.get.useQuery({
       start,
       end,
       selfOnly: true,

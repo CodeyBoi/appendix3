@@ -12,7 +12,7 @@ interface StatisticsTableProps {
 }
 
 const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
-  const { data: stats, status: statsStatus } = trpc.stats.getYearly.useQuery({
+  const { data: stats, status: statsStatus } = trpc.stats.get.useQuery({
     start,
     end,
   });
@@ -30,9 +30,12 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
   today.setHours(0, 0, 0, 0);
   const isNow = today <= end;
 
-  const nbrOfGigsString = nbrOfGigs !== 0 ? `Denna period ${
-    isNow ? 'har vi hittills haft' : 'hade vi'
-  } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}` : '';
+  const nbrOfGigsString =
+    nbrOfGigs !== 0
+      ? `Denna period ${
+          isNow ? 'har vi hittills haft' : 'hade vi'
+        } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`
+      : '';
   const positiveGigsString =
     (positivelyCountedGigs ?? 0) > 0
       ? `, där ${positivelyCountedGigs} ${
@@ -47,11 +50,11 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
   // Somehow ownPoints is a string, so == is used instead of ===
   const ownPointsString =
     ownPoints && ownAttendence && nbrOfGigs !== 0
-      ? `Du ${
-          isNow ? 'har varit' : 'var'
-        } med på ${ownPoints} spelning${ownPoints == 1 ? '' : 'ar'}, vilket ${
-          isNow ? 'motsvarar' : 'motsvarade'
-        } ${Math.round(ownAttendence * 100)}% närvaro.`
+      ? `Du ${isNow ? 'har varit' : 'var'} med på ${ownPoints} spelning${
+          ownPoints == 1 ? '' : 'ar'
+        }, vilket ${isNow ? 'motsvarar' : 'motsvarade'} ${Math.round(
+          ownAttendence * 100,
+        )}% närvaro.`
       : undefined;
 
   if (!corpsStats || !corpsPoints) {
@@ -67,9 +70,11 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
       {corpsIds && corpsIds.length === 0 && (
         <Text>Det finns inga statistikuppgifter för denna period.</Text>
       )}
-      {corpsPoints && corpsStats && corpsIds && (
+      {corpsPoints && corpsStats && corpsIds && corpsIds.length !== 0 && (
         <Stack>
-          <Text>{nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}</Text>
+          <Text>
+            {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
+          </Text>
           {ownPointsString && <Text>{ownPointsString}</Text>}
           <Table>
             <thead>

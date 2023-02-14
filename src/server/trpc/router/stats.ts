@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
 export const statsRouter = router({
-  getYearly: protectedProcedure
+  get: protectedProcedure
     .input(
       z.object({
         start: z.date().optional(),
@@ -177,4 +177,130 @@ export const statsRouter = router({
         corpsEnemy: result[result.length - 1],
       };
     }),
+
+  getMonthly: protectedProcedure
+    .input(
+      z.object({
+        start: z.date().optional(),
+        end: z.date().optional(),
+        corpsId: z.string().optional(),
+      }).optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const ownCorpsId = ctx.session.user.corps.id;
+      const { start, end, corpsId = ownCorpsId } = input ?? {};
+      type Entry = {
+        month: string;
+        points: string;
+      };
+      type MaxGigsEntry = {
+        month: string;
+        maxGigs: string;
+      };
+      const monthlyDataQuery = ctx.prisma.$queryRaw<Entry[]>`
+        SELECT
+          DATE_FORMAT(date, '%Y-%m-01') AS month,
+          SUM(points) AS points
+        FROM GigSignup
+        JOIN Gig ON Gig.id = GigSignup.gigId
+        WHERE attended = true
+        AND corpsId = ${corpsId}
+        ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
+        ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
+        GROUP BY month
+        ORDER BY month
+      `;
+      const monthlyMaxGigsQuery = ctx.prisma.$queryRaw<MaxGigsEntry[]>`
+        SELECT
+          DATE_FORMAT(date, '%Y-%m-01') AS month,
+          SUM(points) AS maxGigs
+          FROM Gig
+          WHERE 1 = 1
+          ${start ? Prisma.sql`AND date >= ${start}` : Prisma.empty}
+          ${end ? Prisma.sql`AND date <= ${end}` : Prisma.empty}
+          GROUP BY month
+      `;
+
+      const [monthlyData, monthlyMaxGigs] = await ctx.prisma.$transaction([
+        monthlyDataQuery,
+        monthlyMaxGigsQuery,
+      ]);
+      console.log(typeof monthlyMaxGigs[0]?.month);
+      const monthlyDataMap = monthlyData.reduce(
+        (acc, { month, points }) => {
+          acc[new Date(month).toISOString()] = parseInt(points);
+          return acc;
+        }, {} as Record<string, number>,
+      );
+
+      const startMonth = new Date(monthlyData[0]?.month ?? new Date());
+      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month))
+        .map(({ month, maxGigs }) => ({
+          points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
+          month: new Date(month),
+          maxGigs: parseInt(maxGigs),
+        })
+      );
+    }),
+
+  getCareer: protectedProcedure
+    .input(
+      z.object({
+        corpsId: z.string().optional(),
+      }).optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const ownCorpsId = ctx.session.user.corps.id;
+      const { corpsId = ownCorpsId } = input ?? {};
+      const joinedQuery = ctx.prisma.corpsRehearsal.findFirst({
+        select: {
+          rehearsal: {
+            select: {
+              date: true,
+            },
+          },
+        },
+        where: {
+          corpsId,
+        },
+        orderBy: {
+          rehearsal: {
+            date: 'asc',
+          },
+        },
+      });
+      
+      const pointsQuery = ctx.prisma.gig.aggregate({
+        _sum: {
+          points: true,
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+      });
+
+      const rehearsalsQuery = ctx.prisma.corpsRehearsal.count({
+        where: {
+          corpsId,
+        },
+      });
+
+      const [joined, points, rehearsals] = await ctx.prisma.$transaction([
+        joinedQuery,
+        pointsQuery,
+        rehearsalsQuery,
+      ]);
+
+      return {
+        joined: joined?.rehearsal.date ?? new Date(),
+        points: points._sum.points ?? 0,
+        rehearsals,
+      };
+    }),
+
 });
