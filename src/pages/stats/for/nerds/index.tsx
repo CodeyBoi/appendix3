@@ -5,15 +5,9 @@ import { getOperatingYear } from '../../[paramYear]/index';
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
   PolarAngleAxis,
   PolarGrid,
+  PolarRadiusAxis,
   Radar,
   RadarChart,
   ResponsiveContainer,
@@ -108,21 +102,10 @@ const getEncouragement = (corpsId1: string, corpsId2: string) => {
   return encouragements[hash(combinedIndex) % encouragements.length];
 };
 
-const gigInstruments = [
-  {
-    name: 'Slagverk',
-    value: 130,
-  },
-  {
-    name: 'Trombon',
-    value: 4,
-  },
-];
-
 const statPoints = [
   {
     name: 'Attack',
-    value: 1.3,
+    value: 6.3,
   },
   {
     name: 'Styrka',
@@ -149,7 +132,7 @@ const StatsForNerds = () => {
   const theme = useMantineTheme();
   const primaryColor =
     theme.colors[theme.primaryColor]?.[theme.primaryShade as number];
-  const strokeColor = theme.colors.gray[theme.colorScheme === 'dark' ? 7 : 5];
+  // const strokeColor = theme.colors.gray[theme.colorScheme === 'dark' ? 7 : 5];
 
   const start = new Date(operatingYear, 8, 1);
   const end = new Date(operatingYear + 1, 7, 31);
@@ -163,6 +146,18 @@ const StatsForNerds = () => {
     start: new Date(2010, 0, 1),
     end,
   });
+
+  const { data: career } = trpc.stats.getCareer.useQuery();
+  const { joined, points, rehearsals } = career ?? {};
+  const joinedText = joined?.toLocaleDateString('sv-SE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+  const careerText =
+    joined && points !== undefined && rehearsals !== undefined
+      ? `Sedan du gick med i corpset den ${joinedText} har du varit med på ${rehearsals} rep och samlat ihop ${points} spelpoäng. Sick!`
+      : '';
 
   const chartData = useMemo(
     () =>
@@ -206,8 +201,12 @@ const StatsForNerds = () => {
     <Stack sx={{ maxWidth: 700 }}>
       <Title order={2}>Statistik för nördar</Title>
       <Stack>
+        <Text>
+          <Title order={3}>Din corpscarriär</Title>
+          {careerText}
+        </Text>
         <Stack>
-          <Title align='center' order={4}>
+          <Title align='center' order={5}>
             Graf över hur cool du varit från månad till månad 😎
           </Title>
           <ResponsiveContainer width='100%' height={150}>
@@ -235,24 +234,30 @@ const StatsForNerds = () => {
           </ResponsiveContainer>
           <Grid>
             <Grid.Col md={6}>
-              <Title align='center' order={4}>
+              <Title align='center' order={5}>
                 Dina corpsegenskaper 📋
               </Title>
               <ResponsiveContainer width='100%' height={210}>
                 <RadarChart outerRadius={80} data={statPoints}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey='name' />
+                  <PolarRadiusAxis domain={[0, 10]} stroke='none' />
                   <Radar
                     name='Poäng'
                     dataKey='value'
                     stroke={primaryColor}
                     fill={primaryColor}
                     fillOpacity={0.6}
-                    max={10}
+                    dot={true}
                   />
                   <Tooltip />
                 </RadarChart>
               </ResponsiveContainer>
+              <Text align='center'>
+                (Detta är enbart en placeholder för att visa hur det kan se ut.
+                Har du några kul idéer på statistik som skulle kunna visas här?
+                Kontakta oss i ITK!)
+              </Text>
             </Grid.Col>
             {/* <Grid.Col md={6}>
               <Title align='center' order={4}>
@@ -271,8 +276,8 @@ const StatsForNerds = () => {
               </ResponsiveContainer>
             </Grid.Col> */}
           </Grid>
-          <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
           <Text>
+            <Title order={5}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
             {corpsBuddy && `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
             <br />
           </Text>

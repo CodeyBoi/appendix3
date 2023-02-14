@@ -234,14 +234,73 @@ export const statsRouter = router({
       );
 
       const startMonth = new Date(monthlyData[0]?.month ?? new Date());
-      return monthlyMaxGigs.filter(
-        ({ month }) => startMonth <= new Date(month)
-        ).map(({ month, maxGigs }) => ({
-        points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
-        month: new Date(month),
-        maxGigs: parseInt(maxGigs),
-      }));
+      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month))
+        .map(({ month, maxGigs }) => ({
+          points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
+          month: new Date(month),
+          maxGigs: parseInt(maxGigs),
+        })
+      );
     }),
 
+  getCareer: protectedProcedure
+    .input(
+      z.object({
+        corpsId: z.string().optional(),
+      }).optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const ownCorpsId = ctx.session.user.corps.id;
+      const { corpsId = ownCorpsId } = input ?? {};
+      const joinedQuery = ctx.prisma.corpsRehearsal.findFirst({
+        select: {
+          rehearsal: {
+            select: {
+              date: true,
+            },
+          },
+        },
+        where: {
+          corpsId,
+        },
+        orderBy: {
+          rehearsal: {
+            date: 'asc',
+          },
+        },
+      });
+      
+      const pointsQuery = ctx.prisma.gig.aggregate({
+        _sum: {
+          points: true,
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+      });
+
+      const rehearsalsQuery = ctx.prisma.corpsRehearsal.count({
+        where: {
+          corpsId,
+        },
+      });
+
+      const [joined, points, rehearsals] = await ctx.prisma.$transaction([
+        joinedQuery,
+        pointsQuery,
+        rehearsalsQuery,
+      ]);
+
+      return {
+        joined: joined?.rehearsal.date ?? new Date(),
+        points: points._sum.points ?? 0,
+        rehearsals,
+      };
+    }),
 
 });
