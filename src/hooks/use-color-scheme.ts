@@ -7,7 +7,6 @@ const useColorScheme = (initialColorScheme: ColorScheme) => {
   const [colorScheme, setColorScheme] =
     useState<ColorScheme>(initialColorScheme);
   const toggleColorScheme = (value?: ColorScheme) => {
-    console.log(colorScheme);
     const newColorScheme =
       value || (colorScheme === 'light' ? 'dark' : 'light');
     setColorScheme(newColorScheme);
