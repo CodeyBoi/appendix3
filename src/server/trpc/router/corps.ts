@@ -357,7 +357,7 @@ export const corpsRouter = router({
       setCookie('mantine-color-scheme', input, {
         req,
         res,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50),
       });
       return { success: true };
     }),
