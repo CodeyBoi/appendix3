@@ -64,6 +64,10 @@ MyApp.getInitialProps = async (context: AppContext) => {
   const { ctx } = context;
   const appProps = await App.getInitialProps(context);
   const cookie = ctx.req?.headers.cookie;
+  if (ctx.req?.headers.cookie === undefined) {
+    return { ...appProps };
+  }
+
   if (cookie) {
     const cookies = cookieParser(cookie);
     const colorScheme = cookies['mantine-color-scheme'];
