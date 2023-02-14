@@ -1,12 +1,8 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-
-// Prisma adapter for NextAuth, optional and can be removed
-//import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { CustomPrismaAdapter } from '../../../utils/CustomPrismaAdapter';
 import { prisma } from '../../../server/db/client';
 import sendVerificationRequest from '../../../utils/email-auth';
-import { createHash, randomBytes } from 'crypto';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { GenerateToken } from '../../../server/utils/token';
 
@@ -18,8 +14,8 @@ type NextAuthOptionsCallback = (
 export const authOptions: NextAuthOptionsCallback = (req, res) => {
   return {
     callbacks: {
-      async signIn({ user, account, profile, email, credentials }) {
-        const isAllowedToSignIn = true;
+      async signIn() {
+        const isAllowedToSignIn = true; //! ... determine if user is allowed to sign in?
         if (isAllowedToSignIn) {
           return true;
         } else {
@@ -33,7 +29,7 @@ export const authOptions: NextAuthOptionsCallback = (req, res) => {
         else if (new URL(url).origin === baseUrl) return url;
         return baseUrl;
       },
-      async session({ session, token, user }) {
+      async session({ session, user }) {
         if (session.user) {
           const userData = await prisma.user.findUnique({
             where: { id: user.id },
@@ -71,14 +67,13 @@ export const authOptions: NextAuthOptionsCallback = (req, res) => {
             res.setHeader('Set-Cookie', `unverifiedToken=${token};Path=/`);
 
             return token;
+            // eslint-disable-next-line
           } catch (error: any) {
             throw Error(error);
           }
         },
       }),
-      // ...add more providers here
     ],
-    //_pages,
     pages: {
       signIn: '/login',
       verifyRequest: `/verify-request`,
@@ -86,6 +81,7 @@ export const authOptions: NextAuthOptionsCallback = (req, res) => {
   };
 };
 
+// eslint-disable-next-line
 export default (req: NextApiRequest, res: NextApiResponse) => {
   NextAuth(req, res, authOptions(req, res));
 };

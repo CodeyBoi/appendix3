@@ -10,7 +10,7 @@ export function CustomPrismaAdapter(p: PrismaClient): Adapter {
         const verificationToken = await p.verificationToken.delete({
           where: { identifier_token },
         });
-        const verified = await p.verifiedToken.create({
+        await p.verifiedToken.create({
           data: {
             identifier: verificationToken.identifier,
             token: verificationToken.token,

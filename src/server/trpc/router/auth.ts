@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 import { randomUUID } from 'crypto';
-import { AdapterSession } from 'next-auth/adapters';
 import { HashToken } from '../../utils/token';
 
 export const authRouter = router({
@@ -35,9 +34,13 @@ export const authRouter = router({
           where: { email: verifiedtoken.identifier },
         });
 
+        if (!user) {
+          return null;
+        }
+
         const data = {
           sessionToken: randomUUID(),
-          userId: user!.id,
+          userId: user.id,
           expires: new Date(new Date().setDate(new Date().getDate() + 1)),
         };
 

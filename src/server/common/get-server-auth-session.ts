@@ -5,7 +5,7 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from 'next';
-import { NextAuthOptions, unstable_getServerSession } from 'next-auth';
+import { unstable_getServerSession } from 'next-auth';
 import { authOptions as nextAuthOptions } from '../../pages/api/auth/[...nextauth]';
 
 // Next API route example - /pages/api/restricted.ts
@@ -16,6 +16,6 @@ export const getServerAuthSession = async (ctx: {
   return await unstable_getServerSession(
     ctx.req,
     ctx.res,
-    nextAuthOptions(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
+    nextAuthOptions(ctx.req as NextApiRequest, ctx.res as NextApiResponse),
   );
 };

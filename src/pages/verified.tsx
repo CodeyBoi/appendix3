@@ -1,10 +1,6 @@
 import { Button, Center, Title, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { NextLink } from '@mantine/next';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
-import { getServerAuthSession } from '../server/common/get-server-auth-session';
-import { trpc } from '../utils/trpc';
 
 const Verified = () => {
   const theme = useMantineTheme();

@@ -9,7 +9,6 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
-import useColorScheme from '../../hooks/use-color-scheme';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 
