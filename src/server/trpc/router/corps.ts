@@ -354,6 +354,11 @@ export const corpsRouter = router({
     .input(z.string())
     .query(async ({ ctx, input }) => {
       const { req, res } = { req: ctx.req, res: ctx.res };
-      setCookie('mantine-color-scheme', input, { req, res, secure: true });
+      setCookie('mantine-color-scheme', input, {
+        req,
+        res,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+      });
+      return { success: true };
     }),
 });
