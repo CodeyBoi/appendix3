@@ -15,7 +15,6 @@ import Head from 'next/head';
 import App from 'next/app';
 import cookieParser from '../utils/cookie-parser';
 import { ColorScheme } from '@mantine/core';
-import { useEffect } from 'react';
 
 interface CustomAppProps {
   session: Session | null;
