@@ -10,7 +10,7 @@
     "start": "next start",
     "importolddb": "ts-node ./src/scripts/importOldDb",
     "startstaging": "next start -p 5160",
-    "stage": "ts-node ./src/scripts/stage"
+    "stage": "yarn lint && ts-node ./src/scripts/stage"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
