@@ -1,12 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Stack,
-  Title,
-  Text,
-  useMantineTheme,
-  Group,
-  Grid,
-} from '@mantine/core';
+import { Stack, Title, Text, useMantineTheme, Grid } from '@mantine/core';
 import { trpc } from '../../../../utils/trpc';
 import { getOperatingYear } from '../../[paramYear]/index';
 import {
@@ -17,7 +10,6 @@ import {
   PieChart,
   PolarAngleAxis,
   PolarGrid,
-  PolarRadiusAxis,
   Radar,
   RadarChart,
   ResponsiveContainer,
@@ -125,24 +117,24 @@ const gigInstruments = [
 
 const statPoints = [
   {
-    name: 'Musicerande',
-    value: 7.6,
+    name: 'Attack',
+    value: 1.3,
   },
   {
-    name: 'Koreografi',
+    name: 'Styrka',
+    value: 4.2,
+  },
+  {
+    name: 'Uthållighet',
     value: 2.6,
   },
   {
-    name: 'Velighet',
-    value: 3.6,
+    name: 'Tagg',
+    value: 7.6,
   },
   {
-    name: 'Dansande',
+    name: 'Pålitlighet',
     value: 8.6,
-  },
-  {
-    name: 'Corpsighet',
-    value: 9.6,
   },
 ];
 
@@ -151,6 +143,9 @@ const StatsForNerds = () => {
   const { data: self } = trpc.corps.getSelf.useQuery();
 
   const theme = useMantineTheme();
+  const primaryColor =
+    theme.colors[theme.primaryColor]?.[theme.primaryShade as number];
+  const strokeColor = theme.colors.gray[theme.colorScheme === 'dark' ? 7 : 5];
 
   const start = new Date(operatingYear, 8, 1);
   const end = new Date(operatingYear + 1, 7, 31);
@@ -194,7 +189,7 @@ const StatsForNerds = () => {
 
   const corpsBuddyText = `Din corpsbästis för året är ${corpsBuddyName} med hela ${corpsBuddy?.commonGigs} gemensamma spelningar! ${encouragement}`;
 
-  const corpsEnemyText = `Du och ${corpsEnemyName} har dock ${
+  const corpsEnemyText = `Du och ${corpsEnemyName} har tvärtemot ${
     corpsEnemy?.commonGigs === 0
       ? 'inte varit på en enda spelning'
       : `bara varit på ${corpsEnemy?.commonGigs} ${
@@ -207,59 +202,59 @@ const StatsForNerds = () => {
       <Title order={2}>Statistik för nördar 🤓</Title>
       <Stack>
         <Stack>
-          <Title order={4}>
+          <Title align='center' order={4}>
             Graf över hur cool du varit från månad till månad 😎
           </Title>
-          <ResponsiveContainer width='100%' height={400}>
+          <ResponsiveContainer width='100%' height={150}>
             <LineChart data={chartData} style={{ marginLeft: '-35px' }}>
               <Line
                 name='Spelningar'
                 type='monotone'
                 dataKey='points'
-                stroke={`${theme.colors.red?.[5]}`}
+                stroke={primaryColor}
               />
-              <CartesianGrid stroke='#ccc' strokeDasharray='5 5' />
+              <CartesianGrid stroke={strokeColor} strokeDasharray='5 5' />
               <XAxis dataKey='name' />
               <YAxis />
               <Tooltip />
             </LineChart>
           </ResponsiveContainer>
           <Grid>
-            <Grid.Col span={6}>
-              <Title order={4}>Vilka instrument du spelat 🎶</Title>
-              <ResponsiveContainer width='100%' height={210}>
-                <PieChart>
-                  <Pie
-                    data={gigInstruments}
-                    dataKey='value'
-                    outerRadius={80}
-                    fill={`${theme.colors.red?.[5]}`}
-                    fillOpacity={0.6}
-                  />
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Grid.Col>
-            <Grid.Col span={6}>
-              <Title order={4}>Dina corpsegenskaper 📋</Title>
+            <Grid.Col md={6}>
+              <Title align='center' order={4}>
+                Dina corpsegenskaper 📋
+              </Title>
               <ResponsiveContainer width='100%' height={210}>
                 <RadarChart outerRadius={80} data={statPoints}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey='name' />
                   <Radar
-                    name='Värde'
+                    name='Poäng'
                     dataKey='value'
-                    stroke={`${theme.colors.red?.[5]}`}
-                    fill={`${theme.colors.red?.[5]}`}
+                    stroke={primaryColor}
+                    fill={primaryColor}
                     fillOpacity={0.6}
                     max={10}
                   />
                   <Tooltip />
                 </RadarChart>
               </ResponsiveContainer>
-              <Text>
-                (detta är bara placeholders. har du en kul idé kontakta oss!)
-              </Text>
+            </Grid.Col>
+            <Grid.Col md={6}>
+              <Title align='center' order={4}>
+                Vilka sorters spelningar du gillar 🎶
+              </Title>
+              <ResponsiveContainer width='100%' height={210}>
+                <PieChart>
+                  <Pie
+                    data={gigInstruments}
+                    dataKey='value'
+                    outerRadius={80}
+                    fill={primaryColor}
+                  />
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </Grid.Col>
           </Grid>
           <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
