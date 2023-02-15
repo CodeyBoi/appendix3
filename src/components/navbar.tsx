@@ -77,7 +77,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
           href: `/stats/${getOperatingYear()}`,
           icon: <IconClipboard />,
         },
-        { label: 'Spelningar', href: '/gig', icon: <IconSpeakerphone /> },
+        { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
       ],
     },
   ],
@@ -107,7 +107,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
         },
         {
           label: 'Visa alla spelningar',
-          href: '/admin/gig',
+          href: '/admin/gigs',
           icon: <IconMusic />,
         },
       ],
@@ -175,11 +175,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   ));
 
   return (
-    <Box
-      style={{ height: '100%' }}
-      pb='md'
-      className={classes.navbar}
-    >
+    <Box style={{ height: '100%' }} pb='md' className={classes.navbar}>
       {isAdmin && (
         <Navbar.Section pt='sm' mx='sm'>
           <SegmentedControl
