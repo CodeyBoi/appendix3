@@ -234,7 +234,9 @@ export const statsRouter = router({
       );
 
       const startMonth = new Date(monthlyData[0]?.month ?? new Date());
-      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month))
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month) && new Date(month) <= currentDate)
         .map(({ month, maxGigs }) => ({
           points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
           month: new Date(month),
