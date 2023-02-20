@@ -180,11 +180,13 @@ export const statsRouter = router({
 
   getMonthly: protectedProcedure
     .input(
-      z.object({
-        start: z.date().optional(),
-        end: z.date().optional(),
-        corpsId: z.string().optional(),
-      }).optional(),
+      z
+        .object({
+          start: z.date().optional(),
+          end: z.date().optional(),
+          corpsId: z.string().optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
@@ -226,30 +228,33 @@ export const statsRouter = router({
         monthlyMaxGigsQuery,
       ]);
       console.log(typeof monthlyMaxGigs[0]?.month);
-      const monthlyDataMap = monthlyData.reduce(
-        (acc, { month, points }) => {
-          acc[new Date(month).toISOString()] = parseInt(points);
-          return acc;
-        }, {} as Record<string, number>,
-      );
+      const monthlyDataMap = monthlyData.reduce((acc, { month, points }) => {
+        acc[new Date(month).toISOString()] = parseInt(points);
+        return acc;
+      }, {} as Record<string, number>);
 
       const startMonth = new Date(monthlyData[0]?.month ?? new Date());
       const currentDate = new Date();
       currentDate.setHours(0, 0, 0, 0);
-      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month) && new Date(month) <= currentDate)
+      return monthlyMaxGigs
+        .filter(
+          ({ month }) =>
+            startMonth <= new Date(month) && new Date(month) <= currentDate,
+        )
         .map(({ month, maxGigs }) => ({
           points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
           month: new Date(month),
           maxGigs: parseInt(maxGigs),
-        })
-      );
+        }));
     }),
 
   getCareer: protectedProcedure
     .input(
-      z.object({
-        corpsId: z.string().optional(),
-      }).optional(),
+      z
+        .object({
+          corpsId: z.string().optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
@@ -271,7 +276,7 @@ export const statsRouter = router({
           },
         },
       });
-      
+
       const pointsQuery = ctx.prisma.gig.aggregate({
         _sum: {
           points: true,
@@ -305,4 +310,100 @@ export const statsRouter = router({
       };
     }),
 
+  getPentagon: protectedProcedure
+    .input(
+      z
+        .object({
+          corpsId: z.string().optional(),
+          limit: z.number().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const ownCorpsId = ctx.session.user.corps.id;
+      const { corpsId = ownCorpsId, limit = 20 } = input ?? {};
+
+      const recentGigsQuery = ctx.prisma.gig.findMany({
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: limit,
+      });
+
+      const recentlySignedGigsQuery = ctx.prisma.gig.findMany({
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              status: {
+                value: 'Ja',
+              },
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: limit,
+      });
+
+      const recentlyAttendedGigsQuery = ctx.prisma.gig.findMany({
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: limit,
+      });
+
+      const [recent, recentlySigned, recentlyAttended] =
+        await ctx.prisma.$transaction([
+          recentGigsQuery,
+          recentlySignedGigsQuery,
+          recentlyAttendedGigsQuery,
+        ]);
+
+      let totalSignupDelay = 0;
+      for (const gig of recentlySigned) {
+        const signup = gig.signups[0];
+        if (!signup) {
+          continue;
+        }
+        totalSignupDelay += Math.trunc(
+          (signup?.createdAt.getTime() - gig.createdAt.getTime()) /
+            1000 /
+            60 /
+            60,
+        );
+      }
+
+      return null;
+    }),
 });
