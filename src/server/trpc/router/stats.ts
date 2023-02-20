@@ -321,9 +321,16 @@ export const statsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
-      const { corpsId = ownCorpsId, limit = 20 } = input ?? {};
+      const { corpsId = ownCorpsId, limit = 21 } = input ?? {};
+
+      const currentDate = new Date();
 
       const recentGigsQuery = ctx.prisma.gig.findMany({
+        where: {
+          date: {
+            lte: currentDate,
+          },
+        },
         include: {
           signups: {
             where: {
@@ -353,6 +360,9 @@ export const statsRouter = router({
                 value: 'Ja',
               },
             },
+          },
+          date: {
+            lte: currentDate,
           },
         },
         orderBy: {
@@ -401,7 +411,7 @@ export const statsRouter = router({
         currentStreak++;
         maxStreak = maxStreak > currentStreak ? maxStreak : currentStreak;
       }
-      const endurance = maxStreak / recent.length;
+      const endurance = (maxStreak / recent.length) * 10;
 
       // Calculate hype (tagg): How many of the recent gigs the corps has attended
       let attended = 0;
@@ -411,7 +421,7 @@ export const statsRouter = router({
           attended++;
         }
       }
-      const hype = attended / recent.length;
+      const hype = (attended / recent.length) * 10;
 
       // Calculate reliablity (pålitlighet): How many of the recent signups the corps has actually attended
       attended = 0;
@@ -421,7 +431,7 @@ export const statsRouter = router({
           attended++;
         }
       }
-      const reliability = attended / recentlySigned.length;
+      const reliability = (attended / recentlySigned.length) * 10;
 
       return {
         attack,

@@ -102,37 +102,41 @@ const getEncouragement = (corpsId1: string, corpsId2: string) => {
   return encouragements[hash(combinedIndex) % encouragements.length];
 };
 
-const statPoints = [
-  {
-    name: 'Attack',
-    value: 6.3,
-  },
-  {
-    name: 'Styrka',
-    value: 4.2,
-  },
-  {
-    name: 'Uthållighet',
-    value: 2.6,
-  },
-  {
-    name: 'Tagg',
-    value: 7.6,
-  },
-  {
-    name: 'Pålitlighet',
-    value: 8.6,
-  },
-];
-
 const StatsForNerds = () => {
   const operatingYear = getOperatingYear();
+
   const { data: self } = trpc.corps.getSelf.useQuery();
+  const { data: pentagon } = trpc.stats.getPentagon.useQuery();
+
+  const statPoints = useMemo(
+    () => [
+      {
+        name: 'Attack',
+        value: pentagon?.attack.toFixed(1) ?? 0,
+      },
+      {
+        name: 'Styrka',
+        value: pentagon?.strength.toFixed(1) ?? 0,
+      },
+      {
+        name: 'Uthållighet',
+        value: pentagon?.endurance.toFixed(1) ?? 0,
+      },
+      {
+        name: 'Tagg',
+        value: pentagon?.hype.toFixed(1) ?? 0,
+      },
+      {
+        name: 'Pålitlighet',
+        value: pentagon?.reliability.toFixed(1) ?? 0,
+      },
+    ],
+    [pentagon],
+  );
 
   const theme = useMantineTheme();
   const primaryColor =
     theme.colors[theme.primaryColor]?.[theme.primaryShade as number];
-  // const strokeColor = theme.colors.gray[theme.colorScheme === 'dark' ? 7 : 5];
 
   const start = new Date(operatingYear, 8, 1);
   const end = new Date(operatingYear + 1, 7, 31);
@@ -189,7 +193,7 @@ const StatsForNerds = () => {
 
   const corpsBuddyText = `Din corpsbästis för året är ${corpsBuddyName} med hela ${corpsBuddy?.commonGigs} gemensamma spelningar! ${encouragement}`;
 
-  const corpsEnemyText = `Du och ${corpsEnemyName} har tvärtemot ${
+  const corpsEnemyText = `Du och ${corpsEnemyName} har dock ${
     corpsEnemy?.commonGigs === 0
       ? 'inte varit på en enda spelning'
       : `bara varit på ${corpsEnemy?.commonGigs} ${
@@ -253,11 +257,6 @@ const StatsForNerds = () => {
                   <Tooltip />
                 </RadarChart>
               </ResponsiveContainer>
-              <Text align='center'>
-                (Detta är enbart en placeholder för att visa hur det kan se ut.
-                Har du några kul idéer på statistik som skulle kunna visas här?
-                Kontakta oss i ITK!)
-              </Text>
             </Grid.Col>
             {/* <Grid.Col md={6}>
               <Title align='center' order={4}>
