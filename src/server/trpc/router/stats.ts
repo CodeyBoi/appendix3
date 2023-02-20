@@ -361,35 +361,12 @@ export const statsRouter = router({
         take: limit,
       });
 
-      const recentlyAttendedGigsQuery = ctx.prisma.gig.findMany({
-        include: {
-          signups: {
-            where: {
-              corpsId,
-            },
-          },
-        },
-        where: {
-          signups: {
-            some: {
-              corpsId,
-              attended: true,
-            },
-          },
-        },
-        orderBy: {
-          date: 'desc',
-        },
-        take: limit,
-      });
+      const [recent, recentlySigned] = await ctx.prisma.$transaction([
+        recentGigsQuery,
+        recentlySignedGigsQuery,
+      ]);
 
-      const [recent, recentlySigned, recentlyAttended] =
-        await ctx.prisma.$transaction([
-          recentGigsQuery,
-          recentlySignedGigsQuery,
-          recentlyAttendedGigsQuery,
-        ]);
-
+      // Calculate attack: How few days a corps waits on average to sign up for a gig
       let totalSignupDelay = 0;
       for (const gig of recentlySigned) {
         const signup = gig.signups[0];
@@ -400,10 +377,58 @@ export const statsRouter = router({
           (signup?.createdAt.getTime() - gig.createdAt.getTime()) /
             1000 /
             60 /
-            60,
+            60 /
+            24,
         );
       }
+      const attack =
+        totalSignupDelay === 0
+          ? 10
+          : 5 / Math.log(totalSignupDelay / recentlySigned.length + 1.65);
 
-      return null;
+      // Calculate strength (styrka): How hard the corps is carrying its section
+      // TODO: Implement this
+
+      // Calculate endurance (uthållighet): How many gigs the corps has attended in a row
+      let maxStreak = 0;
+      let currentStreak = 0;
+      for (const gig of recent) {
+        const signup = gig.signups[0];
+        if (!signup || !signup.attended) {
+          currentStreak = 0;
+          continue;
+        }
+        currentStreak++;
+        maxStreak = maxStreak > currentStreak ? maxStreak : currentStreak;
+      }
+      const endurance = maxStreak / recent.length;
+
+      // Calculate hype (tagg): How many of the recent gigs the corps has attended
+      let attended = 0;
+      for (const gig of recent) {
+        const signup = gig.signups[0];
+        if (signup && signup.attended) {
+          attended++;
+        }
+      }
+      const hype = attended / recent.length;
+
+      // Calculate reliablity (pålitlighet): How many of the recent signups the corps has actually attended
+      attended = 0;
+      for (const gig of recentlySigned) {
+        const signup = gig.signups[0];
+        if (signup && signup.attended) {
+          attended++;
+        }
+      }
+      const reliability = attended / recentlySigned.length;
+
+      return {
+        attack,
+        strength: 6.9,
+        endurance,
+        hype,
+        reliability,
+      };
     }),
 });
