@@ -180,11 +180,13 @@ export const statsRouter = router({
 
   getMonthly: protectedProcedure
     .input(
-      z.object({
-        start: z.date().optional(),
-        end: z.date().optional(),
-        corpsId: z.string().optional(),
-      }).optional(),
+      z
+        .object({
+          start: z.date().optional(),
+          end: z.date().optional(),
+          corpsId: z.string().optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
@@ -226,30 +228,33 @@ export const statsRouter = router({
         monthlyMaxGigsQuery,
       ]);
       console.log(typeof monthlyMaxGigs[0]?.month);
-      const monthlyDataMap = monthlyData.reduce(
-        (acc, { month, points }) => {
-          acc[new Date(month).toISOString()] = parseInt(points);
-          return acc;
-        }, {} as Record<string, number>,
-      );
+      const monthlyDataMap = monthlyData.reduce((acc, { month, points }) => {
+        acc[new Date(month).toISOString()] = parseInt(points);
+        return acc;
+      }, {} as Record<string, number>);
 
       const startMonth = new Date(monthlyData[0]?.month ?? new Date());
       const currentDate = new Date();
       currentDate.setHours(0, 0, 0, 0);
-      return monthlyMaxGigs.filter(({ month }) => startMonth <= new Date(month) && new Date(month) <= currentDate)
+      return monthlyMaxGigs
+        .filter(
+          ({ month }) =>
+            startMonth <= new Date(month) && new Date(month) <= currentDate,
+        )
         .map(({ month, maxGigs }) => ({
           points: monthlyDataMap[new Date(month).toISOString()] ?? 0,
           month: new Date(month),
           maxGigs: parseInt(maxGigs),
-        })
-      );
+        }));
     }),
 
   getCareer: protectedProcedure
     .input(
-      z.object({
-        corpsId: z.string().optional(),
-      }).optional(),
+      z
+        .object({
+          corpsId: z.string().optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
@@ -271,7 +276,7 @@ export const statsRouter = router({
           },
         },
       });
-      
+
       const pointsQuery = ctx.prisma.gig.aggregate({
         _sum: {
           points: true,
@@ -305,4 +310,135 @@ export const statsRouter = router({
       };
     }),
 
+  getPentagon: protectedProcedure
+    .input(
+      z
+        .object({
+          corpsId: z.string().optional(),
+          limit: z.number().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const ownCorpsId = ctx.session.user.corps.id;
+      const { corpsId = ownCorpsId, limit = 21 } = input ?? {};
+
+      const currentDate = new Date();
+
+      const recentGigsQuery = ctx.prisma.gig.findMany({
+        where: {
+          date: {
+            lte: currentDate,
+          },
+        },
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: limit,
+      });
+
+      const recentlySignedGigsQuery = ctx.prisma.gig.findMany({
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId,
+              status: {
+                value: 'Ja',
+              },
+            },
+          },
+          date: {
+            lte: currentDate,
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: limit,
+      });
+
+      const [recent, recentlySigned] = await ctx.prisma.$transaction([
+        recentGigsQuery,
+        recentlySignedGigsQuery,
+      ]);
+
+      // Calculate attack: How few days a corps waits on average to sign up for a gig
+      let totalSignupDelay = 0;
+      for (const gig of recentlySigned) {
+        const signup = gig.signups[0];
+        if (!signup) {
+          continue;
+        }
+        totalSignupDelay += Math.trunc(
+          (signup?.createdAt.getTime() - gig.createdAt.getTime()) /
+            1000 /
+            60 /
+            60 /
+            24,
+        );
+      }
+      const attack =
+        totalSignupDelay === 0
+          ? 10
+          : 5 / Math.log(totalSignupDelay / recentlySigned.length + 1.65);
+
+      // Calculate strength (styrka): How hard the corps is carrying its section
+      // TODO: Implement this
+
+      // Calculate endurance (uthållighet): How many gigs the corps has attended in a row
+      let maxStreak = 0;
+      let currentStreak = 0;
+      for (const gig of recent) {
+        const signup = gig.signups[0];
+        if (!signup || !signup.attended) {
+          currentStreak = 0;
+          continue;
+        }
+        currentStreak++;
+        maxStreak = maxStreak > currentStreak ? maxStreak : currentStreak;
+      }
+      const endurance = (maxStreak / recent.length) * 10;
+
+      // Calculate hype (tagg): How many of the recent gigs the corps has attended
+      let attended = 0;
+      for (const gig of recent) {
+        const signup = gig.signups[0];
+        if (signup && signup.attended) {
+          attended++;
+        }
+      }
+      const hype = (attended / recent.length) * 10;
+
+      // Calculate reliablity (pålitlighet): How many of the recent signups the corps has actually attended
+      attended = 0;
+      for (const gig of recentlySigned) {
+        const signup = gig.signups[0];
+        if (signup && signup.attended) {
+          attended++;
+        }
+      }
+      const reliability = (attended / recentlySigned.length) * 10;
+
+      return {
+        attack,
+        strength: 6.9,
+        endurance,
+        hype,
+        reliability,
+      };
+    }),
 });
