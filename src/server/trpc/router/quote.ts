@@ -2,6 +2,35 @@ import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
 
 export const quoteRouter = router({
+  get: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.quote.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          saidBy: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+            },
+          },
+          writtenBy: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+            },
+          },
+        },
+      });
+    }),
+
   infiniteScroll: protectedProcedure
     .input(
       z.object({
@@ -10,8 +39,26 @@ export const quoteRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, limit = 50 } = input;
+      const { cursor, limit = 50 } = input ?? {};
       const items = await ctx.prisma.quote.findMany({
+        include: {
+          saidBy: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+            },
+          },
+          writtenBy: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+            },
+          },
+        },
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
