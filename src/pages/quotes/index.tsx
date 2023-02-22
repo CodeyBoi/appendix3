@@ -55,8 +55,11 @@ const Quotes = () => {
                         <Group position='apart'>
                           <Text
                             pl={12}
-                            sx={{ flex: '1' }}
-                          >{`${name}: ${quote.quote}`}</Text>
+                            sx={{ flex: '1', whiteSpace: 'pre-wrap' }}
+                          >
+                            {`${name}: `}
+                            <i>{`${quote.quote}`}</i>
+                          </Text>
                           {ownQuote && (
                             <ActionIcon
                               variant='filled'
@@ -85,7 +88,7 @@ const Quotes = () => {
   }, [loading, quotes, corpsId]);
 
   return (
-    <Stack sx={{ maxWidth: '500px' }}>
+    <Stack sx={{ maxWidth: '800px' }}>
       <Group position='apart'>
         <Title order={2}>Citat</Title>
         <Button component={NextLink} href={`/quotes/new`}>
