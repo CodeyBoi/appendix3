@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure, router, adminProcedure } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
 export const songRouter = router({
   get: protectedProcedure
@@ -13,7 +13,8 @@ export const songRouter = router({
       });
     }),
 
-  upsert: adminProcedure
+  // upsert: adminProcedure
+  upsert: protectedProcedure
     .input(
       z.object({
         id: z.string().optional(),
@@ -40,7 +41,8 @@ export const songRouter = router({
       });
     }),
 
-  remove: adminProcedure
+  // remove: adminProcedure
+  remove: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.song.delete({

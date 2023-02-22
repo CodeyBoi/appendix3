@@ -15,8 +15,9 @@ import { NextLink } from '@mantine/next';
 import { IconPlus, IconSearch } from '@tabler/icons';
 
 const Songs = () => {
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-  const isAdmin = corps?.role?.name === 'admin';
+  // const { data: corps } = trpc.corps.getSelf.useQuery();
+  // const isAdmin = corps?.role?.name === 'admin';
+  const isAdmin = true; // Remove this when we move songs to admin
 
   const [search, setSearch] = React.useState<string>('');
 
