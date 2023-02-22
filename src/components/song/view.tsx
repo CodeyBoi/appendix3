@@ -1,4 +1,4 @@
-import { Stack, Title, Text, Button } from '@mantine/core';
+import { Stack, Title, Text, Button, Group } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Song } from '@prisma/client';
 import React from 'react';
@@ -13,8 +13,19 @@ const SongView = ({ song }: SongProps) => {
   // const isAdmin = corps?.role?.name === 'admin';
   const isAdmin = true; // Remove this when we move songs to admin
   return (
-    <Stack>
-      <Title order={2}>{song.title}</Title>
+    <Stack spacing={0} sx={{ maxWidth: '800px' }}>
+      <Group position='apart'>
+        <Title order={4}>{song.title}</Title>
+        {isAdmin && (
+          <Button
+            sx={{ width: 'min-content' }}
+            component={NextLink}
+            href={`/admin/songs/${song.id}`}
+          >
+            Redigera
+          </Button>
+        )}
+      </Group>
       {song.author && (
         <Text>
           <i>{`Skriven av: ${song.author}`}</i>
@@ -25,16 +36,7 @@ const SongView = ({ song }: SongProps) => {
           <i>{`Melodi: ${song.melody}`}</i>
         </Text>
       )}
-      <Text sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
-      {isAdmin && (
-        <Button
-          sx={{ width: 'min-content' }}
-          component={NextLink}
-          href={`/admin/songs/${song.id}`}
-        >
-          Redigera
-        </Button>
-      )}
+      <Text mt={12} sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
     </Stack>
   );
 };

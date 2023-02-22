@@ -42,7 +42,7 @@ const SongForm = ({ song }: SongFormProps) => {
         utils.song.get.invalidate({ id: song.id });
       }
       utils.song.getAll.invalidate();
-      router.push('/songs');
+      router.push(`/songs/${song?.id ?? ''}`);
     },
   });
   const handleSubmit = async (values: FormValues) => {
@@ -55,6 +55,10 @@ const SongForm = ({ song }: SongFormProps) => {
 
   const removeMutation = trpc.song.remove.useMutation({
     onSuccess: () => {
+      if (song) {
+        utils.song.get.invalidate({ id: song.id });
+      }
+      utils.song.getAll.invalidate();
       router.push('/songs');
     },
   });
@@ -82,8 +86,9 @@ const SongForm = ({ song }: SongFormProps) => {
           {...form.getInputProps('melody')}
         />
         <Textarea
-          label='Text'
-          placeholder='Text'
+          label='Sångtext'
+          placeholder='Sångtext'
+          withAsterisk
           autosize
           {...form.getInputProps('lyrics')}
         />
