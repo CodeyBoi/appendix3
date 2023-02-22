@@ -83,6 +83,8 @@ model Corps {
   hiddenGigs  HiddenGig[]
   foodPrefs   CorpsFoodPrefs?
   rehearsals  CorpsRehearsal[]
+  quotes      Quote[]           @relation("SaidQuotes")
+  citedQuotes Quote[]           @relation("WrittenQuotes")
 }
 
 model CorpsInstrument {
@@ -224,4 +226,17 @@ model Song {
   lyrics    String   @default("") @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Quote {
+  id               String   @id @default(cuid())
+  quote            String   @default("") @db.Text
+  location         String   @default("")
+  saidByCorpsId    String
+  writtenByCorpsId String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  saidBy    Corps @relation("SaidQuotes", fields: [saidByCorpsId], references: [id], onDelete: Cascade)
+  writtenBy Corps @relation("WrittenQuotes", fields: [writtenByCorpsId], references: [id])
 }

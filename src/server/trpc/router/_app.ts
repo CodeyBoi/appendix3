@@ -9,6 +9,7 @@ import { gigTypeRouter } from './gig-type';
 import { roleRouter } from './role';
 import { rehearsalRouter } from './rehearsal';
 import { songRouter } from './song';
+import { quoteRouter } from './quote';
 
 export const appRouter = router({
   auth: authRouter,
@@ -20,6 +21,7 @@ export const appRouter = router({
   role: roleRouter,
   rehearsal: rehearsalRouter,
   song: songRouter,
+  quote: quoteRouter,
 });
 
 // export type definition of API
