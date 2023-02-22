@@ -52,7 +52,7 @@ const Quotes = () => {
                     {/* TODO: Group by day it was said */}
                     <tr>
                       <td>
-                        <Group position='apart'>
+                        <Group sx={{ alignItems: 'flex-start' }}>
                           <Text
                             pl={12}
                             sx={{ flex: '1', whiteSpace: 'pre-wrap' }}
