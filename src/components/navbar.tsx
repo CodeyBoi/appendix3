@@ -79,6 +79,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
           icon: <IconClipboard />,
         },
         { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
+        { label: 'Sånger', href: '/songs', icon: <IconPencil /> },
         { label: 'Länkar', href: '/links', icon: <IconLink /> },
       ],
     },
