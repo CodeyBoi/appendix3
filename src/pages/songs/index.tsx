@@ -59,7 +59,7 @@ const Songs = () => {
                 <Link href={`/songs/${song.id}`} key={song.id}>
                   <tr style={{ cursor: 'pointer' }}>
                     <td>
-                      <Text>{song.title}</Text>
+                      <Text pl={12}>{song.title}</Text>
                     </td>
                   </tr>
                 </Link>
