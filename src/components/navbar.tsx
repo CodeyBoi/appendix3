@@ -220,7 +220,10 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         <Button
           px={6}
           leftIcon={<IconLogout />}
-          onClick={() => signOut()}
+          onClick={() => {
+            signOut();
+            router.push('/');
+          }}
           className={classes.link}
           styles={{ inner: { justifyContent: 'flex-start' } }}
           style={{ width: '100%' }}
