@@ -60,7 +60,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <Textarea
-          label='Citat'
+          label='Vad sades?'
           placeholder='Citat'
           withAsterisk
           autosize
@@ -70,6 +70,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
           label='Vem sade detta?'
           placeholder='Välj corps...'
           withAsterisk
+          defaultValue={quote?.saidByCorpsId}
           {...form.getInputProps('saidByCorpsId')}
         />
         <TextInput
