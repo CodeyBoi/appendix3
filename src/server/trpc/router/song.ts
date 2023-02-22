@@ -26,6 +26,7 @@ export const songRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, title, author, melody, lyrics } = input;
+      const ownCorpsId = ctx.session.user.corps.id;
       const data = {
         title,
         author,
@@ -37,7 +38,10 @@ export const songRouter = router({
           id: id ?? '',
         },
         update: data,
-        create: data,
+        create: {
+          ...data,
+          createdByCorpsId: ownCorpsId,
+        },
       });
     }),
 
