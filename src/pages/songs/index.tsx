@@ -86,12 +86,7 @@ const Songs = () => {
           sx={{ flex: '1' }}
         />
         {isAdmin && (
-          <ActionIcon
-            color='red'
-            variant='filled'
-            component={NextLink}
-            href='/admin/songs/new'
-          >
+          <ActionIcon component={NextLink} href='/admin/songs/new'>
             <IconPlus />
           </ActionIcon>
         )}

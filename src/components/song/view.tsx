@@ -1,8 +1,9 @@
-import { Stack, Title, Text, Button, Group } from '@mantine/core';
+import { Stack, Title, Text, Group, ActionIcon } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Song } from '@prisma/client';
 import React from 'react';
 // import { trpc } from '../../utils/trpc';
+import { IconPencil } from '@tabler/icons';
 
 interface SongProps {
   song: Song;
@@ -15,28 +16,28 @@ const SongView = ({ song }: SongProps) => {
   return (
     <Stack spacing={0} sx={{ maxWidth: '800px' }}>
       <Group position='apart'>
-        <Title order={4}>{song.title}</Title>
+        <Title order={3}>{song.title}</Title>
         {isAdmin && (
-          <Button
-            sx={{ width: 'min-content' }}
-            component={NextLink}
-            href={`/admin/songs/${song.id}`}
-          >
-            Redigera
-          </Button>
+          <ActionIcon component={NextLink} href={`/admin/songs/${song.id}`}>
+            <IconPencil />
+          </ActionIcon>
         )}
       </Group>
-      {song.author && (
-        <Text>
-          <i>{`Skriven av: ${song.author}`}</i>
-        </Text>
-      )}
       {song.melody && (
-        <Text>
+        <Text px={12} mt={6}>
           <i>{`Melodi: ${song.melody}`}</i>
         </Text>
       )}
-      <Text mt={12} sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
+      {song.author && (
+        <Text px={12}>
+          <i>{`Skriven av: ${song.author}`}</i>
+        </Text>
+      )}
+      <Text
+        mt={12}
+        px={12}
+        sx={{ whiteSpace: 'pre-wrap' }}
+      >{`${song.lyrics}`}</Text>
     </Stack>
   );
 };

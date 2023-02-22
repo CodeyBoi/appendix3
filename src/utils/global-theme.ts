@@ -17,16 +17,16 @@ const GLOBAL_THEME: MantineThemeOverride = {
       '#210000',
     ],
     orange: [
-      "#FFF4E5",
-      "#FFE1B8",
-      "#FFCE8A",
-      "#FFBB5C",
-      "#FFA72E",
-      "#FF9400",
-      "#CC7600",
-      "#995900",
-      "#663B00",
-      "#331E00",
+      '#FFF4E5',
+      '#FFE1B8',
+      '#FFCE8A',
+      '#FFBB5C',
+      '#FFA72E',
+      '#FF9400',
+      '#CC7600',
+      '#995900',
+      '#663B00',
+      '#331E00',
     ],
   },
   primaryColor: 'red',
@@ -70,9 +70,9 @@ const GLOBAL_THEME: MantineThemeOverride = {
     fontFamily: 'Bahnschrift, sans-serif',
   },
   cursorType: 'pointer',
-  loader: "dots",
-  dateFormat: "D MMMM, YYYY",
-  datesLocale: "sv",
+  loader: 'dots',
+  dateFormat: 'D MMMM, YYYY',
+  datesLocale: 'sv',
   other: {
     fontWeights: {
       regular: 400,
@@ -85,7 +85,7 @@ const GLOBAL_THEME: MantineThemeOverride = {
     Button: {
       styles: {
         root: {
-          variant: "outline",
+          variant: 'outline',
           fontWeight: 500,
         },
       },
@@ -102,10 +102,16 @@ const GLOBAL_THEME: MantineThemeOverride = {
     // },
     Checkbox: {
       defaultProps: {
-        radius: "sm",
-      }
-    }
-  }
+        radius: 'sm',
+      },
+    },
+    ActionIcon: {
+      defaultProps: {
+        color: 'red',
+        variant: 'filled',
+      },
+    },
+  },
 };
 
 export { GLOBAL_THEME };
