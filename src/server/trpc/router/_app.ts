@@ -1,13 +1,14 @@
 // src/server/trpc/router/_app.ts
-import { router } from "../trpc";
-import { authRouter } from "./auth";
-import { gigRouter } from "./gig";
-import { corpsRouter } from "./corps";
-import { statsRouter } from "./stats";
-import { instrumentRouter } from "./instrument";
-import { gigTypeRouter } from "./gig-type";
-import { roleRouter } from "./role";
+import { router } from '../trpc';
+import { authRouter } from './auth';
+import { gigRouter } from './gig';
+import { corpsRouter } from './corps';
+import { statsRouter } from './stats';
+import { instrumentRouter } from './instrument';
+import { gigTypeRouter } from './gig-type';
+import { roleRouter } from './role';
 import { rehearsalRouter } from './rehearsal';
+import { songRouter } from './song';
 
 export const appRouter = router({
   auth: authRouter,
@@ -18,6 +19,7 @@ export const appRouter = router({
   gigType: gigTypeRouter,
   role: roleRouter,
   rehearsal: rehearsalRouter,
+  song: songRouter,
 });
 
 // export type definition of API

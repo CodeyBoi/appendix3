@@ -215,3 +215,13 @@ model RehearsalType {
   name       String      @unique
   rehearsals Rehearsal[]
 }
+
+model Song {
+  id        String   @id @default(cuid())
+  title     String   @unique
+  author    String
+  melody    String
+  lyrics    String   @default("") @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
