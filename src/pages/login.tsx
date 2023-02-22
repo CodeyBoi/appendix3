@@ -19,7 +19,7 @@ import { trpc } from '../utils/trpc';
 const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date('2023-03-01');
 
 export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
+  ctx: GetServerSidePropsContext,
 ) => {
   const session = await getServerAuthSession(ctx);
   // Redirects to home if user is already logged in
@@ -76,16 +76,18 @@ const Login = () => {
         background: theme.fn.linearGradient(
           215,
           theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9]
+          theme?.colors?.red?.[9],
         ),
       }}
     >
       <Center>
-        <Box sx={(theme) => ({
-          marginTop: "35vh",
-          [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-            marginTop: "25vh",
-          }})}
+        <Box
+          sx={(theme) => ({
+            marginTop: '35vh',
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+              marginTop: '25vh',
+            },
+          })}
         >
           <form
             onSubmit={(e) => {

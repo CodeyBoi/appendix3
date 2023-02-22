@@ -62,8 +62,6 @@ const Quotes = () => {
                           </Text>
                           {ownQuote && (
                             <ActionIcon
-                              variant='filled'
-                              color='red'
                               component={NextLink}
                               href={`/quotes/${quote.id}`}
                             >
