@@ -35,8 +35,8 @@ export const quoteRouter = router({
         id: z.string().optional(),
         quote: z.string(),
         location: z.string(),
-        originCorpsId: z.string(),
-        citerCorpsId: z.string().optional(),
+        saidByCorpsId: z.string(),
+        writtenByCorpsId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -45,8 +45,8 @@ export const quoteRouter = router({
         id,
         quote,
         location,
-        originCorpsId,
-        citerCorpsId = ownCorpsId,
+        saidByCorpsId,
+        writtenByCorpsId = ownCorpsId,
       } = input;
       if (id) {
         // Check if quote was created by the same corps or if corps said the quote,
@@ -60,8 +60,8 @@ export const quoteRouter = router({
           throw new Error('Quote not found');
         }
         if (
-          ownCorpsId !== oldQuote.citerCorpsId &&
-          ownCorpsId !== oldQuote.originCorpsId
+          ownCorpsId !== oldQuote.saidByCorpsId &&
+          ownCorpsId !== oldQuote.writtenByCorpsId
         ) {
           throw new Error('Not allowed to edit another corps quote');
         }
@@ -69,8 +69,8 @@ export const quoteRouter = router({
       const data = {
         quote,
         location,
-        originCorpsId,
-        citerCorpsId,
+        saidByCorpsId,
+        writtenByCorpsId,
       };
       return await ctx.prisma.quote.upsert({
         where: {
@@ -97,8 +97,8 @@ export const quoteRouter = router({
         throw new Error('Quote not found');
       }
       if (
-        ownCorpsId !== oldQuote.citerCorpsId &&
-        ownCorpsId !== oldQuote.originCorpsId
+        ownCorpsId !== oldQuote.saidByCorpsId &&
+        ownCorpsId !== oldQuote.writtenByCorpsId
       ) {
         throw new Error('Not allowed to delete another corps quote');
       }
