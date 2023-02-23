@@ -21,7 +21,7 @@ const Quote = () => {
   );
 
   return (
-    <Stack align='flex-start' sx={{ maxWidth: '350px' }}>
+    <Stack align='flex-start'>
       <Title order={2}>{(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}</Title>
       {!newQuote && !quote && failureCount < MAX_TRIES && (
         <Loading msg='Laddar citat...' />
