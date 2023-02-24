@@ -140,6 +140,7 @@ export const quoteRouter = router({
           id,
         },
       });
+      console.log(oldQuote);
       if (!oldQuote) {
         throw new Error('Quote not found');
       }

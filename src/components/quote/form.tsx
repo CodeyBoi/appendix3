@@ -1,11 +1,4 @@
-import {
-  Stack,
-  TextInput,
-  Group,
-  Button,
-  Textarea,
-  ActionIcon,
-} from '@mantine/core';
+import { Stack, TextInput, Group, Button, ActionIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -58,9 +51,9 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
     }
   };
 
-  const removeMutation = trpc.song.remove.useMutation({
+  const removeMutation = trpc.quote.remove.useMutation({
     onSuccess: () => {
-      utils.song.getAll.invalidate();
+      utils.quote.infiniteScroll.invalidate();
     },
   });
 
@@ -112,9 +105,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
               >
                 RADERA CITAT
               </Button>
-              <Button type='submit'>
-                {(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}
-              </Button>
+              <Button type='submit'>Uppdatera citat</Button>
             </>
           )}
         </Group>
