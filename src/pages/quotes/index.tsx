@@ -69,7 +69,7 @@ const Quotes = () => {
                       </tr>
                     )}
                     <tr>
-                      <td>
+                      <td style={{ border: '0' }}>
                         <Quote quote={quote} />
                       </td>
                     </tr>
