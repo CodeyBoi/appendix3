@@ -1,5 +1,6 @@
-import { Stack, TextInput, Group, Button, Textarea } from '@mantine/core';
+import { Stack, TextInput, Group, Button, ActionIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
@@ -38,65 +39,75 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
   const mutation = trpc.quote.upsert.useMutation({
     onSuccess: () => {
       utils.quote.infiniteScroll.invalidate();
-      router.push(`/quotes`);
     },
   });
   const handleSubmit = async (values: FormValues) => {
     if (newQuote) {
       await mutation.mutateAsync(values);
+      form.reset();
     } else {
       await mutation.mutateAsync({ ...values, id: quote.id });
+      router.push('/quotes');
     }
   };
 
-  const removeMutation = trpc.song.remove.useMutation({
+  const removeMutation = trpc.quote.remove.useMutation({
     onSuccess: () => {
-      utils.song.getAll.invalidate();
-      router.push('/quotes');
+      utils.quote.infiniteScroll.invalidate();
     },
   });
 
   return (
-    <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
-        <Textarea
+        <Group>
+          <SelectCorps
+            label='Vem sade detta?'
+            placeholder='Välj corps...'
+            withAsterisk
+            defaultValue={quote?.saidByCorpsId}
+            {...form.getInputProps('saidByCorpsId')}
+          />
+          <TextInput
+            label='Var sades detta?'
+            placeholder='Plats'
+            {...form.getInputProps('location')}
+          />
+        </Group>
+        <TextInput
+          rightSection={
+            <ActionIcon type='submit' variant='subtle' color='dark'>
+              <IconSend />
+            </ActionIcon>
+          }
           label='Vad sades?'
           placeholder='Citat'
           withAsterisk
           autosize
           {...form.getInputProps('quote')}
         />
-        <SelectCorps
-          label='Vem sade detta?'
-          placeholder='Välj corps...'
-          withAsterisk
-          defaultValue={quote?.saidByCorpsId}
-          {...form.getInputProps('saidByCorpsId')}
-        />
-        <TextInput
-          label='Var sades detta?'
-          placeholder='Plats'
-          {...form.getInputProps('location')}
-        />
         <Group position='right'>
-          {quote && (
-            <Button
-              variant='outline'
-              compact
-              onClick={async () => {
-                if (
-                  window.confirm('Är du säker på att du vill ta bort citatet?')
-                ) {
-                  await removeMutation.mutateAsync({ id: quote.id });
-                }
-              }}
-            >
-              RADERA CITAT
-            </Button>
+          {!newQuote && (
+            <>
+              <Button
+                variant='outline'
+                compact
+                onClick={async () => {
+                  if (
+                    window.confirm(
+                      'Är du säker på att du vill ta bort citatet?',
+                    )
+                  ) {
+                    await removeMutation.mutateAsync({ id: quote.id });
+                    router.push('/quotes');
+                  }
+                }}
+              >
+                RADERA CITAT
+              </Button>
+              <Button type='submit'>Uppdatera citat</Button>
+            </>
           )}
-          <Button type='submit'>
-            {(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}
-          </Button>
         </Group>
       </Stack>
     </form>
