@@ -8,7 +8,7 @@ import AlertError from '../../../components/alert-error';
 
 const MAX_TRIES = 3;
 
-const Quote = () => {
+const QuotePage = () => {
   const router = useRouter();
   const quoteId = router.query.id as string | undefined;
   const newQuote = quoteId === 'new';
@@ -35,4 +35,4 @@ const Quote = () => {
   );
 };
 
-export default Quote;
+export default QuotePage;

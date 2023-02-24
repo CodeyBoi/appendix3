@@ -1,19 +1,9 @@
 import React, { useMemo } from 'react';
-import {
-  Table,
-  Title,
-  Stack,
-  Group,
-  Text,
-  Button,
-  ActionIcon,
-  Card,
-} from '@mantine/core';
+import { Table, Title, Stack, Group, Button } from '@mantine/core';
 import { trpc } from '../../utils/trpc';
 import Loading from '../../components/loading';
-import { NextLink } from '@mantine/next';
-import { IconPencil } from '@tabler/icons';
 import QuoteForm from '../../components/quote/form';
+import Quote from '../../components/quote';
 
 const getDayMessage = (date: Date) => {
   const today = new Date();
@@ -38,9 +28,6 @@ const getDayMessage = (date: Date) => {
 };
 
 const Quotes = () => {
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-  const corpsId = corps?.id;
-
   const {
     data: quotes,
     isLoading: corpsLoading,
@@ -64,13 +51,6 @@ const Quotes = () => {
           {quotes.pages.map((page) => {
             {
               return page.items.map((quote) => {
-                const { lastName, number } = quote.saidBy;
-                const name = `${
-                  number !== null ? '#' + number.toString() : 'p.e. ' + lastName
-                }`;
-                const ownQuote =
-                  corpsId === quote.saidByCorpsId ||
-                  corpsId === quote.writtenByCorpsId;
                 const dayMessage = getDayMessage(new Date(quote.createdAt));
                 let shouldAddDayMessage = false;
                 if (prevDayMessage !== dayMessage) {
@@ -90,26 +70,7 @@ const Quotes = () => {
                     )}
                     <tr>
                       <td>
-                        <Group sx={{ alignItems: 'flex-start' }}>
-                          <Text
-                            pl={12}
-                            sx={{
-                              flex: '1',
-                              whiteSpace: 'pre-wrap',
-                            }}
-                          >
-                            {`${name}: `}
-                            <i>{`${quote.quote}`}</i>
-                          </Text>
-                          {ownQuote && (
-                            <ActionIcon
-                              component={NextLink}
-                              href={`/quotes/${quote.id}`}
-                            >
-                              <IconPencil />
-                            </ActionIcon>
-                          )}
-                        </Group>
+                        <Quote quote={quote} />
                       </td>
                     </tr>
                   </React.Fragment>
@@ -124,7 +85,7 @@ const Quotes = () => {
         Här fanns inget att se :/
       </Title>
     );
-  }, [loading, quotes, corpsId]);
+  }, [loading, quotes]);
 
   return (
     <Stack sx={{ maxWidth: '800px' }}>
