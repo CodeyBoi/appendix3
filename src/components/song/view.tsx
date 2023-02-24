@@ -24,20 +24,16 @@ const SongView = ({ song }: SongProps) => {
         )}
       </Group>
       {song.melody && (
-        <Text px={12} mt={6}>
+        <Text mt={6}>
           <i>{`Melodi: ${song.melody}`}</i>
         </Text>
       )}
       {song.author && (
-        <Text px={12}>
+        <Text>
           <i>{`Skriven av: ${song.author}`}</i>
         </Text>
       )}
-      <Text
-        mt={12}
-        px={12}
-        sx={{ whiteSpace: 'pre-wrap' }}
-      >{`${song.lyrics}`}</Text>
+      <Text mt={12} sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
     </Stack>
   );
 };
