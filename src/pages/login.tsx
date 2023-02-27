@@ -50,13 +50,29 @@ const Login = () => {
           redirect: true,
           callbackUrl: '/verified',
         });
-
         setSuccess(true);
       } else {
         setError('Denna mailadress är inte registrerad');
       }
     },
     enabled: !!email,
+  });
+
+  const numberInput = parseInt(email);
+  trpc.auth.getEmailFromNumber.useQuery(numberInput, {
+    onSuccess: (data) => {
+      if (data) {
+        signIn('email', {
+          email: data,
+          redirect: true,
+          callbackUrl: '/verified',
+        });
+        setSuccess(true);
+      } else {
+        setError('Detta nummer är inte registrerat');
+      }
+    },
+    enabled: !!numberInput && !isNaN(numberInput),
   });
 
   const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
@@ -75,8 +91,8 @@ const Login = () => {
         height: '100vh',
         background: theme.fn.linearGradient(
           215,
-          theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9],
+          theme?.colors?.red?.[7] || 'red',
+          theme?.colors?.red?.[9] || 'darkred',
         ),
       }}
     >
@@ -107,7 +123,6 @@ const Login = () => {
                 <Group align='baseline'>
                   <TextInput
                     name='email'
-                    type='email'
                     spellCheck='false'
                     style={{ flexGrow: 1 }}
                     mx='sm'

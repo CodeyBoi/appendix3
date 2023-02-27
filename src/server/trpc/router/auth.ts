@@ -58,4 +58,23 @@ export const authRouter = router({
       }
       return null;
     }),
+
+  getEmailFromNumber: publicProcedure
+    .input(z.number())
+    .query(async ({ ctx, input: number }) => {
+      if (isNaN(number)) {
+        return null;
+      }
+      const user = await ctx.prisma.user.findFirst({
+        where: {
+          corps: {
+            number,
+          },
+        },
+      });
+      if (!user) {
+        return null;
+      }
+      return user.email;
+    }),
 });
