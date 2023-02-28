@@ -234,10 +234,10 @@ export const corpsRouter = router({
               },
             },
             {
-              number,
+              number: isNaN(number) ? undefined : number,
             },
             {
-              bNumber,
+              bNumber: isNaN(bNumber) ? undefined : bNumber,
             },
             {
               instruments: {
