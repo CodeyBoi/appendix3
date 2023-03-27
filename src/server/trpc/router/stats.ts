@@ -321,7 +321,7 @@ export const statsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
-      const { corpsId = ownCorpsId, limit = 21 } = input ?? {};
+      const { corpsId = ownCorpsId, limit = 29 } = input ?? {};
 
       const currentDate = new Date();
 
@@ -329,6 +329,9 @@ export const statsRouter = router({
         where: {
           date: {
             lte: currentDate,
+          },
+          points: {
+            gt: 0,
           },
         },
         include: {
@@ -363,6 +366,9 @@ export const statsRouter = router({
           },
           date: {
             lte: currentDate,
+          },
+          points: {
+            gt: 0,
           },
         },
         orderBy: {
@@ -423,19 +429,29 @@ export const statsRouter = router({
       }
       const hype = (attended / recent.length) * 10;
 
-      // Calculate reliablity (pålitlighet): How many of the recent signups the corps has actually attended
+      // Calculate reliablity (pålitlighet): How late after their initial signup a corps changes their status
       attended = 0;
+      let delta = 0;
       for (const gig of recentlySigned) {
         const signup = gig.signups[0];
-        if (signup && signup.attended) {
-          attended++;
+        if (!signup) {
+          continue;
         }
+        delta += signup.updatedAt.getTime() - signup.createdAt.getTime();
       }
-      const reliability = (attended / recentlySigned.length) * 10;
+      delta /= recentlySigned.length;
+      const deltaDays = delta / 1000 / 60 / 60 / 24;
+      const reliability = 10 * Math.exp(-deltaDays / 2);
+
+      console.log({
+        delta,
+        deltaDays,
+        reliability,
+      });
 
       return {
         attack,
-        strength: 6.9,
+        strength: (attack + endurance + hype + reliability) / 4,
         endurance,
         hype,
         reliability,
