@@ -15,7 +15,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { relative } from 'path';
 
 const encouragements = [
   'Ni är verkligen ett bra team!',
