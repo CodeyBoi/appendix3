@@ -397,16 +397,17 @@ export const statsRouter = router({
             24,
         );
       }
+      const avgSignupDelay = totalSignupDelay / recentlySigned.length;
       const attack =
-        totalSignupDelay === 0
+      avgSignupDelay === 0
           ? 10
-          : 5 / Math.log(totalSignupDelay / recentlySigned.length + 1.65);
+          : 5 / Math.log(avgSignupDelay + 1.65);
 
       // Calculate strength (styrka): How hard the corps is carrying its section
       // TODO: Implement this
 
       // Calculate endurance (uthållighet): How many gigs the corps has attended in a row
-      let maxStreak = 0;
+      let longestStreak = 0;
       let currentStreak = 0;
       for (const gig of recent) {
         const signup = gig.signups[0];
@@ -415,9 +416,9 @@ export const statsRouter = router({
           continue;
         }
         currentStreak++;
-        maxStreak = maxStreak > currentStreak ? maxStreak : currentStreak;
+        longestStreak = longestStreak > currentStreak ? longestStreak : currentStreak;
       }
-      const endurance = (maxStreak / recent.length) * 10;
+      const endurance = (longestStreak / recent.length) * 10;
 
       // Calculate hype (tagg): How many of the recent gigs the corps has attended
       let attended = 0;
@@ -451,10 +452,13 @@ export const statsRouter = router({
 
       return {
         attack,
+        avgSignupDelay,
         strength: (attack + endurance + hype + reliability) / 4,
         endurance,
+        longestStreak,
         hype,
         reliability,
+        avgSignupChange: deltaDays,
       };
     }),
 });

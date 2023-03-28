@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { relative } from 'path';
 
 const encouragements = [
   'Ni är verkligen ett bra team!',
@@ -201,6 +202,34 @@ const StatsForNerds = () => {
         }`
   } tillsammans. Försöker ni undvika varandra?`;
 
+  const avgSignupDelayDays = Math.trunc(pentagon?.avgSignupDelay ?? 0);
+  const attackDaysText =
+    avgSignupDelayDays === 0
+      ? 'samma dag'
+      : avgSignupDelayDays === 1
+      ? 'nästa dag'
+      : 'efter ' + avgSignupDelayDays + ' dagar';
+  const attackText = `Attack är hur snabbt du anmäler dig till nya spelningar. När en spelning dykt upp i blindtarmen är du i snitt på hugget med en anmälan ${attackDaysText}!`;
+
+  const strengthText = `Styrka är inte implementerat än lol. Just nu är det bara snittet av de andra fyra. Maila förslag pls.`;
+
+  const enduranceText = `Uthållighet baseras på din längsta streak bland de senaste spelningarna. För dig är det ${pentagon?.longestStreak} spelningar i rad!`;
+
+  const hypeText = `Tagg är hur taggad du varit på sistone, och du har varit ${Math.trunc(
+    (pentagon?.hype ?? 0) * 10,
+  )}% taggad på sistone!`;
+
+  const avgSignupChangeHours = Math.trunc(
+    (pentagon?.avgSignupChange ?? 0) * 24,
+  );
+  const avgSignupChangeText =
+    avgSignupChangeHours < 4
+      ? 'inte ändra i din anmälan alls efteråt! Sekreteraren tackar dig för att du står för det du säger!'
+      : `ändra din anmälan i snitt ${avgSignupChangeHours} timmar efteråt. Bättre kan du!`;
+  const reliabilityText = `Pålitlighet är hur mycket man kan lita på dig. Efter att du anmält dig brukar du ${avgSignupChangeText}`;
+
+  console.log(pentagon);
+
   return (
     <Stack sx={{ maxWidth: 700 }}>
       <Title order={2}>Statistik för nördar</Title>
@@ -236,47 +265,50 @@ const StatsForNerds = () => {
               <Tooltip />
             </AreaChart>
           </ResponsiveContainer>
-          <Grid>
-            <Grid.Col md={6}>
-              <Title align='center' order={5}>
-                Dina corpsegenskaper 📋
-              </Title>
-              <ResponsiveContainer width='100%' height={210}>
-                <RadarChart outerRadius={80} data={statPoints}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey='name' />
-                  <PolarRadiusAxis domain={[0, 10]} stroke='none' />
-                  <Radar
-                    name='Poäng'
-                    dataKey='value'
-                    stroke={primaryColor}
-                    fill={primaryColor}
-                    fillOpacity={0.6}
-                    dot={true}
-                  />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
-            </Grid.Col>
-            {/* <Grid.Col md={6}>
-              <Title align='center' order={4}>
-                Vilka sorters spelningar du gillar 🎶
-              </Title>
-              <ResponsiveContainer width='100%' height={210}>
-                <PieChart>
-                  <Pie
-                    data={gigInstruments}
-                    dataKey='value'
-                    outerRadius={80}
-                    fill={primaryColor}
-                  />
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Grid.Col> */}
-          </Grid>
+          {pentagon && (
+            <Grid>
+              <Grid.Col>
+                <Title order={4}>Dina corpsegenskaper 📋</Title>
+              </Grid.Col>
+              <Grid.Col md={6}>
+                <Text size='sm'>
+                  {attackText}
+                  <br />
+                  <br />
+                  {strengthText}
+                  <br />
+                  <br />
+                  {enduranceText}
+                  <br />
+                  <br />
+                  {hypeText}
+                  <br />
+                  <br />
+                  {reliabilityText}
+                </Text>
+              </Grid.Col>
+              <Grid.Col md={6}>
+                <ResponsiveContainer width='100%' height={210}>
+                  <RadarChart outerRadius={80} data={statPoints}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey='name' />
+                    <PolarRadiusAxis domain={[0, 10]} stroke='none' />
+                    <Radar
+                      name='Poäng'
+                      dataKey='value'
+                      stroke={primaryColor}
+                      fill={primaryColor}
+                      fillOpacity={0.6}
+                      dot={true}
+                    />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </Grid.Col>
+            </Grid>
+          )}
           <Text>
-            <Title order={5}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
+            <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
             {corpsBuddy && `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
             <br />
           </Text>
