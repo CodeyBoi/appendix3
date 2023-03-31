@@ -8,7 +8,6 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { NextLink } from '@mantine/next';
 import React, { useEffect } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
