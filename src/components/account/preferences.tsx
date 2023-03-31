@@ -8,6 +8,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { NextLink } from '@mantine/next';
 import React, { useEffect } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
@@ -76,6 +77,11 @@ const AccountPreferences = () => {
   const darkThemeMessage =
     'VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?';
 
+  /* April fools */
+  const date = new Date();
+  const isAprilFools = date.getMonth() === 3 && date.getDate() === 1;
+  /* April fools */
+
   return (
     <Stack>
       <Title order={3}>Inställningar</Title>
@@ -90,6 +96,16 @@ const AccountPreferences = () => {
                 label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
                 checked={colorScheme === 'dark'}
                 onChange={() => {
+                  /* April fools */
+                  if (isAprilFools) {
+                    alert('get pranked');
+                    window.open(
+                      'https://www.youtube.com/watch?v=h-d4PlcAGb4',
+                      '_blank',
+                    );
+                    return;
+                  }
+                  /* April fools */
                   if (colorScheme !== 'dark') {
                     if (confirm(darkThemeMessage)) {
                       toggleColorScheme();
