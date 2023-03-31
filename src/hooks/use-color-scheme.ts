@@ -1,6 +1,5 @@
 import { ColorScheme } from '@mantine/core';
-import { setCookie } from 'cookies-next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { trpc } from '../utils/trpc';
 
 const useColorScheme = (initialColorScheme: ColorScheme) => {
@@ -12,8 +11,14 @@ const useColorScheme = (initialColorScheme: ColorScheme) => {
     setColorScheme(newColorScheme);
   };
   trpc.corps.setColorScheme.useQuery(colorScheme);
+
+  /* April Fools */
+  const date = new Date();
+  const isAprilFirst = date.getDate() === 1 && date.getMonth() === 3;
+  /* April Fools */
+
   return {
-    colorScheme,
+    colorScheme: isAprilFirst ? 'dark' : colorScheme,
     toggleColorScheme,
   };
 };

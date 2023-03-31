@@ -227,8 +227,6 @@ const StatsForNerds = () => {
       : `ändra din anmälan i snitt ${avgSignupChangeHours} timmar efteråt. Bättre kan du!`;
   const reliabilityText = `Pålitlighet är hur mycket man kan lita på dig. Efter att du anmält dig brukar du ${avgSignupChangeText}`;
 
-  console.log(pentagon);
-
   return (
     <Stack sx={{ maxWidth: 700 }}>
       <Title order={2}>Statistik för nördar</Title>

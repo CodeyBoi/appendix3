@@ -227,7 +227,6 @@ export const statsRouter = router({
         monthlyDataQuery,
         monthlyMaxGigsQuery,
       ]);
-      console.log(typeof monthlyMaxGigs[0]?.month);
       const monthlyDataMap = monthlyData.reduce((acc, { month, points }) => {
         acc[new Date(month).toISOString()] = parseInt(points);
         return acc;
@@ -399,9 +398,7 @@ export const statsRouter = router({
       }
       const avgSignupDelay = totalSignupDelay / recentlySigned.length;
       const attack =
-      avgSignupDelay === 0
-          ? 10
-          : 5 / Math.log(avgSignupDelay + 1.65);
+        avgSignupDelay === 0 ? 10 : 5 / Math.log(avgSignupDelay + 1.65);
 
       // Calculate strength (styrka): How hard the corps is carrying its section
       // TODO: Implement this
@@ -416,7 +413,8 @@ export const statsRouter = router({
           continue;
         }
         currentStreak++;
-        longestStreak = longestStreak > currentStreak ? longestStreak : currentStreak;
+        longestStreak =
+          longestStreak > currentStreak ? longestStreak : currentStreak;
       }
       const endurance = (longestStreak / recent.length) * 10;
 
@@ -443,12 +441,6 @@ export const statsRouter = router({
       delta /= recentlySigned.length;
       const deltaDays = delta / 1000 / 60 / 60 / 24;
       const reliability = 10 * Math.exp(-deltaDays / 2);
-
-      console.log({
-        delta,
-        deltaDays,
-        reliability,
-      });
 
       return {
         attack,
