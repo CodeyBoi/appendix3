@@ -1,10 +1,18 @@
-import { Title, Text, Stack, Group, Card, UnstyledButton, Grid } from "@mantine/core";
-import React from "react";
-import Datebox from "./datebox";
-import GigButtons from "./buttons";
-import dayjs from "dayjs";
-import { Gig } from "@prisma/client";
-import { NextLink } from "@mantine/next";
+import {
+  Title,
+  Text,
+  Stack,
+  Group,
+  Card,
+  UnstyledButton,
+  Grid,
+} from '@mantine/core';
+import React from 'react';
+import Datebox from './datebox';
+import GigButtons from './buttons';
+import dayjs from 'dayjs';
+import { Gig } from '@prisma/client';
+import { NextLink } from '@mantine/next';
 
 interface GigProps {
   gig: Gig & { type: { name: string } };
@@ -12,8 +20,8 @@ interface GigProps {
 
 const GigCard = ({ gig }: GigProps) => {
   return (
-    <Card shadow="sm" p="md" withBorder style={{ overflow: "visible" }}>
-      <Stack spacing="sm">
+    <Card shadow='sm' p='md' withBorder style={{ overflow: 'visible' }}>
+      <Stack spacing='sm'>
         <Grid>
           <Grid.Col span={12} md={8}>
             <UnstyledButton
@@ -21,11 +29,11 @@ const GigCard = ({ gig }: GigProps) => {
               href={`/gig/${gig.id}`}
               style={{ flexGrow: 1 }}
             >
-              <Stack spacing="sm">
+              <Stack spacing='sm'>
                 <Title order={5}>{gig.title}</Title>
-                <Group position="left">
+                <Group position='left'>
                   <Datebox date={dayjs(gig.date)} />
-                  <Text size="xs">
+                  <Text size='xs'>
                     <i>{gig.type.name}</i>
                     <br />
                     {gig.location && `Plats: ${gig.location}`}
@@ -42,7 +50,7 @@ const GigCard = ({ gig }: GigProps) => {
             <GigButtons gig={gig} />
           </Grid.Col>
         </Grid>
-        <Text size="sm">{gig.description}</Text>
+        <Text size='sm'>{gig.description}</Text>
       </Stack>
     </Card>
   );
