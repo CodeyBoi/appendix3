@@ -26,12 +26,14 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
     (!gig.signupEnd ||
       currentDate.subtract(1, 'day').isBefore(gig.signupEnd, 'day'));
 
-  const hasValidTimes = gig.meetup.includes(':') && gig.start.includes(':');
+  const hasValidTimes =
+    (gig.meetup.includes(':') || gig.meetup.includes('.')) &&
+    (gig.start.includes(':') || gig.start.includes('.'));
 
   const generateCalendarLink = () => {
     if (!hasValidTimes) return '';
-    const [meetupHour, meetupMinute] = gig.meetup.split(':');
-    const [startHourTemp, startMinute] = gig.start.split(':');
+    const [meetupHour, meetupMinute] = gig.meetup.split(/[:.]/);
+    const [startHourTemp, startMinute] = gig.start.split(/[:.]/);
     if (!meetupHour || !meetupMinute || !startHourTemp || !startMinute)
       return '';
     const afterEleven = parseInt(startHourTemp) === 23;
