@@ -62,11 +62,12 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
         <Modal
           opened={opened}
           onClose={() => setOpened(false)}
-          title={<Title order={2}>Uppdatera spelning</Title>}
+          title={<Title order={3}>Uppdatera spelning</Title>}
           centered
           size='auto'
           transition='rotate-left'
           transitionDuration={200}
+          zIndex={1000}
         >
           <GigForm gig={gig} onSubmit={() => setOpened(false)} />
         </Modal>
