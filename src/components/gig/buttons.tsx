@@ -1,19 +1,21 @@
 import React from 'react';
-import { Button, MediaQuery, Stack } from '@mantine/core';
+import { Button, MediaQuery, Modal, Stack, Title } from '@mantine/core';
 import { IconCalendarPlus, IconEdit } from '@tabler/icons';
 import GigSignupBox from './signup-box';
 import dayjs from 'dayjs';
 import { Gig } from '@prisma/client';
-import { NextLink } from '@mantine/next';
 import { trpc } from '../../utils/trpc';
+import GigForm from './form';
 
 interface GigButtonsProps {
-  gig: Gig;
+  gig: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
 }
 
 const GigButtons = ({ gig }: GigButtonsProps) => {
   const { data: corps } = trpc.corps.getSelf.useQuery();
   const isAdmin = corps?.role?.name === 'admin';
+
+  const [opened, setOpened] = React.useState(false);
 
   const currentDate = dayjs().startOf('day');
   const showSignup =
@@ -56,30 +58,42 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
 
   return (
     <MediaQuery smallerThan='md' styles={{ width: '100%' }}>
-      <Stack spacing={6}>
-        {showSignup && <GigSignupBox gigId={gig.id} />}
-        {hasValidTimes && (
-          <Button
-            component='a'
-            href={generateCalendarLink()}
-            target='_blank'
-            leftIcon={<IconCalendarPlus />}
-            fullWidth
-          >
-            Lägg till i kalender
-          </Button>
-        )}
-        {isAdmin && (
-          <Button
-            component={NextLink}
-            href={`/admin/gig/${gig.id}`}
-            leftIcon={<IconEdit />}
-            fullWidth
-          >
-            Redigera spelning
-          </Button>
-        )}
-      </Stack>
+      <>
+        <Modal
+          opened={opened}
+          onClose={() => setOpened(false)}
+          title={<Title order={2}>Uppdatera spelning</Title>}
+          centered
+          size='auto'
+          transition='rotate-left'
+          transitionDuration={200}
+        >
+          <GigForm gig={gig} onSubmit={() => setOpened(false)} />
+        </Modal>
+        <Stack spacing={6}>
+          {showSignup && <GigSignupBox gigId={gig.id} />}
+          {hasValidTimes && (
+            <Button
+              component='a'
+              href={generateCalendarLink()}
+              target='_blank'
+              leftIcon={<IconCalendarPlus />}
+              fullWidth
+            >
+              Lägg till i kalender
+            </Button>
+          )}
+          {isAdmin && (
+            <Button
+              onClick={() => setOpened(true)}
+              leftIcon={<IconEdit />}
+              fullWidth
+            >
+              Redigera spelning
+            </Button>
+          )}
+        </Stack>
+      </>
     </MediaQuery>
   );
 };
