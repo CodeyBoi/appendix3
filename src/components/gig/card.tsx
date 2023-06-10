@@ -14,11 +14,11 @@ import dayjs from 'dayjs';
 import { Gig } from '@prisma/client';
 import { NextLink } from '@mantine/next';
 
-interface GigProps {
-  gig: Gig & { type: { name: string } };
+interface GigCardProps {
+  gig: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
 }
 
-const GigCard = ({ gig }: GigProps) => {
+const GigCard = ({ gig }: GigCardProps) => {
   return (
     <Card shadow='sm' p='md' withBorder style={{ overflow: 'visible' }}>
       <Stack spacing='sm'>

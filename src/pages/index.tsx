@@ -1,11 +1,11 @@
-import { Title, Stack } from "@mantine/core";
-import { Gig } from "@prisma/client";
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import React from "react";
-import GigCard from "../components/gig/card";
-import Loading from "../components/loading";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
+import { Title, Stack } from '@mantine/core';
+import { Gig } from '@prisma/client';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import React from 'react';
+import GigCard from '../components/gig/card';
+import Loading from '../components/loading';
+import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { trpc } from '../utils/trpc';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -26,7 +26,11 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
+const makeGigList = (
+  gigs: (Gig & { type: { name: string } } & {
+    hiddenFor: { corpsId: string }[];
+  })[],
+) => {
   let lastMonth = -1;
 
   const gigsByMonth = gigs.reduce((acc, gig) => {
@@ -38,7 +42,7 @@ const makeGigList = (gigs: (Gig & { type: { name: string } })[]) => {
     }
     acc.at(-1)?.push(gig);
     return acc;
-  }, [] as (Gig & { type: { name: string } })[][]);
+  }, [] as (Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] })[][]);
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
@@ -69,13 +73,15 @@ const Home: NextPage = () => {
   });
 
   return (
-    <Stack sx={{ maxWidth: 800 }} spacing="xs">
-      <Title sx={(theme) => ({
-        fontSize: theme.headings.sizes.h2.fontSize,
-        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-          fontSize: theme.headings.sizes.h3.fontSize,
-        },
-      })}>
+    <Stack sx={{ maxWidth: 800 }} spacing='xs'>
+      <Title
+        sx={(theme) => ({
+          fontSize: theme.headings.sizes.h2.fontSize,
+          [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+            fontSize: theme.headings.sizes.h3.fontSize,
+          },
+        })}
+      >
         {gigs && gigs.length === 0
           ? 'Inga kommande spelningar :('
           : 'Kommande spelningar'}
