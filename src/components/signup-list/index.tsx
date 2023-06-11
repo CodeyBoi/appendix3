@@ -1,38 +1,74 @@
-import React, { useMemo } from "react";
-import { Box, Table, Title, Button, Group, Space, Switch } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconUser } from "@tabler/icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { trpc } from "../../utils/trpc";
-import MultiSelectCorps from "../multi-select-corps";
-import Loading from "../loading";
-import Entry from "./entry";
+import React, { useMemo } from 'react';
+import {
+  Box,
+  Table,
+  Text,
+  Title,
+  Button,
+  Group,
+  Space,
+  Switch,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { IconUser } from '@tabler/icons';
+import { useQueryClient } from '@tanstack/react-query';
+import { trpc } from '../../utils/trpc';
+import MultiSelectCorps from '../multi-select-corps';
+import Loading from '../loading';
+import Entry from './entry';
 
 interface SignupListProps {
   gigId: string;
   gigHasHappened?: boolean;
 }
 
-// const STEMS_PER_INSTRUMENT = {
-//   Piccolo: 1,
-//   Flöjt: 2,
-//   Oboe: 1,
-//   Klarinett: 3,
-//   Fagott: 1,
-//   Basklarinett: 1,
-//   Sopransaxofon: 1,
-//   Altsaxofon: 2,
-//   Tenorsaxofon: 1,
-//   Barytonsaxofon: 1,
-//   Horn: 4,
-//   Trumpet: 3,
-//   Trombon: 3,
-//   Eufonium: 1,
-//   Tuba: 1,
-//   Slagverk: 3,
-//   Fötter: 4,
-//   Annat: 0,
-// };
+const FULL_SETTING: [string, number][] = [
+  ['Dirigent', 1],
+  ['Piccolo', 0],
+  ['Flöjt', 2],
+  ['Oboe', 0],
+  ['Klarinett', 3],
+  ['Fagott', 0],
+  ['Basklarinett', 0],
+  ['Sopransax', 0],
+  ['Altsax', 2],
+  ['Tenorsax', 1],
+  ['Barytonsax', 1],
+  ['Horn', 2],
+  ['Trumpet', 3],
+  ['Trombon', 3],
+  ['Eufonium', 1],
+  ['Tuba', 1],
+  ['Slagverk', 3],
+  ['Balett', 4],
+  ['Annat', 0],
+];
+
+const toPlural = (instrument: string) => {
+  instrument = instrument.trim().toLowerCase();
+  if (instrument === 'piccolo') {
+    return 'piccolor';
+  } else if (instrument === 'oboe') {
+    return 'oboer';
+  } else if (instrument === 'sopransax') {
+    return 'sopransaxar';
+  } else if (instrument === 'altsax') {
+    return 'altsaxar';
+  } else if (instrument === 'tenorsax') {
+    return 'tenorsaxar';
+  } else if (instrument === 'barytonsax') {
+    return 'barytonsaxar';
+  } else if (instrument === 'horn') {
+    return 'horn';
+  } else if (instrument === 'eufonium') {
+    return 'eufonier';
+  } else if (instrument === 'tuba') {
+    return 'tubor';
+  } else if (instrument === 'slagverk') {
+    return 'slagverkare';
+  }
+  return instrument + 'er';
+};
 
 const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   const queryClient = useQueryClient();
@@ -42,7 +78,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
 
   const { data: role } = trpc.corps.getRole.useQuery();
-  const isAdmin = role === "admin";
+  const isAdmin = role === 'admin';
 
   const [editMode, setEditMode] = React.useState(false);
 
@@ -56,44 +92,48 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
         (acc as { [key: string]: number })[instrument.name] = instrument.id;
         return acc;
       }, {}) ?? [],
-    [instruments]
+    [instruments],
   );
   // Hack to make sure the conductor is always first
-  instrumentPrecedence["Dirigent"] = -1;
+  instrumentPrecedence['Dirigent'] = -1;
 
   // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
   const signupsSorted = useMemo(
     () =>
-      signups?.filter((signup) => !gigHasHappened || showAdminTools || signup.attended).sort((a, b) => {
-        // Compare instrument precedence
-        if (a.instrument !== b.instrument) {
-          const aPrio = instrumentPrecedence[a.instrument] ?? Infinity;
-          const bPrio = instrumentPrecedence[b.instrument] ?? Infinity;
-          return aPrio - bPrio;
-        }
+      signups
+        ?.filter(
+          (signup) => !gigHasHappened || showAdminTools || signup.attended,
+        )
+        .sort((a, b) => {
+          // Compare instrument precedence
+          if (a.instrument !== b.instrument) {
+            const aPrio = instrumentPrecedence[a.instrument] ?? Infinity;
+            const bPrio = instrumentPrecedence[b.instrument] ?? Infinity;
+            return aPrio - bPrio;
+          }
 
-        // Compare numbers
-        if (a.number || b.number) {
-          return (a.number || Infinity) - (b.number || Infinity);
-        }
+          // Compare numbers
+          if (a.number || b.number) {
+            return (a.number || Infinity) - (b.number || Infinity);
+          }
 
-        // Compare last name
-        if (a.lastName !== b.lastName) {
-          return a.lastName.localeCompare(b.lastName);
-        }
+          // Compare last name
+          if (a.lastName !== b.lastName) {
+            return a.lastName.localeCompare(b.lastName);
+          }
 
-        // Compare first name
-        return a.firstName.localeCompare(b.firstName);
-      }) ?? [],
-    [signups, instrumentPrecedence, gigHasHappened, showAdminTools]
+          // Compare first name
+          return a.firstName.localeCompare(b.firstName);
+        }) ?? [],
+    [signups, instrumentPrecedence, gigHasHappened, showAdminTools],
   );
 
   // Divide the list of corpsii into people who answered yes and people who answered maybe
   const splitList = signupsSorted?.reduce(
     (acc, signup) => {
-      if (signup.signupStatus === "Ja") {
+      if (signup.signupStatus === 'Ja') {
         acc.yesList.push(signup);
-      } else if (signup.signupStatus === "Kanske") {
+      } else if (signup.signupStatus === 'Kanske') {
         acc.maybeList.push(signup);
       }
       return acc;
@@ -101,7 +141,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     {
       yesList: [] as typeof signupsSorted,
       maybeList: [] as typeof signupsSorted,
-    }
+    },
   );
 
   const yesList = splitList?.yesList;
@@ -111,7 +151,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     initialValues: { corpsIds: [] as string[] },
     validate: {
       corpsIds: (value) =>
-        value.length > 0 ? null : "Du måste välja minst ett corps",
+        value.length > 0 ? null : 'Du måste välja minst ett corps',
     },
   });
 
@@ -120,7 +160,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
       form.reset();
     },
     onSettled: () => {
-      queryClient.invalidateQueries([["gig", "getSignups"], { gigId }]);
+      queryClient.invalidateQueries([['gig', 'getSignups'], { gigId }]);
     },
   });
 
@@ -134,7 +174,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   });
 
   const handleDelete = (corpsId: string) => {
-    if (window.confirm("Är du säker på att du vill ta bort anmälningen?")) {
+    if (window.confirm('Är du säker på att du vill ta bort anmälningen?')) {
       removeSignup.mutateAsync({ corpsId, gigId });
     }
   };
@@ -147,28 +187,55 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     if (signups.length === 0) {
       return;
     }
-    let lastInstrument = signups[0]?.instrument ?? "";
+    let lastInstrument = signups[0]?.instrument ?? '';
     return (
-      <Table sx={{ width: "unset" }}>
+      <Table sx={{ width: 'unset' }}>
         <thead>
           <tr>
-            <th style={{ width: "75px", borderBottom: showAdminTools ? undefined : 0 }}>Instrument</th>
-            <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>Namn</th>
+            <th
+              style={{
+                width: '75px',
+                borderBottom: showAdminTools ? undefined : 0,
+              }}
+            >
+              Instrument
+            </th>
+            <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>
+              Namn
+            </th>
             {showAdminTools && (
               <>
-                <th align="center" style={{ paddingLeft: "0px", paddingRight: "6px" }}>Närvaro</th>
-                <th align="center" style={{ paddingLeft: "0px", paddingRight: "0px" }}>Ta bort</th>
+                <th
+                  align='center'
+                  style={{ paddingLeft: '0px', paddingRight: '6px' }}
+                >
+                  Närvaro
+                </th>
+                <th
+                  align='center'
+                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
+                >
+                  Ta bort
+                </th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
           {signups.map((signup) => {
-            const addNewline = !showAdminTools && signup.instrument !== lastInstrument;
+            const addNewline =
+              !showAdminTools && signup.instrument !== lastInstrument;
             lastInstrument = signup.instrument;
             return (
               <React.Fragment key={signup.corpsId}>
-                {addNewline && <tr key={signup.corpsId + "newline"}><td colSpan={showAdminTools ? 4 : 2} style={{ borderBottom: 0 }} /></tr>}
+                {addNewline && (
+                  <tr key={signup.corpsId + 'newline'}>
+                    <td
+                      colSpan={showAdminTools ? 4 : 2}
+                      style={{ borderBottom: 0 }}
+                    />
+                  </tr>
+                )}
                 <tr>
                   <Entry
                     signup={signup}
@@ -194,11 +261,39 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   const yesTable = signupsToTable(yesList);
   const maybeTable = signupsToTable(maybeList);
 
+  const instrumentCount = useMemo(
+    () =>
+      signupsSorted?.reduce((acc, signup) => {
+        acc[signup.instrument] = (acc[signup.instrument] ?? 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+    [signupsSorted],
+  );
+
+  // Get a count of how many people are missing for each instrument
+  const missingInstrumentsCount = useMemo(() => {
+    const output: Record<string, number> = {};
+    FULL_SETTING.forEach(([instrument, count]) => {
+      output[instrument] = count - (instrumentCount?.[instrument] ?? 0);
+    });
+    return Object.entries(output).filter(([_, count]) => count > 0);
+  }, [instrumentCount]);
+
+  const missingInstrumentsMessages = useMemo(() => {
+    if (missingInstrumentsCount.length === 0) {
+      return ['Spelningen har full sättning!'];
+    }
+    const genMessage = ([instrument, count]: [string, number]) =>
+      `${count} ${count > 1 ? toPlural(instrument) : instrument.toLowerCase()}`;
+    const message = missingInstrumentsCount.map(genMessage);
+    return ['Följande instrument saknas för full sättning:', ...message];
+  }, [missingInstrumentsCount]);
+
   return (
     <Box>
       {isAdmin && (
         <Switch
-          label="Redigera anmälningar"
+          label='Redigera anmälningar'
           checked={editMode}
           onChange={(event) => {
             setEditMode(event.currentTarget.checked);
@@ -212,28 +307,28 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             addSignups.mutateAsync({
               corpsIds: values.corpsIds,
               gigId,
-              status: "Ja",
-            })
+              status: 'Ja',
+            }),
           )}
         >
-          <Space h="sm" />
-          <Group position="apart" noWrap>
+          <Space h='sm' />
+          <Group position='apart' noWrap>
             <MultiSelectCorps
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
               searchable
-              placeholder="Välj corps..."
+              placeholder='Välj corps...'
               limit={30}
               maxDropdownHeight={350}
               icon={<IconUser />}
               excludeIds={signups?.map((s) => s.corpsId) ?? []}
-              {...form.getInputProps("corpsIds")}
+              {...form.getInputProps('corpsIds')}
             />
-            <Button type="submit">Lägg till anmälningar</Button>
+            <Button type='submit'>Lägg till anmälningar</Button>
           </Group>
         </form>
       )}
-      <Space h="sm" />
-      {signupsLoading && <Loading msg="Laddar anmälningar..." />}
+      <Space h='sm' />
+      {signupsLoading && <Loading msg='Laddar anmälningar...' />}
       {!signupsLoading && (
         <>
           {yesList.length === 0 ? (
@@ -242,8 +337,23 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             </Title>
           ) : (
             <>
-              <Title order={3}>{gigHasHappened ? 'Dessa var med:' : 'Dessa är anmälda:'}</Title>
+              <Title order={3}>
+                {gigHasHappened ? 'Dessa var med:' : 'Dessa är anmälda:'}
+              </Title>
               {yesTable}
+            </>
+          )}
+          {!gigHasHappened && (
+            <>
+              <Space h='md' />
+              <Text pl={12}>
+                {missingInstrumentsMessages.map((msg) => (
+                  <>
+                    {msg}
+                    <br />
+                  </>
+                ))}
+              </Text>
             </>
           )}
         </>
