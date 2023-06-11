@@ -263,11 +263,11 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
 
   const instrumentCount = useMemo(
     () =>
-      signupsSorted?.reduce((acc, signup) => {
+      yesList?.reduce((acc, signup) => {
         acc[signup.instrument] = (acc[signup.instrument] ?? 0) + 1;
         return acc;
       }, {} as Record<string, number>),
-    [signupsSorted],
+    [yesList],
   );
 
   // Get a count of how many people are missing for each instrument
