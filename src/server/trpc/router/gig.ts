@@ -82,9 +82,17 @@ export const gigRouter = router({
           },
           ...visibilityFilter,
         },
-        orderBy: {
-          date: input.dateOrder ?? 'asc',
-        },
+        orderBy: [
+          {
+            date: input.dateOrder ?? 'asc',
+          },
+          {
+            meetup: 'asc',
+          },
+          {
+            start: 'asc',
+          },
+        ],
       });
     }),
 
