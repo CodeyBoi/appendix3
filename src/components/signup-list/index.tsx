@@ -135,17 +135,21 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
         acc.yesList.push(signup);
       } else if (signup.signupStatus === 'Kanske') {
         acc.maybeList.push(signup);
+      } else if (signup.signupStatus === 'Nej') {
+        acc.noList.push(signup);
       }
       return acc;
     },
     {
       yesList: [] as typeof signupsSorted,
       maybeList: [] as typeof signupsSorted,
+      noList: [] as typeof signupsSorted,
     },
   );
 
   const yesList = splitList?.yesList;
   const maybeList = splitList?.maybeList;
+  const noList = splitList?.noList;
 
   const form = useForm({
     initialValues: { corpsIds: [] as string[] },
@@ -260,6 +264,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
 
   const yesTable = signupsToTable(yesList);
   const maybeTable = signupsToTable(maybeList);
+  const noTable = signupsToTable(noList);
 
   const instrumentCount = useMemo(
     () =>
@@ -363,6 +368,12 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
         <>
           <Title order={3}>Dessa kanske kommer:</Title>
           {maybeTable}
+        </>
+      )}
+      {isAdmin && noList && noList.length > 0 && (
+        <>
+          <Title order={3}>Dessa kommer inte:</Title>
+          {noTable}
         </>
       )}
     </Box>
