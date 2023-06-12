@@ -363,15 +363,16 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
           )}
         </>
       )}
-      <br />
       {maybeList && maybeList.length > 0 && (
         <>
+          <Space h='md' />
           <Title order={3}>Dessa kanske kommer:</Title>
           {maybeTable}
         </>
       )}
       {isAdmin && noList && noList.length > 0 && (
         <>
+          <Space h='md' />
           <Title order={3}>Dessa kommer inte:</Title>
           {noTable}
         </>
