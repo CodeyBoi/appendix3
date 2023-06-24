@@ -69,6 +69,11 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     const aStat = corpsStats[a];
     const bStat = corpsStats[b];
     if (!aStat || !bStat) return 0;
+    if (
+      Math.floor(aStat.attendence * 100) === Math.floor(bStat.attendence * 100)
+    ) {
+      return bStat.gigsAttended - aStat.gigsAttended;
+    }
     return bStat.attendence - aStat.attendence;
   });
 
