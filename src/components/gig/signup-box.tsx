@@ -1,14 +1,15 @@
-import { SegmentedControl, Select, Stack } from "@mantine/core";
-import React, { useEffect, useState } from "react";
-import { trpc } from "../../utils/trpc";
-import FormLoadingOverlay from "../form-loading-overlay";
+import { Checkbox, SegmentedControl, Select, Stack } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
+import { trpc } from '../../utils/trpc';
+import FormLoadingOverlay from '../form-loading-overlay';
 
 interface GigSignupBoxProps {
   gigId: string;
+  checkbox1: string;
+  checkbox2: string;
 }
 
-const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
-
+const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
   const utils = trpc.useContext();
 
   const addSignup = trpc.gig.addSignup.useMutation({
@@ -22,12 +23,20 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
   });
 
   const { data: corps } = trpc.corps.getSelf.useQuery();
-  const { data: mainInstrument} = trpc.corps.getMainInstrument.useQuery();
-  const { data: signup, isInitialLoading: signupInitLoad, isRefetching: signupRefetching } =
-    trpc.gig.getSignup.useQuery({ gigId, corpsId: corps?.id ?? "" }, { enabled: !!corps });
+  const { data: mainInstrument } = trpc.corps.getMainInstrument.useQuery();
+  const {
+    data: signup,
+    isInitialLoading: signupInitLoad,
+    isRefetching: signupRefetching,
+  } = trpc.gig.getSignup.useQuery(
+    { gigId, corpsId: corps?.id ?? '' },
+    { enabled: !!corps },
+  );
 
   const [instrument, setInstrument] = useState('');
   const [status, setStatus] = useState('');
+  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
+  const [checkbox2Checked, setCheckbox2Checked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -46,11 +55,11 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
   const loading = !corps || !mainInstrument || signupInitLoad;
 
   return (
-    <Stack spacing={2}>
-      <FormLoadingOverlay visible={loading}>
+    <FormLoadingOverlay visible={loading}>
+      <Stack spacing={6}>
         <SegmentedControl
           disabled={signupRefetching || submitting}
-          size="xs"
+          size='xs'
           value={status}
           fullWidth
           onChange={(s) => {
@@ -59,7 +68,14 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
             }
             setSubmitting(true);
             setStatus(s);
-            addSignup.mutateAsync({ gigId, corpsId: corps.id, status: s, instrument: instrument });
+            addSignup.mutateAsync({
+              gigId,
+              corpsId: corps.id,
+              status: s,
+              instrument,
+              checkbox1: checkbox1Checked,
+              checkbox2: checkbox2Checked,
+            });
           }}
           data={[
             { label: 'Ja', value: 'Ja' },
@@ -70,22 +86,82 @@ const GigSignupBox = ({ gigId }: GigSignupBoxProps) => {
         />
         {(corps?.instruments.length ?? 0) > 1 && (
           <Select
-            size="xs"
-            label="Instrument:"
+            disabled={signupRefetching || submitting}
+            size='xs'
+            label='Instrument'
             value={instrument}
-            onChange={val => {
+            onChange={(val) => {
               if (!val || !corps) {
                 return;
               }
+              setSubmitting(true);
               setInstrument(val);
-              addSignup.mutateAsync({ gigId, corpsId: corps.id, status: status, instrument: val });
+              addSignup.mutateAsync({
+                gigId,
+                corpsId: corps.id,
+                status: status,
+                instrument: val,
+                checkbox1: checkbox1Checked,
+                checkbox2: checkbox2Checked,
+              });
             }}
-            data={corps?.instruments.map(i => ({ label: i.instrument.name, value: i.instrument.name })) ?? []}
+            data={
+              corps?.instruments.map((i) => ({
+                label: i.instrument.name,
+                value: i.instrument.name,
+              })) ?? []
+            }
           />
         )}
-      </FormLoadingOverlay>
-    </Stack>
+        {checkbox1 && (
+          <Checkbox
+            disabled={signupRefetching || submitting}
+            checked={checkbox1Checked}
+            label={checkbox1}
+            sx={{ lineHeight: 0 }}
+            onChange={(e) => {
+              if (!corps) {
+                return;
+              }
+              setSubmitting(true);
+              setCheckbox1Checked(e.currentTarget.checked);
+              addSignup.mutateAsync({
+                gigId,
+                corpsId: corps.id,
+                status,
+                instrument,
+                checkbox1: e.currentTarget.checked,
+                checkbox2: checkbox2Checked,
+              });
+            }}
+          />
+        )}
+        {checkbox2 && (
+          <Checkbox
+            disabled={signupRefetching || submitting}
+            checked={checkbox2Checked}
+            label={checkbox2}
+            sx={{ lineHeight: 0 }}
+            onChange={(e) => {
+              if (!corps) {
+                return;
+              }
+              setSubmitting(true);
+              setCheckbox2Checked(e.currentTarget.checked);
+              addSignup.mutateAsync({
+                gigId,
+                corpsId: corps.id,
+                status,
+                instrument,
+                checkbox1: checkbox1Checked,
+                checkbox2: e.currentTarget.checked,
+              });
+            }}
+          />
+        )}
+      </Stack>
+    </FormLoadingOverlay>
   );
-}
+};
 
 export default GigSignupBox;

@@ -20,6 +20,8 @@ import Entry from './entry';
 interface SignupListProps {
   gigId: string;
   gigHasHappened?: boolean;
+  checkbox1: string;
+  checkbox2: string;
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -207,7 +209,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>
               Namn
             </th>
-            {showAdminTools && (
+            {showAdminTools ? (
               <>
                 <th
                   align='center'
@@ -220,6 +222,21 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
                   style={{ paddingLeft: '0px', paddingRight: '0px' }}
                 >
                   Ta bort
+                </th>
+              </>
+            ) : (
+              <>
+                <th
+                  align='center'
+                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
+                >
+                  1
+                </th>
+                <th
+                  align='center'
+                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
+                >
+                  2
                 </th>
               </>
             )}

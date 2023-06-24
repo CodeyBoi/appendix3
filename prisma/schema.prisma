@@ -159,6 +159,8 @@ model GigSignup {
   signupStatusId Int
   instrumentId   Int
   attended       Boolean         @default(false)
+  checkbox1      Boolean         @default(false)
+  checkbox2      Boolean         @default(false)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   corps          Corps           @relation(fields: [corpsId], references: [id], onDelete: Cascade)

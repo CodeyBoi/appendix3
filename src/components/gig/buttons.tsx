@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, MediaQuery, Modal, Stack, Title } from '@mantine/core';
+import {
+  Button,
+  Checkbox,
+  MediaQuery,
+  Modal,
+  Stack,
+  Title,
+} from '@mantine/core';
 import { IconCalendarPlus, IconEdit } from '@tabler/icons';
 import GigSignupBox from './signup-box';
 import dayjs from 'dayjs';
@@ -72,7 +79,13 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
           <GigForm gig={gig} onSubmit={() => setOpened(false)} />
         </Modal>
         <Stack spacing={6}>
-          {showSignup && <GigSignupBox gigId={gig.id} />}
+          {showSignup && (
+            <GigSignupBox
+              gigId={gig.id}
+              checkbox1={gig.checkbox1}
+              checkbox2={gig.checkbox2}
+            />
+          )}
           {hasValidTimes && (
             <Button
               component='a'
