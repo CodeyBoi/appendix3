@@ -70,7 +70,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     const bStat = corpsStats[b];
     if (!aStat || !bStat) return 0;
     if (
-      Math.floor(aStat.attendence * 100) === Math.floor(bStat.attendence * 100)
+      Math.ceil(aStat.attendence * 100) === Math.ceil(bStat.attendence * 100)
     ) {
       return bStat.gigsAttended - aStat.gigsAttended;
     }
