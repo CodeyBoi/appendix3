@@ -13,6 +13,7 @@ import { quoteRouter } from './quote';
 import { mailRouter } from './mail';
 import { sectionRouter } from './section';
 import { killerRouter } from './killer';
+import { bingoRouter } from './bingo';
 
 export const appRouter = router({
   auth: authRouter,
@@ -28,6 +29,7 @@ export const appRouter = router({
   mail: mailRouter,
   section: sectionRouter,
   killer: killerRouter,
+  bingo: bingoRouter,
 });
 
 // export type definition of API
