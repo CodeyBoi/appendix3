@@ -1,10 +1,9 @@
-import { Stack, TextInput, Group, Button, ActionIcon } from '@mantine/core';
+import { TextInput, ActionIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
-import SelectCorps from '../select-corps';
 
 const defaultValues = {
   text: '',
@@ -16,7 +15,7 @@ type BingoEntryFormProps = {
 
 const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
   const router = useRouter();
-  const utils = trpc.useContext();
+  // const utils = trpc.useContext();
 
   const newEntry = !entry;
 
@@ -24,8 +23,8 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
     initialValues: newEntry
       ? defaultValues
       : {
-        text: entry.text,
-      },
+          text: entry.text,
+        },
     validate: {
       text: (text) => (text ? null : 'Fyll i händelse'),
     },
@@ -51,7 +50,6 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-
       <TextInput
         rightSection={
           <ActionIcon type='submit' variant='subtle' color='dark'>
@@ -63,8 +61,6 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
         autosize
         {...form.getInputProps('text')}
       />
-
-
     </form>
   );
 };
