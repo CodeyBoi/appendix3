@@ -91,6 +91,8 @@ model Corps {
   songs           Song[]
   sectionLeaderOf Section[]
   killerProfiles  KillerPlayer[]
+  bingoEntries    BingoEntry[]
+  bingoCards      BingoCorpsCard[]
 }
 
 model CorpsInstrument {
@@ -300,4 +302,33 @@ model KillerGame {
   updatedAt DateTime @updatedAt
 
   participants KillerPlayer[]
+}
+
+model BingoEntry {
+  id               String            @id @default(cuid())
+  text             String
+  createdByCorpsId String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  masterCards      BingoMasterCard[]
+  corpsCards       BingoCorpsCard[]
+
+  createdBy Corps @relation(fields: [createdByCorpsId], references: [id])
+}
+
+model BingoMasterCard {
+  id        String       @id @default(cuid())
+  validFrom DateTime
+  validTo   DateTime
+  entries   BingoEntry[]
+}
+
+model BingoCorpsCard {
+  id        String       @id @default(cuid())
+  corpsId   String
+  validFrom DateTime
+  validTo   DateTime
+  entries   BingoEntry[]
+
+  corps Corps @relation(fields: [corpsId], references: [id])
 }
