@@ -91,6 +91,8 @@ model Corps {
   songs           Song[]
   sectionLeaderOf Section[]
   killerProfiles  KillerPlayer[]
+  bingoEntries    BingoEntry[]
+  bingoCards      BingoCard[]
 }
 
 model Role {
@@ -309,4 +311,38 @@ model KillerGame {
   updatedAt DateTime @updatedAt
 
   participants KillerPlayer[]
+}
+
+model BingoEntry {
+  id               Int              @id @default(autoincrement())
+  text             String
+  createdByCorpsId String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  cards            BingoCardEntry[]
+
+  createdBy Corps @relation(fields: [createdByCorpsId], references: [id])
+}
+
+model BingoCard {
+  id        String           @id @default(cuid())
+  corpsId   String
+  validFrom DateTime
+  validTo   DateTime
+  entries   BingoCardEntry[]
+  isWin     Boolean          @default(false)
+
+  corps Corps @relation(fields: [corpsId], references: [id])
+}
+
+model BingoCardEntry {
+  cardId  String
+  entryId Int
+  index   Int
+  marked  Boolean @default(false)
+
+  card  BingoCard  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  entry BingoEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, entryId])
 }

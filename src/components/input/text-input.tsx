@@ -1,6 +1,6 @@
 'use client';
 
-import React, { InputHTMLAttributes, useEffect, useState } from 'react';
+import React, { InputHTMLAttributes, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 export type ErrorColor = 'red' | 'white';
@@ -37,29 +37,20 @@ const TextInput = ({
   error,
   errorColor = 'red',
   defaultValue,
-  value: propValue,
+  value,
   onFocus,
   onBlur,
   ...props
 }: TextInputProps) => {
-  const [value, setValue] = useState('');
   if (defaultValue && value === '') {
-    setValue(defaultValue);
     onChange?.(defaultValue);
   }
-
-  useEffect(() => {
-    if (propValue) {
-      setValue(propValue);
-    }
-  }, [propValue]);
 
   const [focused, setFocused] = useState(false);
 
   const errorStyle = errorColorVariants[errorColor];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.currentTarget.value);
     onChange?.(e.currentTarget.value);
   };
 
