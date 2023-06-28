@@ -58,7 +58,7 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
         }
         label='Skapa ditt kort här'
         placeholder='koolt shtuff incoming'
-        autosize
+        autosize='true'
         {...form.getInputProps('text')}
       />
     </form>

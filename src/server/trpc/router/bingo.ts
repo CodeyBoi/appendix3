@@ -1,6 +1,5 @@
-import { BingoEntry } from '@prisma/client';
 import { z } from 'zod';
-import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { router, protectedProcedure } from '../trpc';
 
 export const bingoRouter = router({
   getCard: protectedProcedure.query(async ({ ctx }) => {
@@ -9,6 +8,7 @@ export const bingoRouter = router({
     return ctx.prisma.bingoCorpsCard.findFirst({
       include: {
         entries: true,
+        marked: true,
       },
       where: {
         corpsId,
@@ -85,4 +85,61 @@ export const bingoRouter = router({
       },
     });
   }),
+
+  markEntry: protectedProcedure
+    .input(
+      z.object({
+        entryId: z.string(),
+        cardId: z.string(),
+        marked: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const corpsId = ctx.session.user.corps.id;
+      const now = new Date();
+      const card = await ctx.prisma.bingoCorpsCard.findFirst({
+        where: {
+          id: input.cardId,
+          corpsId,
+          validFrom: {
+            lte: now,
+          },
+          validTo: {
+            gte: now,
+          },
+        },
+      });
+
+      if (!card) {
+        throw new Error('Card not found');
+      }
+
+      if (card.corpsId !== corpsId) {
+        throw new Error('Corps unauthorized to mark this bingo card');
+      }
+
+      if (input.marked) {
+        return ctx.prisma.bingoMarked.create({
+          data: {
+            entry: {
+              connect: {
+                id: input.entryId,
+              },
+            },
+            card: {
+              connect: {
+                id: input.cardId,
+              },
+            },
+          },
+        });
+      } else {
+        return ctx.prisma.bingoMarked.deleteMany({
+          where: {
+            entryId: input.entryId,
+            cardId: input.cardId,
+          },
+        });
+      }
+    }),
 });
