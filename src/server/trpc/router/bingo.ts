@@ -1,14 +1,18 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
+import dayjs from 'dayjs';
 
 export const bingoRouter = router({
   getCard: protectedProcedure.query(async ({ ctx }) => {
     const corpsId = ctx.session.user.corps.id;
     const now = new Date();
-    return ctx.prisma.bingoCorpsCard.findFirst({
+    return ctx.prisma.bingoCard.findFirst({
       include: {
-        entries: true,
-        marked: true,
+        entries: {
+          include: {
+            entry: true,
+          }
+        },
       },
       where: {
         corpsId,
@@ -65,22 +69,22 @@ export const bingoRouter = router({
     const entries = indices.map((i) => allEntries[i]);
     const now = new Date();
     const day = now.getDay();
-    const daysUntilThursday = (11 - day) % 7;
-    const nextThursday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + daysUntilThursday,
-    );
+    const isThursday = day == 4;
+    const daysUntilThursday = isThursday ? 7 : (11 - day) % 7;
+    const nextThursday = dayjs().add(daysUntilThursday, 'day').toDate();
 
-    return ctx.prisma.bingoCorpsCard.create({
+    return ctx.prisma.bingoCard.create({
       data: {
         corps: { connect: { id: corpsId } },
         validTo: nextThursday,
         validFrom: now,
         entries: {
-          connect: entries.map((entry) => ({
-            id: entry?.id ?? '',
-          })),
+          createMany: {
+            data: entries.map((entry, i) => ({
+              entryId: entry?.id ?? '',
+              index: i,
+            })),
+          },
         },
       },
     });
@@ -95,11 +99,12 @@ export const bingoRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { entryId, cardId, marked } = input;
       const corpsId = ctx.session.user.corps.id;
       const now = new Date();
-      const card = await ctx.prisma.bingoCorpsCard.findFirst({
+      const card = await ctx.prisma.bingoCard.findFirst({
         where: {
-          id: input.cardId,
+          id: cardId,
           corpsId,
           validFrom: {
             lte: now,
@@ -118,28 +123,16 @@ export const bingoRouter = router({
         throw new Error('Corps unauthorized to mark this bingo card');
       }
 
-      if (input.marked) {
-        return ctx.prisma.bingoMarked.create({
-          data: {
-            entry: {
-              connect: {
-                id: input.entryId,
-              },
-            },
-            card: {
-              connect: {
-                id: input.cardId,
-              },
-            },
+      return ctx.prisma.bingoCardEntry.update({
+        where: {
+          cardId_entryId: {
+            cardId,
+            entryId,
           },
-        });
-      } else {
-        return ctx.prisma.bingoMarked.deleteMany({
-          where: {
-            entryId: input.entryId,
-            cardId: input.cardId,
-          },
-        });
-      }
+        },
+        data: {
+          marked,
+        },
+      });
     }),
 });

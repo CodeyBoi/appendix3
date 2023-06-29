@@ -18,32 +18,39 @@ const Bingo = () => {
   const generateCard = trpc.bingo.generateCard.useMutation({ onSuccess });
   const markEntry = trpc.bingo.markEntry.useMutation({ onSuccess });
 
-  const markedEntries = new Set(card?.marked.map((entry) => entry.entryId));
+  const entries = card?.entries
+    .sort((a, b) => a.index - b.index)
+    .map((entry) => ({
+      ...entry.entry,
+      marked: entry.marked,
+    }));
 
   return (
     <div>
-      <SimpleGrid cols={5}>
-        {card?.entries.map((entry) => (
-          <BingoTile
-            key={entry.id}
-            text={entry.text}
-            marked={markedEntries.has(entry.id)}
-            onChange={async () => {
-              setLoading(true);
-              await markEntry.mutateAsync({
-                cardId: card.id,
-                entryId: entry.id,
-                marked: !markedEntries.has(entry.id),
-              });
-            }}
-          />
-        ))}
-      </SimpleGrid>
+      {card && entries && (
+        <SimpleGrid cols={5}>
+          {entries.map((entry) => (
+            <BingoTile
+              key={entry.id}
+              text={entry.text}
+              marked={entry.marked}
+              onChange={async () => {
+                setLoading(true);
+                await markEntry.mutateAsync({
+                  cardId: card.id,
+                  entryId: entry.id,
+                  marked: !entry.marked,
+                });
+              }}
+            />
+          ))}
+        </SimpleGrid>
+      )}
 
       <BingoEntryForm />
       {!card && (
         <Button
-          onChange={async () => {
+          onClick={async () => {
             setLoading(true);
             await generateCard.mutateAsync();
           }}

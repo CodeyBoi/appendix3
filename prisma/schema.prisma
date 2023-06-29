@@ -92,7 +92,7 @@ model Corps {
   sectionLeaderOf Section[]
   killerProfiles  KillerPlayer[]
   bingoEntries    BingoEntry[]
-  bingoCards      BingoCorpsCard[]
+  bingoCards      BingoCard[]
 }
 
 model CorpsInstrument {
@@ -310,29 +310,29 @@ model BingoEntry {
   createdByCorpsId String
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-  corpsCards       BingoCorpsCard[]
+  cards            BingoCardEntry[]
 
-  createdBy   Corps         @relation(fields: [createdByCorpsId], references: [id])
-  BingoFilled BingoMarked[]
+  createdBy Corps @relation(fields: [createdByCorpsId], references: [id])
 }
 
-model BingoCorpsCard {
-  id        String        @id @default(cuid())
+model BingoCard {
+  id        String           @id @default(cuid())
   corpsId   String
   validFrom DateTime
   validTo   DateTime
-  entries   BingoEntry[]
-  marked    BingoMarked[]
+  entries   BingoCardEntry[]
 
   corps Corps @relation(fields: [corpsId], references: [id])
 }
 
-model BingoMarked {
+model BingoCardEntry {
   cardId  String
   entryId String
+  index   Int
+  marked  Boolean @default(false)
 
-  card  BingoCorpsCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  entry BingoEntry     @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  card  BingoCard  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  entry BingoEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
 
   @@unique([cardId, entryId])
 }
