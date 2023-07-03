@@ -21,4 +21,8 @@ export default defineNextConfig({
     locales: ["en"],
     defaultLocale: "en",
   },
+  experimental: {
+    // https://mmazzarolo.com/blog/2021-04-10-nextjs-scroll-restoration/
+    scrollRestoration: true,
+  },
 });
