@@ -21,6 +21,8 @@
     "@mantine/form": "^5.6.3",
     "@mantine/hooks": "^5.6.0",
     "@mantine/next": "^5.6.0",
+    "@mui/material": "^5.13.7",
+    "@mui/x-data-grid": "^6.9.2",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "^4.8.1",
     "@tabler/icons": "^1.106.0",
