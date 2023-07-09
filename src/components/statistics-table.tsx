@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { DataGrid, GridColDef, GridRowParams, GridSortModel  } from '@mui/x-data-grid';
+import { ThemeProvider, createTheme, styled } from '@mui/material';
+import Box from '@mui/material/Box';
 import { Button, Stack, Text } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { IconMoodNerd } from '@tabler/icons';
 import { trpc } from '../utils/trpc';
 import AlertError from './alert-error';
 import Loading from './loading';
+import styles from '../styles/statistics-table.module.css';
 
 interface StatisticsTableProps {
   start: Date;
@@ -31,6 +33,12 @@ const columns: GridColDef[] = [
 ];
 
 const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
+  const [sortModel, setSortModel] = React.useState<GridSortModel>([
+    {
+      field: 'number',
+      sort: 'asc',
+    },
+  ]);
   const { data: stats, status: statsStatus } = trpc.stats.get.useQuery({ start, end, });
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } = stats ?? {};
   const { data: corps } = trpc.corps.getSelf.useQuery();
@@ -85,6 +93,34 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     };
   });
 
+  const statisticsTableStyle = (params: GridRowParams<any>) => {
+    const isLastRowWithAgeAbove30 = rows.slice(params.row.rowIndex, params.row.rowIndex + 2)
+    if (parseInt(params.row.attendance, 10) >= 75) {
+      return 'fjång';
+    }
+    else if (parseInt(params.row.attendance, 10) >= 50) {
+      return 'member';
+    }
+    return '';
+  };
+
+  const sortComparator = (v1: any, v2: any, cellParams1: any, cellParams2: any) => {
+    if (typeof v1 === 'number' && typeof v2 === 'number') {
+      return v1 - v2;
+    } else if (typeof v1 === 'string' && typeof v2 === 'string') {
+      return v1.localeCompare(v2);
+    } else if (typeof v1 === 'number') {
+      return -1;
+    } else if (typeof v2 === 'number') {
+      return 1;
+    }
+    return 0;
+  };
+  const handleSortModelChange = (model: GridSortModel) => {
+    setSortModel(model);
+  };
+
+
   return (
     <>{corpsIds && corpsIds.length === 0 && (<Text>Det finns inga statistikuppgifter för denna period.</Text>)}
       {corpsPoints && corpsStats && corpsIdsSorted && corpsIdsSorted.length !== 0 && (
@@ -95,18 +131,39 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
           {ownPointsString && <Text>{ownPointsString}</Text>}
           <ThemeProvider theme={theme}>
             <div style={{ height: '100%', width: '100%' }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                hideFooterPagination
-                hideFooterSelectedRowCount
-                disableColumnMenu
-                disableColumnFilter
-                disableColumnSelector
-                columnVisibilityModel={{
-                  id: false,
+              <Box
+                sx={{
+                  '& .fjång': {
+                    backgroundColor: '#90EE90',
+                  },
+                  '& .member': {
+                    backgroundColor: '#FFCCCB',
+                  }
                 }}
-              />
+              >
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  /*initialState={{
+                    sorting: {
+                      sortModel: [{ field: 'attendance', sort: 'desc' }],
+                    },
+                  }}*/
+                  sortingOrder={['desc', 'asc']}
+                  sortModel={sortModel}
+                  onSortModelChange={handleSortModelChange}
+                  sortComparator={sortComparator}
+                  hideFooterPagination
+                  hideFooterSelectedRowCount
+                  disableColumnMenu
+                  disableColumnFilter
+                  disableColumnSelector
+                  columnVisibilityModel={{
+                    id: false,
+                  }}
+                  getRowClassName={statisticsTableStyle}
+                />
+              </Box>
             </div>
           </ThemeProvider>
           <Button
