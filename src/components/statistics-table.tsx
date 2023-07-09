@@ -11,7 +11,7 @@ import Loading from './loading';
 interface StatisticsTableProps {
   start: Date;
   end: Date;
-};
+}
 
 const theme = createTheme({
   palette: {
