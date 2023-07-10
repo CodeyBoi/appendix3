@@ -72,7 +72,13 @@ const GigButtons = ({ gig }: GigButtonsProps) => {
           <GigForm gig={gig} onSubmit={() => setOpened(false)} />
         </Modal>
         <Stack spacing={6}>
-          {showSignup && <GigSignupBox gigId={gig.id} />}
+          {showSignup && (
+            <GigSignupBox
+              gigId={gig.id}
+              checkbox1={gig.checkbox1}
+              checkbox2={gig.checkbox2}
+            />
+          )}
           {hasValidTimes && (
             <Button
               component='a'

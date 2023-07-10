@@ -2,6 +2,7 @@ import { adminProcedure } from './../trpc';
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc';
 import { setCookie } from 'cookies-next';
+import { CorpsFoodPrefs } from '@prisma/client';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -360,5 +361,30 @@ export const corpsRouter = router({
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50),
       });
       return { success: true };
+    }),
+
+  getFoodPreferences: adminProcedure
+    .input(z.object({ corpsIds: z.string().or(z.array(z.string())) }))
+    .query(async ({ ctx, input }) => {
+      const corpsIds = Array.isArray(input.corpsIds)
+        ? input.corpsIds
+        : [input.corpsIds];
+      const corps = await ctx.prisma.corps.findMany({
+        where: {
+          id: {
+            in: corpsIds,
+          },
+        },
+        include: {
+          foodPrefs: true,
+        },
+      });
+      return corps.reduce((acc, corps) => {
+        if (!corps.foodPrefs) {
+          return acc;
+        }
+        acc[corps.id] = corps.foodPrefs;
+        return acc;
+      }, {} as Record<string, CorpsFoodPrefs>);
     }),
 });

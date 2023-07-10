@@ -1,5 +1,5 @@
-import { Center, Checkbox, Tooltip, CloseButton } from "@mantine/core";
-import React from "react";
+import { Center, Checkbox, Tooltip, CloseButton } from '@mantine/core';
+import React from 'react';
 
 interface SignupEntryProps {
   signup: {
@@ -9,6 +9,8 @@ interface SignupEntryProps {
     firstName: string;
     lastName: string;
     attended: boolean;
+    checkbox1: boolean;
+    checkbox2: boolean;
   };
   isAdmin?: boolean;
   setAttendance: (attended: boolean) => void;
@@ -26,20 +28,24 @@ const Entry = ({
     paddingBottom: 0,
     borderBottom: isAdmin ? undefined : 0,
   };
-  const name = `${signup.number ? "#" + signup.number.toString() : "p.e."} ${
+  const name = `${signup.number ? '#' + signup.number.toString() : 'p.e.'} ${
     signup.firstName
   } ${signup.lastName}`;
 
   return (
     <>
-      <td style={{ ...tdStyle, width: "40px" }}>{signup.instrument}</td>
-      <td style={{ ...tdStyle, whiteSpace: isAdmin ? "break-spaces" : "nowrap" }}>{name}</td>
+      <td style={{ ...tdStyle, width: '40px' }}>{signup.instrument}</td>
+      <td
+        style={{ ...tdStyle, whiteSpace: isAdmin ? 'break-spaces' : 'nowrap' }}
+      >
+        {name}
+      </td>
       {isAdmin && (
         <>
           <td style={tdStyle}>
             <Center>
               <Checkbox
-                styles={{ root: { display: "flex" } }}
+                styles={{ root: { display: 'flex' } }}
                 defaultChecked={signup.attended}
                 onChange={(event) => setAttendance(event.target.checked)}
               />
@@ -47,8 +53,8 @@ const Entry = ({
           </td>
           <td style={tdStyle}>
             <Center>
-              <Tooltip label="Ta bort anmälan">
-                <CloseButton color="red" onClick={handleDelete} />
+              <Tooltip label='Ta bort anmälan'>
+                <CloseButton color='red' onClick={handleDelete} />
               </Tooltip>
             </Center>
           </td>

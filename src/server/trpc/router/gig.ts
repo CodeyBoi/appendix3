@@ -201,6 +201,8 @@ export const gigRouter = router({
         instrument: string;
         signupStatus: string;
         attended: boolean;
+        checkbox1: boolean;
+        checkbox2: boolean;
       }
 
       return ctx.prisma.$queryRaw<WhosComingEntry[]>`
@@ -211,7 +213,9 @@ export const gigRouter = router({
           Corps.number AS number,
           Instrument.name AS instrument,
           GigSignupStatus.value AS signupStatus,
-          GigSignup.attended AS attended
+          GigSignup.attended AS attended,
+          GigSignup.checkbox1 AS checkbox1,
+          GigSignup.checkbox2 AS checkbox2
         FROM GigSignup
         JOIN Gig ON Gig.id = GigSignup.gigId
         JOIN Corps ON Corps.id = GigSignup.corpsId
@@ -233,6 +237,8 @@ export const gigRouter = router({
         gigId: z.string(),
         status: z.string(),
         instrument: z.string().optional(),
+        checkbox1: z.boolean(),
+        checkbox2: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -276,6 +282,8 @@ export const gigRouter = router({
               name: instrument,
             },
           },
+          checkbox1: input.checkbox1,
+          checkbox2: input.checkbox2,
         },
         create: {
           corps: {

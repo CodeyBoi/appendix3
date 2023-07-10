@@ -10,12 +10,13 @@ import {
   Switch,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons';
+import { IconInfoCircle, IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '../../utils/trpc';
 import MultiSelectCorps from '../multi-select-corps';
 import Loading from '../loading';
 import Entry from './entry';
+import { NextLink } from '@mantine/next';
 
 interface SignupListProps {
   gigId: string;
@@ -297,14 +298,26 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   return (
     <Box>
       {isAdmin && (
-        <Switch
-          label='Redigera anmälningar'
-          checked={editMode}
-          onChange={(event) => {
-            setEditMode(event.currentTarget.checked);
-            utils.gig.getSignups.invalidate({ gigId });
-          }}
-        />
+        <>
+          <Space h='sm' />
+          <Group position='apart'>
+            <Switch
+              label='Redigera anmälningar'
+              checked={editMode}
+              onChange={(event) => {
+                setEditMode(event.currentTarget.checked);
+                utils.gig.getSignups.invalidate({ gigId });
+              }}
+            />
+            <Button
+              component={NextLink}
+              href={`/admin/gig/${gigId}/info`}
+              leftIcon={<IconInfoCircle />}
+            >
+              Se admininfo
+            </Button>
+          </Group>
+        </>
       )}
       {showAdminTools && (
         <form
