@@ -27,10 +27,8 @@ const useStyles = createStyles(() => ({
 const FoodPrefs = ({ gigId, foodPrefs }: FoodPrefsProps) => {
   const { data: signups } = trpc.gig.getSignups.useQuery({ gigId });
   const { classes } = useStyles();
-
-  console.log({ foodPrefs });
-
-  const rows = signups?.map((signup) => {
+  const yesSignups = signups?.filter((signup) => signup.signupStatus === 'Ja');
+  const rows = yesSignups?.map((signup) => {
     const corpsPrefs = foodPrefs[signup.corpsId] as CorpsFoodPrefs;
     const prefs = corpsPrefs ? corpsPrefs : DEFAULT_FOOD_PREFS;
 
