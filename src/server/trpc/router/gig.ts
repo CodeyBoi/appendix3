@@ -451,34 +451,4 @@ export const gigRouter = router({
         },
       });
     }),
-
-  getFoodPreferences: adminProcedure
-    .input(
-      z.object({
-        gigId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { gigId } = input;
-      const signups = await ctx.prisma.gigSignup.findMany({
-        where: {
-          gigId,
-        },
-        include: {
-          corps: {
-            include: {
-              foodPrefs: true,
-            },
-          },
-        },
-      });
-      const foodPrefs = signups.reduce((acc, signup) => {
-        const foodPrefs = signup.corps?.foodPrefs;
-        if (!foodPrefs) {
-          return acc;
-        }
-        acc[foodPrefs.corpsId] = foodPrefs;
-      }, {} as Record<string, CorpsFoodPrefs>);
-      return foodPrefs;
-    }),
 });

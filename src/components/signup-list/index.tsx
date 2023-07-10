@@ -10,18 +10,17 @@ import {
   Switch,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconDownload, IconUser } from '@tabler/icons';
+import { IconInfoCircle, IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '../../utils/trpc';
 import MultiSelectCorps from '../multi-select-corps';
 import Loading from '../loading';
 import Entry from './entry';
+import { NextLink } from '@mantine/next';
 
 interface SignupListProps {
   gigId: string;
   gigHasHappened?: boolean;
-  checkbox1: string;
-  checkbox2: string;
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -310,8 +309,12 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
                 utils.gig.getSignups.invalidate({ gigId });
               }}
             />
-            <Button leftIcon={<IconDownload />}>
-              Ladda ner anmälningar (.csv)
+            <Button
+              component={NextLink}
+              href={`/admin/gig/${gigId}/info`}
+              leftIcon={<IconInfoCircle />}
+            >
+              Se admininfo
             </Button>
           </Group>
         </>
