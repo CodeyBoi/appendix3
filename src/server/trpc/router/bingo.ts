@@ -103,6 +103,9 @@ export const bingoRouter = router({
       const corpsId = ctx.session.user.corps.id;
       const now = new Date();
       const card = await ctx.prisma.bingoCard.findFirst({
+        include: {
+          entries: true,
+        },
         where: {
           id: cardId,
           corpsId,
@@ -122,6 +125,23 @@ export const bingoRouter = router({
       if (card.corpsId !== corpsId) {
         throw new Error('Corps unauthorized to mark this bingo card');
       }
+
+      let board = new Array(5);
+      for (let i = 0; i < board.length; i++) {
+        board[i] = new Array(5);
+      }
+
+      for (const entry of card.entries) {
+        const row = entry.index % 5;
+        const col = Math.floor(entry.index / 5);
+        if (entryId === entry.entryId) {
+          board[row][col] = true;
+        } else {
+          board[row][col] = entry.marked;
+        }
+      }
+
+      console.log(board);
 
       return ctx.prisma.bingoCardEntry.update({
         where: {

@@ -1,4 +1,4 @@
-import { Card, Checkbox } from '@mantine/core';
+import { Button, Card, Checkbox } from '@mantine/core';
 import React from 'react';
 
 type BingoTileProps = {
@@ -10,18 +10,19 @@ type BingoTileProps = {
 const BingoTile = ({ text, marked = false, onChange }: BingoTileProps) => {
   const [filledState, setFilledState] = React.useState(marked);
   return (
-    <Card shadow='sm' radius='md' withBorder>
-      <Checkbox
-        checked={filledState}
-        onChange={() => {
-          setFilledState(!filledState);
-          if (onChange) {
-            onChange();
-          }
-        }}
-      />
+    <Button onClick={() => {
+      console.log(!filledState)
+      setFilledState(!filledState);
+      if (onChange) {
+        onChange();
+      }
+    }}>
+
       {text}
-    </Card>
+
+    </Button >
+
+
   );
 };
 
