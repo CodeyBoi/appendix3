@@ -6,7 +6,6 @@ import {
   adminProcedure,
 } from '../trpc';
 import { z } from 'zod';
-import { CorpsFoodPrefs } from '@prisma/client';
 
 export const gigRouter = router({
   getWithId: protectedProcedure

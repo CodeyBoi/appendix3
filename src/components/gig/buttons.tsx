@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  Checkbox,
-  MediaQuery,
-  Modal,
-  Stack,
-  Title,
-} from '@mantine/core';
+import { Button, MediaQuery, Modal, Stack, Title } from '@mantine/core';
 import { IconCalendarPlus, IconEdit } from '@tabler/icons';
 import GigSignupBox from './signup-box';
 import dayjs from 'dayjs';
