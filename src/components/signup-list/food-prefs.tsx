@@ -67,7 +67,7 @@ const FoodPrefs = ({ gigId, foodPrefs }: FoodPrefsProps) => {
   const rows = dataRows?.map((row) => {
     return (
       <tr key={row.corpsId}>
-        <td>{row.data[0]}</td>
+        <td style={{ whiteSpace: 'nowrap' }}>{row.data[0]}</td>
         <td>{row.data[1]}</td>
         <td>{row.data[2]}</td>
         <td>{row.data[3]}</td>
