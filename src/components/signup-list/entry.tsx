@@ -40,7 +40,7 @@ const Entry = ({
       >
         {name}
       </td>
-      {isAdmin ? (
+      {isAdmin && (
         <>
           <td style={tdStyle}>
             <Center>
@@ -59,8 +59,6 @@ const Entry = ({
             </Center>
           </td>
         </>
-      ) : (
-        
       )}
     </>
   );

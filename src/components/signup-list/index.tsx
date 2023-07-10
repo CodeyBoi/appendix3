@@ -10,7 +10,7 @@ import {
   Switch,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons';
+import { IconDownload, IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { trpc } from '../../utils/trpc';
 import MultiSelectCorps from '../multi-select-corps';
@@ -209,7 +209,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>
               Namn
             </th>
-            {showAdminTools ? (
+            {showAdminTools && (
               <>
                 <th
                   align='center'
@@ -222,21 +222,6 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
                   style={{ paddingLeft: '0px', paddingRight: '0px' }}
                 >
                   Ta bort
-                </th>
-              </>
-            ) : (
-              <>
-                <th
-                  align='center'
-                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
-                >
-                  1
-                </th>
-                <th
-                  align='center'
-                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
-                >
-                  2
                 </th>
               </>
             )}
@@ -314,14 +299,22 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   return (
     <Box>
       {isAdmin && (
-        <Switch
-          label='Redigera anmälningar'
-          checked={editMode}
-          onChange={(event) => {
-            setEditMode(event.currentTarget.checked);
-            utils.gig.getSignups.invalidate({ gigId });
-          }}
-        />
+        <>
+          <Space h='sm' />
+          <Group position='apart'>
+            <Switch
+              label='Redigera anmälningar'
+              checked={editMode}
+              onChange={(event) => {
+                setEditMode(event.currentTarget.checked);
+                utils.gig.getSignups.invalidate({ gigId });
+              }}
+            />
+            <Button leftIcon={<IconDownload />}>
+              Ladda ner anmälningar (.csv)
+            </Button>
+          </Group>
+        </>
       )}
       {showAdminTools && (
         <form

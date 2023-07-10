@@ -6,6 +6,7 @@ import {
   adminProcedure,
 } from '../trpc';
 import { z } from 'zod';
+import { CorpsFoodPrefs } from '@prisma/client';
 
 export const gigRouter = router({
   getWithId: protectedProcedure
@@ -213,7 +214,7 @@ export const gigRouter = router({
           Corps.number AS number,
           Instrument.name AS instrument,
           GigSignupStatus.value AS signupStatus,
-          GigSignup.attended AS attended
+          GigSignup.attended AS attended,
           GigSignup.checkbox1 AS checkbox1,
           GigSignup.checkbox2 AS checkbox2
         FROM GigSignup
@@ -449,5 +450,35 @@ export const gigRouter = router({
           date: 'desc',
         },
       });
+    }),
+
+  getFoodPreferences: adminProcedure
+    .input(
+      z.object({
+        gigId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { gigId } = input;
+      const signups = await ctx.prisma.gigSignup.findMany({
+        where: {
+          gigId,
+        },
+        include: {
+          corps: {
+            include: {
+              foodPrefs: true,
+            },
+          },
+        },
+      });
+      const foodPrefs = signups.reduce((acc, signup) => {
+        const foodPrefs = signup.corps?.foodPrefs;
+        if (!foodPrefs) {
+          return acc;
+        }
+        acc[foodPrefs.corpsId] = foodPrefs;
+      }, {} as Record<string, CorpsFoodPrefs>);
+      return foodPrefs;
     }),
 });
