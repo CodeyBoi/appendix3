@@ -1,0 +1,50 @@
+import { SimpleGrid } from '@mantine/core';
+import React from 'react';
+import BingoTile from './tile';
+import { ClientBingoCard } from '../../types';
+import { trpc } from '../../utils/trpc';
+
+type BingoCardProps = {
+  card: ClientBingoCard;
+};
+
+const BingoCard = ({ card }: BingoCardProps) => {
+  const utils = trpc.useContext();
+  const [loading, setLoading] = React.useState(false);
+
+  const markEntry = trpc.bingo.markEntry.useMutation({
+    onSuccess: () => {
+      utils.bingo.getCard.invalidate();
+      setLoading(false);
+    },
+  });
+
+  const entries = card.entries
+    .sort((a, b) => a.index - b.index)
+    .map((entry) => ({
+      ...entry.entry,
+      marked: entry.marked,
+    }));
+
+  return (
+    <SimpleGrid cols={5} spacing='xs'>
+      {entries.map((entry) => (
+        <BingoTile
+          key={entry.id}
+          text={entry.text}
+          marked={entry.marked}
+          onChange={async () => {
+            setLoading(true);
+            await markEntry.mutateAsync({
+              cardId: card.id,
+              entryId: entry.id,
+              marked: !entry.marked,
+            });
+          }}
+        />
+      ))}
+    </SimpleGrid>
+  );
+};
+
+export default BingoCard;
