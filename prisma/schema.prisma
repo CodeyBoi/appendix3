@@ -321,6 +321,7 @@ model BingoCard {
   validFrom DateTime
   validTo   DateTime
   entries   BingoCardEntry[]
+  isWin     Boolean          @default(false)
 
   corps Corps @relation(fields: [corpsId], references: [id])
 }

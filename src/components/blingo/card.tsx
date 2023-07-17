@@ -19,6 +19,13 @@ const BingoCard = ({ card }: BingoCardProps) => {
     },
   });
 
+  const isWin = trpc.bingo.isWin.useMutation({
+    onSuccess: () => {
+      utils.bingo.getCard.invalidate();
+      setLoading(false);
+    },
+  });
+
   const entries = card.entries
     .sort((a, b) => a.index - b.index)
     .map((entry) => ({
@@ -35,11 +42,19 @@ const BingoCard = ({ card }: BingoCardProps) => {
           marked={entry.marked}
           onChange={async () => {
             setLoading(true);
+            await isWin.mutateAsync({
+              cardId: card.id,
+              entryId: entry.id,
+              marked: !entry.marked,
+            });
             await markEntry.mutateAsync({
               cardId: card.id,
               entryId: entry.id,
               marked: !entry.marked,
             });
+
+
+
           }}
         />
       ))}

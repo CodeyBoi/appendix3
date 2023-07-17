@@ -90,6 +90,197 @@ export const bingoRouter = router({
     });
   }),
 
+  isWin: protectedProcedure.input(
+    z.object({
+      entryId: z.string(),
+      cardId: z.string(),
+      marked: z.boolean(),
+    }),
+  )
+    .mutation(async ({ ctx, input }) => {
+      const { entryId, cardId, marked } = input;
+      const corpsId = ctx.session.user.corps.id;
+      const now = new Date();
+      const card = await ctx.prisma.bingoCard.findFirst({
+        include: {
+          entries: true,
+        },
+        where: {
+          id: cardId,
+          corpsId,
+          validFrom: {
+            lte: now,
+          },
+          validTo: {
+            gte: now,
+          },
+        },
+      });
+
+      if (!card) {
+        throw new Error('Card not found');
+      }
+
+      if (card.corpsId !== corpsId) {
+        throw new Error('Corps unauthorized to mark this bingo card');
+      }
+
+      let board = new Array(5);
+      for (let i = 0; i < board.length; i++) {
+        board[i] = new Array(5);
+      }
+
+      for (const entry of card.entries) {
+        const row = entry.index % 5;
+        const col = Math.floor(entry.index / 5);
+        if (entryId === entry.entryId) {
+          board[row][col] = true;
+        } else {
+          board[row][col] = entry.marked;
+        }
+      }
+      console.log(board);
+      let count1 = 0;
+      let count2 = 0;
+      let bingocheck = false;
+
+      // Check rows
+      for (let row = 0; row < board.length; row++) {
+        if (board[row].every((value) => value === true)) {
+
+          console.log("DET ÄR ROWS SOM FUCKAR")
+          return ctx.prisma.bingoCard.updateMany({
+            where: {
+              id: cardId,
+              corpsId,
+              validFrom: {
+                lte: now,
+              },
+              validTo: {
+                gte: now,
+              },
+            },
+            data: {
+              isWin: {
+                set: true
+              },
+            }
+          })
+        }
+      }
+
+      // Check columns
+      for (let col = 0; col < board[0].length; col++) {
+        let hasTrueColumn = true;
+        for (let row = 0; row < board.length; row++) {
+          if (!board[row][col]) {
+            hasTrueColumn = false;
+            break;
+          }
+        }
+        if (hasTrueColumn) {
+          console.log("DET ÄR COLS SOM FUCKAR")
+          return ctx.prisma.bingoCard.updateMany({
+
+            where: {
+              id: cardId,
+              corpsId,
+              validFrom: {
+                lte: now,
+              },
+              validTo: {
+                gte: now,
+              },
+            },
+            data: {
+              isWin: {
+                set: true
+              },
+            }
+          })
+        }
+      }
+
+      // Check diagonals
+      let hasTrueDiagonal = true;
+      for (let i = 0; i < board.length; i++) {
+        if (!board[i][i]) {
+          hasTrueDiagonal = false;
+          break;
+        }
+      }
+      if (hasTrueDiagonal) {
+        console.log("DET ÄR DIAGONAL 1 SOM FUCKAR")
+        return ctx.prisma.bingoCard.updateMany({
+
+          where: {
+            id: cardId,
+            corpsId,
+            validFrom: {
+              lte: now,
+            },
+            validTo: {
+              gte: now,
+            },
+          },
+          data: {
+            isWin: {
+              set: true
+            },
+          }
+        })
+      }
+
+      let hasTrueDiagonal1 = true;
+      for (let i = 0; i < board.length; i++) {
+        if (!board[i][board.length - 1 - i]) {
+          hasTrueDiagonal1 = false;
+          break;
+        }
+      }
+      if (hasTrueDiagonal1) {
+        console.log("DET ÄR DIAGONAL 2 SOM FUCKAR")
+        return ctx.prisma.bingoCard.updateMany({
+
+          where: {
+            id: cardId,
+            corpsId,
+            validFrom: {
+              lte: now,
+            },
+            validTo: {
+              gte: now,
+            },
+          },
+          data: {
+            isWin: {
+              set: true
+            },
+          }
+        })
+      }
+
+      return ctx.prisma.bingoCard.updateMany({
+
+        where: {
+          id: cardId,
+          corpsId,
+          validFrom: {
+            lte: now,
+          },
+          validTo: {
+            gte: now,
+          },
+        },
+        data: {
+          isWin: {
+            set: false
+          },
+        }
+      })
+
+    }),
+
   markEntry: protectedProcedure
     .input(
       z.object({
