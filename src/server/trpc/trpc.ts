@@ -14,7 +14,9 @@ export const router = t.router;
 const allowedOrigins = [
   'http://localhost:3000',
   'http://bleckhornen.org',
+  'https://bleckhornen.org',
   'http://testing.bleckhornen.org',
+  'https://testing.bleckhornen.org',
 ];
 
 const allowCors = t.middleware(({ ctx, next }) => {
