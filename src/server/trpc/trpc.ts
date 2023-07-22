@@ -1,6 +1,6 @@
-import { initTRPC, TRPCError } from "@trpc/server";
-import type { Context } from "./context";
-import superjson from "superjson";
+import { initTRPC, TRPCError } from '@trpc/server';
+import type { Context } from './context';
+import superjson from 'superjson';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -11,10 +11,24 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://bleckhornen.org',
+  'http://testing.bleckhornen.org',
+];
+
+const allowCors = t.middleware(({ ctx, next }) => {
+  const origin = ctx.req.headers.origin ?? '';
+  if (allowedOrigins.includes(origin)) {
+    ctx.res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  return next();
+});
+
 /**
  * Unprotected procedure
  **/
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(allowCors);
 
 /**
  * Reusable middleware to ensure
@@ -24,7 +38,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
   const user = ctx.session?.user;
   const corps = ctx.session?.user?.corps;
   if (!ctx.session || !user || !corps) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
@@ -44,8 +58,8 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 const isAdmin = t.middleware(async ({ ctx, next }) => {
   const user = ctx.session?.user;
   const corps = ctx.session?.user?.corps;
-  if (!ctx.session || !user || !corps || corps.role?.name !== "admin") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!ctx.session || !user || !corps || corps.role?.name !== 'admin') {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
