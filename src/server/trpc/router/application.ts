@@ -17,7 +17,7 @@ export const applicationRouter = router({
 
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
       const mail = {
-        from: email,
+        from: process.env.EMAIL_FROM,
         to: 'hannes.ryberg00@gmail.com',
         subject: 'Ansökan till Bleckhornen',
         text: `
