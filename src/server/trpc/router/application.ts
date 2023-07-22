@@ -10,15 +10,17 @@ export const applicationRouter = router({
         email: z.string().email(),
         instrument: z.string(),
         description: z.string(),
+        emailTo: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
-      const { name, email, instrument, description } = input;
+      const { name, email, instrument, description, emailTo } = input;
 
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
+      const recipient = emailTo || 'info@bleckhornen.org';
       const mail = {
         from: process.env.EMAIL_FROM,
-        to: 'hannes.ryberg00@gmail.com',
+        to: recipient,
         subject: 'Ansökan till Bleckhornen',
         text: `
         Namn: ${name}
