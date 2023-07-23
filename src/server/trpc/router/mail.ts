@@ -8,7 +8,7 @@ export const mailRouter = router({
       z.object({
         name: z.string(),
         email: z.string().email(),
-        instrument: z.string(),
+        sections: z.array(z.string()),
         description: z.string(),
         emailTo: z.string().optional(),
       }),
@@ -17,7 +17,7 @@ export const mailRouter = router({
       const {
         name,
         email,
-        instrument,
+        sections,
         description,
         emailTo = 'info@bleckhornen.org',
       } = input;
@@ -26,7 +26,9 @@ export const mailRouter = router({
         from: process.env.EMAIL_FROM,
         to: emailTo,
         subject: 'Ansökan till Bleckhornen från ' + name.trim(),
-        text: `Namn: ${name.trim()}\nEmail: ${email.trim()}\nSektion: ${instrument.trim()}.\n\n${description.trim()}`,
+        text: `Namn: ${name.trim()}\nEmail: ${email.trim()}\nSektion(er): ${sections.join(
+          ', ',
+        )}.\n\n${description.trim()}`,
       };
       await mailTransport.sendMail(mail);
       return {
