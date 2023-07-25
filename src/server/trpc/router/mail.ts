@@ -22,15 +22,16 @@ export const mailRouter = router({
         emailTo = 'info@bleckhornen.org',
       } = input;
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
-      const mail = {
+      await mailTransport.sendMail({
+        subject: 'Ansökan till Bleckhornen från ' + name.trim(),
         from: process.env.EMAIL_FROM,
         to: emailTo,
-        subject: 'Ansökan till Bleckhornen från ' + name.trim(),
+        cc: email.trim(),
+        replyTo: email.trim(),
         text: `Namn: ${name.trim()}\nEmail: ${email.trim()}\nSektion(er): ${sections.join(
           ', ',
-        )}.\n\n${description.trim()}`,
-      };
-      await mailTransport.sendMail(mail);
+        )}.\n\nVad har du spelat/dansat i innan?\n${description.trim()}`,
+      });
       return {
         success: true,
       };
@@ -65,14 +66,18 @@ export const mailRouter = router({
         emailTo = 'styrelsen@bleckhornen.org',
       } = input;
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
-      const mail = {
+      await mailTransport.sendMail({
+        subject: 'Bokningsförfrågan från ' + name.trim() + ', ' + date.trim(),
         from: process.env.EMAIL_FROM,
         to: emailTo,
-        subject: 'Bokningsförfrågan från ' + name.trim() + ', ' + date.trim(),
+        cc: email.trim(),
+        replyTo: email.trim(),
         text:
           `Datum: ${date.trim()}\nTid: ${time.trim()}\nPlats: ${location.trim()}\nEvenemang: ${event.trim()}\nÖvrigt: ${otherInfo.trim()}\n\n` +
           `Kontaktuppgifter\nNamn: ${name.trim()}\nEmail: ${email.trim()}\nTelefon: ${phone.trim()}\nAdress: ${address.trim()}\n`,
+      });
+      return {
+        success: true,
       };
-      await mailTransport.sendMail(mail);
     }),
 });
