@@ -31,7 +31,7 @@ const AdminSection = () => {
                   });
                 }}
                 defaultValue={section.leader?.id}
-                placeholder='Välj sektionsledare'
+                placeholder='Välj sektionsledare...'
               />
             </Group>
           ))}
