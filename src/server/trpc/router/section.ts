@@ -24,15 +24,15 @@ export const sectionRouter = router({
   }),
 
   setSectionLeader: adminProcedure
-    .input(z.object({ sectionId: z.number(), leaderId: z.string() }))
+    .input(z.object({ sectionId: z.number(), corpsId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { sectionId, leaderId } = input;
+      const { sectionId, corpsId } = input;
       const section = await ctx.prisma.section.update({
         where: { id: sectionId },
         data: {
           leader: {
             connect: {
-              id: leaderId,
+              id: corpsId,
             },
           },
         },
