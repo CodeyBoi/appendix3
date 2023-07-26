@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
 }
 
 datasource db {
@@ -251,9 +252,9 @@ model Quote {
 }
 
 model Section {
-  id      Int    @id @default(autoincrement())
-  name    String @unique
-  corpsId String
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  corpsId String?
 
   instruments Instrument[]
   leader      Corps?       @relation(fields: [corpsId], references: [id])
