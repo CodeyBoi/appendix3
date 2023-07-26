@@ -23,7 +23,7 @@ const sendVerificationRequest = async (
   const transport = createTransport(provider.server);
   const result = await transport.sendMail({
     to: identifier,
-    from: provider.from,
+    from: `"Blindtarmen" <${provider.from}>`,
     subject: `Inloggningslänk till Blindtarmen`,
     text: text({ url }),
     html: html({ url, host, theme }),
