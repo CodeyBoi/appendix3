@@ -10,23 +10,36 @@ export const mailRouter = router({
         email: z.string().email(),
         sections: z.array(z.string()),
         description: z.string(),
-        emailTo: z.string().optional(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const {
-        name,
-        email,
-        sections,
-        description,
-        emailTo = 'info@bleckhornen.org',
-      } = input;
+    .mutation(async ({ ctx, input }) => {
+      const { name, email, sections, description } = input;
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
+      const sectionLeaders = await ctx.prisma.section.findMany({
+        where: {
+          instruments: {
+            some: {
+              name: {
+                in: sections,
+              },
+            },
+          },
+        },
+        include: {
+          leader: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+      const to = sectionLeaders.map((section) => section.leader?.user.email);
       await mailTransport.sendMail({
         subject: 'Ansökan till Bleckhornen från ' + name.trim(),
-        from: process.env.EMAIL_FROM,
-        to: emailTo,
+        from: `"AMC Bleckhornen" <${process.env.EMAIL_FROM}>`,
+        to: to.join(', '),
         cc: email.trim(),
+        bcc: 'styrelsen@bleckhornen.org',
         replyTo: email.trim(),
         text: `Namn: ${name.trim()}\nEmail: ${email.trim()}\nSektion(er): ${sections.join(
           ', ',

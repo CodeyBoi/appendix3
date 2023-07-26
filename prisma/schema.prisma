@@ -76,16 +76,17 @@ model Corps {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role        Role?             @relation(fields: [roleId], references: [id])
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  instruments CorpsInstrument[]
-  gigSignups  GigSignup[]
-  hiddenGigs  HiddenGig[]
-  foodPrefs   CorpsFoodPrefs?
-  rehearsals  CorpsRehearsal[]
-  quotes      Quote[]           @relation("SaidQuotes")
-  citedQuotes Quote[]           @relation("WrittenQuotes")
-  songs       Song[]
+  role            Role?             @relation(fields: [roleId], references: [id])
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments     CorpsInstrument[]
+  gigSignups      GigSignup[]
+  hiddenGigs      HiddenGig[]
+  foodPrefs       CorpsFoodPrefs?
+  rehearsals      CorpsRehearsal[]
+  quotes          Quote[]           @relation("SaidQuotes")
+  citedQuotes     Quote[]           @relation("WrittenQuotes")
+  songs           Song[]
+  sectionLeaderOf Section[]
 }
 
 model CorpsInstrument {
@@ -113,10 +114,13 @@ model CorpsFoodPrefs {
 }
 
 model Instrument {
-  id         Int               @id
-  name       String            @unique
+  id        Int    @id
+  name      String @unique
+  sectionId Int?
+
   corps      CorpsInstrument[]
   gigSignups GigSignup[]
+  section    Section?          @relation(fields: [sectionId], references: [id])
 }
 
 model Gig {
@@ -245,4 +249,13 @@ model Quote {
 
   saidBy    Corps @relation("SaidQuotes", fields: [saidByCorpsId], references: [id], onDelete: Cascade)
   writtenBy Corps @relation("WrittenQuotes", fields: [writtenByCorpsId], references: [id])
+}
+
+model Section {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  corpsId String?
+
+  instruments Instrument[]
+  leader      Corps?       @relation(fields: [corpsId], references: [id])
 }

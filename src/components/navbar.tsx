@@ -15,6 +15,7 @@ import {
   IconInfoSquare,
   IconLink,
   IconLogout,
+  IconMicrophone2,
   IconMusic,
   IconPencil,
   IconPencilPlus,
@@ -129,6 +130,16 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
           label: 'Visa alla rep',
           href: '/admin/rehearsal',
           icon: <IconPencil />,
+        },
+      ],
+    },
+    {
+      title: 'Övrigt',
+      links: [
+        {
+          label: 'Sektioner',
+          href: '/admin/section',
+          icon: <IconMicrophone2 />,
         },
       ],
     },
