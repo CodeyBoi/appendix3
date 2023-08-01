@@ -11,17 +11,11 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://www.bleckhornen.org',
-  'https://www.bleckhornen.org',
-  'http://testing.bleckhornen.org',
-  'https://testing.bleckhornen.org',
-];
+const allowedOrigins = ['localhost:3000', 'bleckhornen.org'];
 
 const allowCors = t.middleware(({ ctx, next }) => {
   const origin = ctx.req.headers.origin ?? '';
-  if (allowedOrigins.includes(origin)) {
+  if (allowedOrigins.some((o) => origin.endsWith(o))) {
     ctx.res.setHeader('Access-Control-Allow-Origin', origin);
   }
   return next();
