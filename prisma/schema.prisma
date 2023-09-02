@@ -199,10 +199,12 @@ model Role {
 }
 
 model Rehearsal {
-  id     String   @id @default(cuid())
-  title  String
-  date   DateTime @db.Date
-  typeId Int
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime @db.Date
+  typeId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   type    RehearsalType    @relation(fields: [typeId], references: [id], onDelete: Cascade)
   corpsii CorpsRehearsal[]
