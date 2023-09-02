@@ -30,64 +30,59 @@ export const statsRouter = router({
         },
       });
 
-      interface CorpsStats {
+      type CorpsStats = {
         id: string;
         number: number | null;
         firstName: string;
         lastName: string;
         gigsAttended: number;
-        maxPossibleGigs: number;
-        attendence: number;
-      }
+      };
 
       const corpsStatsQuery = ctx.prisma.$queryRaw<CorpsStats[]>`
-        SELECT 
+        SELECT
           Corps.id as id,
           number,
           firstName,
-          lastName, 
-          SUM(CASE WHEN attended THEN points ELSE 0 END) AS gigsAttended,
-          SUM(
-            CASE WHEN NOT COALESCE(attended, false) AND Gig.countsPositively = 1
-              THEN 0
-              ELSE points
-            END
-          ) AS maxPossibleGigs
+          lastName,
+          SUM(points) AS gigsAttended
         FROM Gig
         CROSS JOIN Corps
         LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
         WHERE Gig.date BETWEEN ${start} AND ${end}
+        AND attended = true
         AND (Corps.id = ${corpsId} OR ${!selfOnly})
         GROUP BY Corps.id
         HAVING gigsAttended > 0 OR ${selfOnly}
-        ORDER BY 
+        ORDER BY
           gigsAttended DESC,
           ISNULL(number), number,
           lastName,
           firstName;
       `;
 
-      const [nbrOfGigs, positivelyCountedGigs, corpsStats] =
-        await ctx.prisma.$transaction([
-          nbrOfGigsQuery,
-          positivelyCountedGigsQuery,
-          corpsStatsQuery,
-        ]);
+      const res = await ctx.prisma.$transaction([
+        nbrOfGigsQuery,
+        positivelyCountedGigsQuery,
+        corpsStatsQuery,
+      ]);
+      const nbrOfGigs = res[0]._sum.points ?? 0;
+      const positivelyCountedGigs = res[1]._sum.points ?? 0;
+      const corpsStats = res[2];
 
       return {
         corpsIds: corpsStats.map((corps) => corps.id),
-        nbrOfGigs: nbrOfGigs._sum.points ?? 0,
-        positivelyCountedGigs: positivelyCountedGigs._sum.points ?? 0,
+        nbrOfGigs,
+        positivelyCountedGigs,
         corpsStats: corpsStats.reduce((acc, corps) => {
           acc[corps.id] = {
             ...corps,
             attendence:
-              corps.maxPossibleGigs === 0
-                ? 1.0
-                : corps.gigsAttended / corps.maxPossibleGigs,
+              nbrOfGigs - positivelyCountedGigs > 0
+                ? corps.gigsAttended / (nbrOfGigs - positivelyCountedGigs)
+                : 1,
           };
           return acc;
-        }, {} as Record<string, CorpsStats>),
+        }, {} as Record<string, CorpsStats & { attendence: number }>),
       };
     }),
 

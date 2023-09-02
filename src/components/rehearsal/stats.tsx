@@ -1,12 +1,12 @@
-import { Table } from "@mantine/core";
-import { Corps } from "@prisma/client";
-import React from "react";
+import { Table } from '@mantine/core';
+import { Corps } from '@prisma/client';
+import React from 'react';
 
 type RehearsalStatsProps = {
   totalRehearsals: number;
   stats: {
-    corps: Corps,
-    count: number,
+    corps: Corps;
+    count: number;
   }[];
 };
 
@@ -23,7 +23,7 @@ const RehearsalStats = ({ totalRehearsals, stats }: RehearsalStatsProps) => {
           <tr key={stat.corps.id}>
             <td>{formatName(stat.corps)}</td>
             <td>{stat.count}</td>
-            <td>{Math.round((stat.count / totalRehearsals) * 100)}%</td>
+            <td>{Math.ceil((stat.count / totalRehearsals) * 100)}%</td>
           </tr>
         ))}
       </tbody>
