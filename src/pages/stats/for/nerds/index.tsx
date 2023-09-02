@@ -304,11 +304,14 @@ const StatsForNerds = () => {
               </Grid.Col>
             </Grid>
           )}
-          <Text>
-            <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
-            {corpsBuddy && `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
-            <br />
-          </Text>
+          {(corpsBuddy || corpsEnemy) && (
+            <Text>
+              <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
+              {corpsBuddy &&
+                `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
+              <br />
+            </Text>
+          )}
         </Stack>
         <Stack>
           <Title order={3}>Allmän statistik</Title>
