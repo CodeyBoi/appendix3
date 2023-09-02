@@ -407,15 +407,28 @@ export const gigRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { corpsId, gigId, attended } = input;
+      const signup = await ctx.prisma.gigSignup.findUnique({
+        where: {
+          corpsId_gigId: {
+            corpsId,
+            gigId,
+          },
+        },
+      });
+      if (!signup) {
+        throw new Error('Signup not found');
+      }
       return ctx.prisma.gigSignup.update({
         where: {
           corpsId_gigId: {
-            corpsId: input.corpsId,
-            gigId: input.gigId,
+            corpsId,
+            gigId,
           },
         },
         data: {
-          attended: input.attended,
+          attended,
+          updatedAt: signup.updatedAt,
         },
       });
     }),
