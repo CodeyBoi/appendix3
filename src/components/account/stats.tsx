@@ -14,12 +14,11 @@ const CorpsStats = () => {
   const end = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
   const { data: points, isLoading: pointsLoading } =
     trpc.corps.getPoints.useQuery();
-  const { data: stats, isLoading: statsLoading } =
-    trpc.stats.get.useQuery({
-      start,
-      end,
-      selfOnly: true,
-    });
+  const { data: stats, isLoading: statsLoading } = trpc.stats.get.useQuery({
+    start,
+    end,
+    selfOnly: true,
+  });
   const {
     data: orchestraRehearsalAttendance,
     isLoading: orchestraAttendanceLoading,
@@ -60,11 +59,11 @@ const CorpsStats = () => {
             <Text>
               {`Spelpoäng: ${corpsStats.gigsAttended}`}
               <br />
-              {`Spelningar: ${Math.round(corpsStats.attendence * 100)}%`}
+              {`Spelningar: ${Math.ceil(corpsStats.attendence * 100)}%`}
               {orchestraRehearsalAttendance !== 0 && (
                 <>
                   <br />
-                  {`Orkesterrepor: ${Math.round(
+                  {`Orkesterrepor: ${Math.ceil(
                     orchestraRehearsalAttendance * 100,
                   )}%`}
                 </>
@@ -72,7 +71,7 @@ const CorpsStats = () => {
               {balletRehearsalAttendance !== 0 && (
                 <>
                   <br />
-                  {`Balettrepor: ${Math.round(
+                  {`Balettrepor: ${Math.ceil(
                     balletRehearsalAttendance * 100,
                   )}%`}
                 </>

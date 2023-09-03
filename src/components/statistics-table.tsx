@@ -52,7 +52,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     ownPoints && ownAttendence && nbrOfGigs !== 0
       ? `Du ${isNow ? 'har varit' : 'var'} med på ${ownPoints} spelning${
           ownPoints == 1 ? '' : 'ar'
-        }, vilket ${isNow ? 'motsvarar' : 'motsvarade'} ${Math.round(
+        }, vilket ${isNow ? 'motsvarar' : 'motsvarade'} ${Math.ceil(
           ownAttendence * 100,
         )}% närvaro.`
       : undefined;
@@ -65,18 +65,6 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     return <AlertError msg='Kunde inte hämta spelningsstatistik.' />;
   }
 
-  const corpsIdsSorted = corpsIds?.sort((a, b) => {
-    const aStat = corpsStats[a];
-    const bStat = corpsStats[b];
-    if (!aStat || !bStat) return 0;
-    if (
-      Math.ceil(aStat.attendence * 100) === Math.ceil(bStat.attendence * 100)
-    ) {
-      return bStat.gigsAttended - aStat.gigsAttended;
-    }
-    return bStat.attendence - aStat.attendence;
-  });
-
   let lastAttendence = 1.0;
 
   return (
@@ -84,105 +72,102 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
       {corpsIds && corpsIds.length === 0 && (
         <Text>Det finns inga statistikuppgifter för denna period.</Text>
       )}
-      {corpsPoints &&
-        corpsStats &&
-        corpsIdsSorted &&
-        corpsIdsSorted.length !== 0 && (
-          <Stack>
-            <Text>
-              {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
-            </Text>
-            {ownPointsString && <Text>{ownPointsString}</Text>}
-            <Table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Namn</th>
-                  <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
-                    Poäng
-                  </th>
-                  <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
-                    Närvaro
-                  </th>
-                  <th
-                    style={{
-                      textAlign: 'center',
-                      paddingLeft: '0px',
-                      paddingRight: '0px',
-                    }}
-                  >
-                    Totala poäng
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {corpsIdsSorted.map((id) => {
-                  const stat = corpsStats[id];
-                  if (!stat) return null;
-                  let addFjangDivider = false;
-                  let addMemberDivider = false;
-                  if (lastAttendence >= 0.75 && stat.attendence < 0.75) {
-                    addFjangDivider = true;
-                  }
-                  if (lastAttendence >= 0.5 && stat.attendence < 0.5) {
-                    addMemberDivider = true;
-                  }
-                  lastAttendence = stat.attendence;
-                  return (
-                    <>
-                      {addFjangDivider && (
-                        <tr style={{ border: '0' }}>
-                          <td colSpan={5} style={{ textAlign: 'center' }}>
-                            <Divider
-                              color='red'
-                              label='Fjång'
-                              labelPosition='center'
-                            />
-                          </td>
-                        </tr>
-                      )}
-                      {addMemberDivider && (
-                        <tr>
-                          <td colSpan={5} style={{ textAlign: 'center' }}>
-                            <Divider
-                              color='red'
-                              label='Nummer'
-                              labelPosition='center'
-                            />
-                          </td>
-                        </tr>
-                      )}
-                      <tr key={id}>
-                        <td
-                          align='center'
-                          style={{ paddingLeft: '0px', paddingRight: '0px' }}
-                        >
-                          {stat.number ?? 'p.e.'}
+      {corpsIds && corpsIds.length !== 0 && corpsPoints && corpsStats && (
+        <Stack>
+          <Text>
+            {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
+          </Text>
+          {ownPointsString && <Text>{ownPointsString}</Text>}
+          <Table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Namn</th>
+                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
+                  Poäng
+                </th>
+                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
+                  Närvaro
+                </th>
+                <th
+                  style={{
+                    textAlign: 'center',
+                    paddingLeft: '0px',
+                    paddingRight: '0px',
+                  }}
+                >
+                  Totala poäng
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {corpsIds.map((id) => {
+                const stat = corpsStats[id];
+                if (!stat) return null;
+                let addFjangDivider = false;
+                let addMemberDivider = false;
+                if (lastAttendence >= 1 && stat.attendence < 1) {
+                  addFjangDivider = true;
+                }
+                if (lastAttendence >= 0.5 && stat.attendence < 0.5) {
+                  addMemberDivider = true;
+                }
+                lastAttendence = stat.attendence;
+                return (
+                  <React.Fragment key={stat.id}>
+                    {addFjangDivider && (
+                      <tr style={{ border: '0' }}>
+                        <td colSpan={5} style={{ textAlign: 'center' }}>
+                          <Divider
+                            color='red'
+                            label='Fjång'
+                            labelPosition='center'
+                          />
                         </td>
-                        <td>{`${stat.firstName} ${stat.lastName}`}</td>
-                        <td align='center' style={{ paddingLeft: '0px' }}>
-                          {stat.gigsAttended}
-                        </td>
-                        <td
-                          align='center'
-                          style={{ paddingLeft: '0px' }}
-                        >{`${Math.round(stat.attendence * 100)}%`}</td>
-                        <td align='center'>{corpsPoints.points[id]}</td>
                       </tr>
-                    </>
-                  );
-                })}
-              </tbody>
-            </Table>
-            <Button
-              component={NextLink}
-              href='/stats/for/nerds'
-              leftIcon={<IconMoodNerd />}
-            >
-              Statistik för nördar
-            </Button>
-          </Stack>
-        )}
+                    )}
+                    {addMemberDivider && (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center' }}>
+                          <Divider
+                            color='red'
+                            label='Nummer'
+                            labelPosition='center'
+                          />
+                        </td>
+                      </tr>
+                    )}
+                    <tr key={id}>
+                      <td
+                        align='center'
+                        style={{ paddingLeft: '0px', paddingRight: '0px' }}
+                      >
+                        {stat.number ?? 'p.e.'}
+                      </td>
+                      <td>{`${stat.firstName} ${stat.lastName}`}</td>
+                      <td align='center' style={{ paddingLeft: '0px' }}>
+                        {stat.gigsAttended}
+                      </td>
+                      <td
+                        align='center'
+                        style={{ paddingLeft: '0px' }}
+                      >{`${Math.ceil(stat.attendence * 100)}%`}</td>
+                      <td align='center'>{corpsPoints.points[id]}</td>
+                    </tr>
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </Table>
+          <Button
+            component={NextLink}
+            href='/stats/for/nerds'
+            leftIcon={<IconMoodNerd />}
+          >
+            Statistik för nördar
+          </Button>
+        </Stack>
+      )}
     </>
   );
 };
