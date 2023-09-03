@@ -106,10 +106,10 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                 if (!stat) return null;
                 let addFjangDivider = false;
                 let addMemberDivider = false;
-                if (lastAttendence >= 1 && stat.attendence < 1) {
+                if (Math.ceil(lastAttendence * 100) >= 100 && Math.ceil(stat.attendence * 100) < 100) {
                   addFjangDivider = true;
                 }
-                if (lastAttendence >= 0.5 && stat.attendence < 0.5) {
+                if (Math.ceil(lastAttendence * 100) >= 50 && Math.ceil(stat.attendence * 100) < 50) {
                   addMemberDivider = true;
                 }
                 lastAttendence = stat.attendence;
