@@ -12,7 +12,7 @@ const About = () => {
         <ul>
           <li>#516 Hannes Ryberg</li>
           <li>h.m. Hampus Wall</li>
-          <li>p.e. Hanna Nilsson</li>
+          <li>#580 Hanna Nilsson</li>
           <li>!509 Hugo Rogmark</li>
         </ul>
         Bjud dem gärna på ett streck eller dylikt om ni ser dem i vardagen.
