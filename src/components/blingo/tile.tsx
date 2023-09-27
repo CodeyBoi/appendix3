@@ -21,6 +21,20 @@ const useStyles = createStyles((theme) => ({
       backgroundColor: theme.colors.red[6],
     },
   },
+
+  tileMarked: {
+    backgroundColor: theme.colors.blue[5], // Change this to the desired color
+    position: 'relative',
+    width: '100%',
+    height: 0,
+    paddingBottom: '100%',
+    borderRadius: theme.radius.sm,
+    textAlign: 'center',
+    '&:hover': {
+      backgroundColor: theme.colors.blue[6],
+    },
+  },
+
   tileText: {
     color: theme.white,
     fontSize: theme.fontSizes.xs,
@@ -34,12 +48,17 @@ const useStyles = createStyles((theme) => ({
 const BingoTile = ({ text, marked = false, onChange }: BingoTileProps) => {
   const { classes } = useStyles();
   const [filledState, setFilledState] = React.useState(marked);
+
+  const tileClassName = marked ? classes.tileMarked : classes.tile;
+
   return (
     <UnstyledButton
-      className={classes.tile}
+      className={tileClassName}
+
       onClick={() => {
         console.log(!filledState);
         setFilledState(!filledState);
+
         if (onChange) {
           onChange();
         }
