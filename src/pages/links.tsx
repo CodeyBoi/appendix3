@@ -37,7 +37,15 @@ const Links = () => {
             </a>
           </li>
           <li>
-            <a style={style} href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>
+            <a
+              style={style}
+              href='http://old.bleckhornen.org/appendix/minnesfond/'
+            >
+              Fonden
+            </a>
+          </li>
+          <li>
+            <a style={style} href='https://www.youtube.com/watch?v=a3Z7zEc7AXQ'>
               Nakenbilder av Arvid Tarmén
             </a>
           </li>
