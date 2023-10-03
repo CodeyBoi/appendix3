@@ -65,7 +65,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     return <AlertError msg='Kunde inte hämta spelningsstatistik.' />;
   }
 
-  let lastAttendence = 1.0;
+  let lastAttendence = 516.0;
 
   return (
     <>
@@ -104,18 +104,21 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
-                let addFjangDivider = false;
+                // let addFjangDivider = false;
                 let addMemberDivider = false;
-                if (Math.ceil(lastAttendence * 100) >= 100 && Math.ceil(stat.attendence * 100) < 100) {
-                  addFjangDivider = true;
-                }
-                if (Math.ceil(lastAttendence * 100) >= 50 && Math.ceil(stat.attendence * 100) < 50) {
+                // if (Math.ceil(lastAttendence * 100) >= 100 && Math.ceil(stat.attendence * 100) < 100) {
+                //   addFjangDivider = true;
+                // }
+                if (
+                  Math.ceil(lastAttendence * 100) >= 50 &&
+                  Math.ceil(stat.attendence * 100) < 50
+                ) {
                   addMemberDivider = true;
                 }
                 lastAttendence = stat.attendence;
                 return (
                   <React.Fragment key={stat.id}>
-                    {addFjangDivider && (
+                    {/* {addFjangDivider && (
                       <tr style={{ border: '0' }}>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
                           <Divider
@@ -125,7 +128,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                           />
                         </td>
                       </tr>
-                    )}
+                    )} */}
                     {addMemberDivider && (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
