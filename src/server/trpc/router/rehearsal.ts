@@ -30,14 +30,7 @@ export const rehearsalRouter = router({
         throw new Error('Rehearsal not found');
       }
 
-      const corpsIds = rehearsal.corpsii.map((corps) => corps.corps.id) ?? [];
-      return {
-        id: rehearsal.id,
-        title: rehearsal.title,
-        date: rehearsal.date,
-        type: rehearsal.type.name,
-        corpsIds,
-      };
+      return rehearsal;
     }),
 
   getMany: adminProcedure
@@ -81,16 +74,16 @@ export const rehearsalRouter = router({
         id: z.string().cuid('Invalid CUID').optional(),
         title: z.string(),
         date: z.date(),
-        type: z.string(),
+        typeId: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, title, date, type } = input;
+      const { id, title, date, typeId } = input;
       const data = {
         title,
         date,
         type: {
-          connect: { name: type },
+          connect: { id: typeId },
         },
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
@@ -286,7 +279,7 @@ export const rehearsalRouter = router({
 
   getTypes: adminProcedure.query(async ({ ctx }) => {
     const types = await ctx.prisma.rehearsalType.findMany();
-    return types.map((type) => type.name);
+    return types;
   }),
 
   getOwnOrchestraAttendance: protectedProcedure
@@ -355,10 +348,16 @@ export const rehearsalRouter = router({
       return attendance / allRehearsals;
     }),
 
-  getActiveCorps: adminProcedure
-    .input(z.object({ start: z.date().optional(), end: z.date().optional() }))
+  getAttendedRehearsalList: adminProcedure
+    .input(
+      z.object({
+        id: z.string().cuid('Invalid CUID'),
+        start: z.date().optional(),
+        end: z.date().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const { start, end } = input;
+      const { id, start, end } = input;
       const corpsii = await ctx.prisma.corps.findMany({
         include: {
           instruments: {
@@ -371,10 +370,17 @@ export const rehearsalRouter = router({
           rehearsals: {
             some: {
               rehearsal: {
-                date: {
-                  gte: start,
-                  lte: end,
-                },
+                OR: [
+                  {
+                    date: {
+                      gte: start,
+                      lte: end,
+                    },
+                  },
+                  {
+                    id,
+                  },
+                ],
               },
             },
           },
@@ -402,6 +408,11 @@ export const rehearsalRouter = router({
         }
         return 'Annat';
       };
+      const attended = await ctx.prisma.corpsRehearsal.findMany({
+        where: {
+          rehearsalId: id,
+        },
+      });
       const instruments = await ctx.prisma.instrument.findMany({});
       const instrumentPrecedence = instruments.reduce((acc, instrument) => {
         acc[instrument.name] = instrument.sectionId || 516;
@@ -412,6 +423,9 @@ export const rehearsalRouter = router({
           (instrumentPrecedence[getMainInstrument(a)] ?? 516) -
           (instrumentPrecedence[getMainInstrument(b)] ?? 516),
       );
-      return corpsii;
+      return corpsii.map((corps) => ({
+        ...corps,
+        attended: attended.some((e) => e.corpsId === corps.id),
+      }));
     }),
 });

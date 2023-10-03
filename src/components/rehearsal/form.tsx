@@ -1,32 +1,23 @@
-import {
-  Stack,
-  TextInput,
-  Select,
-  Group,
-  Button,
-  Checkbox,
-} from '@mantine/core';
+import { Stack, TextInput, Select, Group, Button } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconCalendar } from '@tabler/icons';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
-import dayjs from 'dayjs';
-import { Corps } from '@prisma/client';
+import { Rehearsal } from '@prisma/client';
 
 const defaultValues = {
   title: '',
   date: null as unknown as Date,
-  type: '',
+  typeId: '',
 };
 type FormValues = typeof defaultValues;
 type RehearsalFormProps = {
-  rehearsal?: FormValues & { id: string };
+  rehearsal?: Rehearsal;
+  onSubmit?: () => void;
 };
 
-const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
-  const router = useRouter();
+const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   const utils = trpc.useContext();
 
   const { data: rehearsalTypes } = trpc.rehearsal.getTypes.useQuery();
@@ -39,12 +30,12 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
       : {
           title: rehearsal.title,
           date: rehearsal.date,
-          type: rehearsal.type,
+          typeId: rehearsal.typeId.toString(),
         },
     validate: {
       title: (title) => (title ? null : 'Fyll i titel'),
       date: (date) => (date ? null : 'Välj datum'),
-      type: (type) => (type ? null : 'Välj typ'),
+      typeId: (typeId) => (typeId ? null : 'Välj typ'),
     },
   });
 
@@ -54,7 +45,7 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
       utils.rehearsal.getMany.invalidate();
       utils.rehearsal.getOrchestraStats.invalidate();
       utils.rehearsal.getBalletStats.invalidate();
-      router.push('/admin/rehearsal/' + id);
+      onSubmit?.();
     },
   });
 
@@ -63,24 +54,18 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
       values.date.getMinutes() - values.date.getTimezoneOffset(),
     );
     if (newRehearsal) {
-      await mutation.mutateAsync(values);
+      await mutation.mutateAsync({
+        ...values,
+        typeId: parseInt(values.typeId),
+      });
     } else {
-      await mutation.mutateAsync({ ...values, id: rehearsal.id });
+      await mutation.mutateAsync({
+        ...values,
+        typeId: parseInt(values.typeId),
+        id: rehearsal.id,
+      });
     }
   };
-
-  const attendenceMutation = trpc.rehearsal.updateAttendance.useMutation({
-    onSuccess: ({ corpsId }) => {
-      utils.rehearsal.getOrchestraStats.invalidate();
-      utils.rehearsal.getBalletStats.invalidate();
-      if (!newRehearsal) {
-        utils.rehearsal.getAttendence.invalidate({
-          id: rehearsal.id,
-          corpsId,
-        });
-      }
-    },
-  });
 
   return (
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
@@ -106,11 +91,11 @@ const RehearsalForm = ({ rehearsal }: RehearsalFormProps) => {
           placeholder='Välj typ...'
           data={
             rehearsalTypes?.map((type) => ({
-              label: type,
-              value: type,
+              label: type.name,
+              value: type.id.toString(),
             })) ?? []
           }
-          {...form.getInputProps('type')}
+          {...form.getInputProps('typeId')}
         />
         <Group position='right'>
           <Button type='submit'>
