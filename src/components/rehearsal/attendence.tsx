@@ -28,6 +28,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
       id: rehearsal.id,
       start,
       end,
+      typeId: rehearsal.typeId,
     });
 
   const mutation = trpc.rehearsal.updateAttendance.useMutation({
@@ -47,6 +48,29 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
     [activeCorps],
   );
   const selectedAlreadyAttendedCorps = attendedCorpsIds.has(corpsId);
+
+  const corpsBySections = useMemo(() => {
+    if (!activeCorps) return null;
+    const sectionMap = activeCorps.reduce((acc, corps) => {
+      if (!corps.id) return acc;
+      acc[corps.id] =
+        corps.instruments.find((i) => i.isMainInstrument)?.instrument.name ??
+        'Övrigt';
+      return acc;
+    }, {} as Record<string, string>);
+    let lastSection = '';
+    const result = activeCorps.reduce((acc, corps) => {
+      if (!corps.id) return acc;
+      const section = sectionMap[corps.id] ?? 'Övrigt';
+      if (section !== lastSection) {
+        acc.push({ name: section, corpsii: [] });
+        lastSection = section;
+      }
+      acc[acc.length - 1]?.corpsii.push(corps);
+      return acc;
+    }, [] as { name: string; corpsii: typeof activeCorps }[]);
+    return result;
+  }, [activeCorps]);
 
   return (
     <Stack>
@@ -78,27 +102,33 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
           <IconPlus />
         </ActionIcon>
       </Group>
-
-      {activeCorps && (
-        <SimpleGrid
-          cols={1}
-          breakpoints={[
-            { minWidth: 'md', cols: 2 },
-            { minWidth: 'lg', cols: 3 },
-          ]}
-          spacing={0}
-          verticalSpacing={0}
-        >
-          {activeCorps.map((corps) => (
-            <RehearsalCheckbox
-              key={corps.id}
-              rehearsal={rehearsal}
-              corps={corps}
-              attended={corps.attended}
-            />
+      <Stack spacing='xs'>
+        {corpsBySections &&
+          corpsBySections.map((section) => (
+            <React.Fragment key={section.name}>
+              <Title order={4}>{section.name}</Title>
+              <SimpleGrid
+                ml='md'
+                cols={1}
+                breakpoints={[
+                  { minWidth: 'md', cols: 2 },
+                  { minWidth: 'lg', cols: 3 },
+                ]}
+                spacing={0}
+                verticalSpacing={0}
+              >
+                {section.corpsii.map((corps) => (
+                  <RehearsalCheckbox
+                    key={corps.id}
+                    rehearsal={rehearsal}
+                    corps={corps}
+                    attended={corps.attended}
+                  />
+                ))}
+              </SimpleGrid>
+            </React.Fragment>
           ))}
-        </SimpleGrid>
-      )}
+      </Stack>
     </Stack>
   );
 };
