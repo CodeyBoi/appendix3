@@ -1,4 +1,4 @@
-import { Stack, Title } from '@mantine/core';
+import { Stack } from '@mantine/core';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Loading from '../../../../components/loading';

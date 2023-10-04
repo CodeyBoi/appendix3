@@ -45,7 +45,7 @@ const Quotes = () => {
     let prevDayMessage: string | undefined;
     return loading ? (
       <Loading msg='Laddar citat...' />
-    ) : quotes && (quotes.pages[0]?.items.length ?? []) > 0 ? (
+    ) : quotes && (quotes.pages[0]?.items ?? []).length > 0 ? (
       <Table fontSize={16}>
         <tbody>
           {quotes.pages.map((page) => {
