@@ -100,14 +100,14 @@ const Rehearsals = () => {
                 <Title order={3}>Orkesterrepor</Title>
                 <RehearsalStats
                   stats={orchestraStats.stats}
-                  totalRehearsals={orchestraStats.rehearsalCount}
+                  totalRehearsals={orchestraStats.nonPositiveRehearsals}
                 />
               </Stack>
               <Stack>
                 <Title order={3}>Balettrepor</Title>
                 <RehearsalStats
                   stats={balletStats.stats}
-                  totalRehearsals={balletStats.rehearsalCount}
+                  totalRehearsals={balletStats.nonPositiveRehearsals}
                 />
               </Stack>
             </Group>

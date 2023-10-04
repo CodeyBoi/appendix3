@@ -1,7 +1,14 @@
-import { Stack, TextInput, Select, Group, Button } from '@mantine/core';
+import {
+  Stack,
+  TextInput,
+  Select,
+  Group,
+  Button,
+  Checkbox,
+} from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconCalendar } from '@tabler/icons';
+import { IconCalendar, IconSend } from '@tabler/icons';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
 import { Rehearsal } from '@prisma/client';
@@ -10,6 +17,7 @@ const defaultValues = {
   title: '',
   date: null as unknown as Date,
   typeId: '',
+  countsPositively: false,
 };
 type FormValues = typeof defaultValues;
 type RehearsalFormProps = {
@@ -31,6 +39,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
           title: rehearsal.title,
           date: rehearsal.date,
           typeId: rehearsal.typeId.toString(),
+          countsPositively: rehearsal.countsPositively,
         },
     validate: {
       title: (title) => (title ? null : 'Fyll i titel'),
@@ -41,10 +50,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
 
   const mutation = trpc.rehearsal.upsert.useMutation({
     onSuccess: ({ id }) => {
-      utils.rehearsal.getWithId.invalidate(rehearsal?.id ?? '');
+      utils.rehearsal.getWithId.invalidate(id);
       utils.rehearsal.getMany.invalidate();
-      utils.rehearsal.getOrchestraStats.invalidate();
-      utils.rehearsal.getBalletStats.invalidate();
       onSubmit?.();
     },
   });
@@ -97,9 +104,19 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
           }
           {...form.getInputProps('typeId')}
         />
+        <Checkbox
+          label='Räknas positivt?'
+          {...form.getInputProps('countsPositively', {
+            type: 'checkbox',
+          })}
+        />
         <Group position='right'>
-          <Button type='submit'>
-            {(newRehearsal ? 'Skapa' : 'Uppdatera') + ' repa'}
+          <Button
+            type='submit'
+            leftIcon={<IconSend />}
+            loading={mutation.isLoading}
+          >
+            {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
         </Group>
       </Stack>

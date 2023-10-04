@@ -75,19 +75,21 @@ export const rehearsalRouter = router({
         title: z.string(),
         date: z.date(),
         typeId: z.number(),
+        countsPositively: z.boolean().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, title, date, typeId } = input;
+      const { id, title, date, typeId, countsPositively } = input;
       const data = {
         title,
         date,
         type: {
           connect: { id: typeId },
         },
+        countsPositively,
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
-        where: { id: id ?? '' },
+        where: { id },
         create: data,
         update: data,
       });
@@ -161,12 +163,12 @@ export const rehearsalRouter = router({
           name: 'Orkesterrepa',
         },
       };
-      const rehearsals = await ctx.prisma.rehearsal.aggregate({
+      const rehearsals = await ctx.prisma.rehearsal.findMany({
         where: whereRehearsal,
-        _count: {
-          _all: true,
-        },
       });
+      const nonPositiveRehearsals = rehearsals.filter(
+        (rehearsal) => !rehearsal.countsPositively,
+      ).length;
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
         by: ['corpsId'],
         where: {
@@ -202,7 +204,7 @@ export const rehearsalRouter = router({
         return acc;
       }, {} as Record<string, Corps>);
       return {
-        rehearsalCount: rehearsals._count._all,
+        nonPositiveRehearsals,
         stats: stats.map((stat) => ({
           corps: corps[stat.corpsId] as Corps,
           count: stat._count.rehearsalId,
@@ -228,12 +230,12 @@ export const rehearsalRouter = router({
           name: 'Balettrepa',
         },
       };
-      const rehearsals = await ctx.prisma.rehearsal.aggregate({
+      const rehearsals = await ctx.prisma.rehearsal.findMany({
         where: whereRehearsal,
-        _count: {
-          _all: true,
-        },
       });
+      const nonPositiveRehearsals = rehearsals.filter(
+        (rehearsal) => !rehearsal.countsPositively,
+      ).length;
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
         by: ['corpsId'],
         where: {
@@ -269,7 +271,7 @@ export const rehearsalRouter = router({
         return acc;
       }, {} as Record<string, Corps>);
       return {
-        rehearsalCount: rehearsals._count._all,
+        nonPositiveRehearsals,
         stats: stats.map((stat) => ({
           corps: corps[stat.corpsId] as Corps,
           count: stat._count.rehearsalId,
@@ -310,6 +312,7 @@ export const rehearsalRouter = router({
             gte: start,
             lte: end,
           },
+          countsPositively: false,
         },
       });
       return attendance / allRehearsals;
@@ -343,6 +346,7 @@ export const rehearsalRouter = router({
             gte: start,
             lte: end,
           },
+          countsPositively: false,
         },
       });
       return attendance / allRehearsals;

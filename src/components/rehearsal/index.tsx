@@ -34,7 +34,7 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
           {rehearsal.title + ' (' + rehearsal.date.toLocaleDateString() + ')'}
         </h1>
         <Button onClick={() => setOpened(true)} leftIcon={<IconEdit />}>
-          Redigera repa
+          Redigera
         </Button>
         <RehearsalAttendence rehearsal={rehearsal} />
       </Stack>
