@@ -96,6 +96,15 @@ export const rehearsalRouter = router({
       return rehearsal;
     }),
 
+  remove: adminProcedure
+    .input(z.string().cuid('Invalid CUID'))
+    .mutation(async ({ ctx, input }) => {
+      const rehearsal = await ctx.prisma.rehearsal.delete({
+        where: { id: input },
+      });
+      return rehearsal;
+    }),
+
   getAttendence: adminProcedure
     .input(
       z.object({
