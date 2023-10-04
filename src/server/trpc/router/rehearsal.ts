@@ -30,14 +30,7 @@ export const rehearsalRouter = router({
         throw new Error('Rehearsal not found');
       }
 
-      const corpsIds = rehearsal.corpsii.map((corps) => corps.corps.id) ?? [];
-      return {
-        id: rehearsal.id,
-        title: rehearsal.title,
-        date: rehearsal.date,
-        type: rehearsal.type.name,
-        corpsIds,
-      };
+      return rehearsal;
     }),
 
   getMany: adminProcedure
@@ -81,62 +74,75 @@ export const rehearsalRouter = router({
         id: z.string().cuid('Invalid CUID').optional(),
         title: z.string(),
         date: z.date(),
-        type: z.string(),
-        corpsIds: z.array(z.string().cuid('Invalid CUID')).optional(),
+        typeId: z.number(),
+        countsPositively: z.boolean().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, title, date, type, corpsIds } = input;
-      // Remove all corpsRehearsals for this rehearsal if updating an existing rehearsal
-      if (id) {
-        await ctx.prisma.corpsRehearsal.deleteMany({
-          where: { rehearsalId: id },
-        });
-      }
+      const { id, title, date, typeId, countsPositively } = input;
       const data = {
         title,
         date,
-        corpsii: {
-          create: corpsIds?.map((corpsId) => ({
-            corps: {
-              connect: { id: corpsId },
-            },
-          })),
-        },
         type: {
-          connect: { name: type },
+          connect: { id: typeId },
         },
+        countsPositively,
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
-        where: { id: id ?? '' },
+        where: { id },
         create: data,
         update: data,
       });
       return rehearsal;
     }),
 
+  getAttendence: adminProcedure
+    .input(
+      z.object({
+        corpsId: z.string().cuid('Invalid CUID'),
+        id: z.string().cuid('Invalid CUID'),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { corpsId, id: rehearsalId } = input;
+      const attendance = await ctx.prisma.corpsRehearsal.findUnique({
+        where: {
+          corpsId_rehearsalId: {
+            corpsId,
+            rehearsalId,
+          },
+        },
+      });
+      return !!attendance;
+    }),
+
   updateAttendance: adminProcedure
     .input(
       z.object({
-        rehearsalId: z.string().cuid('Invalid CUID'),
-        corpsIds: z.array(z.string().cuid('Invalid CUID')),
+        id: z.string().cuid('Invalid CUID'),
+        corpsId: z.string().cuid('Invalid CUID'),
+        attended: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { rehearsalId, corpsIds } = input;
-      await ctx.prisma.corpsRehearsal.deleteMany({
-        where: { rehearsalId },
-      });
-      await ctx.prisma.corpsRehearsal.createMany({
-        data: corpsIds.map((corpsId) => ({
-          corpsId,
-          rehearsalId,
-        })),
-      });
-      const rehearsal = await ctx.prisma.rehearsal.findUnique({
-        where: { id: rehearsalId },
-      });
-      return rehearsal;
+      const { id: rehearsalId, corpsId, attended } = input;
+      if (attended) {
+        return ctx.prisma.corpsRehearsal.create({
+          data: {
+            corpsId,
+            rehearsalId,
+          },
+        });
+      } else {
+        return ctx.prisma.corpsRehearsal.delete({
+          where: {
+            corpsId_rehearsalId: {
+              corpsId,
+              rehearsalId,
+            },
+          },
+        });
+      }
     }),
 
   getOrchestraStats: adminProcedure
@@ -157,12 +163,12 @@ export const rehearsalRouter = router({
           name: 'Orkesterrepa',
         },
       };
-      const rehearsals = await ctx.prisma.rehearsal.aggregate({
+      const rehearsals = await ctx.prisma.rehearsal.findMany({
         where: whereRehearsal,
-        _count: {
-          _all: true,
-        },
       });
+      const nonPositiveRehearsals = rehearsals.filter(
+        (rehearsal) => !rehearsal.countsPositively,
+      ).length;
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
         by: ['corpsId'],
         where: {
@@ -198,7 +204,7 @@ export const rehearsalRouter = router({
         return acc;
       }, {} as Record<string, Corps>);
       return {
-        rehearsalCount: rehearsals._count._all,
+        nonPositiveRehearsals,
         stats: stats.map((stat) => ({
           corps: corps[stat.corpsId] as Corps,
           count: stat._count.rehearsalId,
@@ -224,12 +230,12 @@ export const rehearsalRouter = router({
           name: 'Balettrepa',
         },
       };
-      const rehearsals = await ctx.prisma.rehearsal.aggregate({
+      const rehearsals = await ctx.prisma.rehearsal.findMany({
         where: whereRehearsal,
-        _count: {
-          _all: true,
-        },
       });
+      const nonPositiveRehearsals = rehearsals.filter(
+        (rehearsal) => !rehearsal.countsPositively,
+      ).length;
       const stats = await ctx.prisma.corpsRehearsal.groupBy({
         by: ['corpsId'],
         where: {
@@ -265,7 +271,7 @@ export const rehearsalRouter = router({
         return acc;
       }, {} as Record<string, Corps>);
       return {
-        rehearsalCount: rehearsals._count._all,
+        nonPositiveRehearsals,
         stats: stats.map((stat) => ({
           corps: corps[stat.corpsId] as Corps,
           count: stat._count.rehearsalId,
@@ -275,7 +281,7 @@ export const rehearsalRouter = router({
 
   getTypes: adminProcedure.query(async ({ ctx }) => {
     const types = await ctx.prisma.rehearsalType.findMany();
-    return types.map((type) => type.name);
+    return types;
   }),
 
   getOwnOrchestraAttendance: protectedProcedure
@@ -306,6 +312,7 @@ export const rehearsalRouter = router({
             gte: start,
             lte: end,
           },
+          countsPositively: false,
         },
       });
       return attendance / allRehearsals;
@@ -339,8 +346,90 @@ export const rehearsalRouter = router({
             gte: start,
             lte: end,
           },
+          countsPositively: false,
         },
       });
       return attendance / allRehearsals;
+    }),
+
+  getAttendedRehearsalList: adminProcedure
+    .input(
+      z.object({
+        id: z.string().cuid('Invalid CUID'),
+        start: z.date().optional(),
+        end: z.date().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { id, start, end } = input;
+      const corpsii = await ctx.prisma.corps.findMany({
+        include: {
+          instruments: {
+            include: {
+              instrument: true,
+            },
+          },
+        },
+        where: {
+          rehearsals: {
+            some: {
+              rehearsal: {
+                OR: [
+                  {
+                    date: {
+                      gte: start,
+                      lte: end,
+                    },
+                  },
+                  {
+                    id,
+                  },
+                ],
+              },
+            },
+          },
+        },
+        orderBy: [
+          {
+            number: {
+              sort: 'asc',
+              nulls: 'last',
+            },
+          },
+          {
+            lastName: 'asc',
+          },
+          {
+            firstName: 'asc',
+          },
+        ],
+      });
+      const getMainInstrument = (corps: (typeof corpsii)[number]) => {
+        for (const instrument of corps.instruments) {
+          if (instrument.isMainInstrument) {
+            return instrument.instrument.name;
+          }
+        }
+        return 'Annat';
+      };
+      const attended = await ctx.prisma.corpsRehearsal.findMany({
+        where: {
+          rehearsalId: id,
+        },
+      });
+      const instruments = await ctx.prisma.instrument.findMany({});
+      const instrumentPrecedence = instruments.reduce((acc, instrument) => {
+        acc[instrument.name] = instrument.sectionId || 516;
+        return acc;
+      }, {} as Record<string, number>);
+      corpsii.sort(
+        (a, b) =>
+          (instrumentPrecedence[getMainInstrument(a)] ?? 516) -
+          (instrumentPrecedence[getMainInstrument(b)] ?? 516),
+      );
+      return corpsii.map((corps) => ({
+        ...corps,
+        attended: attended.some((e) => e.corpsId === corps.id),
+      }));
     }),
 });
