@@ -191,7 +191,11 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   ));
 
   return (
-    <Box style={{ height: '100%' }} pb='md' className={classes.navbar}>
+    <Box
+      style={{ height: 'calc(100vh - 60px)' }}
+      pb='md'
+      className={classes.navbar}
+    >
       {isAdmin && (
         <Navbar.Section pt='sm' mx='sm'>
           <SegmentedControl
@@ -227,6 +231,10 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           className={classes.link}
           styles={{ inner: { justifyContent: 'flex-start' } }}
           style={{ width: '100%' }}
+          onClick={() => {
+            onLinkClicked?.('/about');
+            setActive('/about');
+          }}
         >
           Om sidan
         </Button>
