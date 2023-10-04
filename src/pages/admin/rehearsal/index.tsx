@@ -1,4 +1,13 @@
-import { Group, Select, SelectItem, Stack, Tabs, Title } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  Select,
+  SelectItem,
+  Stack,
+  Tabs,
+  Title,
+} from '@mantine/core';
 import React, { useMemo, useState } from 'react';
 import Loading from '../../../components/loading';
 import RehearsalList from '../../../components/rehearsal/list';
@@ -6,9 +15,11 @@ import RehearsalStats from '../../../components/rehearsal/stats';
 import { trpc } from '../../../utils/trpc';
 import { getOperatingYear } from '../../stats/[paramYear]';
 import { newUTCDate } from '../../../utils/date';
+import RehearsalForm from '../../../components/rehearsal/form';
 
 const Rehearsals = () => {
   const [year, setYear] = useState(getOperatingYear());
+  const [modalOpen, setModalOpen] = useState(false);
   const start = newUTCDate(year, 8, 1);
   const end = newUTCDate(year + 1, 7, 31);
   const startYear = 2010;
@@ -62,59 +73,76 @@ const Rehearsals = () => {
   }, [rehearsals]);
 
   return (
-    <Stack align='flex-start'>
-      <Title order={2}>Repor</Title>
-      <Select
-        label='Verksamhetsår'
-        value={year.toString()}
-        onChange={(value) => setYear(parseInt(value as string))}
-        data={years}
-      />
-      <Tabs defaultValue='all-rehearsals'>
-        <Tabs.List mb={12}>
-          <Tabs.Tab value='all-rehearsals'>Alla repor</Tabs.Tab>
-          <Tabs.Tab value='stats'>Statistik</Tabs.Tab>
-        </Tabs.List>
+    <>
+      <Modal
+        opened={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={<Title order={3}>Skapa repa</Title>}
+        centered
+        size='auto'
+        transition='rotate-left'
+        transitionDuration={200}
+        zIndex={1000}
+      >
+        <RehearsalForm onSubmit={() => setModalOpen(false)} />
+      </Modal>
+      <Stack align='flex-start'>
+        <Title order={2}>Repor</Title>
+        <Group position='left' align='end'>
+          <Select
+            label='Verksamhetsår'
+            value={year.toString()}
+            onChange={(value) => setYear(parseInt(value as string))}
+            data={years}
+          />
+          <Button onClick={() => setModalOpen(true)}>Skapa repa</Button>
+        </Group>
+        <Tabs defaultValue='all-rehearsals'>
+          <Tabs.List mb={12}>
+            <Tabs.Tab value='all-rehearsals'>Alla repor</Tabs.Tab>
+            <Tabs.Tab value='stats'>Statistik</Tabs.Tab>
+          </Tabs.List>
 
-        <Tabs.Panel value='all-rehearsals'>
-          {isInitialLoading && <Loading msg='Laddar repor...' />}
-          {splitRehearsals && (
-            <Group position='left' align='baseline'>
-              <Stack>
-                <Title order={3}>Orkesterrepor</Title>
-                <RehearsalList rehearsals={splitRehearsals.orchestra ?? []} />
-              </Stack>
-              <Stack>
-                <Title order={3}>Balettrepor</Title>
-                <RehearsalList rehearsals={splitRehearsals.ballet ?? []} />
-              </Stack>
-            </Group>
-          )}
-        </Tabs.Panel>
+          <Tabs.Panel value='all-rehearsals'>
+            {isInitialLoading && <Loading msg='Laddar repor...' />}
+            {splitRehearsals && (
+              <Group position='left' align='baseline'>
+                <Stack>
+                  <Title order={3}>Orkesterrepor</Title>
+                  <RehearsalList rehearsals={splitRehearsals.orchestra ?? []} />
+                </Stack>
+                <Stack>
+                  <Title order={3}>Balettrepor</Title>
+                  <RehearsalList rehearsals={splitRehearsals.ballet ?? []} />
+                </Stack>
+              </Group>
+            )}
+          </Tabs.Panel>
 
-        <Tabs.Panel value='stats'>
-          {isInitialLoading && <Loading msg='Laddar repstatistik...' />}
-          {orchestraStats && balletStats && (
-            <Group position='left' align='baseline'>
-              <Stack>
-                <Title order={3}>Orkesterrepor</Title>
-                <RehearsalStats
-                  stats={orchestraStats.stats}
-                  totalRehearsals={orchestraStats.nonPositiveRehearsals}
-                />
-              </Stack>
-              <Stack>
-                <Title order={3}>Balettrepor</Title>
-                <RehearsalStats
-                  stats={balletStats.stats}
-                  totalRehearsals={balletStats.nonPositiveRehearsals}
-                />
-              </Stack>
-            </Group>
-          )}
-        </Tabs.Panel>
-      </Tabs>
-    </Stack>
+          <Tabs.Panel value='stats'>
+            {isInitialLoading && <Loading msg='Laddar repstatistik...' />}
+            {orchestraStats && balletStats && (
+              <Group position='left' align='baseline'>
+                <Stack>
+                  <Title order={3}>Orkesterrepor</Title>
+                  <RehearsalStats
+                    stats={orchestraStats.stats}
+                    totalRehearsals={orchestraStats.nonPositiveRehearsals}
+                  />
+                </Stack>
+                <Stack>
+                  <Title order={3}>Balettrepor</Title>
+                  <RehearsalStats
+                    stats={balletStats.stats}
+                    totalRehearsals={balletStats.nonPositiveRehearsals}
+                  />
+                </Stack>
+              </Group>
+            )}
+          </Tabs.Panel>
+        </Tabs>
+      </Stack>
+    </>
   );
 };
 

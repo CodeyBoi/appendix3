@@ -61,6 +61,13 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
     },
   });
 
+  const removeMutation = trpc.rehearsal.remove.useMutation({
+    onSuccess: () => {
+      utils.rehearsal.getMany.invalidate();
+      router.replace('/admin/rehearsal');
+    },
+  });
+
   const handleSubmit = async (values: FormValues) => {
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
@@ -115,7 +122,20 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
             type: 'checkbox',
           })}
         />
-        <Group position='right'>
+        <Group position={newRehearsal ? 'right' : 'apart'}>
+          {!newRehearsal && (
+            <Button
+              type='button'
+              variant='outline'
+              compact
+              onClick={() => {
+                if (!confirm('Är du säker på att du vill ta bort rep?')) return;
+                removeMutation.mutate(rehearsal.id);
+              }}
+            >
+              Ta bort
+            </Button>
+          )}
           <Button
             type='submit'
             leftIcon={<IconSend />}
