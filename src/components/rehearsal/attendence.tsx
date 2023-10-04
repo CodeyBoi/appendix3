@@ -1,6 +1,6 @@
 import { Rehearsal } from '@prisma/client';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { trpc } from '../../utils/trpc';
 import RehearsalCheckbox from './checkbox';
 import { ActionIcon, Group, SimpleGrid, Stack, Title } from '@mantine/core';
@@ -41,12 +41,22 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
     },
   });
 
+  const attendedCorpsIds = useMemo(
+    () =>
+      new Set(activeCorps?.filter((corps) => corps.attended).map((c) => c.id)),
+    [activeCorps],
+  );
+  const selectedAlreadyAttendedCorps = attendedCorpsIds.has(corpsId);
+
   return (
     <Stack>
       <Title order={3}>Närvaro</Title>
-      <Group position='left'>
+      <Group position='left' align='start'>
         <SelectCorps
-          placeholder='Välj corps...'
+          error={
+            selectedAlreadyAttendedCorps ? 'Corps har redan närvaro' : null
+          }
+          placeholder='Lägg till närvaro...'
           value={corpsId}
           onChange={(corpsId) => {
             if (!corpsId) return;
@@ -62,6 +72,8 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
               attended: true,
             });
           }}
+          loading={mutation.isLoading}
+          disabled={selectedAlreadyAttendedCorps || !corpsId}
         >
           <IconPlus />
         </ActionIcon>
