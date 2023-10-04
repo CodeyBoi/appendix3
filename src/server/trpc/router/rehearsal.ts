@@ -89,7 +89,7 @@ export const rehearsalRouter = router({
         countsPositively,
       };
       const rehearsal = await ctx.prisma.rehearsal.upsert({
-        where: { id },
+        where: { id: id ?? '' },
         create: data,
         update: data,
       });
@@ -358,10 +358,11 @@ export const rehearsalRouter = router({
         id: z.string().cuid('Invalid CUID'),
         start: z.date().optional(),
         end: z.date().optional(),
+        typeId: z.number().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { id, start, end } = input;
+      const { id, start, end, typeId } = input;
       const corpsii = await ctx.prisma.corps.findMany({
         include: {
           instruments: {
@@ -385,6 +386,7 @@ export const rehearsalRouter = router({
                     id,
                   },
                 ],
+                typeId,
               },
             },
           },

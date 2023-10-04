@@ -12,6 +12,7 @@ import { IconCalendar, IconSend } from '@tabler/icons';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
 import { Rehearsal } from '@prisma/client';
+import { useRouter } from 'next/router';
 
 const defaultValues = {
   title: '',
@@ -27,6 +28,7 @@ type RehearsalFormProps = {
 
 const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   const utils = trpc.useContext();
+  const router = useRouter();
 
   const { data: rehearsalTypes } = trpc.rehearsal.getTypes.useQuery();
 
@@ -53,6 +55,9 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
       utils.rehearsal.getWithId.invalidate(id);
       utils.rehearsal.getMany.invalidate();
       onSubmit?.();
+      if (newRehearsal) {
+        router.push(`/admin/rehearsal/${id}`);
+      }
     },
   });
 
