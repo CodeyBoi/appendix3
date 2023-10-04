@@ -64,7 +64,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   const removeMutation = trpc.rehearsal.remove.useMutation({
     onSuccess: () => {
       utils.rehearsal.getMany.invalidate();
-      router.push('/admin/rehearsal');
+      router.replace('/admin/rehearsal');
     },
   });
 

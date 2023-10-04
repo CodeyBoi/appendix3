@@ -122,12 +122,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
       title: 'Repor',
       links: [
         {
-          label: 'Skapa rep',
-          href: '/admin/rehearsal/new',
-          icon: <IconPencilPlus />,
-        },
-        {
-          label: 'Visa alla rep',
+          label: 'Repor',
           href: '/admin/rehearsal',
           icon: <IconPencil />,
         },
