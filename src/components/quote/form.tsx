@@ -1,4 +1,11 @@
-import { Stack, TextInput, Group, Button, ActionIcon } from '@mantine/core';
+import {
+  Stack,
+  TextInput,
+  Group,
+  Button,
+  ActionIcon,
+  Textarea,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -74,7 +81,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
             {...form.getInputProps('location')}
           />
         </Group>
-        <TextInput
+        <Textarea
           rightSection={
             <ActionIcon type='submit' variant='subtle' color='dark'>
               <IconSend />
