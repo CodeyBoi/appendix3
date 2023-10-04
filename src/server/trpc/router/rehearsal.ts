@@ -367,7 +367,14 @@ export const rehearsalRouter = router({
         include: {
           instruments: {
             include: {
-              instrument: true,
+              instrument: {
+                include: {
+                  section: true,
+                },
+              },
+            },
+            where: {
+              isMainInstrument: true,
             },
           },
         },
@@ -414,11 +421,6 @@ export const rehearsalRouter = router({
         }
         return 'Annat';
       };
-      const attended = await ctx.prisma.corpsRehearsal.findMany({
-        where: {
-          rehearsalId: id,
-        },
-      });
       const instruments = await ctx.prisma.instrument.findMany({});
       const instrumentPrecedence = instruments.reduce((acc, instrument) => {
         acc[instrument.name] = instrument.sectionId || 516;
@@ -429,9 +431,35 @@ export const rehearsalRouter = router({
           (instrumentPrecedence[getMainInstrument(a)] ?? 516) -
           (instrumentPrecedence[getMainInstrument(b)] ?? 516),
       );
-      return corpsii.map((corps) => ({
-        ...corps,
-        attended: attended.some((e) => e.corpsId === corps.id),
-      }));
+
+      const attended = await ctx.prisma.corpsRehearsal.findMany({
+        where: {
+          rehearsalId: id,
+        },
+      });
+      const corpsIds = new Set(attended.map((e) => e.corpsId));
+
+      let lastSectionName = '';
+      const result = corpsii.reduce((acc, corps) => {
+        const sectionName = corps.instruments[0]?.instrument.section?.name;
+        if (!sectionName) return acc;
+        if (lastSectionName !== sectionName) {
+          acc.push({
+            name: sectionName,
+            corpsii: [],
+          });
+          lastSectionName = sectionName;
+        }
+        const c = {
+          ...corps,
+          attended: corpsIds.has(corps.id),
+        };
+        acc[acc.length - 1]?.corpsii.push(c);
+        return acc;
+      }, [] as { name: string; corpsii: ((typeof corpsii)[number] & { attended: boolean })[] }[]);
+      return {
+        corpsiiBySection: result,
+        corpsIds,
+      };
     }),
 });
