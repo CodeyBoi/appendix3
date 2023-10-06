@@ -297,7 +297,7 @@ const SignupList = ({ gig }: SignupListProps) => {
       {isAdmin && (
         <>
           <Switch
-            label='Redigera anmälningar'
+            label='Muokkaa ilmoituksia'
             checked={editMode}
             onChange={(event) => {
               setEditMode(event.currentTarget.checked);

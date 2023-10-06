@@ -78,7 +78,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
           <React.Fragment key={gig.id}>
             {shouldAddMonth && (
               <h3 className='pt-2'>
-                {gig.date.toLocaleString('sv-SE', { month: 'long' })}
+                {gig.date.toLocaleString('fi-FI', { month: 'long' })}
               </h3>
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>
@@ -100,12 +100,12 @@ const Gigs = ({ initialTab }: GigsProps) => {
   return (
     <div className='flex flex-col gap-2 max-w-fit'>
       <Head>
-        <title>Spelningar</title>
+        <title>Keikat</title>
       </Head>
-      <h2>Spelningar</h2>
+      <h2>Keikat</h2>
       <div className='flex items-end gap-4'>
         <Select
-          label='År'
+          label='Vuosi'
           maxDropdownHeight={280}
           data={years}
           value={year.toString()}
@@ -121,8 +121,8 @@ const Gigs = ({ initialTab }: GigsProps) => {
       <Tabs value={tab} onTabChange={changeTab}>
         <Tabs.List pl={8}>
           <div className='flex flex-nowrap'>
-            <Tabs.Tab value='my-gigs'>Mina spelningar</Tabs.Tab>
-            <Tabs.Tab value='all-gigs'>Alla spelningar</Tabs.Tab>
+            <Tabs.Tab value='my-gigs'>Omat keikat</Tabs.Tab>
+            <Tabs.Tab value='all-gigs'>Kaikki keikat</Tabs.Tab>
           </div>
         </Tabs.List>
 

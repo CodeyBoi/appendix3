@@ -97,9 +97,9 @@ const Statistics: NextPage = () => {
   return (
     <div className='flex flex-col gap-2 max-w-max'>
       <Head>
-        <title>{`Statistik ${year}-${year + 1}`}</title>
+        <title>{`Tilastot ${year}-${year + 1}`}</title>
       </Head>
-      <h2>Statistik</h2>
+      <h2>Tilastot</h2>
       <div className='w-36'>
         <Select
           label='Verksamhetsår'

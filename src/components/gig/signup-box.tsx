@@ -79,16 +79,16 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
             });
           }}
           data={[
-            { label: 'Ja', value: 'Ja' },
-            { label: 'Nej', value: 'Nej' },
-            { label: 'Kanske', value: 'Kanske' },
+            { label: 'Joo', value: 'Ja' },
+            { label: 'Ei', value: 'Nej' },
+            { label: 'Kenties', value: 'Kanske' },
           ]}
         />
         {(corps?.instruments.length ?? 0) > 1 && (
           <Select
             disabled={signupRefetching || submitting}
             size='xs'
-            label='Instrument'
+            label='Instrumentti'
             value={instrument}
             onChange={(val) => {
               if (!val || !corps) {

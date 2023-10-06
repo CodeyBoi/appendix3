@@ -70,17 +70,17 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   user: [
     {
       links: [
-        { label: 'Huvudsida', href: '/', icon: <IconHome /> },
-        { label: 'Mina sidor', href: '/account', icon: <IconUser /> },
+        { label: 'Pääsivu', href: '/', icon: <IconHome /> },
+        { label: 'Minun sivujani', href: '/account', icon: <IconUser /> },
         {
-          label: 'Statistik',
+          label: 'Tilastot',
           href: `/stats/${getOperatingYear()}`,
           icon: <IconClipboard />,
         },
-        { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
-        { label: 'Sånger', href: '/songs', icon: <IconPencil /> },
-        { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
-        { label: 'Länkar', href: '/links', icon: <IconLink /> },
+        { label: 'Keikat', href: '/gigs', icon: <IconSpeakerphone /> },
+        { label: 'Laulut', href: '/songs', icon: <IconPencil /> },
+        { label: 'Sitaatit', href: '/quotes', icon: <IconQuote /> },
+        { label: 'Linkit', href: '/links', icon: <IconLink /> },
       ],
     },
   ],
@@ -179,7 +179,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
               },
             }}
             data={[
-              { label: 'Användare', value: 'user' },
+              { label: 'Käyttäjä', value: 'user' },
               { label: 'Admin', value: 'admin' },
             ]}
           />
@@ -203,7 +203,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
             setActive('/about');
           }}
         >
-          Om sidan
+          Tietoja sivusta
         </Button>
         <Button
           px={6}
@@ -216,7 +216,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           styles={{ inner: { justifyContent: 'flex-start' } }}
           style={{ width: '100%' }}
         >
-          Logga ut
+          Kirjautua ulos
         </Button>
       </Navbar.Section>
     </Box>

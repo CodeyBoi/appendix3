@@ -9,9 +9,9 @@ const Links = () => {
   return (
     <div>
       <Head>
-        <title>Länkar</title>
+        <title>Linkit</title>
       </Head>
-      <h1>Länkar</h1>
+      <h1>Linkit</h1>
       <div className='text-lg'>
         <ul className='pl-4 list-disc'>
           <li>

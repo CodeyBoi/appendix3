@@ -26,12 +26,28 @@ const SongView = ({ song }: SongProps) => {
             </div>
           </Link>
         )}
+<<<<<<< HEAD
       </div>
       {song.melody && <i>{`Melodi: ${song.melody}`}</i>}
       {song.author && <i>{`Skriven av: ${song.author}`}</i>}
       <div className='h-4' />
       <div className='whitespace-pre-wrap'>{`${song.lyrics}`}</div>
     </div>
+=======
+      </Group>
+      {song.melody && (
+        <Text mt={6}>
+          <i>{`Melodia: ${song.melody}`}</i>
+        </Text>
+      )}
+      {song.author && (
+        <Text>
+          <i>{`Kirjoittanut: ${song.author}`}</i>
+        </Text>
+      )}
+      <Text mt={12} sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
+    </Stack>
+>>>>>>> 8a2c741 (Translated A LOT of the text to Finnish)
   );
 };
 
