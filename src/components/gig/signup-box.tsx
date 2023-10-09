@@ -44,7 +44,6 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
       return;
     }
     if (!signup) {
-      setStatus('Ej svarat');
       setInstrument(mainInstrument.name);
     } else {
       setStatus(signup.status.value);
@@ -81,7 +80,6 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
             { label: 'Ja', value: 'Ja' },
             { label: 'Nej', value: 'Nej' },
             { label: 'Kanske', value: 'Kanske' },
-            { label: 'Ej svarat', value: 'Ej svarat' },
           ]}
         />
         {(corps?.instruments.length ?? 0) > 1 && (
