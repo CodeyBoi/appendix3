@@ -103,9 +103,10 @@ export const gigRouter = router({
         title: z.string(),
         date: z.date(),
         type: z.string(),
-        points: z.number(),
+        points: z.number().nonnegative("Points can't be negative"),
         meetup: z.string().optional(),
         start: z.string().optional(),
+        end: z.string().optional(),
         location: z.string().optional(),
         signupStart: z.date().nullable(),
         signupEnd: z.date().nullable(),
@@ -118,9 +119,6 @@ export const gigRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (input.points < 0) {
-        throw new Error('Points cannot be negative');
-      }
       await ctx.prisma.hiddenGig.deleteMany({
         where: {
           gigId: input.gigId,

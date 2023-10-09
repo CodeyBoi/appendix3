@@ -300,23 +300,14 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
       {isAdmin && (
         <>
           <Space h='sm' />
-          <Group position='apart'>
-            <Switch
-              label='Redigera anmälningar'
-              checked={editMode}
-              onChange={(event) => {
-                setEditMode(event.currentTarget.checked);
-                utils.gig.getSignups.invalidate({ gigId });
-              }}
-            />
-            <Button
-              component={NextLink}
-              href={`/admin/gig/${gigId}/info`}
-              leftIcon={<IconInfoCircle />}
-            >
-              Se admininfo
-            </Button>
-          </Group>
+          <Switch
+            label='Redigera anmälningar'
+            checked={editMode}
+            onChange={(event) => {
+              setEditMode(event.currentTarget.checked);
+              utils.gig.getSignups.invalidate({ gigId });
+            }}
+          />
         </>
       )}
       {showAdminTools && (
@@ -366,10 +357,10 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
               <Space h='md' />
               <Text pl={12}>
                 {missingInstrumentsMessages.map((msg) => (
-                  <>
+                  <React.Fragment key={msg}>
                     {msg}
                     <br />
-                  </>
+                  </React.Fragment>
                 ))}
               </Text>
             </>

@@ -129,6 +129,7 @@ model Gig {
   date             DateTime  @db.Date
   meetup           String    @default("")
   start            String    @default("")
+  end              String    @default("")
   location         String    @default("")
   signupStart      DateTime?
   signupEnd        DateTime?
