@@ -1,4 +1,4 @@
-import { MantineThemeOverride } from '@mantine/core';
+import { MantineThemeOverride, Modal } from '@mantine/core';
 
 const GLOBAL_THEME: MantineThemeOverride = {
   // colorScheme: 'dark',
@@ -109,6 +109,15 @@ const GLOBAL_THEME: MantineThemeOverride = {
       defaultProps: {
         color: 'red',
         variant: 'filled',
+      },
+    },
+    Modal: {
+      defaultProps: {
+        size: 'auto',
+        centered: true,
+        transition: 'rotate-left',
+        transitionDuration: 200,
+        zIndex: 1000,
       },
     },
   },

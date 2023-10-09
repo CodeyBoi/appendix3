@@ -61,6 +61,7 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
           size='xs'
           value={status}
           fullWidth
+          color='red'
           onChange={(s) => {
             if (!s || !corps) {
               return;
