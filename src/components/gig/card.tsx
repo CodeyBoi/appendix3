@@ -50,7 +50,7 @@ const GigCard = ({ gig }: GigCardProps) => {
       <Card shadow='sm' p='md' withBorder style={{ overflow: 'visible' }}>
         <Stack spacing='sm'>
           <Stack spacing={0}>
-            <Group position='apart' align='flex-start'>
+            <Group position='apart' align='flex-start' noWrap>
               <UnstyledButton component={NextLink} href={`/gig/${gig.id}`}>
                 <Title order={5}>{gig.title}</Title>
               </UnstyledButton>
