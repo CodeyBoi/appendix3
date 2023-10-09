@@ -18,11 +18,6 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
         opened={opened}
         onClose={() => setOpened(false)}
         title={<Title order={3}>Uppdatera repa</Title>}
-        centered
-        size='auto'
-        transition='rotate-left'
-        transitionDuration={200}
-        zIndex={1000}
       >
         <RehearsalForm
           rehearsal={rehearsal}

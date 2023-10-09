@@ -78,11 +78,6 @@ const Rehearsals = () => {
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
         title={<Title order={3}>Skapa repa</Title>}
-        centered
-        size='auto'
-        transition='rotate-left'
-        transitionDuration={200}
-        zIndex={1000}
       >
         <RehearsalForm onSubmit={() => setModalOpen(false)} />
       </Modal>
