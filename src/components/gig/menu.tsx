@@ -62,7 +62,7 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
   };
 
   return (
-    <Menu shadow='md' width={200}>
+    <Menu shadow='md' width={200} position='left-start' withArrow>
       <Group position='right'>
         <Menu.Target>
           <ActionIcon variant='subtle'>
