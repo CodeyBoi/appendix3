@@ -272,7 +272,7 @@ export const gigRouter = router({
         update: {
           status: {
             connect: {
-              value: input.status,
+              value: input.status || 'Ja',
             },
           },
           instrument: {
@@ -296,7 +296,7 @@ export const gigRouter = router({
           },
           status: {
             connect: {
-              value: input.status,
+              value: input.status || 'Ja',
             },
           },
           instrument: {
@@ -304,6 +304,8 @@ export const gigRouter = router({
               name: instrument,
             },
           },
+          checkbox1: input.checkbox1,
+          checkbox2: input.checkbox2,
         },
       });
     }),
