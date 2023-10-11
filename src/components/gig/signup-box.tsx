@@ -62,7 +62,7 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
           disabled={signupRefetching || submitting}
           value={status}
           fullWidth
-          color='red'
+          color='blue'
           onChange={(s) => {
             if (!s || !corps) {
               return;
