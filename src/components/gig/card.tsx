@@ -55,9 +55,9 @@ const GigCard = ({ gig }: GigCardProps) => {
                   <br />
                   {!!gig.location && `${gig.location}`}
                   {!!gig.location && <br />}
-                  {!!gig.meetup && `Samling: ${gig.meetup}`}
+                  {!!gig.meetup && `Kokoonpanoaika: ${gig.meetup}`}
                   {!!gig.meetup && <br />}
-                  {!!gig.start && `Spelstart: ${gig.start}`}
+                  {!!gig.start && `Peliaika: ${gig.start}`}
                 </div>
               </div>
             </Link>
