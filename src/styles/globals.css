@@ -43,7 +43,8 @@ body {
   src: url(../../public/fonts/hatten.ttf);
 }
 
-.icon-tabler {
+svg.icon.icon-tabler {
+  color: inherit;
   width: 20px;
   height: 20px;
 }

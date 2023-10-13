@@ -1,4 +1,4 @@
-import { Title, Text, Modal } from '@mantine/core';
+import { Modal } from '@mantine/core';
 import React from 'react';
 import Datebox from './datebox';
 import dayjs from 'dayjs';
@@ -31,7 +31,7 @@ const GigCard = ({ gig }: GigCardProps) => {
   return (
     <>
       <Modal
-        title={<Title order={3}>Uppdatera spelning</Title>}
+        title={<h3>Uppdatera spelning</h3>}
         opened={opened}
         onClose={() => setOpened(false)}
       >
@@ -47,7 +47,7 @@ const GigCard = ({ gig }: GigCardProps) => {
               <GigMenu gig={gig} isAdmin={isAdmin} setOpened={setOpened} />
             </div>
             <div className='flex flex-col justify-between md:flex-row'>
-              <div>
+              <div className='flex flex-grow'>
                 <a
                   className='flex flex-row items-center flex-grow space-x-4'
                   href={`/gig/${gig.id}`}

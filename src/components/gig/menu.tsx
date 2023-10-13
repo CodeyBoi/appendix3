@@ -1,4 +1,4 @@
-import { Menu, Group, ActionIcon } from '@mantine/core';
+import { Menu } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Gig } from '@prisma/client';
 import {
@@ -64,9 +64,9 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
   return (
     <Menu shadow='md' width={200} position='left-start' withArrow>
       <Menu.Target>
-        <ActionIcon variant='subtle'>
+        <button className='p-1 text-red-600 rounded hover:bg-red-100'>
           <IconDotsVertical />
-        </ActionIcon>
+        </button>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item

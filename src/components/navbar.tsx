@@ -18,7 +18,6 @@ import {
   IconMicrophone2,
   IconMusic,
   IconPencil,
-  IconPencilPlus,
   IconQuote,
   IconSpeakerphone,
   IconUser,
