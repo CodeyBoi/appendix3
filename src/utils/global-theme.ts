@@ -1,4 +1,4 @@
-import { MantineThemeOverride, Modal } from '@mantine/core';
+import { MantineThemeOverride } from '@mantine/core';
 
 const GLOBAL_THEME: MantineThemeOverride = {
   // colorScheme: 'dark',

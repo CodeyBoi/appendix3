@@ -1,18 +1,8 @@
-import {
-  Title,
-  Text,
-  Stack,
-  Group,
-  Card,
-  UnstyledButton,
-  Grid,
-  Modal,
-} from '@mantine/core';
+import { Title, Text, Modal } from '@mantine/core';
 import React from 'react';
 import Datebox from './datebox';
 import dayjs from 'dayjs';
 import { Gig } from '@prisma/client';
-import { NextLink } from '@mantine/next';
 import GigMenu from './menu';
 import { trpc } from '../../utils/trpc';
 import GigForm from './form';
@@ -47,37 +37,34 @@ const GigCard = ({ gig }: GigCardProps) => {
       >
         <GigForm gig={gig} onSubmit={() => setOpened(false)} />
       </Modal>
-      <Card shadow='sm' p='md' withBorder style={{ overflow: 'visible' }}>
-        <Stack spacing='sm'>
-          <Stack spacing={0}>
-            <Group position='apart' align='flex-start' noWrap>
-              <UnstyledButton component={NextLink} href={`/gig/${gig.id}`}>
-                <Title order={5}>{gig.title}</Title>
-              </UnstyledButton>
+      <div className='overflow-visible border rounded shadow-md'>
+        <div className='flex-col p-4 space-y-3'>
+          <div className='flex-col'>
+            <div className='flex content-start justify-between flex-nowrap'>
+              <a href={`/gig/${gig.id}`}>
+                <h5>{gig.title}</h5>
+              </a>
               <GigMenu gig={gig} isAdmin={isAdmin} setOpened={setOpened} />
-            </Group>
-            <Grid grow>
-              <Grid.Col span={12} md={8}>
-                <UnstyledButton
-                  component={NextLink}
+            </div>
+            <div className='flex flex-col justify-between md:flex-row'>
+              <div>
+                <a
+                  className='flex flex-row items-center flex-grow space-x-4'
                   href={`/gig/${gig.id}`}
-                  style={{ flexGrow: 1 }}
                 >
-                  <Group position='left'>
-                    <Datebox date={dayjs(gig.date)} />
-                    <Text size='xs'>
-                      <i>{gig.type.name}</i>
-                      <br />
-                      {gig.location && `${gig.location}`}
-                      {gig.location && <br />}
-                      {gig.meetup && `Samling: ${gig.meetup}`}
-                      {gig.meetup && <br />}
-                      {gig.start && `Spelstart: ${gig.start}`}
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-              </Grid.Col>
-              <Grid.Col span={12} md={4}>
+                  <Datebox date={dayjs(gig.date)} />
+                  <div className='text-xs leading-normal'>
+                    <i>{gig.type.name}</i>
+                    <br />
+                    {!!gig.location && `${gig.location}`}
+                    {!!gig.location && <br />}
+                    {!!gig.meetup && `Samling: ${gig.meetup}`}
+                    {!!gig.meetup && <br />}
+                    {!!gig.start && `Spelstart: ${gig.start}`}
+                  </div>
+                </a>
+              </div>
+              <div className='w-full md:w-56'>
                 {showSignup && (
                   <GigSignupBox
                     gigId={gig.id}
@@ -85,12 +72,12 @@ const GigCard = ({ gig }: GigCardProps) => {
                     checkbox2={gig.checkbox2}
                   />
                 )}
-              </Grid.Col>
-            </Grid>
-          </Stack>
-          <Text size='sm'>{gig.description}</Text>
-        </Stack>
-      </Card>
+              </div>
+            </div>
+          </div>
+          <div className='text'>{gig.description}</div>
+        </div>
+      </div>
     </>
   );
 };
