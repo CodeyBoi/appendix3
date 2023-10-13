@@ -37,42 +37,40 @@ const GigCard = ({ gig }: GigCardProps) => {
       >
         <GigForm gig={gig} onSubmit={() => setOpened(false)} />
       </Modal>
-      <div className='overflow-visible border rounded shadow-md'>
-        <div className='flex-col p-4 space-y-3'>
-          <div className='flex-col'>
-            <div className='flex content-start justify-between flex-nowrap'>
-              <a href={`/gig/${gig.id}`}>
-                <h5>{gig.title}</h5>
+      <div className='border rounded shadow-md'>
+        <div className='flex flex-col p-4 space-y-2'>
+          <div className='flex content-start justify-between flex-nowrap'>
+            <a href={`/gig/${gig.id}`}>
+              <h4>{gig.title}</h4>
+            </a>
+            <GigMenu gig={gig} isAdmin={isAdmin} setOpened={setOpened} />
+          </div>
+          <div className='flex flex-col justify-between md:flex-row'>
+            <div className='flex flex-grow'>
+              <a
+                className='flex flex-row items-center flex-grow space-x-4'
+                href={`/gig/${gig.id}`}
+              >
+                <Datebox date={dayjs(gig.date)} />
+                <div className='text-xs leading-normal'>
+                  <i>{gig.type.name}</i>
+                  <br />
+                  {!!gig.location && `${gig.location}`}
+                  {!!gig.location && <br />}
+                  {!!gig.meetup && `Samling: ${gig.meetup}`}
+                  {!!gig.meetup && <br />}
+                  {!!gig.start && `Spelstart: ${gig.start}`}
+                </div>
               </a>
-              <GigMenu gig={gig} isAdmin={isAdmin} setOpened={setOpened} />
             </div>
-            <div className='flex flex-col justify-between md:flex-row'>
-              <div className='flex flex-grow'>
-                <a
-                  className='flex flex-row items-center flex-grow space-x-4'
-                  href={`/gig/${gig.id}`}
-                >
-                  <Datebox date={dayjs(gig.date)} />
-                  <div className='text-xs leading-normal'>
-                    <i>{gig.type.name}</i>
-                    <br />
-                    {!!gig.location && `${gig.location}`}
-                    {!!gig.location && <br />}
-                    {!!gig.meetup && `Samling: ${gig.meetup}`}
-                    {!!gig.meetup && <br />}
-                    {!!gig.start && `Spelstart: ${gig.start}`}
-                  </div>
-                </a>
-              </div>
-              <div className='w-full md:w-56'>
-                {showSignup && (
-                  <GigSignupBox
-                    gigId={gig.id}
-                    checkbox1={gig.checkbox1}
-                    checkbox2={gig.checkbox2}
-                  />
-                )}
-              </div>
+            <div className='w-full md:w-56'>
+              {showSignup && (
+                <GigSignupBox
+                  gigId={gig.id}
+                  checkbox1={gig.checkbox1}
+                  checkbox2={gig.checkbox2}
+                />
+              )}
             </div>
           </div>
           <div className='text'>{gig.description}</div>

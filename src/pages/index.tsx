@@ -3,9 +3,9 @@ import { Gig } from '@prisma/client';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import React from 'react';
 import GigCard from '../components/gig/card';
-import Loading from '../components/loading';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
+import GigSkeleton from '../components/gig/skeleton';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -33,16 +33,21 @@ const makeGigList = (
 ) => {
   let lastMonth = -1;
 
-  const gigsByMonth = gigs.reduce((acc, gig) => {
-    const month = gig.date.getMonth();
-    const newMonth = month !== lastMonth;
-    lastMonth = month;
-    if (newMonth) {
-      acc.push([]);
-    }
-    acc.at(-1)?.push(gig);
-    return acc;
-  }, [] as (Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] })[][]);
+  const gigsByMonth = gigs.reduce(
+    (acc, gig) => {
+      const month = gig.date.getMonth();
+      const newMonth = month !== lastMonth;
+      lastMonth = month;
+      if (newMonth) {
+        acc.push([]);
+      }
+      acc.at(-1)?.push(gig);
+      return acc;
+    },
+    [] as (Gig & { type: { name: string } } & {
+      hiddenFor: { corpsId: string }[];
+    })[][],
+  );
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
@@ -50,9 +55,9 @@ const makeGigList = (
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
-        <Title pt={6} order={4}>
+        <h3 className='pt-2'>
           {`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}
-        </Title>
+        </h3>
         {gigs.map((gig) => (
           <GigCard key={gig.id} gig={gig} />
         ))}
@@ -72,6 +77,8 @@ const Home: NextPage = () => {
     startDate: currentDate,
   });
 
+  const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
+
   return (
     <Stack sx={{ maxWidth: 800 }} spacing='xs'>
       <Title
@@ -86,7 +93,15 @@ const Home: NextPage = () => {
           ? 'Inga kommande spelningar :('
           : 'Kommande spelningar'}
       </Title>
-      {gigsLoading && <Loading msg='Laddar spelningar...' />}
+      {gigsLoading && (
+        <div className='flex flex-col space-y-4'>
+          <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
+          <GigSkeleton />
+          <GigSkeleton />
+          <GigSkeleton />
+          <GigSkeleton />
+        </div>
+      )}
       {gigs && makeGigList(gigs)}
     </Stack>
   );
