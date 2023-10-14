@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  button.mantine-Button-root {
+    @apply text-white bg-red-500;
+  }
+}
+
 html,
 body {
   padding: 0;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   TextInput,
   Button,
@@ -6,20 +6,20 @@ import {
   Select,
   SimpleGrid,
   MultiSelect,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { trpc } from "../utils/trpc";
-import FormLoadingOverlay from "./form-loading-overlay";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { trpc } from '../utils/trpc';
+import FormLoadingOverlay from './form-loading-overlay';
 
 const initialValues = {
-  firstName: "",
-  lastName: "",
-  number: "",
-  bNumber: "",
-  email: "",
-  mainInstrument: "",
+  firstName: '',
+  lastName: '',
+  number: '',
+  bNumber: '',
+  email: '',
+  mainInstrument: '',
   otherInstruments: [] as string[],
-  role: "user",
+  role: 'user',
 };
 type FormValues = typeof initialValues;
 
@@ -33,7 +33,7 @@ interface AdminCorpsProps {
 
 const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   const utils = trpc.useContext();
-  const creatingCorps = corpsId === "new";
+  const creatingCorps = corpsId === 'new';
   const [loading, setLoading] = useState(!creatingCorps);
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,16 +44,16 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   const form = useForm<FormValues>({
     initialValues,
     validate: {
-      firstName: (value) => (value.length > 0 ? null : "Fyll i förnamn"),
-      lastName: (value) => (value.length > 0 ? null : "Fyll i efternamn"),
-      number: (value) => (isNumber(value) ? null : "Ogitligt nummer"),
-      bNumber: (value) => (isNumber(value) ? null : "Ogitligt balettnummer"),
+      firstName: (value) => (value.length > 0 ? null : 'Fyll i förnamn'),
+      lastName: (value) => (value.length > 0 ? null : 'Fyll i efternamn'),
+      number: (value) => (isNumber(value) ? null : 'Ogitligt nummer'),
+      bNumber: (value) => (isNumber(value) ? null : 'Ogitligt balettnummer'),
       email: (value) =>
-        /^\S+@\S+$/.test(value) ? null : "Ogiltig emailadress",
-      mainInstrument: (value) => (value ? null : "Välj ett huvudinstrument"),
+        /^\S+@\S+$/.test(value) ? null : 'Ogiltig emailadress',
+      mainInstrument: (value) => (value ? null : 'Välj ett huvudinstrument'),
       otherInstruments: (value, values) =>
         value.includes(values.mainInstrument)
-          ? "Huvudinstrument kan inte väljas som övrigt instrument"
+          ? 'Huvudinstrument kan inte väljas som övrigt instrument'
           : null,
     },
   });
@@ -68,12 +68,12 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       form.setValues({
         firstName: corps.firstName,
         lastName: corps.lastName,
-        number: corps.number?.toString() || "",
-        bNumber: corps.bNumber?.toString() || "",
-        email: corps.user.email ?? "",
+        number: corps.number?.toString() || '',
+        bNumber: corps.bNumber?.toString() || '',
+        email: corps.user.email ?? '',
         mainInstrument,
         otherInstruments,
-        role: corps.role?.name ?? "user",
+        role: corps.role?.name ?? 'user',
       });
       setLoading(false);
     } else if (creatingCorps) {
@@ -111,75 +111,75 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       <FormLoadingOverlay visible={loading || submitting}>
         <SimpleGrid
           cols={1}
-          spacing="lg"
-          breakpoints={[{ minWidth: "md", cols: 2 }]}
+          spacing='lg'
+          breakpoints={[{ minWidth: 'md', cols: 2 }]}
         >
           <TextInput
             withAsterisk
-            label="Förnamn"
-            placeholder="Förnamn"
-            {...form.getInputProps("firstName")}
+            label='Förnamn'
+            placeholder='Förnamn'
+            {...form.getInputProps('firstName')}
           />
           <TextInput
             withAsterisk
-            label="Efternamn"
-            placeholder="Efternamn"
-            {...form.getInputProps("lastName")}
+            label='Efternamn'
+            placeholder='Efternamn'
+            {...form.getInputProps('lastName')}
           />
           <TextInput
-            label="Nummer"
-            placeholder="Nummer"
-            description="Lämnas tomt om de inte har något"
-            {...form.getInputProps("number")}
+            label='Nummer'
+            placeholder='Nummer'
+            description='Lämnas tomt om de inte har något'
+            {...form.getInputProps('number')}
           />
           <TextInput
-            label="Balettnummer"
-            placeholder="Balettnummer"
-            description="Lämnas tomt om de inte har något"
-            {...form.getInputProps("bNumber")}
+            label='Balettnummer'
+            placeholder='Balettnummer'
+            description='Lämnas tomt om de inte har något'
+            {...form.getInputProps('bNumber')}
           />
           <Select
-            label="Huvudinstrument"
-            placeholder="Välj instrument..."
-            nothingFound="Instrument kunde inte laddas"
+            label='Huvudinstrument'
+            placeholder='Välj instrument...'
+            nothingFound='Instrument kunde inte laddas'
             data={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
             withAsterisk
-            {...form.getInputProps("mainInstrument")}
+            {...form.getInputProps('mainInstrument')}
           />
           <MultiSelect
-            label="Övriga instrument"
-            placeholder="Välj instrument..."
+            label='Övriga instrument'
+            placeholder='Välj instrument...'
             clearable
-            nothingFound="Instrument kunde inte laddas"
+            nothingFound='Instrument kunde inte laddas'
             data={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
-            {...form.getInputProps("otherInstruments")}
+            {...form.getInputProps('otherInstruments')}
           />
           <TextInput
             withAsterisk
-            label="Email"
-            placeholder="exempel@domän.se"
-            {...form.getInputProps("email")}
+            label='Email'
+            placeholder='exempel@domän.se'
+            {...form.getInputProps('email')}
           />
           <Select
-            label="Behörighetsroll"
-            placeholder="Välj behörighet..."
+            label='Behörighetsroll'
+            placeholder='Välj behörighet...'
             data={roles?.map((i) => ({ value: i.name, label: i.name })) ?? []}
             withAsterisk
-            {...form.getInputProps("role")}
+            {...form.getInputProps('role')}
           />
         </SimpleGrid>
       </FormLoadingOverlay>
-      <Group position="right" mt="md">
+      <Group position='right' mt='md'>
         <Button
           disabled={!form.isTouched() || submitting || !form.isValid()}
-          type="submit"
+          type='submit'
           loading={loading || submitting}
         >
-          {creatingCorps ? "Skapa corpsmedlem" : "Spara ändringar"}
+          {creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}
         </Button>
       </Group>
     </form>

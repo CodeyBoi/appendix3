@@ -6,8 +6,8 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      display: ['Bahnscrift', 'sans-serif'],
-      body: ['Bahnscrift', 'sans-serif'],
+      display: ['Bahnschrift', 'sans-serif'],
+      body: ['Bahnschrift', 'sans-serif'],
     },
     extend: {
       colors: {
