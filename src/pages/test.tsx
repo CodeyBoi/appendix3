@@ -1,5 +1,4 @@
-import React from "react";
-import Squircle from "../components/squircle";
+import Squircle from '../components/squircle';
 
 const TestSquircle = () => {
   const squircles = [];

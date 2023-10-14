@@ -1,5 +1,5 @@
 import { Checkbox, SegmentedControl, Select, Stack } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 

@@ -1,20 +1,23 @@
 // src/pages/_app.tsx
-import '../styles/globals.css';
-import { SessionProvider } from 'next-auth/react';
-import type { Session } from 'next-auth';
-import type { AppContext, AppProps } from 'next/app';
-import { trpc } from '../utils/trpc';
-import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+} from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
-import { GLOBAL_THEME } from '../utils/global-theme';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import 'dayjs/locale/sv';
+import type { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import type { AppContext, AppProps } from 'next/app';
+import App from 'next/app';
+import Head from 'next/head';
 import { AppContainer } from '../components/app-container';
 import useColorScheme from '../hooks/use-color-scheme';
-import 'dayjs/locale/sv';
-import Head from 'next/head';
-import App from 'next/app';
+import '../styles/globals.css';
 import cookieParser from '../utils/cookie-parser';
-import { ColorScheme } from '@mantine/core';
+import { GLOBAL_THEME } from '../utils/global-theme';
+import { trpc } from '../utils/trpc';
 
 interface CustomAppProps {
   session: Session | null;

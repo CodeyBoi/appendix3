@@ -1,13 +1,13 @@
-import React, { useMemo } from 'react';
 import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
 import { trpc } from '../../utils/trpc';
-import MultiSelectCorps from '../multi-select-corps';
-import Loading from '../loading';
-import Entry from './entry';
 import Button from '../button';
+import Loading from '../loading';
+import MultiSelectCorps from '../multi-select-corps';
+import Entry from './entry';
 
 interface SignupListProps {
   gigId: string;

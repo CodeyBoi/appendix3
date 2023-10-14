@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, Title, useMantineTheme } from '@mantine/core';
 
 const Links = () => {

@@ -1,13 +1,12 @@
 import { Box, Title } from '@mantine/core';
-import React from 'react';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
 import GigCard from '../../../components/gig/card';
+import GigSkeleton from '../../../components/gig/skeleton';
 import Loading from '../../../components/loading';
 import SignupList from '../../../components/signup-list';
-import { useRouter } from 'next/router';
-import { trpc } from '../../../utils/trpc';
-import GigSkeleton from '../../../components/gig/skeleton';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
+import { trpc } from '../../../utils/trpc';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -27,8 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (
     },
   };
 };
-
-const LIST_WIDTH = '800px';
 
 const WhosComing = () => {
   const router = useRouter();

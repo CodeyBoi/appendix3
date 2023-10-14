@@ -2,9 +2,9 @@ import { Gig } from '@prisma/client';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import React from 'react';
 import GigCard from '../components/gig/card';
+import GigSkeleton from '../components/gig/skeleton';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
-import GigSkeleton from '../components/gig/skeleton';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,

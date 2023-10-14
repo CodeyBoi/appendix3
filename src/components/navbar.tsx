@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  createStyles,
   Divider,
   Navbar,
   SegmentedControl,
   Space,
   Stack,
+  createStyles,
   useMantineTheme,
 } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 import {
   IconClipboard,
   IconHome,
@@ -24,12 +24,12 @@ import {
   IconUser,
   IconUserPlus,
 } from '@tabler/icons';
-import { getOperatingYear } from '../pages/stats/[paramYear]';
-import { NextLink } from '@mantine/next';
-import { trpc } from '../utils/trpc';
-import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
 import cuid from 'cuid';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { getOperatingYear } from '../pages/stats/[paramYear]';
+import { trpc } from '../utils/trpc';
 import IconMusicPlus from './icons/music-plus';
 
 interface LinkItem {
