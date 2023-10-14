@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import {
-  TextInput,
   Button,
   Group,
+  MultiSelect,
   Select,
   SimpleGrid,
-  MultiSelect,
+  TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
 import FormLoadingOverlay from './form-loading-overlay';
 
@@ -175,6 +175,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       </FormLoadingOverlay>
       <Group position='right' mt='md'>
         <Button
+          className='bg-red-600'
           disabled={!form.isTouched() || submitting || !form.isValid()}
           type='submit'
           loading={loading || submitting}

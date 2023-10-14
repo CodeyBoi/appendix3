@@ -1,13 +1,13 @@
 import {
+  Button,
+  Checkbox,
+  Grid,
+  Group,
+  NumberInput,
+  Select,
   SimpleGrid,
   TextInput,
-  Select,
-  NumberInput,
-  Grid,
   Textarea,
-  Group,
-  Checkbox,
-  Button,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -15,8 +15,8 @@ import { Gig } from '@prisma/client';
 import { IconCalendar, IconClock } from '@tabler/icons';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
-import MultiSelectCorps from '../multi-select-corps';
 import FormLoadingOverlay from '../form-loading-overlay';
+import MultiSelectCorps from '../multi-select-corps';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -257,7 +257,11 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
                 Radera spelning
               </Button>
             )}
-            <Button disabled={!form.isDirty()}>
+            <Button
+              type='submit'
+              className='bg-red-600'
+              disabled={!form.isDirty()}
+            >
               {newGig ? 'Skapa spelning' : 'Spara ändringar'}
             </Button>
           </Group>

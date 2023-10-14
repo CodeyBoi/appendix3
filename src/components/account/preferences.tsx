@@ -175,6 +175,7 @@ const AccountPreferences = () => {
           </FormLoadingOverlay>
           <Group position='right'>
             <Button
+              className='bg-red-600'
               disabled={!form.isTouched() || !form.isValid() || submitting}
               loading={submitting}
               type='submit'

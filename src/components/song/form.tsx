@@ -1,7 +1,6 @@
-import { Stack, TextInput, Group, Button, Textarea } from '@mantine/core';
+import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
-import React from 'react';
 import { trpc } from '../../utils/trpc';
 
 const defaultValues = {
@@ -108,7 +107,7 @@ const SongForm = ({ song }: SongFormProps) => {
               RADERA SÅNG
             </Button>
           )}
-          <Button type='submit'>
+          <Button className='bg-red-600' type='submit'>
             {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
           </Button>
         </Group>

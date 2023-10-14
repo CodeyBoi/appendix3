@@ -1,15 +1,14 @@
 import {
+  ActionIcon,
+  Button,
+  Group,
   Stack,
   TextInput,
-  Group,
-  Button,
-  ActionIcon,
   Textarea,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
-import React from 'react';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';
 
@@ -112,7 +111,9 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
               >
                 RADERA CITAT
               </Button>
-              <Button type='submit'>Uppdatera citat</Button>
+              <Button type='submit' className='bg-red-600'>
+                Uppdatera citat
+              </Button>
             </>
           )}
         </Group>

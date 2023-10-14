@@ -163,6 +163,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
             </tbody>
           </Table>
           <Button
+            className='bg-red-600'
             component={NextLink}
             href='/stats/for/nerds'
             leftIcon={<IconMoodNerd />}

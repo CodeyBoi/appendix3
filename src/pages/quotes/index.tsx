@@ -1,9 +1,9 @@
+import { Button, Group, Stack, Table, Title } from '@mantine/core';
 import React, { useMemo } from 'react';
-import { Table, Title, Stack, Group, Button } from '@mantine/core';
-import { trpc } from '../../utils/trpc';
 import Loading from '../../components/loading';
-import QuoteForm from '../../components/quote/form';
 import Quote from '../../components/quote';
+import QuoteForm from '../../components/quote/form';
+import { trpc } from '../../utils/trpc';
 
 const getDayMessage = (date: Date) => {
   const today = new Date();
@@ -95,6 +95,7 @@ const Quotes = () => {
       {hasNextPage && (
         <Group position='center'>
           <Button
+            className='bg-red-600'
             sx={{ width: 'min-content' }}
             onClick={() => fetchNextPage()}
             loading={isFetchingNextPage}

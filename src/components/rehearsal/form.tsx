@@ -1,18 +1,17 @@
 import {
-  Stack,
-  TextInput,
-  Select,
-  Group,
   Button,
   Checkbox,
+  Group,
+  Select,
+  Stack,
+  TextInput,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconCalendar, IconSend } from '@tabler/icons';
-import React from 'react';
-import { trpc } from '../../utils/trpc';
 import { Rehearsal } from '@prisma/client';
+import { IconCalendar, IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
+import { trpc } from '../../utils/trpc';
 
 const defaultValues = {
   title: '',
@@ -140,6 +139,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
             type='submit'
             leftIcon={<IconSend />}
             loading={mutation.isLoading}
+            className='bg-red-600'
           >
             {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
