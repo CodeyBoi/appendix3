@@ -45,7 +45,7 @@ const WhosComing = () => {
     : false;
 
   return (
-    <Box sx={{ maxWidth: LIST_WIDTH }}>
+    <div className='flex flex-col max-w-4xl space-y-4'>
       <Title order={2}>Anmälningar</Title>
       {gig ? <GigCard gig={gig} /> : <GigSkeleton />}
       {loading && (
@@ -54,7 +54,7 @@ const WhosComing = () => {
         </Box>
       )}
       {!loading && <SignupList gigId={gigId} gigHasHappened={gigHasHappened} />}
-    </Box>
+    </div>
   );
 };
 
