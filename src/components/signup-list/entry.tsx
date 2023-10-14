@@ -28,6 +28,7 @@ const Entry = ({
     paddingBottom: 0,
     borderBottom: isAdmin ? undefined : 0,
   };
+
   const name = `${signup.number ? '#' + signup.number.toString() : 'p.e.'} ${
     signup.firstName
   } ${signup.lastName}`;

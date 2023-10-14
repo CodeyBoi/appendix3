@@ -257,7 +257,7 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
                 Radera spelning
               </Button>
             )}
-            <Button type='submit' disabled={!form.isDirty()}>
+            <Button disabled={!form.isDirty()}>
               {newGig ? 'Skapa spelning' : 'Spara ändringar'}
             </Button>
           </Group>

@@ -64,7 +64,7 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
   return (
     <Menu shadow='md' width={200} position='left-start' withArrow>
       <Menu.Target>
-        <button className='p-1 text-red-600 rounded hover:bg-red-100'>
+        <button className='p-1 text-red-600 rounded hover:bg-red-600/10'>
           <IconDotsVertical />
         </button>
       </Menu.Target>

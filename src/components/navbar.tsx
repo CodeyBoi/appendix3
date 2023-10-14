@@ -6,6 +6,7 @@ import {
   Divider,
   Navbar,
   SegmentedControl,
+  Space,
   Stack,
   useMantineTheme,
 } from '@mantine/core';
@@ -213,9 +214,10 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           />
         </Navbar.Section>
       )}
-      <Navbar.Section grow pt='sm' mx='sm'>
+      <Navbar.Section sx={{ overflowY: 'auto' }} grow pt='sm' mx='sm'>
         <Stack>{links}</Stack>
       </Navbar.Section>
+      <Space p={6} />
       <Navbar.Section pb='sm' mx='sm'>
         <Button
           px={6}

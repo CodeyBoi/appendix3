@@ -1,4 +1,3 @@
-import { Title, Stack } from '@mantine/core';
 import { Gig } from '@prisma/client';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import React from 'react';
@@ -55,9 +54,7 @@ const makeGigList = (
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
-        <h3 className='pt-2'>
-          {`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}
-        </h3>
+        <h3>{`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
         {gigs.map((gig) => (
           <GigCard key={gig.id} gig={gig} />
         ))}
@@ -80,30 +77,26 @@ const Home: NextPage = () => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
   return (
-    <Stack sx={{ maxWidth: 800 }} spacing='xs'>
-      <Title
-        sx={(theme) => ({
-          fontSize: theme.headings.sizes.h2.fontSize,
-          [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-            fontSize: theme.headings.sizes.h3.fontSize,
-          },
-        })}
-      >
+    // <Stack sx={{ maxWidth: 800 }} spacing='xs'>
+    <div className='flex flex-col max-w-4xl space-y-4'>
+      <h2 className='text-2xl md:text-4xl'>
         {gigs && gigs.length === 0
           ? 'Inga kommande spelningar :('
           : 'Kommande spelningar'}
-      </Title>
-      {gigsLoading && (
-        <div className='flex flex-col space-y-4'>
-          <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
-          <GigSkeleton />
-          <GigSkeleton />
-          <GigSkeleton />
-          <GigSkeleton />
-        </div>
-      )}
-      {gigs && makeGigList(gigs)}
-    </Stack>
+      </h2>
+      <div className='flex flex-col space-y-4'>
+        {gigsLoading && (
+          <>
+            <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
+            <GigSkeleton />
+            <GigSkeleton />
+            <GigSkeleton />
+            <GigSkeleton />
+          </>
+        )}
+        {gigs && makeGigList(gigs)}
+      </div>
+    </div>
   );
 };
 

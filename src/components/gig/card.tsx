@@ -37,7 +37,7 @@ const GigCard = ({ gig }: GigCardProps) => {
       >
         <GigForm gig={gig} onSubmit={() => setOpened(false)} />
       </Modal>
-      <div className='border rounded shadow-md'>
+      <div className='border rounded shadow-md dark:border-neutral-800'>
         <div className='flex flex-col p-4 space-y-2'>
           <div className='flex content-start justify-between flex-nowrap'>
             <a href={`/gig/${gig.id}`}>
@@ -45,7 +45,7 @@ const GigCard = ({ gig }: GigCardProps) => {
             </a>
             <GigMenu gig={gig} isAdmin={isAdmin} setOpened={setOpened} />
           </div>
-          <div className='flex flex-col justify-between md:flex-row'>
+          <div className='flex flex-col justify-between lg:flex-row'>
             <div className='flex flex-grow'>
               <a
                 className='flex flex-row items-center flex-grow space-x-4'
@@ -63,7 +63,7 @@ const GigCard = ({ gig }: GigCardProps) => {
                 </div>
               </a>
             </div>
-            <div className='w-full md:w-56'>
+            <div className='w-full lg:w-56'>
               {showSignup && (
                 <GigSignupBox
                   gigId={gig.id}
