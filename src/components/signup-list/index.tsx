@@ -38,7 +38,7 @@ const FULL_SETTING: [string, number][] = [
 
 const toPlural = (instrument: string) => {
   instrument = instrument.trim().toLowerCase();
-  if (instrument === 'piccolo') {
+  if (instrument === 'piccola') {
     return 'piccolor';
   } else if (instrument === 'oboe') {
     return 'oboer';
@@ -183,17 +183,22 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     if (signups.length === 0) {
       return;
     }
-    let lastInstrument = signups[0]?.instrument ?? '';
+    let lastInstrument = '';
     return (
       <table className='text-sm table-auto'>
         <thead>
-          <tr className='text-left'>
-            <th className='w-20'>Instrument</th>
-            <th>Namn</th>
-            {showAdminTools && (
+          <tr>
+            {showAdminTools ? (
               <>
-                <th className='px-2'>Närvaro</th>
-                <th className='px-2'>Ta bort</th>
+                <th className='text-left'>Namn</th>
+                <th className='px-1'>Här?</th>
+                <th className='px-1'>Vask</th>
+              </>
+            ) : (
+              <>
+                <th></th>
+                <th></th>
+                <th></th>
               </>
             )}
           </tr>
@@ -206,7 +211,11 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
                   <tr>
-                    <td className='h-2' />
+                    <td>
+                      <h4 className='mt-2 first-letter:capitalize'>
+                        {toPlural(signup.instrument)}
+                      </h4>
+                    </td>
                   </tr>
                 )}
                 <tr>
@@ -316,7 +325,13 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             </h3>
           ) : (
             <>
-              <h3>{gigHasHappened ? 'Dessa var med:' : 'Dessa är anmälda:'}</h3>
+              <h3>
+                {gigHasHappened
+                  ? showAdminTools
+                    ? 'Dessa var anmälda:'
+                    : 'Dessa var med:'
+                  : 'Dessa är anmälda:'}
+              </h3>
               {yesTable}
             </>
           )}
@@ -335,7 +350,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
       )}
       {maybeList && maybeList.length > 0 && (
         <div>
-          <h3>Dessa kanske kommer:</h3>
+          {!gigHasHappened && <h3>Dessa kanske kommer:</h3>}
           {maybeTable}
         </div>
       )}

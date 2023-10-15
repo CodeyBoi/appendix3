@@ -29,11 +29,10 @@ const Entry = ({
 
   return (
     <>
-      <td>{signup.instrument}</td>
       <td>{name}</td>
       {isAdmin && (
         <>
-          <td>
+          <td className='px-2'>
             <div className='flex place-content-center'>
               <Checkbox
                 styles={{ root: { display: 'flex' } }}
@@ -42,10 +41,10 @@ const Entry = ({
               />
             </div>
           </td>
-          <td className='flex place-content-center'>
+          <td className='flex px-2 place-content-center'>
             <button
-              type='button'
               className='text-red-600'
+              type='button'
               onClick={handleDelete}
             >
               <IconX />

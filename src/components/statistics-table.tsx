@@ -78,17 +78,17 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
             {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
           </div>
           {ownPointsString && <div>{ownPointsString}</div>}
-          <table>
+          <table className='divide-y divide-solid'>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Namn</th>
-                <th className='pr-1 text-center'>Poäng</th>
+                <th className='text-left'>Namn</th>
+                <th className='px-1 text-center'>Poäng</th>
                 <th className='px-1 text-center'>Närvaro</th>
-                <th className='pl-1 text-center'>Totala poäng</th>
+                <th className='px-1 text-center'>Totala poäng</th>
               </tr>
             </thead>
-            <tbody className='divide-y divide-solid'>
+            <tbody className='text-sm divide-y divide-solid'>
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
@@ -128,14 +128,12 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                         </td>
                       </tr>
                     )}
-                    <tr key={id}>
-                      <td className='pr-1 text-center'>
+                    <tr>
+                      <td className='py-1 pr-2 text-right'>
                         {stat.number ?? 'p.e.'}
                       </td>
                       <td>{`${stat.firstName} ${stat.lastName}`}</td>
-                      <td align='center' style={{ paddingLeft: '0px' }}>
-                        {stat.gigsAttended}
-                      </td>
+                      <td className='text-center'>{stat.gigsAttended}</td>
                       <td
                         align='center'
                         style={{ paddingLeft: '0px' }}
