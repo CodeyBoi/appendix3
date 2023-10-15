@@ -15,8 +15,8 @@ const formatName = (corps: Corps) => {
 
 const RehearsalStats = ({ totalRehearsals, stats }: RehearsalStatsProps) => {
   return (
-    <table className='border-spacing-2'>
-      <tbody>
+    <table className='table'>
+      <tbody className='divide-y divide-solid'>
         {stats.map((stat) => (
           <tr key={stat.corps.id}>
             <td className='pr-2'>{formatName(stat.corps)}</td>

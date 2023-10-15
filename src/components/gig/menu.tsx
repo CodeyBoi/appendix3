@@ -2,14 +2,13 @@ import { Menu } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Gig } from '@prisma/client';
 import {
-  IconDotsVertical,
-  IconUsers,
   IconCalendarPlus,
+  IconDotsVertical,
   IconEdit,
   IconInfoCircle,
+  IconUsers,
 } from '@tabler/icons';
 import dayjs from 'dayjs';
-import React from 'react';
 
 type GigMenuProps = {
   gig: Gig & { type: { name: string } };

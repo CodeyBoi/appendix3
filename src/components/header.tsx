@@ -7,8 +7,7 @@ const AppendixHeader = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
   return (
     <Header
-      height={60}
-      p='sm'
+      height={56}
       sx={(theme) => ({
         backgroundColor: theme?.colors?.red?.[5],
         color: theme.white,
@@ -16,9 +15,8 @@ const AppendixHeader = () => {
         boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.3)',
         border: 0,
       })}
-      style={{}}
     >
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between px-3 h-14'>
         <Logo />
         <Burger
           color='white'

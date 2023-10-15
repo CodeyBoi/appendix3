@@ -1,9 +1,7 @@
-import { Stack, Title, Text, Group, ActionIcon } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { Song } from '@prisma/client';
-import React from 'react';
 // import { trpc } from '../../utils/trpc';
 import { IconPencil } from '@tabler/icons';
+import Link from 'next/link';
 
 interface SongProps {
   song: Song;
@@ -14,27 +12,22 @@ const SongView = ({ song }: SongProps) => {
   // const isAdmin = corps?.role?.name === 'admin';
   const isAdmin = true; // Remove this when we move songs to admin
   return (
-    <Stack spacing={0} sx={{ maxWidth: '800px' }}>
-      <Group position='apart'>
-        <Title order={3}>{song.title}</Title>
+    <div className='flex flex-col max-w-3xl'>
+      <div className='flex justify-between flex-nowrap'>
+        <h3>{song.title}</h3>
         {isAdmin && (
-          <ActionIcon component={NextLink} href={`/admin/songs/${song.id}`}>
-            <IconPencil />
-          </ActionIcon>
+          <Link href={`/admin/songs/${song.id}`}>
+            <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
+              <IconPencil />
+            </div>
+          </Link>
         )}
-      </Group>
-      {song.melody && (
-        <Text mt={6}>
-          <i>{`Melodi: ${song.melody}`}</i>
-        </Text>
-      )}
-      {song.author && (
-        <Text>
-          <i>{`Skriven av: ${song.author}`}</i>
-        </Text>
-      )}
-      <Text mt={12} sx={{ whiteSpace: 'pre-wrap' }}>{`${song.lyrics}`}</Text>
-    </Stack>
+      </div>
+      {song.melody && <i>{`Melodi: ${song.melody}`}</i>}
+      {song.author && <i>{`Skriven av: ${song.author}`}</i>}
+      <div className='h-4' />
+      <div className='whitespace-pre-wrap'>{`${song.lyrics}`}</div>
+    </div>
   );
 };
 

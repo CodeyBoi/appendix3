@@ -5,7 +5,6 @@ import {
   Group,
   Stack,
   TextInput,
-  Title,
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -112,13 +111,13 @@ const Login = () => {
             }}
           >
             <Stack>
-              <Title order={onMobile ? 2 : 1} color='white' align='center'>
+              <h2 className='text-center text-white md:text-5xl'>
                 {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
                 <span style={{ color: theme?.colors?.red?.[5] }}>
                   Blindtarmen
                 </span>
                 !
-              </Title>
+              </h2>
               {!success && (
                 <Group align='baseline'>
                   <TextInput

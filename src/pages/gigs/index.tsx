@@ -1,10 +1,10 @@
-import React from 'react';
-import { Table, Tabs, Select, Group, Title, Stack } from '@mantine/core';
-import { trpc } from '../../utils/trpc';
-import Link from 'next/link';
-import Loading from '../../components/loading';
+import { Select, Tabs } from '@mantine/core';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React from 'react';
+import Loading from '../../components/loading';
+import { trpc } from '../../utils/trpc';
 
 type Tab = 'all-gigs' | 'my-gigs';
 interface GigsProps {
@@ -61,61 +61,56 @@ const Gigs = ({ initialTab }: GigsProps) => {
   const gigTable = loading ? (
     <Loading msg='Laddar spelningar...' />
   ) : currentGigs && currentGigs.length > 0 ? (
-    <Table fontSize={12} highlightOnHover>
-      <tbody>
-        {currentGigs.map((gig) => {
-          const gigMonth = gig.date.getMonth();
-          let shouldAddMonth = false;
-          if (gigMonth !== lastGigMonth) {
-            lastGigMonth = gigMonth;
-            shouldAddMonth = true;
-          }
-          return (
-            <React.Fragment key={gig.id}>
-              {shouldAddMonth && (
-                // We set color to unset to get rid of the highlightOnHover for the month
-                <tr style={{ backgroundColor: 'unset' }}>
-                  <td colSpan={12}>
-                    <Title order={4}>
-                      {gig.date.toLocaleString('sv-SE', { month: 'long' })}
-                    </Title>
-                  </td>
-                </tr>
-              )}
-              <Link href={`/gig/${gig.id}`} key={gig.id}>
-                <tr style={{ cursor: 'pointer' }}>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    {dayjs(gig.date).format('YYYY-MM-DD')}
-                  </td>
-                  <td>{gig.title}</td>
-                </tr>
-              </Link>
-            </React.Fragment>
-          );
-        })}
-      </tbody>
-    </Table>
+    <div className='flex flex-col divide-y divide-solid'>
+      {currentGigs.map((gig) => {
+        const gigMonth = gig.date.getMonth();
+        let shouldAddMonth = false;
+        if (gigMonth !== lastGigMonth) {
+          lastGigMonth = gigMonth;
+          shouldAddMonth = true;
+        }
+        return (
+          <React.Fragment key={gig.id}>
+            {shouldAddMonth && (
+              <h3 className='pt-2'>
+                {gig.date.toLocaleString('sv-SE', { month: 'long' })}
+              </h3>
+            )}
+            <Link href={`/gig/${gig.id}`} key={gig.id}>
+              <div className='flex items-center gap-2 py-1 pl-2 cursor-pointer hover:bg-red-300/10'>
+                <div className='min-w-max'>
+                  {dayjs(gig.date).format('YYYY-MM-DD')}
+                </div>
+                {gig.title}
+              </div>
+            </Link>
+          </React.Fragment>
+        );
+      })}
+    </div>
   ) : (
-    <Title order={4}>Här fanns inget att se :/</Title>
+    <h4>Här fanns inget att se :/</h4>
   );
 
   return (
-    <Stack sx={{ maxWidth: 500 }}>
-      <Title order={2}>Spelningar</Title>
-      <Group position='left'>
+    <div className='flex flex-col gap-2 max-w-fit'>
+      <h2>Spelningar</h2>
+      <div className='w-24'>
         <Select
-          sx={{ width: 100 }}
           label='År'
           maxDropdownHeight={280}
           data={years}
           value={year.toString()}
           onChange={changeYear}
         />
-      </Group>
+      </div>
+
       <Tabs value={tab} onTabChange={changeTab}>
         <Tabs.List pl={8}>
-          <Tabs.Tab value='my-gigs'>Mina spelningar</Tabs.Tab>
-          <Tabs.Tab value='all-gigs'>Alla spelningar</Tabs.Tab>
+          <div className='flex flex-nowrap'>
+            <Tabs.Tab value='my-gigs'>Mina spelningar</Tabs.Tab>
+            <Tabs.Tab value='all-gigs'>Alla spelningar</Tabs.Tab>
+          </div>
         </Tabs.List>
 
         <Tabs.Panel value='my-gigs' pt='xs'>
@@ -126,7 +121,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
           {gigTable}
         </Tabs.Panel>
       </Tabs>
-    </Stack>
+    </div>
   );
 };
 

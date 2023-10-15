@@ -1,10 +1,8 @@
 import {
   Button,
   Checkbox,
-  Grid,
   NumberInput,
   Select,
-  SimpleGrid,
   TextInput,
   Textarea,
 } from '@mantine/core';
@@ -101,11 +99,8 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
 
   return (
     <FormLoadingOverlay visible={submitting}>
-      <form
-        style={{ maxWidth: '720px' }}
-        onSubmit={form.onSubmit(handleSubmit)}
-      >
-        <div className='grid grid-cols-1 space-x-4 md:grid-cols-2'>
+      <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
+        <div className='grid grid-cols-1 content-baseline gap-x-4 gap-y-2 md:grid-cols-2'>
           <TextInput
             label='Titel'
             placeholder='Titel'
@@ -138,121 +133,115 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
             clearable={false}
             {...form.getInputProps('date')}
           />
-          <Grid>
-            <Grid.Col span={12} md={6}>
-              <TextInput
-                label='Plats'
-                placeholder='Plats'
-                spellCheck={false}
-                {...form.getInputProps('location')}
-              />
-            </Grid.Col>
-            <Grid.Col span={6} md={3}>
-              <TextInput
-                icon={<IconClock />}
-                label='Samlingstid'
-                placeholder='Samlingstid'
-                spellCheck='false'
-                {...form.getInputProps('meetup')}
-              />
-            </Grid.Col>
-            <Grid.Col span={6} md={3}>
-              <TextInput
-                icon={<IconClock />}
-                label='Spelningstart'
-                placeholder='Spelningstart'
-                spellCheck='false'
-                {...form.getInputProps('start')}
-              />
-            </Grid.Col>
-          </Grid>
-          <Textarea
-            autosize
-            label='Beskrivning'
-            placeholder='Beskrivning'
-            {...form.getInputProps('description')}
+          <TextInput
+            label='Plats'
+            placeholder='Plats'
+            spellCheck={false}
+            {...form.getInputProps('location')}
           />
-          <SimpleGrid cols={1} breakpoints={[{ minWidth: 'md', cols: 2 }]}>
-            <DatePicker
-              label='Anmälningsstart'
-              description='Lämna tom för att tillåta anmälan omedelbart'
-              placeholder='Välj datum...'
-              icon={<IconCalendar />}
-              clearable={true}
-              {...form.getInputProps('signupStart')}
-            />
-            <DatePicker
-              label='Anmälningsstopp'
-              description='Lämna tom för att tillåta anmälan tills spelningen börjar'
-              placeholder='Välj datum...'
-              icon={<IconCalendar />}
-              clearable={true}
-              {...form.getInputProps('signupEnd')}
+          <div className='grid grid-cols-2 space-x-4'>
+            <TextInput
+              icon={<IconClock />}
+              label='Samlingstid'
+              placeholder='Samlingstid'
+              spellCheck='false'
+              {...form.getInputProps('meetup')}
             />
             <TextInput
-              label='Kryssruta 1'
-              placeholder='Kryssruta 1'
-              description='Lämna tom för att inte visa kryssruta'
-              {...form.getInputProps('checkbox1')}
+              icon={<IconClock />}
+              label='Spelningstart'
+              placeholder='Spelningstart'
+              spellCheck='false'
+              {...form.getInputProps('start')}
             />
-            <TextInput
-              label='Kryssruta 2'
-              placeholder='Kryssruta 2'
-              description='Lämna tom för att inte visa kryssruta'
-              {...form.getInputProps('checkbox2')}
+          </div>
+          <div className='col-span-1 md:col-span-2'>
+            <Textarea
+              autosize
+              label='Beskrivning'
+              placeholder='Beskrivning'
+              {...form.getInputProps('description')}
             />
-          </SimpleGrid>
-          <MultiSelectCorps
-            maxDropdownHeight={260}
-            label='Dölj spelning'
-            disabled={form.values.isPublic}
-            defaultValue={form.values.hiddenFor}
-            description='Spelningsanmälan kommer inte att synas för dessa corps'
-            placeholder='Välj corps...'
-            {...form.getInputProps('hiddenFor')}
+          </div>
+          <DatePicker
+            label='Anmälningsstart'
+            description='Lämna tom för att tillåta anmälan omedelbart'
+            placeholder='Välj datum...'
+            icon={<IconCalendar />}
+            clearable={true}
+            {...form.getInputProps('signupStart')}
           />
-          <div className='grid items-baseline grid-cols-1 space-y-4 md:grid-cols-2'>
-            <div className='flex space-x-4 whitespace-nowrap'>
-              <Checkbox
-                label='Allmän spelning?'
-                radius='xl'
-                {...form.getInputProps('isPublic', { type: 'checkbox' })}
-              />
-              <Checkbox
-                label='Räknas positivt?'
-                radius='xl'
-                {...form.getInputProps('countsPositively', {
-                  type: 'checkbox',
-                })}
-              />
-            </div>
-            <div className='flex items-center justify-end space-x-4'>
-              {!newGig && (
-                <Button
-                  variant='outline'
-                  compact
-                  uppercase
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        'Detta kommer att radera spelningen och går inte att ångra. Är du säker?',
-                      )
-                    ) {
-                      removeGig.mutateAsync({ gigId });
-                    }
-                  }}
-                >
-                  Radera spelning
-                </Button>
-              )}
+          <DatePicker
+            label='Anmälningsstopp'
+            description='Lämna tom för att tillåta anmälan tills spelningen börjar'
+            placeholder='Välj datum...'
+            icon={<IconCalendar />}
+            clearable={true}
+            {...form.getInputProps('signupEnd')}
+          />
+          <TextInput
+            label='Kryssruta 1'
+            placeholder='Kryssruta 1'
+            description='Lämna tom för att inte visa kryssruta'
+            {...form.getInputProps('checkbox1')}
+          />
+          <TextInput
+            label='Kryssruta 2'
+            placeholder='Kryssruta 2'
+            description='Lämna tom för att inte visa kryssruta'
+            {...form.getInputProps('checkbox2')}
+          />
+          <div className='col-span-1 md:col-span-2'>
+            <MultiSelectCorps
+              maxDropdownHeight={260}
+              label='Dölj spelning'
+              disabled={form.values.isPublic}
+              defaultValue={form.values.hiddenFor}
+              description='Spelningsanmälan kommer inte att synas för dessa corps'
+              placeholder='Välj corps...'
+              {...form.getInputProps('hiddenFor')}
+            />
+          </div>
+          <div className='flex space-x-4 whitespace-nowrap'>
+            <Checkbox
+              label='Allmän spelning?'
+              radius='xl'
+              {...form.getInputProps('isPublic', { type: 'checkbox' })}
+            />
+            <Checkbox
+              label='Räknas positivt?'
+              radius='xl'
+              {...form.getInputProps('countsPositively', {
+                type: 'checkbox',
+              })}
+            />
+          </div>
+          <div className='flex items-center justify-end space-x-4'>
+            {!newGig && (
               <Button
-                type='submit'
-                className='bg-red-600'
-                disabled={!form.isDirty()}
+                variant='outline'
+                compact
+                uppercase
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      'Detta kommer att radera spelningen och går inte att ångra. Är du säker?',
+                    )
+                  ) {
+                    removeGig.mutateAsync({ gigId });
+                  }
+                }}
               >
-                {newGig ? 'Skapa spelning' : 'Spara ändringar'}
+                Radera spelning
               </Button>
-            </div>
+            )}
+            <Button
+              type='submit'
+              className='bg-red-600'
+              disabled={!form.isDirty()}
+            >
+              {newGig ? 'Skapa spelning' : 'Spara ändringar'}
+            </Button>
           </div>
         </div>
       </form>

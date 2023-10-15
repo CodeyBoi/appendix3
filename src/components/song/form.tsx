@@ -1,4 +1,4 @@
-import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core';
+import { Button, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
@@ -64,7 +64,7 @@ const SongForm = ({ song }: SongFormProps) => {
 
   return (
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
+      <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
           placeholder='Titel'
@@ -91,7 +91,7 @@ const SongForm = ({ song }: SongFormProps) => {
           autosize
           {...form.getInputProps('lyrics')}
         />
-        <Group position='right'>
+        <div className='flex items-center justify-end gap-4'>
           {song && (
             <Button
               variant='outline'
@@ -110,8 +110,8 @@ const SongForm = ({ song }: SongFormProps) => {
           <Button className='bg-red-600' type='submit'>
             {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
           </Button>
-        </Group>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 };

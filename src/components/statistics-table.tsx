@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, Table, Text } from '@mantine/core';
+import { Button, Divider } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { IconMoodNerd } from '@tabler/icons';
 import React from 'react';
@@ -65,42 +65,30 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     return <AlertError msg='Kunde inte hämta spelningsstatistik.' />;
   }
 
-  let lastAttendence = 516.0;
+  let lastAttendence = -516.0;
 
   return (
     <>
       {corpsIds && corpsIds.length === 0 && (
-        <Text>Det finns inga statistikuppgifter för denna period.</Text>
+        <div>Det finns inga statistikuppgifter för denna period.</div>
       )}
       {corpsIds && corpsIds.length !== 0 && corpsPoints && corpsStats && (
-        <Stack>
-          <Text>
+        <div className='flex flex-col gap-2'>
+          <div>
             {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
-          </Text>
-          {ownPointsString && <Text>{ownPointsString}</Text>}
-          <Table>
+          </div>
+          {ownPointsString && <div>{ownPointsString}</div>}
+          <table>
             <thead>
               <tr>
                 <th>#</th>
                 <th>Namn</th>
-                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
-                  Poäng
-                </th>
-                <th style={{ textAlign: 'center', paddingLeft: '0px' }}>
-                  Närvaro
-                </th>
-                <th
-                  style={{
-                    textAlign: 'center',
-                    paddingLeft: '0px',
-                    paddingRight: '0px',
-                  }}
-                >
-                  Totala poäng
-                </th>
+                <th className='pr-1 text-center'>Poäng</th>
+                <th className='px-1 text-center'>Närvaro</th>
+                <th className='pl-1 text-center'>Totala poäng</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='divide-y divide-solid'>
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
@@ -141,10 +129,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                       </tr>
                     )}
                     <tr key={id}>
-                      <td
-                        align='center'
-                        style={{ paddingLeft: '0px', paddingRight: '0px' }}
-                      >
+                      <td className='pr-1 text-center'>
                         {stat.number ?? 'p.e.'}
                       </td>
                       <td>{`${stat.firstName} ${stat.lastName}`}</td>
@@ -161,7 +146,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                 );
               })}
             </tbody>
-          </Table>
+          </table>
           <Button
             className='bg-red-600'
             component={NextLink}
@@ -170,7 +155,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
           >
             Statistik för nördar
           </Button>
-        </Stack>
+        </div>
       )}
     </>
   );

@@ -1,5 +1,6 @@
 import { Quote } from '@prisma/client';
 import { IconPencil } from '@tabler/icons';
+import Link from 'next/link';
 import { trpc } from '../../utils/trpc';
 
 interface QuoteProps {
@@ -36,7 +37,6 @@ const Quote = ({ quote }: QuoteProps) => {
     minute: 'numeric',
   });
   return (
-    // <Group sx={{ alignItems: 'flex-start' }}>
     <div className='flex flex-nowrap'>
       <div className='flex-grow pl-3'>
         <div className='flex items-baseline space-x-1'>
@@ -47,9 +47,11 @@ const Quote = ({ quote }: QuoteProps) => {
         <i>{`${quote.quote}`}</i>
       </div>
       {ownQuote && (
-        <a href={`/quotes/${quote.id}`} className='text-red-600'>
-          <IconPencil />
-        </a>
+        <Link href={`/quotes/${quote.id}`}>
+          <div className='text-red-600'>
+            <IconPencil />
+          </div>
+        </Link>
       )}
     </div>
   );

@@ -162,7 +162,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   }, [router.asPath]);
 
   const links = tabs[activeTab].map((tab) => (
-    <Stack key={tab.title || cuid()} spacing='xs'>
+    <div className='flex flex-col gap-2' key={tab.title || cuid()}>
       {tab.title && <Divider label={tab.title} color='white' />}
       {tab.links.map((link) => (
         <Button
@@ -182,12 +182,12 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           {link.label}
         </Button>
       ))}
-    </Stack>
+    </div>
   ));
 
   return (
     <Box
-      style={{ height: 'calc(100vh - 60px)' }}
+      style={{ height: 'calc(100vh - 56px)' }}
       pb='md'
       className={classes.navbar}
     >

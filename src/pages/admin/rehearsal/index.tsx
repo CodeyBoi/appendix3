@@ -1,14 +1,6 @@
-import {
-  Button,
-  Group,
-  Modal,
-  Select,
-  SelectItem,
-  Stack,
-  Tabs,
-  Title,
-} from '@mantine/core';
+import { Modal, Select, SelectItem, Tabs, Title } from '@mantine/core';
 import { useMemo, useState } from 'react';
+import Button from '../../../components/button';
 import Loading from '../../../components/loading';
 import RehearsalForm from '../../../components/rehearsal/form';
 import RehearsalList from '../../../components/rehearsal/list';
@@ -81,9 +73,9 @@ const Rehearsals = () => {
       >
         <RehearsalForm onSubmit={() => setModalOpen(false)} />
       </Modal>
-      <Stack align='flex-start'>
-        <Title order={2}>Repor</Title>
-        <Group position='left' align='end'>
+      <div className='flex flex-col max-w-2xl gap-2'>
+        <h2>Repor</h2>
+        <div className='flex items-end gap-4'>
           <Select
             label='Verksamhetsår'
             value={year.toString()}
@@ -93,52 +85,52 @@ const Rehearsals = () => {
           <Button className='bg-red-600' onClick={() => setModalOpen(true)}>
             Skapa repa
           </Button>
-        </Group>
+        </div>
         <Tabs defaultValue='all-rehearsals'>
-          <Tabs.List mb={12}>
+          <Tabs.List>
             <Tabs.Tab value='all-rehearsals'>Alla repor</Tabs.Tab>
             <Tabs.Tab value='stats'>Statistik</Tabs.Tab>
           </Tabs.List>
-
+          <br />
           <Tabs.Panel value='all-rehearsals'>
             {isInitialLoading && <Loading msg='Laddar repor...' />}
             {splitRehearsals && (
-              <Group position='left' align='baseline'>
-                <Stack>
-                  <Title order={3}>Orkesterrepor</Title>
+              <div className='flex items-baseline gap-4'>
+                <div className='flex flex-col gap-2'>
+                  <h3>Orkesterrepor</h3>
                   <RehearsalList rehearsals={splitRehearsals.orchestra ?? []} />
-                </Stack>
-                <Stack>
-                  <Title order={3}>Balettrepor</Title>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <h3>Balettrepor</h3>
                   <RehearsalList rehearsals={splitRehearsals.ballet ?? []} />
-                </Stack>
-              </Group>
+                </div>
+              </div>
             )}
           </Tabs.Panel>
 
           <Tabs.Panel value='stats'>
             {isInitialLoading && <Loading msg='Laddar repstatistik...' />}
             {orchestraStats && balletStats && (
-              <Group position='left' align='baseline'>
-                <Stack>
-                  <Title order={3}>Orkesterrepor</Title>
+              <div className='flex items-baseline gap-4'>
+                <div className='flex flex-col gap-2'>
+                  <h3>Orkesterrepor</h3>
                   <RehearsalStats
                     stats={orchestraStats.stats}
                     totalRehearsals={orchestraStats.nonPositiveRehearsals}
                   />
-                </Stack>
-                <Stack>
-                  <Title order={3}>Balettrepor</Title>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <h3>Balettrepor</h3>
                   <RehearsalStats
                     stats={balletStats.stats}
                     totalRehearsals={balletStats.nonPositiveRehearsals}
                   />
-                </Stack>
-              </Group>
+                </div>
+              </div>
             )}
           </Tabs.Panel>
         </Tabs>
-      </Stack>
+      </div>
     </>
   );
 };

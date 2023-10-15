@@ -1,11 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  Group,
-  Select,
-  Stack,
-  TextInput,
-} from '@mantine/core';
+import { Button, Checkbox, Select, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
@@ -87,7 +80,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
 
   return (
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
+      <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
           placeholder='Titel'
@@ -121,7 +114,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
             type: 'checkbox',
           })}
         />
-        <Group position={newRehearsal ? 'right' : 'apart'}>
+        <div className='flex items-center justify-end gap-4'>
           {!newRehearsal && (
             <Button
               type='button'
@@ -143,8 +136,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
           >
             {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
-        </Group>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 };

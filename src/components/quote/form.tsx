@@ -1,11 +1,4 @@
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Stack,
-  TextInput,
-  Textarea,
-} from '@mantine/core';
+import { Button, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -65,8 +58,8 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
-        <Group>
+      <div className='flex flex-col gap-2'>
+        <div className='flex gap-4'>
           <SelectCorps
             label='Vem sade detta?'
             placeholder='Välj corps...'
@@ -79,45 +72,37 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
             placeholder='Plats'
             {...form.getInputProps('location')}
           />
-        </Group>
+        </div>
         <Textarea
-          rightSection={
-            <ActionIcon type='submit' variant='subtle' color='dark'>
-              <IconSend />
-            </ActionIcon>
-          }
+          rightSection={newQuote && <IconSend />}
           label='Vad sades?'
           placeholder='Citat'
           withAsterisk
           autosize
           {...form.getInputProps('quote')}
         />
-        <Group position='right'>
-          {!newQuote && (
-            <>
-              <Button
-                variant='outline'
-                compact
-                onClick={async () => {
-                  if (
-                    window.confirm(
-                      'Är du säker på att du vill ta bort citatet?',
-                    )
-                  ) {
-                    await removeMutation.mutateAsync({ id: quote.id });
-                    router.push('/quotes');
-                  }
-                }}
-              >
-                RADERA CITAT
-              </Button>
-              <Button type='submit' className='bg-red-600'>
-                Uppdatera citat
-              </Button>
-            </>
-          )}
-        </Group>
-      </Stack>
+        {!newQuote && (
+          <div className='flex items-center justify-end gap-4'>
+            <Button
+              variant='outline'
+              compact
+              onClick={async () => {
+                if (
+                  window.confirm('Är du säker på att du vill ta bort citatet?')
+                ) {
+                  await removeMutation.mutateAsync({ id: quote.id });
+                  router.push('/quotes');
+                }
+              }}
+            >
+              RADERA CITAT
+            </Button>
+            <Button type='submit' className='bg-red-600'>
+              Uppdatera citat
+            </Button>
+          </div>
+        )}
+      </div>
     </form>
   );
 };

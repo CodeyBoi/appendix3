@@ -1,24 +1,11 @@
-import React, { useMemo } from 'react';
-import {
-  Table,
-  Title,
-  Stack,
-  Group,
-  Text,
-  ActionIcon,
-  TextInput,
-} from '@mantine/core';
-import { trpc } from '../../utils/trpc';
-import Link from 'next/link';
-import Loading from '../../components/loading';
-import { NextLink } from '@mantine/next';
+import { TextInput } from '@mantine/core';
 import { IconPlus, IconSearch } from '@tabler/icons';
+import Link from 'next/link';
+import React, { useMemo } from 'react';
+import Loading from '../../components/loading';
+import { trpc } from '../../utils/trpc';
 
 const Songs = () => {
-  // const { data: corps } = trpc.corps.getSelf.useQuery();
-  // const isAdmin = corps?.role?.name === 'admin';
-  const isAdmin = true; // Remove this when we move songs to admin
-
   const [search, setSearch] = React.useState<string>('');
 
   const { data: songs, isLoading: songsLoading } = trpc.song.getAll.useQuery();
@@ -30,69 +17,57 @@ const Songs = () => {
     return loading ? (
       <Loading msg='Laddar sånger...' />
     ) : songs && songs.length > 0 ? (
-      <Table fontSize={16} highlightOnHover>
-        <tbody>
-          {songs.map((song) => {
-            // Filter out songs that don't match the search
-            if (
-              search &&
-              !song.title.toLowerCase().includes(search.toLowerCase())
-            ) {
-              return null;
-            }
-            const titleLetter = song.title[0]?.toUpperCase() ?? '';
-            let shouldAddLetter = false;
-            if (titleLetter !== prevTitleLetter) {
-              prevTitleLetter = titleLetter;
-              shouldAddLetter = true;
-            }
-            return (
-              <React.Fragment key={song.id}>
-                {shouldAddLetter && (
-                  // We set color to unset to get rid of the highlightOnHover
-                  <tr style={{ backgroundColor: 'unset' }}>
-                    <td colSpan={12}>
-                      <Title order={5}>{titleLetter}</Title>
-                    </td>
-                  </tr>
-                )}
-                <Link href={`/songs/${song.id}`} key={song.id}>
-                  <tr style={{ cursor: 'pointer' }}>
-                    <td>
-                      <Text pl={12}>{song.title}</Text>
-                    </td>
-                  </tr>
-                </Link>
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </Table>
+      <div className='flex flex-col text-base divide-y divide-solid'>
+        {songs.map((song) => {
+          // Filter out songs that don't match the search
+          if (
+            search &&
+            !song.title.toLowerCase().includes(search.toLowerCase())
+          ) {
+            return null;
+          }
+          const titleLetter = song.title[0]?.toUpperCase() ?? '';
+          let shouldAddLetter = false;
+          if (titleLetter !== prevTitleLetter) {
+            prevTitleLetter = titleLetter;
+            shouldAddLetter = true;
+          }
+          return (
+            <React.Fragment key={song.id}>
+              {shouldAddLetter && <h5 className='py-2 pl-3'>{titleLetter}</h5>}
+              <Link href={`/songs/${song.id}`}>
+                <div className='py-2 pl-6 cursor-pointer hover:bg-red-300/10'>
+                  {song.title}
+                </div>
+              </Link>
+            </React.Fragment>
+          );
+        })}
+      </div>
     ) : (
-      <Title sx={{ whiteSpace: 'nowrap' }} order={4}>
-        Här fanns inget att se :/
-      </Title>
+      <h4 className='whitespace-pre-wrap'>Här fanns inget att se :/</h4>
     );
   }, [loading, songs, search]);
 
   return (
-    <Stack sx={{ maxWidth: '500px' }}>
-      <Group position='apart'>
-        <TextInput
-          placeholder='Sök...'
-          value={search}
-          onChange={(e) => setSearch(e.currentTarget.value)}
-          icon={<IconSearch />}
-          sx={{ flex: '1' }}
-        />
-        {isAdmin && (
-          <ActionIcon component={NextLink} href='/admin/songs/new'>
+    <div className='flex flex-col max-w-lg gap-2'>
+      <div className='flex items-center justify-between gap-4'>
+        <div className='flex-grow'>
+          <TextInput
+            placeholder='Sök...'
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+            icon={<IconSearch />}
+          />
+        </div>
+        <Link href='/admin/songs/new'>
+          <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
             <IconPlus />
-          </ActionIcon>
-        )}
-      </Group>
+          </div>
+        </Link>
+      </div>
       {songList}
-    </Stack>
+    </div>
   );
 };
 
