@@ -1,11 +1,11 @@
+import { ActionIcon } from '@mantine/core';
 import { Rehearsal } from '@prisma/client';
+import { IconPlus } from '@tabler/icons';
 import dayjs from 'dayjs';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
-import RehearsalCheckbox from './checkbox';
-import { ActionIcon, Group, SimpleGrid, Stack, Title } from '@mantine/core';
 import SelectCorps from '../select-corps';
-import { IconPlus } from '@tabler/icons';
+import RehearsalCheckbox from './checkbox';
 
 type RehearsalAttendenceProps = {
   rehearsal: Rehearsal;
@@ -46,9 +46,9 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   const selectedAlreadyAttendedCorps = attendence?.corpsIds.has(corpsId);
 
   return (
-    <Stack>
-      <Title order={3}>Närvaro</Title>
-      <Group position='left' align='start'>
+    <div className='flex flex-col space-y-2'>
+      <h3>Närvaro</h3>
+      <div className='flex space-x-2'>
         <SelectCorps
           error={
             selectedAlreadyAttendedCorps ? 'Corps har redan närvaro' : null
@@ -74,22 +74,13 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
         >
           <IconPlus />
         </ActionIcon>
-      </Group>
-      <Stack spacing='xs'>
+      </div>
+      <div className='flex flex-col space-y-2'>
         {attendence?.corpsiiBySection &&
           attendence.corpsiiBySection.map((section) => (
             <React.Fragment key={section.name}>
-              <Title order={4}>{section.name}</Title>
-              <SimpleGrid
-                ml='md'
-                cols={1}
-                breakpoints={[
-                  { minWidth: 'md', cols: 2 },
-                  { minWidth: 'lg', cols: 3 },
-                ]}
-                spacing={0}
-                verticalSpacing={0}
-              >
+              <h4>{section.name}</h4>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
                 {section.corpsii.map((corps) => (
                   <RehearsalCheckbox
                     key={corps.id}
@@ -98,11 +89,11 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
                     attended={corps.attended}
                   />
                 ))}
-              </SimpleGrid>
+              </div>
             </React.Fragment>
           ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 };
 

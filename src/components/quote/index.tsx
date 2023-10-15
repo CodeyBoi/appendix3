@@ -1,8 +1,5 @@
-import { Group, ActionIcon, Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { Quote } from '@prisma/client';
 import { IconPencil } from '@tabler/icons';
-import React from 'react';
 import { trpc } from '../../utils/trpc';
 
 interface QuoteProps {
@@ -39,29 +36,22 @@ const Quote = ({ quote }: QuoteProps) => {
     minute: 'numeric',
   });
   return (
-    <Group sx={{ alignItems: 'flex-start' }}>
-      <Text
-        pl={12}
-        sx={{
-          flex: '1',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        <Group spacing={0}>
-          <Text sx={{ fontWeight: 'bold' }}>{writtenByName} </Text>
-          <Text size='xs' sx={{ fontWeight: 'lighter', color: '#888888' }}>
-            {time}
-          </Text>
-        </Group>
+    // <Group sx={{ alignItems: 'flex-start' }}>
+    <div className='flex flex-nowrap'>
+      <div className='flex-grow pl-3'>
+        <div className='flex items-baseline space-x-1'>
+          <div className='font-bold'>{writtenByName}</div>
+          <div className='text-xs font-thin text-gray-500'>{time}</div>
+        </div>
         {`${saidByName}: `}
         <i>{`${quote.quote}`}</i>
-      </Text>
+      </div>
       {ownQuote && (
-        <ActionIcon component={NextLink} href={`/quotes/${quote.id}`}>
+        <a href={`/quotes/${quote.id}`} className='text-red-600'>
           <IconPencil />
-        </ActionIcon>
+        </a>
       )}
-    </Group>
+    </div>
   );
 };
 

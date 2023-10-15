@@ -1,5 +1,3 @@
-import { Stack, Title, Text } from '@mantine/core';
-import React from 'react';
 import { getOperatingYear } from '../../pages/stats/[paramYear]';
 import { trpc } from '../../utils/trpc';
 import Loading from '../loading';
@@ -41,22 +39,20 @@ const CorpsStats = () => {
     orchestraAttendanceLoading ||
     balletAttendanceLoading;
   return (
-    <Stack>
-      <Title order={3}>Närvaro</Title>
+    <div className='flex flex-col space-y-2'>
+      <h3>Närvaro</h3>
       {loading && <Loading msg='Laddar...' />}
-      {points !== undefined && (
-        <Title order={5}>{`Du har totalt ${points} spelpoäng!`}</Title>
-      )}
+      {points !== undefined && <h5>{`Du har totalt ${points} spelpoäng!`}</h5>}
       {corpsStats &&
         orchestraRehearsalAttendance !== undefined &&
         balletRehearsalAttendance !== undefined && (
-          <Stack spacing={0}>
-            <Title order={6}>
+          <div className='flex flex-col'>
+            <h6>
               {`Nuvarande verksamhetsår (${operatingYear}-${
                 operatingYear + 1
               }):`}
-            </Title>
-            <Text>
+            </h6>
+            <div>
               {`Spelpoäng: ${corpsStats.gigsAttended}`}
               <br />
               {`Spelningar: ${Math.ceil(corpsStats.attendence * 100)}%`}
@@ -76,10 +72,10 @@ const CorpsStats = () => {
                   )}%`}
                 </>
               )}
-            </Text>
-          </Stack>
+            </div>
+          </div>
         )}
-    </Stack>
+    </div>
   );
 };
 

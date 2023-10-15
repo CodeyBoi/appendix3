@@ -9,20 +9,24 @@ const Button = ({ disabled, children, leftSection, ...props }: ButtonProps) => {
     return (
       <button
         {...props}
-        className='flex align-top space-x-2 px-5 pb-2.5 pt-2.5 text-neutral-700 dark:text-neutral-300 dark:bg-neutral-700 bg-neutral-300 rounded whitespace-nowrap font-display h-min opacity-50 cursor-not-allowed'
+        className='px-5 pb-2.5 pt-2.5 text-neutral-700 dark:text-neutral-300 dark:bg-neutral-700 bg-neutral-300 rounded h-min opacity-50 cursor-not-allowed'
       >
-        {leftSection}
-        {children}
+        <div className='flex items-center justify-center space-x-2'>
+          {leftSection}
+          <div className='font-display whitespace-nowrap'>{children}</div>
+        </div>
       </button>
     );
   } else {
     return (
       <button
         {...props}
-        className='flex align-top space-x-2 px-5 pb-2.5 pt-2.5 text-white bg-red-600 rounded hover:bg-red-700 whitespace-nowrap font-display h-min'
+        className='px-5 pb-2.5 pt-2.5 text-white bg-red-600 rounded hover:bg-red-700 h-min'
       >
-        {leftSection}
-        {children}
+        <div className='flex items-center justify-center space-x-2'>
+          {leftSection}
+          <div className='font-display whitespace-nowrap'>{children}</div>
+        </div>
       </button>
     );
   }

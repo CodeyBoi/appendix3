@@ -1,11 +1,4 @@
-import {
-  Button,
-  Group,
-  MultiSelect,
-  Select,
-  SimpleGrid,
-  TextInput,
-} from '@mantine/core';
+import { Button, MultiSelect, Select, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
@@ -109,11 +102,12 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={loading || submitting}>
-        <SimpleGrid
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+          {/* <SimpleGrid
           cols={1}
           spacing='lg'
           breakpoints={[{ minWidth: 'md', cols: 2 }]}
-        >
+        > */}
           <TextInput
             withAsterisk
             label='Förnamn'
@@ -171,9 +165,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             withAsterisk
             {...form.getInputProps('role')}
           />
-        </SimpleGrid>
+        </div>
       </FormLoadingOverlay>
-      <Group position='right' mt='md'>
+      <div className='flex justify-end p-2'>
         <Button
           className='bg-red-600'
           disabled={!form.isTouched() || submitting || !form.isValid()}
@@ -182,7 +176,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         >
           {creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}
         </Button>
-      </Group>
+      </div>
     </form>
   );
 };
