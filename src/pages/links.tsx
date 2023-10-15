@@ -11,7 +11,7 @@ const Links = () => {
     <div>
       <Title order={1}>Länkar</Title>
       <Text size='lg' mt={12}>
-        <ul>
+        <ul className='pl-4 list-disc'>
           <li>
             <a style={style} href='https://www.bleckhornen.org/'>
               Bleckhornens publika hemsida
