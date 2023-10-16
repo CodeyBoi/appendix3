@@ -6,6 +6,13 @@ import GigSkeleton from '../components/gig/skeleton';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
 
+const WIDTHS = [
+  [200, 120, 95, 0.6],
+  [110, 75, 70, 0.2],
+  [235, 105, 95, 0.1],
+  [145, 155, 135, 0.4],
+];
+
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
 ) => {
@@ -87,10 +94,10 @@ const Home: NextPage = () => {
         {gigsLoading && (
           <>
             <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
-            <GigSkeleton />
-            <GigSkeleton />
-            <GigSkeleton />
-            <GigSkeleton />
+            <GigSkeleton widths={WIDTHS[0]} />
+            <GigSkeleton widths={WIDTHS[1]} />
+            <GigSkeleton widths={WIDTHS[2]} />
+            <GigSkeleton widths={WIDTHS[3]} />
           </>
         )}
         {gigs && makeGigList(gigs)}

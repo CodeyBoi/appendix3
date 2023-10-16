@@ -1,18 +1,11 @@
-import React from 'react';
-
-const genRandom = (min: number, max: number, step = 1) => {
-  const range = max - min;
-  const steps = range / step;
-  const randomStep = Math.floor(Math.random() * steps);
-  return min + randomStep * step;
+type GigSkeletonProps = {
+  widths?: number[];
 };
 
-const GigSkeleton = () => {
-  const titleWidth = genRandom(100, 300);
-  const typeWidth = genRandom(70, 170);
-  const locationWidth = genRandom(50, 140);
-  const textWidth = (Math.random() * 100).toString() + '%';
-
+const GigSkeleton = ({ widths = [] }: GigSkeletonProps) => {
+  const [titleWidth = 200, typeWidth = 120, locationWidth = 95, textW = 0.6] =
+    widths;
+  const textWidth = Math.floor(textW * 100) + '%';
   return (
     <div className='border rounded shadow-md border-neutral-500/20'>
       <div className='flex flex-col p-4 space-y-2 animate-pulse'>
