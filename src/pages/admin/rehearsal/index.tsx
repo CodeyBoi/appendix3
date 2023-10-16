@@ -1,4 +1,4 @@
-import { Modal, Select, SelectItem, Tabs, Title } from '@mantine/core';
+import { Modal, Select, SelectItem, Tabs } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import Button from '../../../components/button';
 import Loading from '../../../components/loading';
@@ -69,11 +69,11 @@ const Rehearsals = () => {
       <Modal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={<Title order={3}>Skapa repa</Title>}
+        title={<h3>Skapa repa</h3>}
       >
         <RehearsalForm onSubmit={() => setModalOpen(false)} />
       </Modal>
-      <div className='flex flex-col max-w-2xl gap-2'>
+      <div className='flex flex-col gap-2 max-w-max'>
         <h2>Repor</h2>
         <div className='flex items-end gap-4'>
           <Select

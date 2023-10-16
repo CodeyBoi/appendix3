@@ -3,7 +3,6 @@ import {
   Button,
   Center,
   Group,
-  Stack,
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
@@ -110,7 +109,7 @@ const Login = () => {
               setEmail(e.currentTarget.email.value);
             }}
           >
-            <Stack>
+            <div className='flex flex-col gap-2'>
               <h2 className='text-center text-white md:text-5xl'>
                 {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
                 <span style={{ color: theme?.colors?.red?.[5] }}>
@@ -143,7 +142,7 @@ const Login = () => {
                   </Button>
                 </Group>
               )}
-            </Stack>
+            </div>
           </form>
         </Box>
       </Center>

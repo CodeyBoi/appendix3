@@ -1,4 +1,4 @@
-import { Box, Title } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import GigCard from '../../../components/gig/card';
@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-const WhosComing = () => {
+const GigPage = () => {
   const router = useRouter();
   const gigId = router.query.id as string;
 
@@ -43,7 +43,7 @@ const WhosComing = () => {
 
   return (
     <div className='flex flex-col max-w-4xl space-y-4'>
-      <Title order={2}>Anmälningar</Title>
+      <h2>Anmälningar</h2>
       {gig ? <GigCard gig={gig} /> : <GigSkeleton />}
       {loading && (
         <Box sx={{ maxWidth: 'fit-content' }}>
@@ -55,4 +55,4 @@ const WhosComing = () => {
   );
 };
 
-export default WhosComing;
+export default GigPage;

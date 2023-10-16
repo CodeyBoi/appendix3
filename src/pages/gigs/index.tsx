@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
+import Button from '../../components/button';
 import Loading from '../../components/loading';
 import { trpc } from '../../utils/trpc';
 
@@ -32,6 +33,9 @@ const Gigs = ({ initialTab }: GigsProps) => {
       { startDate, endDate },
       { enabled: tab === 'my-gigs' },
     );
+
+  const { data: corps } = trpc.corps.getSelf.useQuery();
+  const isAdmin = corps?.role?.name === 'admin';
 
   const loading =
     (allGigsLoading && tab === 'all-gigs') ||
@@ -78,7 +82,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>
               <div className='flex items-center gap-2 py-1 pl-2 cursor-pointer hover:bg-red-300/10'>
-                <div className='min-w-max'>
+                <div className='w-24'>
                   {dayjs(gig.date).format('YYYY-MM-DD')}
                 </div>
                 {gig.title}
@@ -95,7 +99,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
   return (
     <div className='flex flex-col gap-2 max-w-fit'>
       <h2>Spelningar</h2>
-      <div className='w-24'>
+      <div className='flex items-end gap-4'>
         <Select
           label='År'
           maxDropdownHeight={280}
@@ -103,6 +107,11 @@ const Gigs = ({ initialTab }: GigsProps) => {
           value={year.toString()}
           onChange={changeYear}
         />
+        {isAdmin && (
+          <Link href='/admin/gig/new'>
+            <Button>Skapa spelning</Button>
+          </Link>
+        )}
       </div>
 
       <Tabs value={tab} onTabChange={changeTab}>

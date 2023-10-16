@@ -1,4 +1,4 @@
-import { Modal, Stack, Title } from '@mantine/core';
+import { Modal } from '@mantine/core';
 import { Rehearsal as RehearsalPrisma } from '@prisma/client';
 import { IconEdit } from '@tabler/icons';
 import React from 'react';
@@ -18,14 +18,14 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title={<Title order={3}>Uppdatera repa</Title>}
+        title={<h3>Uppdatera repa</h3>}
       >
         <RehearsalForm
           rehearsal={rehearsal}
           onSubmit={() => setOpened(false)}
         />
       </Modal>
-      <Stack>
+      <div className='flex flex-col gap-2'>
         <h1>
           {rehearsal.title + ' (' + rehearsal.date.toLocaleDateString() + ')'}
         </h1>
@@ -37,7 +37,7 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
           Redigera
         </Button>
         <RehearsalAttendence rehearsal={rehearsal} />
-      </Stack>
+      </div>
     </>
   );
 };

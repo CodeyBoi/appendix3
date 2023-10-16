@@ -77,7 +77,6 @@ const Home: NextPage = () => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
   return (
-    // <Stack sx={{ maxWidth: 800 }} spacing='xs'>
     <div className='flex flex-col max-w-4xl space-y-4'>
       <h2 className='text-2xl md:text-4xl'>
         {gigs && gigs.length === 0

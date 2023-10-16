@@ -1,10 +1,8 @@
-import React from 'react';
-import Loading from '../../../components/loading';
 import { useRouter } from 'next/router';
-import { trpc } from '../../../utils/trpc';
-import QuoteForm from '../../../components/quote/form';
-import { Stack, Title } from '@mantine/core';
 import AlertError from '../../../components/alert-error';
+import Loading from '../../../components/loading';
+import QuoteForm from '../../../components/quote/form';
+import { trpc } from '../../../utils/trpc';
 
 const MAX_TRIES = 3;
 
@@ -21,8 +19,8 @@ const QuotePage = () => {
   );
 
   return (
-    <Stack align='flex-start'>
-      <Title order={2}>{(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}</Title>
+    <div className='flex flex-col max-w-sm gap-2'>
+      <h2>{(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}</h2>
       {!newQuote && !quote && failureCount < MAX_TRIES && (
         <Loading msg='Laddar citat...' />
       )}
@@ -31,7 +29,7 @@ const QuotePage = () => {
       )}
       {!newQuote && quote && <QuoteForm quote={quote} />}
       {newQuote && <QuoteForm />}
-    </Stack>
+    </div>
   );
 };
 

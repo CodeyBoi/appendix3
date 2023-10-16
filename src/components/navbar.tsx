@@ -5,7 +5,6 @@ import {
   Navbar,
   SegmentedControl,
   Space,
-  Stack,
   createStyles,
   useMantineTheme,
 } from '@mantine/core';
@@ -22,7 +21,6 @@ import {
   IconQuote,
   IconSpeakerphone,
   IconUser,
-  IconUserPlus,
 } from '@tabler/icons';
 import cuid from 'cuid';
 import { signOut } from 'next-auth/react';
@@ -30,7 +28,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getOperatingYear } from '../pages/stats/[paramYear]';
 import { trpc } from '../utils/trpc';
-import IconMusicPlus from './icons/music-plus';
 
 interface LinkItem {
   label: string;
@@ -89,48 +86,22 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   ],
   admin: [
     {
-      title: 'Corps',
       links: [
         {
-          label: 'Skapa corps',
-          href: '/admin/corps/new',
-          icon: <IconUserPlus />,
-        },
-        {
-          label: 'Visa och uppdatera corps',
+          label: 'Corps',
           href: '/admin/corps',
           icon: <IconUser />,
         },
-      ],
-    },
-    {
-      title: 'Spelningar',
-      links: [
         {
-          label: 'Skapa spelning',
-          href: '/admin/gig/new',
-          icon: <IconMusicPlus />,
-        },
-        {
-          label: 'Visa alla spelningar',
+          label: 'Spelningar',
           href: '/admin/gigs',
           icon: <IconMusic />,
         },
-      ],
-    },
-    {
-      title: 'Repor',
-      links: [
         {
           label: 'Repor',
           href: '/admin/rehearsal',
           icon: <IconPencil />,
         },
-      ],
-    },
-    {
-      title: 'Övrigt',
-      links: [
         {
           label: 'Sektioner',
           href: '/admin/section',
@@ -215,7 +186,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         </Navbar.Section>
       )}
       <Navbar.Section sx={{ overflowY: 'auto' }} grow pt='sm' mx='sm'>
-        <Stack>{links}</Stack>
+        {links}
       </Navbar.Section>
       <Space p={6} />
       <Navbar.Section pb='sm' mx='sm'>

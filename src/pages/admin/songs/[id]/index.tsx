@@ -1,10 +1,8 @@
-import React from 'react';
 import { useRouter } from 'next/router';
-import { trpc } from '../../../../utils/trpc';
+import AlertError from '../../../../components/alert-error';
 import Loading from '../../../../components/loading';
 import SongForm from '../../../../components/song/form';
-import { Stack, Title } from '@mantine/core';
-import AlertError from '../../../../components/alert-error';
+import { trpc } from '../../../../utils/trpc';
 
 const MAX_TRIES = 3;
 
@@ -21,8 +19,8 @@ const Song = () => {
   );
 
   return (
-    <Stack align='flex-start' sx={{ maxWidth: '350px' }}>
-      <Title order={2}>{(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}</Title>
+    <div className='flex flex-col max-w-sm'>
+      <h2>{(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}</h2>
       {!newSong && !song && failureCount < MAX_TRIES && (
         <Loading msg='Laddar sång...' />
       )}
@@ -31,7 +29,7 @@ const Song = () => {
       )}
       {!newSong && song && <SongForm song={song} />}
       {newSong && <SongForm />}
-    </Stack>
+    </div>
   );
 };
 

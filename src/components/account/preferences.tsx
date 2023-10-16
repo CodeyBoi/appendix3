@@ -79,12 +79,12 @@ const AccountPreferences = () => {
   /* April fools */
 
   return (
-    <div className='flex flex-col space-y-4'>
+    <div className='flex flex-col gap-2'>
       <h3>Inställningar</h3>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <div className='flex flex-col space-y-2'>
+        <div className='flex flex-col gap-2'>
           <FormLoadingOverlay visible={submitting || corpsLoading}>
-            <div className='flex flex-col space-y-2'>
+            <div className='flex flex-col'>
               <h6>Allmänt</h6>
               <Switch
                 pl='xs'

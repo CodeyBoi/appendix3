@@ -1,7 +1,5 @@
-import React, { useMemo } from 'react';
-import { Stack, Title, Text, useMantineTheme, Grid } from '@mantine/core';
-import { trpc } from '../../../../utils/trpc';
-import { getOperatingYear } from '../../[paramYear]/index';
+import { useMantineTheme } from '@mantine/core';
+import { useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -15,6 +13,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { trpc } from '../../../../utils/trpc';
+import { getOperatingYear } from '../../[paramYear]/index';
 
 const encouragements = [
   'Ni är verkligen ett bra team!',
@@ -228,17 +228,17 @@ const StatsForNerds = () => {
   const reliabilityText = `Pålitlighet är hur mycket man kan lita på dig. Efter att du anmält dig brukar du ${avgSignupChangeText}`;
 
   return (
-    <Stack sx={{ maxWidth: 700 }}>
-      <Title order={2}>Statistik för nördar</Title>
-      <Stack>
-        <Text>
-          <Title order={3}>Din corpscarriär</Title>
+    <div className='flex flex-col max-w-4xl text-base'>
+      <h2>Statistik för nördar</h2>
+      <div className='flex flex-col gap-2'>
+        <div>
+          <h3>Din corpscarriär</h3>
           {careerText}
-        </Text>
-        <Stack>
-          <Title align='center' order={5}>
-            Graf över hur cool du varit från månad till månad 😎
-          </Title>
+        </div>
+        <div className='flex flex-col gap-4'>
+          <div className='text-center'>
+            <h4>Graf över hur cool du varit från månad till månad 😎</h4>
+          </div>
           <ResponsiveContainer width='100%' height={150}>
             <AreaChart data={chartData} style={{ marginLeft: '-35px' }}>
               <Area
@@ -263,75 +263,56 @@ const StatsForNerds = () => {
             </AreaChart>
           </ResponsiveContainer>
           {pentagon && (
-            <Grid>
-              <Grid.Col>
-                <Title order={4}>Dina corpsegenskaper 📋</Title>
-              </Grid.Col>
-              <Grid.Col md={6}>
-                <Text size='sm'>
-                  {attackText}
-                  <br />
-                  <br />
-                  {strengthText}
-                  <br />
-                  <br />
-                  {enduranceText}
-                  <br />
-                  <br />
-                  {hypeText}
-                  <br />
-                  <br />
-                  {reliabilityText}
-                </Text>
-              </Grid.Col>
-              <Grid.Col md={6}>
-                <ResponsiveContainer width='100%' height={210}>
-                  <RadarChart outerRadius={80} data={statPoints}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey='name' />
-                    <PolarRadiusAxis domain={[0, 10]} stroke='none' />
-                    <Radar
-                      name='Poäng'
-                      dataKey='value'
-                      stroke={primaryColor}
-                      fill={primaryColor}
-                      fillOpacity={0.6}
-                      dot={true}
-                    />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </Grid.Col>
-            </Grid>
+            <div className='grid grid-cols-1 lg:grid-cols-2'>
+              <div>
+                <h3>Dina corpsegenskaper 📋</h3>
+                {[
+                  attackText,
+                  strengthText,
+                  enduranceText,
+                  hypeText,
+                  reliabilityText,
+                ].join(' ')}
+              </div>
+              <ResponsiveContainer width='100%' height={210}>
+                <RadarChart outerRadius={80} data={statPoints}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey='name' />
+                  <PolarRadiusAxis domain={[0, 10]} stroke='none' />
+                  <Radar
+                    name='Poäng'
+                    dataKey='value'
+                    stroke={primaryColor}
+                    fill={primaryColor}
+                    fillOpacity={0.6}
+                    dot={true}
+                  />
+                  <Tooltip />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
           )}
           {(corpsBuddy || corpsEnemy) && (
-            <Text>
-              <Title order={4}>Corpsbästis 😇🤝😇 och corpssämstis 😱</Title>
+            <div>
+              <h4>Corpsbästis 😇🤝😇 och corpssämstis 😱</h4>
               {corpsBuddy &&
                 `${corpsBuddyText} ${corpsEnemy && corpsEnemyText}`}
-              <br />
-            </Text>
+            </div>
           )}
-        </Stack>
-        <Stack>
-          <Title order={3}>Allmän statistik</Title>
-        </Stack>
-      </Stack>
-      <Text>
-        <i>
-          <b>
-            DENNA SIDA ÄR UNDER KONSTRUKTION. SNART I EN BLINDTARM NÄRA DIG!
-          </b>
-          <br />
-          (har du några förslag på vad som skulle kunna finnas på denna sida?
-          skicka ett mail till{' '}
-          <a style={{ color: 'blue' }} href='mailto:itk@bleckhornen.org'>
-            <u>itk@bleckhornen.org</u>
-          </a>
-          )
-        </i>
-      </Text>
-    </Stack>
+        </div>
+        <h3>Allmän statistik</h3>
+      </div>
+      <i>
+        <b>DENNA SIDA ÄR UNDER KONSTRUKTION. SNART I EN BLINDTARM NÄRA DIG!</b>
+        <br />
+        (har du några förslag på vad som skulle kunna finnas på denna sida?
+        skicka ett mail till{' '}
+        <a style={{ color: 'blue' }} href='mailto:itk@bleckhornen.org'>
+          <u>itk@bleckhornen.org</u>
+        </a>
+        )
+      </i>
+    </div>
   );
 };
 

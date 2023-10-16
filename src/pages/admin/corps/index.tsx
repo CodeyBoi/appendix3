@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Button from '../../../components/button';
 import SelectCorps from '../../../components/select-corps';
 
 const ViewCorps = () => {
@@ -11,6 +13,9 @@ const ViewCorps = () => {
           placeholder='Välj corps...'
           onChange={(id) => router.push(`/admin/corps/${id}`)}
         />
+        <Link href='/admin/corps/new'>
+          <Button>Skapa corps</Button>
+        </Link>
       </div>
     </div>
   );
