@@ -29,17 +29,12 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
         <h1>
           {rehearsal.title + ' (' + rehearsal.date.toLocaleDateString() + ')'}
         </h1>
-<<<<<<< HEAD
         <Button
           className='bg-red-600'
           onClick={() => setOpened(true)}
           leftSection={<IconEdit />}
         >
-          Redigera
-=======
-        <Button onClick={() => setOpened(true)} leftIcon={<IconEdit />}>
           Muokata
->>>>>>> 8a2c741 (Translated A LOT of the text to Finnish)
         </Button>
         <RehearsalAttendence rehearsal={rehearsal} />
       </div>

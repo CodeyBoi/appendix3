@@ -80,7 +80,7 @@ const Home: NextPage = () => {
     startDate: currentDate,
   });
 
-  const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
+  const month = currentDate.toLocaleDateString('fi-FI', { month: 'long' });
 
   return (
     <div className='flex flex-col max-w-4xl space-y-4'>

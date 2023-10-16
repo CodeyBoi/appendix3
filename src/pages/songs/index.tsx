@@ -72,7 +72,6 @@ const Songs = () => {
   }, [loading, songs, search]);
 
   return (
-<<<<<<< HEAD
     <div className='flex flex-col max-w-lg gap-2'>
       <Head>
         <title>Sångboken</title>
@@ -80,7 +79,7 @@ const Songs = () => {
       <div className='flex items-center justify-between gap-4'>
         <div className='flex-grow'>
           <TextInput
-            placeholder='Sök...'
+            placeholder='Hae...'
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
             icon={<IconSearch />}
@@ -88,19 +87,6 @@ const Songs = () => {
         </div>
         <Link href='/admin/songs/new'>
           <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
-=======
-    <Stack sx={{ maxWidth: '500px' }}>
-      <Group position='apart'>
-        <TextInput
-          placeholder='Hae...'
-          value={search}
-          onChange={(e) => setSearch(e.currentTarget.value)}
-          icon={<IconSearch />}
-          sx={{ flex: '1' }}
-        />
-        {isAdmin && (
-          <ActionIcon component={NextLink} href='/admin/songs/new'>
->>>>>>> 8a2c741 (Translated A LOT of the text to Finnish)
             <IconPlus />
           </div>
         </Link>

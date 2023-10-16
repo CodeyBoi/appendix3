@@ -107,13 +107,8 @@ const SongForm = ({ song }: SongFormProps) => {
               POISTA KAPPALE
             </Button>
           )}
-<<<<<<< HEAD
           <Button className='bg-red-600' type='submit'>
-            {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
-=======
-          <Button type='submit'>
             {(newSong ? 'Luo' : 'Päivitä') + ' kappale'}
->>>>>>> 8a2c741 (Translated A LOT of the text to Finnish)
           </Button>
         </div>
       </div>

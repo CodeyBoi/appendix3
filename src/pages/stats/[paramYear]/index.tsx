@@ -84,7 +84,7 @@ const Statistics: NextPage = () => {
   };
 
   if (!router.isReady) {
-    return <Loading msg='Laddar statistik...' />;
+    return <Loading msg='Tilastojen hakeminen...' />;
   }
 
   const yearData =
@@ -102,7 +102,7 @@ const Statistics: NextPage = () => {
       <h2>Tilastot</h2>
       <div className='w-36'>
         <Select
-          label='Verksamhetsår'
+          label='Toimintavuosi'
           defaultValue={paramYear}
           maxDropdownHeight={250}
           data={yearData}
