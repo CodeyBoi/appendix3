@@ -1,13 +1,10 @@
 import {
-  SimpleGrid,
-  TextInput,
-  Select,
-  NumberInput,
-  Grid,
-  Textarea,
-  Group,
-  Checkbox,
   Button,
+  Checkbox,
+  NumberInput,
+  Select,
+  TextInput,
+  Textarea,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -15,8 +12,8 @@ import { Gig } from '@prisma/client';
 import { IconCalendar, IconClock } from '@tabler/icons';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
-import MultiSelectCorps from '../multi-select-corps';
 import FormLoadingOverlay from '../form-loading-overlay';
+import MultiSelectCorps from '../multi-select-corps';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -102,15 +99,8 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
 
   return (
     <FormLoadingOverlay visible={submitting}>
-      <form
-        style={{ maxWidth: '720px' }}
-        onSubmit={form.onSubmit(handleSubmit)}
-      >
-        <SimpleGrid
-          cols={1}
-          breakpoints={[{ minWidth: 'md', cols: 2 }]}
-          mb='md'
-        >
+      <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
+        <div className='grid grid-cols-1 content-baseline gap-x-4 gap-y-2 md:grid-cols-2'>
           <TextInput
             label='Titel'
             placeholder='Titel'
@@ -143,17 +133,13 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
             clearable={false}
             {...form.getInputProps('date')}
           />
-        </SimpleGrid>
-        <Grid mb='xs'>
-          <Grid.Col span={12} md={6}>
-            <TextInput
-              label='Plats'
-              placeholder='Plats'
-              spellCheck={false}
-              {...form.getInputProps('location')}
-            />
-          </Grid.Col>
-          <Grid.Col span={6} md={3}>
+          <TextInput
+            label='Plats'
+            placeholder='Plats'
+            spellCheck={false}
+            {...form.getInputProps('location')}
+          />
+          <div className='grid grid-cols-2 space-x-4'>
             <TextInput
               icon={<IconClock />}
               label='Samlingstid'
@@ -161,8 +147,6 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
               spellCheck='false'
               {...form.getInputProps('meetup')}
             />
-          </Grid.Col>
-          <Grid.Col span={6} md={3}>
             <TextInput
               icon={<IconClock />}
               label='Spelningstart'
@@ -170,20 +154,15 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
               spellCheck='false'
               {...form.getInputProps('start')}
             />
-          </Grid.Col>
-        </Grid>
-        <Textarea
-          mb='md'
-          autosize
-          label='Beskrivning'
-          placeholder='Beskrivning'
-          {...form.getInputProps('description')}
-        />
-        <SimpleGrid
-          cols={1}
-          mb='md'
-          breakpoints={[{ minWidth: 'md', cols: 2 }]}
-        >
+          </div>
+          <div className='col-span-1 md:col-span-2'>
+            <Textarea
+              autosize
+              label='Beskrivning'
+              placeholder='Beskrivning'
+              {...form.getInputProps('description')}
+            />
+          </div>
           <DatePicker
             label='Anmälningsstart'
             description='Lämna tom för att tillåta anmälan omedelbart'
@@ -212,19 +191,18 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
-        </SimpleGrid>
-        <MultiSelectCorps
-          mb='md'
-          maxDropdownHeight={260}
-          label='Dölj spelning'
-          disabled={form.values.isPublic}
-          defaultValue={form.values.hiddenFor}
-          description='Spelningsanmälan kommer inte att synas för dessa corps'
-          placeholder='Välj corps...'
-          {...form.getInputProps('hiddenFor')}
-        />
-        <Group position='apart'>
-          <Group position='left'>
+          <div className='col-span-1 md:col-span-2'>
+            <MultiSelectCorps
+              maxDropdownHeight={260}
+              label='Dölj spelning'
+              disabled={form.values.isPublic}
+              defaultValue={form.values.hiddenFor}
+              description='Spelningsanmälan kommer inte att synas för dessa corps'
+              placeholder='Välj corps...'
+              {...form.getInputProps('hiddenFor')}
+            />
+          </div>
+          <div className='flex space-x-4 whitespace-nowrap'>
             <Checkbox
               label='Allmän spelning?'
               radius='xl'
@@ -237,8 +215,8 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
                 type: 'checkbox',
               })}
             />
-          </Group>
-          <Group position='right'>
+          </div>
+          <div className='flex items-center justify-end space-x-4'>
             {!newGig && (
               <Button
                 variant='outline'
@@ -257,11 +235,15 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
                 Radera spelning
               </Button>
             )}
-            <Button type='submit' disabled={!form.isDirty()}>
+            <Button
+              type='submit'
+              className='bg-red-600'
+              disabled={!form.isDirty()}
+            >
               {newGig ? 'Skapa spelning' : 'Spara ändringar'}
             </Button>
-          </Group>
-        </Group>
+          </div>
+        </div>
       </form>
     </FormLoadingOverlay>
   );

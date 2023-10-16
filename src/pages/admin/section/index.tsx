@@ -1,8 +1,6 @@
-import { Group, Stack, Title } from '@mantine/core';
-import React from 'react';
-import { trpc } from '../../../utils/trpc';
 import Loading from '../../../components/loading';
 import SelectCorps from '../../../components/select-corps';
+import { trpc } from '../../../utils/trpc';
 
 const AdminSection = () => {
   const utils = trpc.useContext();
@@ -14,14 +12,14 @@ const AdminSection = () => {
   });
 
   return (
-    <Stack>
-      <Title order={2}>Sektioner</Title>
+    <div className='flex flex-col gap-2'>
+      <h2>Sektioner</h2>
       {isInitialLoading && <Loading msg='Hämtar sektioner...' />}
-      {sections && (
-        <Stack>
-          {sections.map((section) => (
-            <Group key={section.id}>
-              <Title order={4}>{section.name}</Title>
+      {sections &&
+        sections.map((section) => (
+          <div className='flex flex-col' key={section.id}>
+            <h4>{section.name}</h4>
+            <div className='max-w-xs'>
               <SelectCorps
                 onChange={(value) => {
                   if (!value) return;
@@ -33,11 +31,10 @@ const AdminSection = () => {
                 defaultValue={section.leader?.id}
                 placeholder='Välj sektionsledare...'
               />
-            </Group>
-          ))}
-        </Stack>
-      )}
-    </Stack>
+            </div>
+          </div>
+        ))}
+    </div>
   );
 };
 

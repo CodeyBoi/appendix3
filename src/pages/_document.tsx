@@ -1,10 +1,10 @@
 import { createStylesServer, ServerStyles } from '@mantine/next';
 import Document, {
-  Html,
+  DocumentContext,
   Head,
+  Html,
   Main,
   NextScript,
-  DocumentContext,
 } from 'next/document';
 
 const stylesServer = createStylesServer();

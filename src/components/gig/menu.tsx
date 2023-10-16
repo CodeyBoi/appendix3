@@ -1,15 +1,14 @@
-import { Menu, Group, ActionIcon } from '@mantine/core';
+import { Menu } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Gig } from '@prisma/client';
 import {
-  IconDotsVertical,
-  IconUsers,
   IconCalendarPlus,
+  IconDotsVertical,
   IconEdit,
   IconInfoCircle,
+  IconUsers,
 } from '@tabler/icons';
 import dayjs from 'dayjs';
-import React from 'react';
 
 type GigMenuProps = {
   gig: Gig & { type: { name: string } };
@@ -63,13 +62,11 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
 
   return (
     <Menu shadow='md' width={200} position='left-start' withArrow>
-      <Group position='right'>
-        <Menu.Target>
-          <ActionIcon variant='subtle'>
-            <IconDotsVertical />
-          </ActionIcon>
-        </Menu.Target>
-      </Group>
+      <Menu.Target>
+        <button className='p-1 text-red-600 rounded hover:bg-red-600/10'>
+          <IconDotsVertical />
+        </button>
+      </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item
           icon={<IconUsers />}

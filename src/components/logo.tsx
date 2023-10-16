@@ -1,29 +1,14 @@
-import React from 'react';
-import { Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
+import Link from 'next/link';
 
 const Logo = () => {
   const date = new Date();
   const isAprilFools = date.getMonth() === 3 && date.getDate() === 1;
   return (
-    // <Text
-    //   sx={{
-    //     fontSize: "1.5rem",
-    //     fontFamily: "Castellar",
-    //   }}
-    //   component={NextLink}
-    //   href="/"
-    // >Blindtarmen</Text>
-    <Text
-      sx={{
-        fontSize: '1.5rem',
-        fontFamily: 'Castellar',
-      }}
-      component={NextLink}
-      href='/'
-    >
-      {isAprilFools ? 'Bihålan' : 'Blindtarmen'}
-    </Text>
+    <Link href='/'>
+      <div style={{ fontFamily: 'Castellar' }} className='text-2xl'>
+        {isAprilFools ? 'Bihålan' : 'Blindtarmen'}
+      </div>
+    </Link>
   );
 };
 

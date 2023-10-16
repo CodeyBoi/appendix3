@@ -1,6 +1,4 @@
-import { Table } from '@mantine/core';
 import { Corps } from '@prisma/client';
-import React from 'react';
 
 type RehearsalStatsProps = {
   totalRehearsals: number;
@@ -17,17 +15,19 @@ const formatName = (corps: Corps) => {
 
 const RehearsalStats = ({ totalRehearsals, stats }: RehearsalStatsProps) => {
   return (
-    <Table>
-      <tbody>
+    <table className='table'>
+      <tbody className='divide-y divide-solid'>
         {stats.map((stat) => (
           <tr key={stat.corps.id}>
-            <td>{formatName(stat.corps)}</td>
-            <td>{stat.count}</td>
-            <td>{Math.ceil((stat.count / totalRehearsals) * 100)}%</td>
+            <td className='pr-2'>{formatName(stat.corps)}</td>
+            <td className='px-2'>{stat.count}</td>
+            <td className='pl-2'>
+              {Math.ceil((stat.count / totalRehearsals) * 100)}%
+            </td>
           </tr>
         ))}
       </tbody>
-    </Table>
+    </table>
   );
 };
 

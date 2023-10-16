@@ -1,10 +1,7 @@
 import {
   Button,
-  Group,
-  Stack,
   Switch,
   TextInput,
-  Title,
   useMantineColorScheme,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -82,13 +79,13 @@ const AccountPreferences = () => {
   /* April fools */
 
   return (
-    <Stack>
-      <Title order={3}>Inställningar</Title>
+    <div className='flex flex-col gap-2'>
+      <h3>Inställningar</h3>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack spacing='md'>
+        <div className='flex flex-col gap-2'>
           <FormLoadingOverlay visible={submitting || corpsLoading}>
-            <Stack spacing='xs'>
-              <Title order={6}>Allmänt</Title>
+            <div className='flex flex-col'>
+              <h6>Allmänt</h6>
               <Switch
                 pl='xs'
                 mb='md'
@@ -114,7 +111,7 @@ const AccountPreferences = () => {
                   }
                 }}
               />
-              <Title order={6}> Kontaktuppgifter</Title>
+              <h6> Kontaktuppgifter</h6>
               <TextInput
                 label='Förnamn'
                 placeholder='Förnamn'
@@ -133,10 +130,10 @@ const AccountPreferences = () => {
                 withAsterisk
                 {...form.getInputProps('email')}
               />
-            </Stack>
+            </div>
             <br />
-            <Stack spacing='xs'>
-              <Title order={6}>Matpreferenser</Title>
+            <div className='flex flex-col space-y-2'>
+              <h6>Matpreferenser</h6>
               <Switch
                 pl='xs'
                 label='Dricker alkohol'
@@ -171,20 +168,21 @@ const AccountPreferences = () => {
                 placeholder='Övriga matpreferenser...'
                 {...form.getInputProps('otherFoodPrefs')}
               />
-            </Stack>
+            </div>
           </FormLoadingOverlay>
-          <Group position='right'>
+          <div className='flex justify-end p-2'>
             <Button
+              className='bg-red-600'
               disabled={!form.isTouched() || !form.isValid() || submitting}
               loading={submitting}
               type='submit'
             >
               Spara
             </Button>
-          </Group>
-        </Stack>
+          </div>
+        </div>
       </form>
-    </Stack>
+    </div>
   );
 };
 

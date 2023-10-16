@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  createStyles,
   Divider,
   Navbar,
   SegmentedControl,
-  Stack,
+  Space,
+  createStyles,
   useMantineTheme,
 } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 import {
   IconClipboard,
   IconHome,
@@ -18,19 +18,16 @@ import {
   IconMicrophone2,
   IconMusic,
   IconPencil,
-  IconPencilPlus,
   IconQuote,
   IconSpeakerphone,
   IconUser,
-  IconUserPlus,
 } from '@tabler/icons';
-import { getOperatingYear } from '../pages/stats/[paramYear]';
-import { NextLink } from '@mantine/next';
-import { trpc } from '../utils/trpc';
-import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
 import cuid from 'cuid';
-import IconMusicPlus from './icons/music-plus';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { getOperatingYear } from '../pages/stats/[paramYear]';
+import { trpc } from '../utils/trpc';
 
 interface LinkItem {
   label: string;
@@ -89,48 +86,22 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   ],
   admin: [
     {
-      title: 'Corps',
       links: [
         {
-          label: 'Skapa corps',
-          href: '/admin/corps/new',
-          icon: <IconUserPlus />,
-        },
-        {
-          label: 'Visa och uppdatera corps',
+          label: 'Corps',
           href: '/admin/corps',
           icon: <IconUser />,
         },
-      ],
-    },
-    {
-      title: 'Spelningar',
-      links: [
         {
-          label: 'Skapa spelning',
-          href: '/admin/gig/new',
-          icon: <IconMusicPlus />,
-        },
-        {
-          label: 'Visa alla spelningar',
+          label: 'Spelningar',
           href: '/admin/gigs',
           icon: <IconMusic />,
         },
-      ],
-    },
-    {
-      title: 'Repor',
-      links: [
         {
           label: 'Repor',
           href: '/admin/rehearsal',
           icon: <IconPencil />,
         },
-      ],
-    },
-    {
-      title: 'Övrigt',
-      links: [
         {
           label: 'Sektioner',
           href: '/admin/section',
@@ -162,7 +133,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
   }, [router.asPath]);
 
   const links = tabs[activeTab].map((tab) => (
-    <Stack key={tab.title || cuid()} spacing='xs'>
+    <div className='flex flex-col gap-2' key={tab.title || cuid()}>
       {tab.title && <Divider label={tab.title} color='white' />}
       {tab.links.map((link) => (
         <Button
@@ -182,12 +153,12 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           {link.label}
         </Button>
       ))}
-    </Stack>
+    </div>
   ));
 
   return (
     <Box
-      style={{ height: 'calc(100vh - 60px)' }}
+      style={{ height: 'calc(100vh - 56px)' }}
       pb='md'
       className={classes.navbar}
     >
@@ -214,9 +185,10 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           />
         </Navbar.Section>
       )}
-      <Navbar.Section grow pt='sm' mx='sm'>
-        <Stack>{links}</Stack>
+      <Navbar.Section sx={{ overflowY: 'auto' }} grow pt='sm' mx='sm'>
+        {links}
       </Navbar.Section>
+      <Space p={6} />
       <Navbar.Section pb='sm' mx='sm'>
         <Button
           px={6}

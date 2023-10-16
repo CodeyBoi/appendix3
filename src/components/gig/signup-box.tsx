@@ -1,5 +1,5 @@
-import { Checkbox, SegmentedControl, Select, Stack } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { Checkbox, SegmentedControl, Select } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 
@@ -55,10 +55,9 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
 
   return (
     <FormLoadingOverlay visible={loading}>
-      <Stack spacing={6}>
+      <div className='flex flex-col gap-2'>
         <SegmentedControl
           disabled={signupRefetching || submitting}
-          size='xs'
           value={status}
           fullWidth
           color='red'
@@ -158,7 +157,7 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
             }}
           />
         )}
-      </Stack>
+      </div>
     </FormLoadingOverlay>
   );
 };

@@ -1,21 +1,13 @@
-import {
-  Button,
-  Group,
-  Modal,
-  Select,
-  SelectItem,
-  Stack,
-  Tabs,
-  Title,
-} from '@mantine/core';
-import React, { useMemo, useState } from 'react';
+import { Modal, Select, SelectItem, Tabs } from '@mantine/core';
+import { useMemo, useState } from 'react';
+import Button from '../../../components/button';
 import Loading from '../../../components/loading';
+import RehearsalForm from '../../../components/rehearsal/form';
 import RehearsalList from '../../../components/rehearsal/list';
 import RehearsalStats from '../../../components/rehearsal/stats';
+import { newUTCDate } from '../../../utils/date';
 import { trpc } from '../../../utils/trpc';
 import { getOperatingYear } from '../../stats/[paramYear]';
-import { newUTCDate } from '../../../utils/date';
-import RehearsalForm from '../../../components/rehearsal/form';
 
 const Rehearsals = () => {
   const [year, setYear] = useState(getOperatingYear());
@@ -77,66 +69,68 @@ const Rehearsals = () => {
       <Modal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={<Title order={3}>Skapa repa</Title>}
+        title={<h3>Skapa repa</h3>}
       >
         <RehearsalForm onSubmit={() => setModalOpen(false)} />
       </Modal>
-      <Stack align='flex-start'>
-        <Title order={2}>Repor</Title>
-        <Group position='left' align='end'>
+      <div className='flex flex-col gap-2 max-w-max'>
+        <h2>Repor</h2>
+        <div className='flex items-end gap-4'>
           <Select
             label='Verksamhetsår'
             value={year.toString()}
             onChange={(value) => setYear(parseInt(value as string))}
             data={years}
           />
-          <Button onClick={() => setModalOpen(true)}>Skapa repa</Button>
-        </Group>
+          <Button className='bg-red-600' onClick={() => setModalOpen(true)}>
+            Skapa repa
+          </Button>
+        </div>
         <Tabs defaultValue='all-rehearsals'>
-          <Tabs.List mb={12}>
+          <Tabs.List>
             <Tabs.Tab value='all-rehearsals'>Alla repor</Tabs.Tab>
             <Tabs.Tab value='stats'>Statistik</Tabs.Tab>
           </Tabs.List>
-
+          <br />
           <Tabs.Panel value='all-rehearsals'>
             {isInitialLoading && <Loading msg='Laddar repor...' />}
             {splitRehearsals && (
-              <Group position='left' align='baseline'>
-                <Stack>
-                  <Title order={3}>Orkesterrepor</Title>
+              <div className='flex items-baseline gap-4'>
+                <div className='flex flex-col gap-2'>
+                  <h3>Orkesterrepor</h3>
                   <RehearsalList rehearsals={splitRehearsals.orchestra ?? []} />
-                </Stack>
-                <Stack>
-                  <Title order={3}>Balettrepor</Title>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <h3>Balettrepor</h3>
                   <RehearsalList rehearsals={splitRehearsals.ballet ?? []} />
-                </Stack>
-              </Group>
+                </div>
+              </div>
             )}
           </Tabs.Panel>
 
           <Tabs.Panel value='stats'>
             {isInitialLoading && <Loading msg='Laddar repstatistik...' />}
             {orchestraStats && balletStats && (
-              <Group position='left' align='baseline'>
-                <Stack>
-                  <Title order={3}>Orkesterrepor</Title>
+              <div className='flex items-baseline gap-4'>
+                <div className='flex flex-col gap-2'>
+                  <h3>Orkesterrepor</h3>
                   <RehearsalStats
                     stats={orchestraStats.stats}
                     totalRehearsals={orchestraStats.nonPositiveRehearsals}
                   />
-                </Stack>
-                <Stack>
-                  <Title order={3}>Balettrepor</Title>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <h3>Balettrepor</h3>
                   <RehearsalStats
                     stats={balletStats.stats}
                     totalRehearsals={balletStats.nonPositiveRehearsals}
                   />
-                </Stack>
-              </Group>
+                </div>
+              </div>
             )}
           </Tabs.Panel>
         </Tabs>
-      </Stack>
+      </div>
     </>
   );
 };

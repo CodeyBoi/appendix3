@@ -1,5 +1,5 @@
-import { Center, Checkbox, Tooltip, CloseButton } from '@mantine/core';
-import React from 'react';
+import { Checkbox } from '@mantine/core';
+import { IconX } from '@tabler/icons';
 
 interface SignupEntryProps {
   signup: {
@@ -23,40 +23,32 @@ const Entry = ({
   setAttendance,
   handleDelete,
 }: SignupEntryProps) => {
-  const tdStyle = {
-    paddingTop: 0,
-    paddingBottom: 0,
-    borderBottom: isAdmin ? undefined : 0,
-  };
   const name = `${signup.number ? '#' + signup.number.toString() : 'p.e.'} ${
     signup.firstName
   } ${signup.lastName}`;
 
   return (
     <>
-      <td style={{ ...tdStyle, width: '40px' }}>{signup.instrument}</td>
-      <td
-        style={{ ...tdStyle, whiteSpace: isAdmin ? 'break-spaces' : 'nowrap' }}
-      >
-        {name}
-      </td>
+      <td>{name}</td>
       {isAdmin && (
         <>
-          <td style={tdStyle}>
-            <Center>
+          <td className='px-2'>
+            <div className='flex place-content-center'>
               <Checkbox
                 styles={{ root: { display: 'flex' } }}
                 defaultChecked={signup.attended}
                 onChange={(event) => setAttendance(event.target.checked)}
               />
-            </Center>
+            </div>
           </td>
-          <td style={tdStyle}>
-            <Center>
-              <Tooltip label='Ta bort anmälan'>
-                <CloseButton color='red' onClick={handleDelete} />
-              </Tooltip>
-            </Center>
+          <td className='flex px-2 place-content-center'>
+            <button
+              className='text-red-600'
+              type='button'
+              onClick={handleDelete}
+            >
+              <IconX />
+            </button>
           </td>
         </>
       )}

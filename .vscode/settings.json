@@ -1,5 +1,8 @@
 {
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+  },
   "WillLuke.nextjs.hasPrompted": true
 }

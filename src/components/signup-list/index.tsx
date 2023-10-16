@@ -1,22 +1,13 @@
-import React, { useMemo } from 'react';
-import {
-  Box,
-  Table,
-  Text,
-  Title,
-  Button,
-  Group,
-  Space,
-  Switch,
-} from '@mantine/core';
+import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconInfoCircle, IconUser } from '@tabler/icons';
+import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
 import { trpc } from '../../utils/trpc';
-import MultiSelectCorps from '../multi-select-corps';
+import Button from '../button';
 import Loading from '../loading';
+import MultiSelectCorps from '../multi-select-corps';
 import Entry from './entry';
-import { NextLink } from '@mantine/next';
 
 interface SignupListProps {
   gigId: string;
@@ -47,7 +38,7 @@ const FULL_SETTING: [string, number][] = [
 
 const toPlural = (instrument: string) => {
   instrument = instrument.trim().toLowerCase();
-  if (instrument === 'piccolo') {
+  if (instrument === 'piccola') {
     return 'piccolor';
   } else if (instrument === 'oboe') {
     return 'oboer';
@@ -172,9 +163,9 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   const editAttendance = trpc.gig.editAttendance.useMutation();
 
   const removeSignup = trpc.gig.removeSignup.useMutation({
-    onSuccess: async () => {
-      await utils.gig.getSignup.invalidate();
-      await utils.gig.getSignups.invalidate();
+    onSuccess: async ({ corpsId, gigId }) => {
+      await utils.gig.getSignup.invalidate({ corpsId, gigId });
+      await utils.gig.getSignups.invalidate({ gigId });
     },
   });
 
@@ -192,53 +183,39 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
     if (signups.length === 0) {
       return;
     }
-    let lastInstrument = signups[0]?.instrument ?? '';
+    let lastInstrument = '';
     return (
-      <Table sx={{ width: 'unset' }}>
+      <table className='text-sm table-auto'>
         <thead>
           <tr>
-            <th
-              style={{
-                width: '75px',
-                borderBottom: showAdminTools ? undefined : 0,
-              }}
-            >
-              Instrument
-            </th>
-            <th style={{ borderBottom: showAdminTools ? undefined : 0 }}>
-              Namn
-            </th>
-            {showAdminTools && (
+            {showAdminTools ? (
               <>
-                <th
-                  align='center'
-                  style={{ paddingLeft: '0px', paddingRight: '6px' }}
-                >
-                  Närvaro
-                </th>
-                <th
-                  align='center'
-                  style={{ paddingLeft: '0px', paddingRight: '0px' }}
-                >
-                  Ta bort
-                </th>
+                <th className='text-left'>Namn</th>
+                <th className='px-1'>Här?</th>
+                <th className='px-1'>Vask</th>
+              </>
+            ) : (
+              <>
+                <th></th>
+                <th></th>
+                <th></th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
           {signups.map((signup) => {
-            const addNewline =
-              !showAdminTools && signup.instrument !== lastInstrument;
+            const addNewline = signup.instrument !== lastInstrument;
             lastInstrument = signup.instrument;
             return (
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
-                  <tr key={signup.corpsId + 'newline'}>
-                    <td
-                      colSpan={showAdminTools ? 4 : 2}
-                      style={{ borderBottom: 0 }}
-                    />
+                  <tr>
+                    <td>
+                      <h4 className='mt-2 first-letter:capitalize'>
+                        {toPlural(signup.instrument)}
+                      </h4>
+                    </td>
                   </tr>
                 )}
                 <tr>
@@ -259,7 +236,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             );
           })}
         </tbody>
-      </Table>
+      </table>
     );
   };
 
@@ -269,10 +246,13 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
 
   const instrumentCount = useMemo(
     () =>
-      yesList?.reduce((acc, signup) => {
-        acc[signup.instrument] = (acc[signup.instrument] ?? 0) + 1;
-        return acc;
-      }, {} as Record<string, number>),
+      yesList?.reduce(
+        (acc, signup) => {
+          acc[signup.instrument] = (acc[signup.instrument] ?? 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     [yesList],
   );
 
@@ -296,10 +276,9 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
   }, [missingInstrumentsCount]);
 
   return (
-    <Box>
+    <div className='space-y-2'>
       {isAdmin && (
         <>
-          <Space h='sm' />
           <Switch
             label='Redigera anmälningar'
             checked={editMode}
@@ -320,8 +299,7 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             }),
           )}
         >
-          <Space h='sm' />
-          <Group position='apart' noWrap>
+          <div className='flex justify-between flex-grow space-x-4 flex-nowrap'>
             <MultiSelectCorps
               sx={{ width: '100%' }}
               searchable
@@ -332,56 +310,57 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
               excludeIds={signups?.map((s) => s.corpsId) ?? []}
               {...form.getInputProps('corpsIds')}
             />
-            <Button type='submit'>Lägg till anmälningar</Button>
-          </Group>
+            <Button className='bg-red-600' type='submit'>
+              Lägg till anmälningar
+            </Button>
+          </div>
         </form>
       )}
-      <Space h='sm' />
       {signupsLoading && <Loading msg='Laddar anmälningar...' />}
       {!signupsLoading && (
-        <>
+        <div>
           {yesList.length === 0 ? (
-            <Title order={3}>
+            <h3>
               <i>Ingen är anmäld än. Kanske kan du bli den första?</i>
-            </Title>
+            </h3>
           ) : (
             <>
-              <Title order={3}>
-                {gigHasHappened ? 'Dessa var med:' : 'Dessa är anmälda:'}
-              </Title>
+              <h3>
+                {gigHasHappened
+                  ? showAdminTools
+                    ? 'Dessa var anmälda:'
+                    : 'Dessa var med:'
+                  : 'Dessa är anmälda:'}
+              </h3>
               {yesTable}
             </>
           )}
           {!gigHasHappened && (
-            <>
-              <Space h='md' />
-              <Text pl={12}>
-                {missingInstrumentsMessages.map((msg) => (
-                  <React.Fragment key={msg}>
-                    {msg}
-                    <br />
-                  </React.Fragment>
-                ))}
-              </Text>
-            </>
+            <div>
+              <div className='h-4' />
+              {missingInstrumentsMessages.map((msg) => (
+                <React.Fragment key={msg}>
+                  {msg}
+                  <br />
+                </React.Fragment>
+              ))}
+            </div>
           )}
-        </>
+        </div>
       )}
       {maybeList && maybeList.length > 0 && (
-        <>
-          <Space h='md' />
-          <Title order={3}>Dessa kanske kommer:</Title>
+        <div>
+          {!gigHasHappened && <h3>Dessa kanske kommer:</h3>}
           {maybeTable}
-        </>
+        </div>
       )}
       {isAdmin && noList && noList.length > 0 && (
-        <>
-          <Space h='md' />
-          <Title order={3}>Dessa kommer inte:</Title>
+        <div>
+          <h3>Dessa kommer inte:</h3>
           {noTable}
-        </>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

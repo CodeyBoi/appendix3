@@ -1,18 +1,10 @@
-import {
-  Stack,
-  TextInput,
-  Select,
-  Group,
-  Button,
-  Checkbox,
-} from '@mantine/core';
+import { Button, Checkbox, Select, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconCalendar, IconSend } from '@tabler/icons';
-import React from 'react';
-import { trpc } from '../../utils/trpc';
 import { Rehearsal } from '@prisma/client';
+import { IconCalendar, IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
+import { trpc } from '../../utils/trpc';
 
 const defaultValues = {
   title: '',
@@ -88,7 +80,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
 
   return (
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
+      <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
           placeholder='Titel'
@@ -122,7 +114,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
             type: 'checkbox',
           })}
         />
-        <Group position={newRehearsal ? 'right' : 'apart'}>
+        <div className='flex items-center justify-end gap-4'>
           {!newRehearsal && (
             <Button
               type='button'
@@ -140,11 +132,12 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
             type='submit'
             leftIcon={<IconSend />}
             loading={mutation.isLoading}
+            className='bg-red-600'
           >
             {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
-        </Group>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 };

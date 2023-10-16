@@ -3,16 +3,14 @@ import {
   Button,
   Center,
   Group,
-  Stack,
   TextInput,
-  Title,
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
 
@@ -111,14 +109,14 @@ const Login = () => {
               setEmail(e.currentTarget.email.value);
             }}
           >
-            <Stack>
-              <Title order={onMobile ? 2 : 1} color='white' align='center'>
+            <div className='flex flex-col gap-2'>
+              <h2 className='text-center text-white md:text-5xl'>
                 {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
                 <span style={{ color: theme?.colors?.red?.[5] }}>
                   Blindtarmen
                 </span>
                 !
-              </Title>
+              </h2>
               {!success && (
                 <Group align='baseline'>
                   <TextInput
@@ -144,7 +142,7 @@ const Login = () => {
                   </Button>
                 </Group>
               )}
-            </Stack>
+            </div>
           </form>
         </Box>
       </Center>

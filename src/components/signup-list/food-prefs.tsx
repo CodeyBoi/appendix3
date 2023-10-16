@@ -1,8 +1,7 @@
-import { CorpsFoodPrefs } from '@prisma/client';
-import React from 'react';
-import { trpc } from '../../utils/trpc';
 import { Button, Space, Table, createStyles } from '@mantine/core';
+import { CorpsFoodPrefs } from '@prisma/client';
 import { IconDownload } from '@tabler/icons';
+import { trpc } from '../../utils/trpc';
 
 type FoodPrefsProps = {
   gigId: string;
@@ -103,6 +102,7 @@ const FoodPrefs = ({ gigId, foodPrefs }: FoodPrefsProps) => {
         <>
           <Space h='md' />
           <Button
+            className='bg-red-600'
             leftIcon={<IconDownload />}
             component={'a'}
             href={csvDownloadLink}

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Group, Select, Stack, Title } from '@mantine/core';
-import StatisticsTable from '../../../components/statistics-table';
-import Loading from '../../../components/loading';
-import { useRouter } from 'next/router';
-import { NextPage } from 'next';
+import { Select } from '@mantine/core';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
+import { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import React from 'react';
+import Loading from '../../../components/loading';
+import StatisticsTable from '../../../components/statistics-table';
 
 export const getOperatingYear = () => {
   const date = new Date();
@@ -70,9 +70,9 @@ const Statistics: NextPage = () => {
   yearData.push({ label: 'Eget intervall...', value: 'custom' });
 
   return (
-    <Stack sx={{ maxWidth: 700 }}>
-      <Title order={2}>Statistik</Title>
-      <Group position='left'>
+    <div className='flex flex-col gap-2 max-w-max'>
+      <h2>Statistik</h2>
+      <div className='w-36'>
         <Select
           label='Verksamhetsår'
           defaultValue={paramYear}
@@ -80,22 +80,23 @@ const Statistics: NextPage = () => {
           data={yearData}
           onChange={handleYearChange}
         />
-        {showCustomInterval && (
+      </div>
+      {showCustomInterval && (
+        <div className='w-72'>
           <DateRangePicker
             value={statsInterval}
             onChange={setStatsInterval}
             label='Tidsintervall'
             placeholder='Välj intervall...'
             maxDate={new Date()}
-            sx={{ width: '100%', maxWidth: 300 }}
           />
-        )}
-      </Group>
+        </div>
+      )}
       <StatisticsTable
         start={statsInterval[0] || initialStart}
         end={statsInterval[1] || initialEnd}
       />
-    </Stack>
+    </div>
   );
 };
 

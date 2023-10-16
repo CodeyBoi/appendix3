@@ -1,9 +1,9 @@
+import { Button, Table } from '@mantine/core';
 import React, { useMemo } from 'react';
-import { Table, Title, Stack, Group, Button } from '@mantine/core';
-import { trpc } from '../../utils/trpc';
 import Loading from '../../components/loading';
-import QuoteForm from '../../components/quote/form';
 import Quote from '../../components/quote';
+import QuoteForm from '../../components/quote/form';
+import { trpc } from '../../utils/trpc';
 
 const getDayMessage = (date: Date) => {
   const today = new Date();
@@ -62,9 +62,7 @@ const Quotes = () => {
                     {shouldAddDayMessage && (
                       <tr style={{ backgroundColor: 'unset' }}>
                         <td colSpan={12}>
-                          <Title mt={12} order={3}>
-                            {dayMessage}
-                          </Title>
+                          <h3 className='mt-3'>{dayMessage}</h3>
                         </td>
                       </tr>
                     )}
@@ -81,29 +79,28 @@ const Quotes = () => {
         </tbody>
       </Table>
     ) : (
-      <Title sx={{ whiteSpace: 'nowrap' }} order={4}>
-        Här fanns inget att se :/
-      </Title>
+      <h4 className='whitespace-nowrap'>Här fanns inget att se :/</h4>
     );
   }, [loading, quotes]);
 
   return (
-    <Stack sx={{ maxWidth: '800px' }}>
-      <Title order={2}>Citat</Title>
+    <div className='flex flex-col max-w-xl gap-2'>
+      <h2>Citat</h2>
       <QuoteForm />
       {quoteList}
       {hasNextPage && (
-        <Group position='center'>
+        <div className='flex justify-center'>
           <Button
+            className='bg-red-600'
             sx={{ width: 'min-content' }}
             onClick={() => fetchNextPage()}
             loading={isFetchingNextPage}
           >
             Ladda fler citat
           </Button>
-        </Group>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 };
 
