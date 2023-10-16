@@ -31,7 +31,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
   const [submitting, setSubmitting] = useState(false);
 
   const { data: instruments } = trpc.instrument.getAll.useQuery();
-  const { data: corps } = trpc.corps.get.useQuery({ id: corpsId });
+  const { data: corps, isLoading: corpsLoading } = trpc.corps.get.useQuery({
+    id: corpsId,
+  });
   const { data: roles } = trpc.role.getAll.useQuery();
 
   const form = useForm<FormValues>({
@@ -101,13 +103,8 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <FormLoadingOverlay visible={loading || submitting}>
+      <FormLoadingOverlay visible={loading || submitting || corpsLoading}>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          {/* <SimpleGrid
-          cols={1}
-          spacing='lg'
-          breakpoints={[{ minWidth: 'md', cols: 2 }]}
-        > */}
           <TextInput
             withAsterisk
             label='Förnamn'
@@ -172,7 +169,6 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           className='bg-red-600'
           disabled={!form.isTouched() || submitting || !form.isValid()}
           type='submit'
-          loading={loading || submitting}
         >
           {creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}
         </Button>

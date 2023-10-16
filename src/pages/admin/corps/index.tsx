@@ -1,22 +1,27 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useState } from 'react';
 import Button from '../../../components/button';
+import CorpsForm from '../../../components/corps-form';
 import SelectCorps from '../../../components/select-corps';
 
 const ViewCorps = () => {
-  const router = useRouter();
+  const [corpsId, setCorpsId] = useState<string | null>(null);
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex items-center gap-4'>
-        <h2>Uppdatera corpsmedlem:</h2>
-        <SelectCorps
-          placeholder='Välj corps...'
-          onChange={(id) => router.push(`/admin/corps/${id}`)}
-        />
+    <div className='flex flex-col max-w-lg gap-2'>
+      <h1>Corps</h1>
+      <div className='max-w-max'>
         <Link href='/admin/corps/new'>
           <Button>Skapa corps</Button>
         </Link>
       </div>
+      <div className='h-2' />
+      <h2>Uppdatera corps</h2>
+      <SelectCorps placeholder='Välj corps...' onChange={setCorpsId} />
+      {corpsId !== null && (
+        <div className='p-2 border rounded shadow-md dark:border-neutral-800'>
+          <CorpsForm corpsId={corpsId} />
+        </div>
+      )}
     </div>
   );
 };

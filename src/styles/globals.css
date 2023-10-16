@@ -50,7 +50,7 @@ svg.icon.icon-tabler {
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 3rem !important;
   line-height: 4.5rem;
   font-weight: 700;
 }
