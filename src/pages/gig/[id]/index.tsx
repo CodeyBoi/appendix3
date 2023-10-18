@@ -37,9 +37,6 @@ const GigPage = () => {
   );
 
   const loading = gigStatus === 'loading';
-  const gigHasHappened = gig
-    ? gig.date.getTime() < new Date().getTime() - 1000 * 60 * 60 * 24
-    : false;
 
   return (
     <div className='flex flex-col max-w-4xl space-y-4'>
@@ -50,7 +47,7 @@ const GigPage = () => {
           <Loading msg='Laddar anmälningar...' />
         </Box>
       )}
-      {!loading && <SignupList gigId={gigId} gigHasHappened={gigHasHappened} />}
+      {!loading && gig && <SignupList gig={gig} />}
     </div>
   );
 };

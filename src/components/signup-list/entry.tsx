@@ -12,6 +12,8 @@ interface SignupEntryProps {
     checkbox1: boolean;
     checkbox2: boolean;
   };
+  hasCheckbox1?: boolean;
+  hasCheckbox2?: boolean;
   isAdmin?: boolean;
   setAttendance: (attended: boolean) => void;
   handleDelete: () => void;
@@ -20,6 +22,8 @@ interface SignupEntryProps {
 const Entry = ({
   signup,
   isAdmin = false,
+  hasCheckbox1 = false,
+  hasCheckbox2 = false,
   setAttendance,
   handleDelete,
 }: SignupEntryProps) => {
@@ -32,6 +36,16 @@ const Entry = ({
       <td>{name}</td>
       {isAdmin && (
         <>
+          {hasCheckbox1 && (
+            <td className='px-2 text-center'>
+              {signup.checkbox1 ? 'Ja' : 'Nej'}
+            </td>
+          )}
+          {hasCheckbox2 && (
+            <td className='px-2 text-center'>
+              {signup.checkbox2 ? 'Ja' : 'Nej'}
+            </td>
+          )}
           <td className='px-2'>
             <div className='flex place-content-center'>
               <Checkbox
