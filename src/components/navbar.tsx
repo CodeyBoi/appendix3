@@ -8,7 +8,6 @@ import {
   createStyles,
   useMantineTheme,
 } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import {
   IconClipboard,
   IconHome,
@@ -24,6 +23,7 @@ import {
 } from '@tabler/icons';
 import cuid from 'cuid';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { getOperatingYear } from '../pages/stats/[paramYear]';
@@ -141,7 +141,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           className={cx(classes.link, {
             [classes.activeLink]: active === link.href,
           })}
-          component={NextLink}
+          component={Link}
           href={link.href}
           onClick={() => {
             setActive(link.href);
@@ -193,7 +193,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         <Button
           px={6}
           leftIcon={<IconInfoSquare />}
-          component={NextLink}
+          component={Link}
           href='/about'
           className={classes.link}
           styles={{ inner: { justifyContent: 'flex-start' } }}
