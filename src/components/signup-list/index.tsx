@@ -10,8 +10,12 @@ import MultiSelectCorps from '../multi-select-corps';
 import Entry from './entry';
 
 interface SignupListProps {
-  gigId: string;
-  gigHasHappened?: boolean;
+  gig: {
+    id: string;
+    date: Date;
+    checkbox1: string;
+    checkbox2: string;
+  };
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -62,12 +66,18 @@ const toPlural = (instrument: string) => {
   return instrument + 'er';
 };
 
-const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
+const SignupList = ({ gig }: SignupListProps) => {
   const queryClient = useQueryClient();
   const utils = trpc.useContext();
 
+  const gigHasHappened = gig
+    ? gig.date.getTime() < new Date().getTime() - 1000 * 60 * 60 * 24
+    : false;
+
+  const gigId = gig.id;
+
   const { data: signups, isInitialLoading: signupsLoading } =
-    trpc.gig.getSignups.useQuery({ gigId }, { enabled: !!gigId });
+    trpc.gig.getSignups.useQuery({ gigId });
 
   const { data: role } = trpc.corps.getRole.useQuery();
   const isAdmin = role === 'admin';
@@ -191,15 +201,13 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
             {showAdminTools ? (
               <>
                 <th className='text-left'>Namn</th>
+                {gig.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
+                {gig.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
                 <th className='px-1'>Här?</th>
                 <th className='px-1'>Vask</th>
               </>
             ) : (
-              <>
-                <th></th>
-                <th></th>
-                <th></th>
-              </>
+              <th></th>
             )}
           </tr>
         </thead>
@@ -229,6 +237,8 @@ const SignupList = ({ gigId, gigHasHappened }: SignupListProps) => {
                         attended,
                       })
                     }
+                    hasCheckbox1={!!gig.checkbox1}
+                    hasCheckbox2={!!gig.checkbox2}
                     handleDelete={() => handleDelete(signup.corpsId)}
                   />
                 </tr>
