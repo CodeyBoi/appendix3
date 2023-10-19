@@ -40,7 +40,7 @@ const GigCard = ({ gig }: GigCardProps) => {
       </Modal>
       <div className='border rounded shadow-md dark:border-neutral-800'>
         <div className='flex flex-col p-4 space-y-2'>
-          <div className='flex content-start justify-between flex-nowrap'>
+          <div className='flex items-start justify-between flex-nowrap'>
             <Link href={`/gig/${gig.id}`}>
               <h4 className='cursor-pointer'>{gig.title}</h4>
             </Link>

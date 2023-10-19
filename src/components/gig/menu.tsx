@@ -1,5 +1,4 @@
 import { Menu } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { Gig } from '@prisma/client';
 import {
   IconCalendarPlus,
@@ -9,6 +8,7 @@ import {
   IconUsers,
 } from '@tabler/icons';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 
 type GigMenuProps = {
   gig: Gig & { type: { name: string } };
@@ -70,7 +70,7 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
       <Menu.Dropdown>
         <Menu.Item
           icon={<IconUsers />}
-          component={NextLink}
+          component={Link}
           href={`/gig/${gig.id}`}
         >
           Se anmälningar

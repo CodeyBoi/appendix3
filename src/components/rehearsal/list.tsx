@@ -1,6 +1,6 @@
 import { Card } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 
 type Rehearsal = {
   id: string;
@@ -18,7 +18,7 @@ const RehearsalList = ({ rehearsals }: RehearsalsProps) => {
         <Card
           key={rehearsal.id}
           shadow='sm'
-          component={NextLink}
+          component={Link}
           href={`/admin/rehearsal/${rehearsal.id}`}
         >
           <div className='flex gap-4'>

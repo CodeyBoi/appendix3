@@ -1,9 +1,10 @@
-import { Button, Divider } from '@mantine/core';
-import { NextLink } from '@mantine/next';
+import { Divider } from '@mantine/core';
 import { IconMoodNerd } from '@tabler/icons';
+import Link from 'next/link';
 import React from 'react';
 import { trpc } from '../utils/trpc';
 import AlertError from './alert-error';
+import Button from './button';
 import Loading from './loading';
 
 interface StatisticsTableProps {
@@ -145,14 +146,14 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
               })}
             </tbody>
           </table>
-          <Button
-            className='bg-red-600'
-            component={NextLink}
-            href='/stats/for/nerds'
-            leftIcon={<IconMoodNerd />}
-          >
-            Statistik för nördar
-          </Button>
+          <div className='h-96' />
+          <Link href='/stats/for/nerds'>
+            <div className='flex justify-center'>
+              <Button leftSection={<IconMoodNerd />}>
+                Statistik för nördar
+              </Button>
+            </div>
+          </Link>
         </div>
       )}
     </>

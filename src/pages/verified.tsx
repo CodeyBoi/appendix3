@@ -1,6 +1,6 @@
 import { Button, Center, Title, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { NextLink } from '@mantine/next';
+import Link from 'next/link';
 
 const Verified = () => {
   const theme = useMantineTheme();
@@ -33,7 +33,7 @@ const Verified = () => {
           <Center>
             <Button
               style={{ marginTop: 12 }}
-              component={NextLink}
+              component={Link}
               href='/'
               gradient={{ from: 'red', to: 'darkred', deg: 185 }}
             >
