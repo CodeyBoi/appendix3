@@ -1,8 +1,8 @@
-import { adminProcedure } from './../trpc';
-import { z } from 'zod';
-import { router, protectedProcedure } from '../trpc';
-import { setCookie } from 'cookies-next';
 import { CorpsFoodPrefs } from '@prisma/client';
+import { setCookie } from 'cookies-next';
+import { z } from 'zod';
+import { protectedProcedure, router } from '../trpc';
+import { adminProcedure } from './../trpc';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -26,7 +26,7 @@ export const corpsRouter = router({
         foodPrefs: true,
       },
       where: {
-        userId: ctx.session?.user.id || undefined,
+        userId: ctx.session?.user.id || '',
       },
     });
   }),
@@ -68,6 +68,7 @@ export const corpsRouter = router({
       z.object({
         firstName: z.string(),
         lastName: z.string(),
+        nickName: z.string(),
         email: z.string(),
         drinksAlcohol: z.boolean(),
         vegetarian: z.boolean(),
@@ -80,7 +81,7 @@ export const corpsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const corps = await ctx.prisma.corps.findUnique({
         where: {
-          userId: ctx.session?.user.id || undefined,
+          userId: ctx.session?.user.id || '',
         },
       });
 
@@ -102,11 +103,13 @@ export const corpsRouter = router({
           id: corps.id,
         },
         data: {
-          firstName: input.firstName,
-          lastName: input.lastName,
+          firstName: input.firstName.trim(),
+          lastName: input.lastName.trim(),
+          nickName:
+            input.nickName.trim().length > 0 ? input.nickName.trim() : null,
           user: {
             update: {
-              email: input.email,
+              email: input.email.trim(),
             },
           },
           foodPrefs: {
@@ -379,12 +382,15 @@ export const corpsRouter = router({
           foodPrefs: true,
         },
       });
-      return corps.reduce((acc, corps) => {
-        if (!corps.foodPrefs) {
+      return corps.reduce(
+        (acc, corps) => {
+          if (!corps.foodPrefs) {
+            return acc;
+          }
+          acc[corps.id] = corps.foodPrefs;
           return acc;
-        }
-        acc[corps.id] = corps.foodPrefs;
-        return acc;
-      }, {} as Record<string, CorpsFoodPrefs>);
+        },
+        {} as Record<string, CorpsFoodPrefs>,
+      );
     }),
 });
