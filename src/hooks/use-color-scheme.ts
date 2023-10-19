@@ -1,6 +1,5 @@
 import { ColorScheme } from '@mantine/core';
 import { useState } from 'react';
-import { trpc } from '../utils/trpc';
 
 const useColorScheme = (initialColorScheme: ColorScheme) => {
   const [colorScheme, setColorScheme] =
@@ -17,7 +16,7 @@ const useColorScheme = (initialColorScheme: ColorScheme) => {
       }
     }
   };
-  trpc.corps.setColorScheme.useQuery(colorScheme);
+  // trpc.corps.setColorScheme.useQuery(colorScheme);
 
   if (typeof window !== 'undefined') {
     if (colorScheme === 'dark') {
