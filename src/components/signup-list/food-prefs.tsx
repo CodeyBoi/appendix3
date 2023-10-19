@@ -1,11 +1,27 @@
-import { Button, Space, Table, createStyles } from '@mantine/core';
 import { CorpsFoodPrefs } from '@prisma/client';
 import { IconDownload } from '@tabler/icons';
-import { trpc } from '../../utils/trpc';
+import Button from '../button';
+
+type Signup = {
+  status: {
+    value: string;
+  };
+  checkbox1: boolean;
+  checkbox2: boolean;
+  corps: {
+    number: number | null;
+    id: string;
+    fullName: string;
+    displayName: string;
+  };
+};
 
 type FoodPrefsProps = {
-  gigId: string;
+  gigTitle: string;
+  signups: Signup[];
   foodPrefs: Record<string, CorpsFoodPrefs>;
+  checkbox1?: string;
+  checkbox2?: string;
 };
 
 const DEFAULT_FOOD_PREFS: CorpsFoodPrefs = {
@@ -18,28 +34,25 @@ const DEFAULT_FOOD_PREFS: CorpsFoodPrefs = {
   other: '',
 };
 
-const useStyles = createStyles(() => ({
-  table: {
-    textAlign: 'center',
-  },
-}));
+const FoodPrefs = ({
+  signups,
+  foodPrefs,
+  gigTitle,
+  checkbox1,
+  checkbox2,
+}: FoodPrefsProps) => {
+  const yesSignups = signups.filter((signup) => signup.status.value === 'Ja');
 
-const FoodPrefs = ({ gigId, foodPrefs }: FoodPrefsProps) => {
-  const { data: gig } = trpc.gig.getWithId.useQuery({ gigId });
-  const { data: signups } = trpc.gig.getSignups.useQuery({ gigId });
-  const { classes } = useStyles();
-  const yesSignups = signups?.filter((signup) => signup.signupStatus === 'Ja');
-
-  const dataRows = yesSignups?.map((signup) => {
-    const corpsPrefs = foodPrefs[signup.corpsId] as CorpsFoodPrefs;
-    const prefs = corpsPrefs ? corpsPrefs : DEFAULT_FOOD_PREFS;
-
+  const dataRows = yesSignups.map((signup) => {
+    const prefs = foodPrefs[signup.corps.id] ?? DEFAULT_FOOD_PREFS;
     return {
-      corpsId: signup.corpsId,
+      corpsId: signup.corps.id,
       data: [
-        `${signup.number ? '#' + signup.number.toString() : 'p.e.'} ${
-          signup.firstName
-        } ${signup.lastName}`,
+        `${
+          signup.corps.number ? '#' + signup.corps.number.toString() : 'p.e.'
+        } ${signup.corps.fullName}`,
+        signup.checkbox1 ? 'X' : '',
+        signup.checkbox2 ? 'X' : '',
         prefs.vegetarian ? 'X' : '',
         prefs.vegan ? 'X' : '',
         prefs.glutenFree ? 'X' : '',
@@ -65,51 +78,55 @@ const FoodPrefs = ({ gigId, foodPrefs }: FoodPrefsProps) => {
 
   const rows = dataRows?.map((row) => {
     return (
-      <tr key={row.corpsId}>
-        <td style={{ whiteSpace: 'nowrap' }}>{row.data[0]}</td>
-        <td>{row.data[1]}</td>
-        <td>{row.data[2]}</td>
-        <td>{row.data[3]}</td>
-        <td>{row.data[4]}</td>
-        <td>{row.data[5]}</td>
-        <td>{row.data[6]}</td>
+      <tr key={row.corpsId} className='divide-x divide-solid'>
+        <td className='pr-2 text-right' style={{ whiteSpace: 'nowrap' }}>
+          {row.data[0]}
+        </td>
+        {checkbox1 !== undefined && (
+          <td className='text-center'>{row.data[1]}</td>
+        )}
+        {checkbox2 !== undefined && (
+          <td className='text-center'>{row.data[2]}</td>
+        )}
+        <td className='text-center'>{row.data[3]}</td>
+        <td className='text-center'>{row.data[4]}</td>
+        <td className='text-center'>{row.data[5]}</td>
+        <td className='text-center'>{row.data[6]}</td>
+        <td className='text-center'>{row.data[7]}</td>
+        <td className='pl-2'>{row.data[8]}</td>
       </tr>
     );
   });
 
   return (
     <>
-      <Table
-        withColumnBorders
-        horizontalSpacing={2}
-        verticalSpacing={2}
-        className={classes.table}
-      >
+      <table className='table'>
         <thead>
           <tr>
-            <th>Namn</th>
-            <th>Vegetarian</th>
-            <th>Vegan</th>
-            <th>Gluten</th>
-            <th>Laktos</th>
-            <th>Alkohol</th>
-            <th>Övrigt</th>
+            <th className='px-1 text-right'>Namn</th>
+            {checkbox1 !== undefined && <th className='px-1'>{checkbox1}</th>}
+            {checkbox2 !== undefined && <th className='px-1'>{checkbox2}</th>}
+            <th className='px-1'>Vegetarian</th>
+            <th className='px-1'>Vegan</th>
+            <th className='px-1'>Gluten</th>
+            <th className='px-1'>Laktos</th>
+            <th className='px-1'>Alkohol (gammal)</th>
+            <th className='px-1'>Övrigt</th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
-      </Table>
+        <tbody className='gap-1 divide-y divide-solid'>{rows}</tbody>
+      </table>
       {dataRows && (
         <>
-          <Space h='md' />
-          <Button
-            className='bg-red-600'
-            leftIcon={<IconDownload />}
-            component={'a'}
+          <div className='h-4' />
+          <a
             href={csvDownloadLink}
-            download={`Matpreffar ${gig?.title.trim() ?? ''}.csv`}
+            download={`Matpreffar ${gigTitle.trim() ?? ''}.csv`}
           >
-            Ladda ner som CSV
-          </Button>
+            <Button className='bg-red-600' leftSection={<IconDownload />}>
+              Ladda ner som CSV
+            </Button>
+          </a>
         </>
       )}
     </>

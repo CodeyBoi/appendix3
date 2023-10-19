@@ -1,10 +1,9 @@
-import { useRouter } from 'next/router';
-import React from 'react';
-import { trpc } from '../../../../utils/trpc';
 import { Box, Space } from '@mantine/core';
+import { useRouter } from 'next/router';
 import GigCard from '../../../../components/gig/card';
 import Loading from '../../../../components/loading';
 import FoodPrefs from '../../../../components/signup-list/food-prefs';
+import { trpc } from '../../../../utils/trpc';
 
 const LIST_WIDTH = '800px';
 
@@ -29,8 +28,14 @@ const GigAdminInfo = () => {
     <Box sx={{ maxWidth: LIST_WIDTH }}>
       {gig ? <GigCard gig={gig} /> : <Loading msg='Laddar spelning...' />}
       <Space h='md' />
-      {signups && foodPrefs && (
-        <FoodPrefs gigId={gigId} foodPrefs={foodPrefs} />
+      {signups && foodPrefs && gig && (
+        <FoodPrefs
+          gigTitle={gig.title}
+          checkbox1={gig.checkbox1.trim() || undefined}
+          checkbox2={gig.checkbox2.trim() || undefined}
+          signups={signups}
+          foodPrefs={foodPrefs}
+        />
       )}
     </Box>
   );
