@@ -12,9 +12,9 @@ export const formatName = (c: {
 }) => {
   const { number, firstName, lastName, nickName } = c;
   const corpsNumber = number ? '#' + number.toString() : 'p.e.';
-  const name = `${firstName} ${
-    nickName ? '"' + nickName.trim() + '"' : ''
-  } ${lastName}`;
+  const name = `${firstName.trim()}${
+    nickName ? ' "' + nickName.trim() + '"' : ''
+  } ${lastName.trim()}`;
   return `${corpsNumber} ${name}`;
 };
 
