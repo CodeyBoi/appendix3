@@ -2,8 +2,10 @@ import { AppShell, Navbar } from '@mantine/core';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import AppendixHeader from './header';
-import NavbarContent from './navbar';
+import dynamic from 'next/dynamic';
+
+const AppendixHeader = dynamic(() => import('./header'));
+const NavbarContent = dynamic(() => import('./navbar'));
 
 const AppContainer = ({ children }: { children: ReactElement }) => {
   const session = useSession();

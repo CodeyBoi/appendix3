@@ -4,9 +4,13 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Loading from '../../../components/loading';
-import StatisticsTable from '../../../components/statistics-table';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
+import Loading from 'components/loading';
+import { getServerAuthSession } from 'server/common/get-server-auth-session';
+import dynamic from 'next/dynamic';
+
+const StatisticsTable = dynamic(() => import('components/statistics-table'), {
+  loading: () => <Loading msg='Laddar statistik...' />,
+});
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
