@@ -1,6 +1,5 @@
-import { Corps } from '@prisma/client';
 import { z } from 'zod';
-import { router, adminProcedure, protectedProcedure } from '../trpc';
+import { adminProcedure, protectedProcedure, router } from '../trpc';
 
 export const rehearsalRouter = router({
   getWithId: adminProcedure
@@ -200,22 +199,25 @@ export const rehearsalRouter = router({
         },
       });
       const corpsIds = stats.map((stat) => stat.corpsId);
-      const corps = (
-        await ctx.prisma.corps.findMany({
-          where: {
-            id: {
-              in: corpsIds,
-            },
+      const corpsii = await ctx.prisma.corps.findMany({
+        where: {
+          id: {
+            in: corpsIds,
           },
-        })
-      ).reduce((acc, curr) => {
-        acc[curr.id] = curr;
-        return acc;
-      }, {} as Record<string, Corps>);
+        },
+      });
+      type ExtendedCorps = (typeof corpsii)[number];
+      const corps = corpsii.reduce(
+        (acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        },
+        {} as Record<string, ExtendedCorps>,
+      );
       return {
         nonPositiveRehearsals,
         stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId] as Corps,
+          corps: corps[stat.corpsId] as ExtendedCorps,
           count: stat._count.rehearsalId,
         })),
       };
@@ -267,22 +269,25 @@ export const rehearsalRouter = router({
         },
       });
       const corpsIds = stats.map((stat) => stat.corpsId);
-      const corps = (
-        await ctx.prisma.corps.findMany({
-          where: {
-            id: {
-              in: corpsIds,
-            },
+      const corpsii = await ctx.prisma.corps.findMany({
+        where: {
+          id: {
+            in: corpsIds,
           },
-        })
-      ).reduce((acc, curr) => {
-        acc[curr.id] = curr;
-        return acc;
-      }, {} as Record<string, Corps>);
+        },
+      });
+      type ExtendedCorps = (typeof corpsii)[number];
+      const corps = corpsii.reduce(
+        (acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        },
+        {} as Record<string, ExtendedCorps>,
+      );
       return {
         nonPositiveRehearsals,
         stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId] as Corps,
+          corps: corps[stat.corpsId] as ExtendedCorps,
           count: stat._count.rehearsalId,
         })),
       };
@@ -431,10 +436,13 @@ export const rehearsalRouter = router({
         return 'Annat';
       };
       const instruments = await ctx.prisma.instrument.findMany({});
-      const instrumentPrecedence = instruments.reduce((acc, instrument) => {
-        acc[instrument.name] = instrument.sectionId || 516;
-        return acc;
-      }, {} as Record<string, number>);
+      const instrumentPrecedence = instruments.reduce(
+        (acc, instrument) => {
+          acc[instrument.name] = instrument.sectionId || 516;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
       corpsii.sort(
         (a, b) =>
           (instrumentPrecedence[getMainInstrument(a)] ?? 516) -
@@ -449,23 +457,29 @@ export const rehearsalRouter = router({
       const corpsIds = new Set(attended.map((e) => e.corpsId));
 
       let lastSectionName = '';
-      const result = corpsii.reduce((acc, corps) => {
-        const sectionName = corps.instruments[0]?.instrument.section?.name;
-        if (!sectionName) return acc;
-        if (lastSectionName !== sectionName) {
-          acc.push({
-            name: sectionName,
-            corpsii: [],
-          });
-          lastSectionName = sectionName;
-        }
-        const c = {
-          ...corps,
-          attended: corpsIds.has(corps.id),
-        };
-        acc[acc.length - 1]?.corpsii.push(c);
-        return acc;
-      }, [] as { name: string; corpsii: ((typeof corpsii)[number] & { attended: boolean })[] }[]);
+      const result = corpsii.reduce(
+        (acc, corps) => {
+          const sectionName = corps.instruments[0]?.instrument.section?.name;
+          if (!sectionName) return acc;
+          if (lastSectionName !== sectionName) {
+            acc.push({
+              name: sectionName,
+              corpsii: [],
+            });
+            lastSectionName = sectionName;
+          }
+          const c = {
+            ...corps,
+            attended: corpsIds.has(corps.id),
+          };
+          acc[acc.length - 1]?.corpsii.push(c);
+          return acc;
+        },
+        [] as {
+          name: string;
+          corpsii: ((typeof corpsii)[number] & { attended: boolean })[];
+        }[],
+      );
       return {
         corpsiiBySection: result,
         corpsIds,

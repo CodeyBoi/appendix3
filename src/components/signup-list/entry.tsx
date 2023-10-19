@@ -2,55 +2,44 @@ import { Checkbox } from '@mantine/core';
 import { IconX } from '@tabler/icons';
 
 interface SignupEntryProps {
-  signup: {
-    corpsId: string;
-    instrument: string;
-    number?: number;
-    firstName: string;
-    lastName: string;
-    attended: boolean;
-    checkbox1: boolean;
-    checkbox2: boolean;
-  };
-  hasCheckbox1?: boolean;
-  hasCheckbox2?: boolean;
+  name: string;
+  number: number | null;
+  attended: boolean;
+  checkbox1?: boolean;
+  checkbox2?: boolean;
   isAdmin?: boolean;
   setAttendance: (attended: boolean) => void;
   handleDelete: () => void;
 }
 
 const Entry = ({
-  signup,
+  name,
+  number,
+  attended,
+  checkbox1,
+  checkbox2,
   isAdmin = false,
-  hasCheckbox1 = false,
-  hasCheckbox2 = false,
   setAttendance,
   handleDelete,
 }: SignupEntryProps) => {
-  const name = `${signup.number ? '#' + signup.number.toString() : 'p.e.'} ${
-    signup.firstName
-  } ${signup.lastName}`;
-
+  const corpsNumber = number ? '#' + number.toString() : 'p.e.';
   return (
     <>
+      <td className='pr-1 text-right w-max'>{corpsNumber}</td>
       <td>{name}</td>
       {isAdmin && (
         <>
-          {hasCheckbox1 && (
-            <td className='px-2 text-center'>
-              {signup.checkbox1 ? 'Ja' : 'Nej'}
-            </td>
+          {checkbox1 !== undefined && (
+            <td className='px-2 text-center'>{checkbox1 ? 'Ja' : 'Nej'}</td>
           )}
-          {hasCheckbox2 && (
-            <td className='px-2 text-center'>
-              {signup.checkbox2 ? 'Ja' : 'Nej'}
-            </td>
+          {checkbox2 !== undefined && (
+            <td className='px-2 text-center'>{checkbox2 ? 'Ja' : 'Nej'}</td>
           )}
           <td className='px-2'>
             <div className='flex place-content-center'>
               <Checkbox
                 styles={{ root: { display: 'flex' } }}
-                defaultChecked={signup.attended}
+                defaultChecked={attended}
                 onChange={(event) => setAttendance(event.target.checked)}
               />
             </div>

@@ -36,7 +36,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
           {
             label: `${
               initialCorps.number ? '#' + initialCorps.number : 'p.e.'
-            } ${initialCorps.firstName} ${initialCorps.lastName}`,
+            } ${initialCorps.displayName}`,
             value: initialCorps.id,
           },
         ]
@@ -46,7 +46,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
         corpsii
           .filter((c) => !initialCorps || initialCorps.id !== c.id)
           .map((c) => ({
-            label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
+            label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.displayName,
             value: c.id,
           })),
       );

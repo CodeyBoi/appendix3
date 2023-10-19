@@ -109,23 +109,23 @@ const SignupList = ({ gig }: SignupListProps) => {
         .sort((a, b) => {
           // Compare instrument precedence
           if (a.instrument !== b.instrument) {
-            const aPrio = instrumentPrecedence[a.instrument] ?? Infinity;
-            const bPrio = instrumentPrecedence[b.instrument] ?? Infinity;
+            const aPrio = instrumentPrecedence[a.instrument.name] ?? Infinity;
+            const bPrio = instrumentPrecedence[b.instrument.name] ?? Infinity;
             return aPrio - bPrio;
           }
 
           // Compare numbers
-          if (a.number || b.number) {
-            return (a.number || Infinity) - (b.number || Infinity);
+          if (a.corps.number || b.corps.number) {
+            return (a.corps.number || Infinity) - (b.corps.number || Infinity);
           }
 
           // Compare last name
-          if (a.lastName !== b.lastName) {
-            return a.lastName.localeCompare(b.lastName);
+          if (a.corps.lastName !== b.corps.lastName) {
+            return a.corps.lastName.localeCompare(b.corps.lastName);
           }
 
           // Compare first name
-          return a.firstName.localeCompare(b.firstName);
+          return a.corps.firstName.localeCompare(b.corps.firstName);
         }) ?? [],
     [signups, instrumentPrecedence, gigHasHappened, showAdminTools],
   );
@@ -133,11 +133,11 @@ const SignupList = ({ gig }: SignupListProps) => {
   // Divide the list of corpsii into people who answered yes and people who answered maybe
   const splitList = signupsSorted?.reduce(
     (acc, signup) => {
-      if (signup.signupStatus === 'Ja') {
+      if (signup.status.value === 'Ja') {
         acc.yesList.push(signup);
-      } else if (signup.signupStatus === 'Kanske') {
+      } else if (signup.status.value === 'Kanske') {
         acc.maybeList.push(signup);
-      } else if (signup.signupStatus === 'Nej') {
+      } else if (signup.status.value === 'Nej') {
         acc.noList.push(signup);
       }
       return acc;
@@ -200,6 +200,7 @@ const SignupList = ({ gig }: SignupListProps) => {
           <tr>
             {showAdminTools ? (
               <>
+                <th className='text-center'>#</th>
                 <th className='text-left'>Namn</th>
                 {gig.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
                 {gig.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
@@ -213,22 +214,25 @@ const SignupList = ({ gig }: SignupListProps) => {
         </thead>
         <tbody>
           {signups.map((signup) => {
-            const addNewline = signup.instrument !== lastInstrument;
-            lastInstrument = signup.instrument;
+            const addNewline = signup.instrument.name !== lastInstrument;
+            lastInstrument = signup.instrument.name;
             return (
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
                   <tr>
+                    <td />
                     <td>
                       <h4 className='mt-2 first-letter:capitalize'>
-                        {toPlural(signup.instrument)}
+                        {toPlural(signup.instrument.name)}
                       </h4>
                     </td>
                   </tr>
                 )}
                 <tr>
                   <Entry
-                    signup={signup}
+                    name={signup.corps.displayName}
+                    attended={signup.attended}
+                    number={signup.corps.number}
                     isAdmin={showAdminTools}
                     setAttendance={(attended) =>
                       editAttendance.mutate({
@@ -237,8 +241,12 @@ const SignupList = ({ gig }: SignupListProps) => {
                         attended,
                       })
                     }
-                    hasCheckbox1={!!gig.checkbox1}
-                    hasCheckbox2={!!gig.checkbox2}
+                    checkbox1={
+                      !!gig.checkbox1.trim() ? signup.checkbox1 : undefined
+                    }
+                    checkbox2={
+                      !!gig.checkbox2.trim() ? signup.checkbox2 : undefined
+                    }
                     handleDelete={() => handleDelete(signup.corpsId)}
                   />
                 </tr>
@@ -258,7 +266,7 @@ const SignupList = ({ gig }: SignupListProps) => {
     () =>
       yesList?.reduce(
         (acc, signup) => {
-          acc[signup.instrument] = (acc[signup.instrument] ?? 0) + 1;
+          acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
           return acc;
         },
         {} as Record<string, number>,

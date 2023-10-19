@@ -241,6 +241,11 @@ export const corpsRouter = router({
               },
             },
             {
+              nickName: {
+                contains: input.search,
+              },
+            },
+            {
               number: isNaN(number) ? undefined : number,
             },
             {
@@ -270,9 +275,13 @@ export const corpsRouter = router({
           id: true,
           firstName: true,
           lastName: true,
+          nickName: true,
+          fullName: true,
+          displayName: true,
           number: true,
           instruments: {
             select: {
+              isMainInstrument: true,
               instrument: {
                 select: {
                   name: true,
@@ -299,11 +308,17 @@ export const corpsRouter = router({
       });
       return corpsii.map((corps) => ({
         id: corps.id,
-        name: corps.firstName + ' ' + corps.lastName,
+        firstName: corps.firstName,
+        lastName: corps.lastName,
+        nickName: corps.nickName,
+        fullName: corps.fullName,
+        displayName: corps.displayName,
         number: corps.number,
-        instruments: corps.instruments.map(
-          (instrument) => instrument.instrument.name,
-        ),
+        mainInstrument: corps.instruments.find((i) => i.isMainInstrument)
+          ?.instrument.name,
+        otherInstruments: corps.instruments
+          .filter((i) => !i.isMainInstrument)
+          .map((instrument) => instrument.instrument.name),
       }));
     }),
 
