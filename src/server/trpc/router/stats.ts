@@ -1,7 +1,7 @@
-import { protectedProcedure } from './../trpc';
-import { router } from '../trpc';
-import { z } from 'zod';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
+import { router } from '../trpc';
+import { protectedProcedure } from './../trpc';
 
 export const statsRouter = router({
   get: protectedProcedure
@@ -35,6 +35,7 @@ export const statsRouter = router({
         number: number | null;
         firstName: string;
         lastName: string;
+        nickName: string | null;
         gigsAttended: number;
       };
 
@@ -44,6 +45,7 @@ export const statsRouter = router({
           number,
           firstName,
           lastName,
+          nickName,
           SUM(points) AS gigsAttended
         FROM Gig
         CROSS JOIN Corps
@@ -73,16 +75,29 @@ export const statsRouter = router({
         corpsIds: corpsStats.map((corps) => corps.id),
         nbrOfGigs,
         positivelyCountedGigs,
-        corpsStats: corpsStats.reduce((acc, corps) => {
-          acc[corps.id] = {
-            ...corps,
-            attendence:
-              nbrOfGigs - positivelyCountedGigs > 0
-                ? corps.gigsAttended / (nbrOfGigs - positivelyCountedGigs)
-                : 1,
-          };
-          return acc;
-        }, {} as Record<string, CorpsStats & { attendence: number }>),
+        corpsStats: corpsStats.reduce(
+          (acc, corps) => {
+            const fullName = `${corps.firstName} ${corps.lastName}`;
+            acc[corps.id] = {
+              ...corps,
+              fullName,
+              displayName: corps.nickName ?? fullName,
+              attendence:
+                nbrOfGigs - positivelyCountedGigs > 0
+                  ? corps.gigsAttended / (nbrOfGigs - positivelyCountedGigs)
+                  : 1,
+            };
+            return acc;
+          },
+          {} as Record<
+            string,
+            CorpsStats & {
+              attendence: number;
+              fullName: string;
+              displayName: string;
+            }
+          >,
+        ),
       };
     }),
 
@@ -105,10 +120,13 @@ export const statsRouter = router({
         AND (${corpsIds.length === 0} OR corpsId IN (${Prisma.join(corpsIds)}))
         GROUP BY corpsId
       `;
-      const points = pointsQuery.reduce((acc, { corpsId, points }) => {
-        acc[corpsId] = points;
-        return acc;
-      }, {} as Record<string, number>);
+      const points = pointsQuery.reduce(
+        (acc, { corpsId, points }) => {
+          acc[corpsId] = points;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
       return {
         points,
         corpsIds: Object.keys(points),
@@ -222,10 +240,13 @@ export const statsRouter = router({
         monthlyDataQuery,
         monthlyMaxGigsQuery,
       ]);
-      const monthlyDataMap = monthlyData.reduce((acc, { month, points }) => {
-        acc[new Date(month).toISOString()] = parseInt(points);
-        return acc;
-      }, {} as Record<string, number>);
+      const monthlyDataMap = monthlyData.reduce(
+        (acc, { month, points }) => {
+          acc[new Date(month).toISOString()] = parseInt(points);
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
       const startMonth = new Date(monthlyData[0]?.month ?? new Date());
       const currentDate = new Date();

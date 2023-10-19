@@ -12,6 +12,7 @@ import FormLoadingOverlay from '../form-loading-overlay';
 const initialValues = {
   firstName: '',
   lastName: '',
+  nickName: '',
   vegetarian: false,
   vegan: false,
   glutenFree: false,
@@ -46,6 +47,7 @@ const AccountPreferences = () => {
     form.setValues({
       firstName: corps.firstName,
       lastName: corps.lastName,
+      nickName: corps.nickName ?? '',
       vegetarian: corps.foodPrefs?.vegetarian ?? false,
       vegan: corps.foodPrefs?.vegan ?? false,
       glutenFree: corps.foodPrefs?.glutenFree ?? false,
@@ -123,6 +125,11 @@ const AccountPreferences = () => {
                 placeholder='Efternamn'
                 withAsterisk
                 {...form.getInputProps('lastName')}
+              />
+              <TextInput
+                label='Smeknamn'
+                placeholder='Smeknamn'
+                {...form.getInputProps('nickName')}
               />
               <TextInput
                 label='E-post'

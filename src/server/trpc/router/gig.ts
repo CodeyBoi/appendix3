@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import {
-  router,
-  publicProcedure,
-  protectedProcedure,
-  adminProcedure,
-} from '../trpc';
 import { z } from 'zod';
+import {
+  adminProcedure,
+  protectedProcedure,
+  publicProcedure,
+  router,
+} from '../trpc';
 
 export const gigRouter = router({
   getWithId: protectedProcedure
@@ -191,41 +191,57 @@ export const gigRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      interface WhosComingEntry {
-        corpsId: string;
-        firstName: string;
-        lastName: string;
-        number?: number;
-        instrument: string;
-        signupStatus: string;
-        attended: boolean;
-        checkbox1: boolean;
-        checkbox2: boolean;
-      }
-
-      return ctx.prisma.$queryRaw<WhosComingEntry[]>`
-        SELECT
-          Corps.id AS corpsId,
-          Corps.firstName AS firstName,
-          Corps.lastName AS lastName,
-          Corps.number AS number,
-          Instrument.name AS instrument,
-          GigSignupStatus.value AS signupStatus,
-          GigSignup.attended AS attended,
-          GigSignup.checkbox1 AS checkbox1,
-          GigSignup.checkbox2 AS checkbox2
-        FROM GigSignup
-        JOIN Gig ON Gig.id = GigSignup.gigId
-        JOIN Corps ON Corps.id = GigSignup.corpsId
-        JOIN GigSignupStatus ON GigSignupStatus.id = GigSignup.signupStatusId
-        JOIN Instrument ON Instrument.id = GigSignup.instrumentId
-        WHERE GigSignup.gigId = ${input.gigId}
-        ORDER BY
-          signupStatus,
-          ISNULL(Corps.number), Corps.number,
-          Corps.lastName,
-          Corps.firstName
-      `;
+      const result = ctx.prisma.gigSignup.findMany({
+        where: {
+          gigId: input.gigId,
+        },
+        include: {
+          corps: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              nickName: true,
+              displayName: true,
+              number: true,
+            },
+          },
+          status: {
+            select: {
+              value: true,
+            },
+          },
+          instrument: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: [
+          {
+            signupStatusId: 'asc',
+          },
+          {
+            corps: {
+              number: {
+                sort: 'asc',
+                nulls: 'last',
+              },
+            },
+          },
+          {
+            corps: {
+              lastName: 'asc',
+            },
+          },
+          {
+            corps: {
+              firstName: 'asc',
+            },
+          },
+        ],
+      });
+      return result;
     }),
 
   addSignup: protectedProcedure

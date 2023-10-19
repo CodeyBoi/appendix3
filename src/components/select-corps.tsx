@@ -4,6 +4,20 @@ import { trpc } from '../utils/trpc';
 
 const MIN_SEARCH_LENGTH = 2;
 
+export const formatName = (c: {
+  number: number | null;
+  firstName: string;
+  lastName: string;
+  nickName: string | null;
+}) => {
+  const { number, firstName, lastName, nickName } = c;
+  const corpsNumber = number ? '#' + number.toString() : 'p.e.';
+  const name = `${firstName} ${
+    nickName ? '"' + nickName.trim() + '"' : ''
+  } ${lastName}`;
+  return `${corpsNumber} ${name}`;
+};
+
 type SelectCorpsProps = Omit<SelectProps, 'data'> & { excludeSelf?: boolean };
 
 const SelectCorps = (props: SelectCorpsProps) => {
@@ -34,9 +48,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
     const data = initialCorps
       ? [
           {
-            label: `${
-              initialCorps.number ? '#' + initialCorps.number : 'p.e.'
-            } ${initialCorps.firstName} ${initialCorps.lastName}`,
+            label: formatName(initialCorps),
             value: initialCorps.id,
           },
         ]
@@ -46,7 +58,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
         corpsii
           .filter((c) => !initialCorps || initialCorps.id !== c.id)
           .map((c) => ({
-            label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.name,
+            label: formatName(c),
             value: c.id,
           })),
       );
@@ -77,6 +89,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
       searchValue.length < MIN_SEARCH_LENGTH
         ? 'Skriv minst två tecken för att söka...'
         : nothingFound,
+    filter: () => true,
     searchValue,
     onSearchChange,
   };

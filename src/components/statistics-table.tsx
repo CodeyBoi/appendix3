@@ -133,7 +133,7 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                       <td className='py-1 pr-2 text-right'>
                         {stat.number ?? 'p.e.'}
                       </td>
-                      <td>{`${stat.firstName} ${stat.lastName}`}</td>
+                      <td>{`${stat.displayName}`}</td>
                       <td className='text-center'>{stat.gigsAttended}</td>
                       <td
                         align='center'

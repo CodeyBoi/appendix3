@@ -7,6 +7,7 @@ import FormLoadingOverlay from './form-loading-overlay';
 const initialValues = {
   firstName: '',
   lastName: '',
+  nickName: '',
   number: '',
   bNumber: '',
   email: '',
@@ -63,6 +64,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       form.setValues({
         firstName: corps.firstName,
         lastName: corps.lastName,
+        nickName: corps.nickName ?? '',
         number: corps.number?.toString() || '',
         bNumber: corps.bNumber?.toString() || '',
         email: corps.user.email ?? '',
@@ -91,8 +93,10 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
 
   const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
-    const number = values.number ? parseInt(values.number) : null;
-    const bNumber = values.bNumber ? parseInt(values.bNumber) : null;
+    const number = values.number.trim() ? parseInt(values.number.trim()) : null;
+    const bNumber = values.bNumber.trim()
+      ? parseInt(values.bNumber.trim())
+      : null;
     mutation.mutateAsync({
       ...values,
       number,
@@ -118,17 +122,22 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             {...form.getInputProps('lastName')}
           />
           <TextInput
-            label='Nummer'
-            placeholder='Nummer'
-            description='Lämnas tomt om de inte har något'
-            {...form.getInputProps('number')}
+            label='Smeknamn'
+            placeholder='Smeknamn'
+            {...form.getInputProps('nickName')}
           />
-          <TextInput
-            label='Balettnummer'
-            placeholder='Balettnummer'
-            description='Lämnas tomt om de inte har något'
-            {...form.getInputProps('bNumber')}
-          />
+          <div className='flex gap-4'>
+            <TextInput
+              label='Nummer'
+              placeholder='Nummer'
+              {...form.getInputProps('number')}
+            />
+            <TextInput
+              label='Balettnr.'
+              placeholder='Balettnr.'
+              {...form.getInputProps('bNumber')}
+            />
+          </div>
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
