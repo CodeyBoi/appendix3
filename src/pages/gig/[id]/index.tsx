@@ -1,5 +1,6 @@
 import { Box } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import GigCard from '../../../components/gig/card';
 import GigSkeleton from '../../../components/gig/skeleton';
@@ -40,6 +41,11 @@ const GigPage = () => {
 
   return (
     <div className='flex flex-col max-w-4xl space-y-4'>
+      {gig?.title && (
+        <Head>
+          <title>{gig.title}</title>
+        </Head>
+      )}
       <h2>Anmälningar</h2>
       {gig ? <GigCard gig={gig} /> : <GigSkeleton />}
       {loading && (

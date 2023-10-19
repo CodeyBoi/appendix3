@@ -1,4 +1,5 @@
 import { useMantineTheme } from '@mantine/core';
+import Head from 'next/head';
 import { useMemo } from 'react';
 import {
   Area,
@@ -229,6 +230,9 @@ const StatsForNerds = () => {
 
   return (
     <div className='flex flex-col max-w-4xl text-base'>
+      <Head>
+        <title>Statistik för nördar</title>
+      </Head>
       <h2>Statistik för nördar</h2>
       <div className='flex flex-col gap-2'>
         <div>

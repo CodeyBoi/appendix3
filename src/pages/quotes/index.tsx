@@ -1,4 +1,5 @@
 import { Button, Table } from '@mantine/core';
+import Head from 'next/head';
 import React, { useMemo } from 'react';
 import Loading from '../../components/loading';
 import Quote from '../../components/quote';
@@ -85,6 +86,9 @@ const Quotes = () => {
 
   return (
     <div className='flex flex-col max-w-xl gap-2'>
+      <Head>
+        <title>Citat</title>
+      </Head>
       <h2>Citat</h2>
       <QuoteForm />
       {quoteList}

@@ -1,5 +1,6 @@
 import { Select, Tabs } from '@mantine/core';
 import dayjs from 'dayjs';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -98,6 +99,9 @@ const Gigs = ({ initialTab }: GigsProps) => {
 
   return (
     <div className='flex flex-col gap-2 max-w-fit'>
+      <Head>
+        <title>Spelningar</title>
+      </Head>
       <h2>Spelningar</h2>
       <div className='flex items-end gap-4'>
         <Select

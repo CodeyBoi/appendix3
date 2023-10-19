@@ -1,4 +1,5 @@
 import { useMantineTheme } from '@mantine/core';
+import Head from 'next/head';
 
 const Links = () => {
   const theme = useMantineTheme();
@@ -9,6 +10,9 @@ const Links = () => {
   };
   return (
     <div>
+      <Head>
+        <title>Länkar</title>
+      </Head>
       <h1>Länkar</h1>
       <div className='text-lg'>
         <ul className='pl-4 list-disc'>

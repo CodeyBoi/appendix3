@@ -73,6 +73,9 @@ const Songs = () => {
 
   return (
     <div className='flex flex-col max-w-lg gap-2'>
+      <Head>
+        <title>Sångboken</title>
+      </Head>
       <div className='flex items-center justify-between gap-4'>
         <div className='flex-grow'>
           <TextInput
