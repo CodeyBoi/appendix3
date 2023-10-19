@@ -1,10 +1,30 @@
 import { Select } from '@mantine/core';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
-import { NextPage } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Loading from '../../../components/loading';
 import StatisticsTable from '../../../components/statistics-table';
+import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext,
+) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session) {
+    return {
+      redirect: {
+        destination: 'api/auth/signin',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+    },
+  };
+};
 
 export const getOperatingYear = () => {
   const date = new Date();
