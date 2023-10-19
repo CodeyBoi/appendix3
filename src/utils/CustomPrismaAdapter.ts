@@ -1,9 +1,11 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Adapter } from 'next-auth/adapters';
+import { prisma } from '../server/db/client';
 
-export function CustomPrismaAdapter(p: PrismaClient): Adapter {
+export function CustomPrismaAdapter(p: typeof prisma): Adapter {
   return {
+    // @ts-expect-errors // We have extended the PrismaClient, but the type doesn't know that
     ...PrismaAdapter(p),
     async useVerificationToken(identifier_token) {
       try {
