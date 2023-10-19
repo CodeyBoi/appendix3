@@ -1,9 +1,31 @@
 import { TextInput } from '@mantine/core';
 import { IconPlus, IconSearch } from '@tabler/icons';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
 import Loading from '../../components/loading';
+import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext,
+) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session) {
+    return {
+      redirect: {
+        destination: 'api/auth/signin',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+    },
+  };
+};
 
 const Songs = () => {
   const [search, setSearch] = React.useState<string>('');
