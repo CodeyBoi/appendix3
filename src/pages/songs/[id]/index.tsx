@@ -5,6 +5,7 @@ import {
 } from 'next';
 import SongView from '../../../components/song/view';
 import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
+import { prisma } from '../../../server/db/client';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
