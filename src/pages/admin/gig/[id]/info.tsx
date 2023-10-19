@@ -1,11 +1,13 @@
-import { Box, Space } from '@mantine/core';
 import { useRouter } from 'next/router';
-import GigCard from '../../../../components/gig/card';
-import Loading from '../../../../components/loading';
-import FoodPrefs from '../../../../components/signup-list/food-prefs';
-import { trpc } from '../../../../utils/trpc';
+import Loading from 'components/loading';
+import { trpc } from 'utils/trpc';
+import GigSkeleton from 'components/gig/skeleton';
+import dynamic from 'next/dynamic';
 
-const LIST_WIDTH = '800px';
+const GigCard = dynamic(() => import('components/gig/card'), {
+  loading: () => <GigSkeleton />,
+});
+const FoodPrefs = dynamic(() => import('components/signup-list/food-prefs'));
 
 const GigAdminInfo = () => {
   const router = useRouter();
@@ -25,9 +27,9 @@ const GigAdminInfo = () => {
   );
 
   return (
-    <Box sx={{ maxWidth: LIST_WIDTH }}>
+    <div className='max-w-4xl'>
       {gig ? <GigCard gig={gig} /> : <Loading msg='Laddar spelning...' />}
-      <Space h='md' />
+      <div className='h-2' />
       {signups && foodPrefs && gig && (
         <FoodPrefs
           gigTitle={gig.title}
@@ -37,7 +39,7 @@ const GigAdminInfo = () => {
           foodPrefs={foodPrefs}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

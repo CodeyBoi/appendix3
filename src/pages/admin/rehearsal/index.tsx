@@ -1,13 +1,15 @@
 import { Modal, Select, SelectItem, Tabs } from '@mantine/core';
 import { useMemo, useState } from 'react';
-import Button from '../../../components/button';
-import Loading from '../../../components/loading';
-import RehearsalForm from '../../../components/rehearsal/form';
-import RehearsalList from '../../../components/rehearsal/list';
-import RehearsalStats from '../../../components/rehearsal/stats';
-import { newUTCDate } from '../../../utils/date';
-import { trpc } from '../../../utils/trpc';
-import { getOperatingYear } from '../../stats/[paramYear]';
+import { newUTCDate } from 'utils/date';
+import { trpc } from 'utils/trpc';
+import { getOperatingYear } from 'pages/stats/[paramYear]';
+import dynamic from 'next/dynamic';
+
+const Button = dynamic(() => import('components/button'));
+const Loading = dynamic(() => import('components/loading'));
+const RehearsalForm = dynamic(() => import('components/rehearsal/form'));
+const RehearsalList = dynamic(() => import('components/rehearsal/list'));
+const RehearsalStats = dynamic(() => import('components/rehearsal/stats'));
 
 const Rehearsals = () => {
   const [year, setYear] = useState(getOperatingYear());

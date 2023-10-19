@@ -1,7 +1,11 @@
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import AccountPreferences from '../../components/account/preferences';
-import CorpsStats from '../../components/account/stats';
-import { trpc } from '../../utils/trpc';
+import { trpc } from 'utils/trpc';
+
+const AccountPreferences = dynamic(
+  () => import('components/account/preferences'),
+);
+const CorpsStats = dynamic(() => import('components/account/stats'));
 
 const Account = () => {
   const { data: corps } = trpc.corps.getSelf.useQuery();

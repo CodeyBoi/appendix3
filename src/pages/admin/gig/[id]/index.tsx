@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router.js';
-import FormLoadingOverlay from '../../../../components/form-loading-overlay';
-import GigForm from '../../../../components/gig/form';
-import { trpc } from '../../../../utils/trpc';
+import FormLoadingOverlay from 'components/form-loading-overlay';
+import dynamic from 'next/dynamic';
+import { trpc } from 'utils/trpc';
+
+const GigForm = dynamic(() => import('components/gig/form'));
 
 const AdminGig = () => {
   const router = useRouter();

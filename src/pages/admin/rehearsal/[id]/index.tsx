@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router';
-import AlertError from '../../../../components/alert-error';
-import Loading from '../../../../components/loading';
-import Rehearsal from '../../../../components/rehearsal';
-import { trpc } from '../../../../utils/trpc';
+import AlertError from 'components/alert-error';
+import { trpc } from 'utils/trpc';
+import dynamic from 'next/dynamic';
+import Loading from 'components/loading';
+
+const Rehearsal = dynamic(() => import('components/rehearsal'));
 
 const MAX_TRIES = 3;
 

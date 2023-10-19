@@ -1,13 +1,21 @@
-import { Box } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import GigCard from '../../../components/gig/card';
-import GigSkeleton from '../../../components/gig/skeleton';
-import Loading from '../../../components/loading';
-import SignupList from '../../../components/signup-list';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
-import { trpc } from '../../../utils/trpc';
+import { getServerAuthSession } from 'server/common/get-server-auth-session';
+import { trpc } from 'utils/trpc';
+import dynamic from 'next/dynamic';
+import GigSkeleton from 'components/gig/skeleton';
+import Loading from 'components/loading';
+
+const skeleton = <GigSkeleton />;
+const loader = <Loading msg='Laddar anmälningar...' />;
+
+const SignupList = dynamic(() => import('components/signup-list'), {
+  loading: () => loader,
+});
+const GigCard = dynamic(() => import('components/gig/card'), {
+  loading: () => skeleton,
+});
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -47,12 +55,8 @@ const GigPage = () => {
         </Head>
       )}
       <h2>Anmälningar</h2>
-      {gig ? <GigCard gig={gig} /> : <GigSkeleton />}
-      {loading && (
-        <Box sx={{ maxWidth: 'fit-content' }}>
-          <Loading msg='Laddar anmälningar...' />
-        </Box>
-      )}
+      {gig ? <GigCard gig={gig} /> : skeleton}
+      {loading && loader}
       {!loading && gig && <SignupList gig={gig} />}
     </div>
   );
