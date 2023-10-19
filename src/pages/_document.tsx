@@ -1,4 +1,4 @@
-import { createStylesServer, ServerStyles } from '@mantine/next';
+import { ServerStyles, createStylesServer } from '@mantine/next';
 import Document, {
   DocumentContext,
   Head,

@@ -1,7 +1,4 @@
-import { useMantineTheme } from '@mantine/core';
-
 const About = () => {
-  const theme = useMantineTheme();
   return (
     <div>
       <h2>Om sidan</h2>
@@ -19,7 +16,7 @@ const About = () => {
         kolla in den publika{' '}
         <a
           style={{
-            color: `${theme.colors[theme.primaryColor ?? 'red']?.[5]}`,
+            color: '#ce0c00',
             textDecoration: 'underline',
             cursor: 'pointer',
           }}

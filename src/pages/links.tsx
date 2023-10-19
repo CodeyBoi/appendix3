@@ -1,10 +1,8 @@
-import { useMantineTheme } from '@mantine/core';
 import Head from 'next/head';
 
 const Links = () => {
-  const theme = useMantineTheme();
   const style = {
-    color: `${theme.colors[theme.primaryColor ?? 'red']?.[5]}`,
+    color: `#ce0c00`,
     textDecoration: 'underline',
     cursor: 'pointer',
   };

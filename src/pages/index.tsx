@@ -1,17 +1,16 @@
 import { Gig } from '@prisma/client';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import React from 'react';
-import GigCard from '../components/gig/card';
-import GigSkeleton from '../components/gig/skeleton';
+import dynamic from 'next/dynamic';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
+import GigSkeleton from '../components/gig/skeleton';
 
-const WIDTHS = [
-  [200, 120, 95, 0.6],
-  [110, 75, 70, 0.2],
-  [235, 105, 95, 0.1],
-  [145, 155, 135, 0.4],
-];
+const skeleton = <GigSkeleton />;
+
+const GigCard = dynamic(() => import('../components/gig/card'), {
+  loading: () => skeleton,
+});
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -94,10 +93,10 @@ const Home: NextPage = () => {
         {gigsLoading && (
           <>
             <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
-            <GigSkeleton widths={WIDTHS[0]} />
-            <GigSkeleton widths={WIDTHS[1]} />
-            <GigSkeleton widths={WIDTHS[2]} />
-            <GigSkeleton widths={WIDTHS[3]} />
+            {skeleton}
+            {skeleton}
+            {skeleton}
+            {skeleton}
           </>
         )}
         {gigs && makeGigList(gigs)}
