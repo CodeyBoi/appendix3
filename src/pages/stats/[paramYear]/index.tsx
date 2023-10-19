@@ -1,6 +1,7 @@
 import { Select } from '@mantine/core';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Loading from '../../../components/loading';
@@ -91,6 +92,9 @@ const Statistics: NextPage = () => {
 
   return (
     <div className='flex flex-col gap-2 max-w-max'>
+      <Head>
+        <title>{`Statistik ${year}-${year + 1}`}</title>
+      </Head>
       <h2>Statistik</h2>
       <div className='w-36'>
         <Select
