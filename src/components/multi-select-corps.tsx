@@ -1,6 +1,7 @@
 import { MultiSelect, MultiSelectProps } from '@mantine/core';
 import { useMemo } from 'react';
 import { trpc } from '../utils/trpc';
+import { formatName } from './select-corps';
 
 type MultiSelectCorpsProps = Omit<MultiSelectProps, 'data'> & {
   excludeSelf?: boolean;
@@ -21,7 +22,7 @@ const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
       corpsii
         ?.filter((c) => !excludeSet.has(c.id))
         .map((c) => ({
-          label: (c.number ? '#' + c.number : 'p.e.') + ' ' + c.displayName,
+          label: formatName(c),
           value: c.id,
         })) ?? []
     );
@@ -45,6 +46,7 @@ const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
         : props.placeholder ?? 'Välj corps...',
     nothingFound,
     limit: props.limit ?? 30,
+    filter: () => true,
   };
 
   return <MultiSelect {...multiSelectProps} />;
