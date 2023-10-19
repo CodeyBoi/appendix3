@@ -128,6 +128,7 @@ export const corpsRouter = router({
         id: z.string().optional(),
         firstName: z.string(),
         lastName: z.string(),
+        nickName: z.string(),
         number: z.number().nullable(),
         bNumber: z.number().nullable(),
         email: z.string(),
@@ -144,6 +145,8 @@ export const corpsRouter = router({
       const queryData = {
         firstName: input.firstName,
         lastName: input.lastName,
+        nickName:
+          input.nickName.trim().length > 0 ? input.nickName.trim() : null,
         number: input.number,
         bNumber: input.bNumber,
         instruments: {
