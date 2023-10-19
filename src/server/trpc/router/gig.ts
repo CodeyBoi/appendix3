@@ -202,6 +202,7 @@ export const gigRouter = router({
               firstName: true,
               lastName: true,
               nickName: true,
+              fullName: true,
               displayName: true,
               number: true,
             },

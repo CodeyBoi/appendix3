@@ -70,7 +70,6 @@ export const corpsRouter = router({
         lastName: z.string(),
         nickName: z.string(),
         email: z.string(),
-        drinksAlcohol: z.boolean(),
         vegetarian: z.boolean(),
         vegan: z.boolean(),
         glutenFree: z.boolean(),
@@ -90,7 +89,6 @@ export const corpsRouter = router({
       }
 
       const foodPrefs = {
-        drinksAlcohol: input.drinksAlcohol,
         vegetarian: input.vegetarian,
         vegan: input.vegan,
         glutenFree: input.glutenFree,

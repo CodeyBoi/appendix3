@@ -1,10 +1,10 @@
 import { Menu } from '@mantine/core';
 import { Gig } from '@prisma/client';
 import {
+  IconApple,
   IconCalendarPlus,
   IconDotsVertical,
   IconEdit,
-  IconInfoCircle,
   IconUsers,
 } from '@tabler/icons';
 import dayjs from 'dayjs';
@@ -92,11 +92,11 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
               Redigera
             </Menu.Item>
             <Menu.Item
-              icon={<IconInfoCircle />}
-              component='a'
+              icon={<IconApple />}
+              component={Link}
               href={`/admin/gig/${gig.id}/info`}
             >
-              Anmälningsinfo
+              Matpreffar
             </Menu.Item>
           </>
         )}

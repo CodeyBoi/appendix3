@@ -1,12 +1,8 @@
-import {
-  Button,
-  Switch,
-  TextInput,
-  useMantineColorScheme,
-} from '@mantine/core';
+import { Switch, TextInput, useMantineColorScheme } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
 import { trpc } from '../../utils/trpc';
+import Button from '../button';
 import FormLoadingOverlay from '../form-loading-overlay';
 
 const initialValues = {
@@ -17,7 +13,6 @@ const initialValues = {
   vegan: false,
   glutenFree: false,
   lactoseFree: false,
-  drinksAlcohol: false,
   otherFoodPrefs: '',
   email: '',
 };
@@ -52,7 +47,6 @@ const AccountPreferences = () => {
       vegan: corps.foodPrefs?.vegan ?? false,
       glutenFree: corps.foodPrefs?.glutenFree ?? false,
       lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
-      drinksAlcohol: corps.foodPrefs?.drinksAlcohol ?? false,
       otherFoodPrefs: corps.foodPrefs?.other ?? '',
       email: corps.user.email || undefined,
     });
@@ -81,115 +75,100 @@ const AccountPreferences = () => {
   /* April fools */
 
   return (
-    <div className='flex flex-col gap-2'>
-      <h3>Inställningar</h3>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <div className='flex flex-col gap-2'>
-          <FormLoadingOverlay visible={submitting || corpsLoading}>
-            <div className='flex flex-col'>
-              <h6>Allmänt</h6>
-              <Switch
-                pl='xs'
-                mb='md'
-                label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
-                checked={colorScheme === 'dark'}
-                onChange={() => {
-                  /* April fools */
-                  if (isAprilFools) {
-                    alert('get pranked');
-                    window.open(
-                      'https://www.youtube.com/watch?v=h-d4PlcAGb4',
-                      '_blank',
-                    );
-                    return;
-                  }
-                  /* April fools */
-                  if (colorScheme !== 'dark') {
-                    if (confirm(darkThemeMessage)) {
-                      toggleColorScheme();
-                    }
-                  } else {
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <FormLoadingOverlay visible={submitting || corpsLoading}>
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col space-y-2'>
+            <h3>Allmänt</h3>
+            <Switch
+              pl='xs'
+              label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
+              checked={colorScheme === 'dark'}
+              onChange={() => {
+                /* April fools */
+                if (isAprilFools) {
+                  alert('get pranked');
+                  window.open(
+                    'https://www.youtube.com/watch?v=h-d4PlcAGb4',
+                    '_blank',
+                  );
+                  return;
+                }
+                /* April fools */
+                if (colorScheme !== 'dark') {
+                  if (confirm(darkThemeMessage)) {
                     toggleColorScheme();
                   }
-                }}
-              />
-              <h6> Kontaktuppgifter</h6>
-              <TextInput
-                label='Förnamn'
-                placeholder='Förnamn'
-                withAsterisk
-                {...form.getInputProps('firstName')}
-              />
-              <TextInput
-                label='Efternamn'
-                placeholder='Efternamn'
-                withAsterisk
-                {...form.getInputProps('lastName')}
-              />
-              <TextInput
-                label='Smeknamn'
-                placeholder='Smeknamn'
-                {...form.getInputProps('nickName')}
-              />
-              <TextInput
-                label='E-post'
-                placeholder='E-post'
-                withAsterisk
-                {...form.getInputProps('email')}
-              />
-            </div>
-            <br />
-            <div className='flex flex-col space-y-2'>
-              <h6>Matpreferenser</h6>
-              <Switch
-                pl='xs'
-                label='Dricker alkohol'
-                {...form.getInputProps('drinksAlcohol', { type: 'checkbox' })}
-              />
-              <Switch
-                pl='xs'
-                label='Vegetarian'
-                {...form.getInputProps('vegetarian', { type: 'checkbox' })}
-              />
-              <Switch
-                pl='xs'
-                label='Vegan'
-                {...form.getInputProps('vegan', { type: 'checkbox' })}
-              />
-              <Switch
-                pl='xs'
-                label='Glutenfritt'
-                {...form.getInputProps('glutenFree', {
-                  type: 'checkbox',
-                })}
-              />
-              <Switch
-                pl='xs'
-                label='Laktosfritt'
-                {...form.getInputProps('lactoseFree', {
-                  type: 'checkbox',
-                })}
-              />
-              <TextInput
-                label='Övriga matpreferenser'
-                placeholder='Övriga matpreferenser...'
-                {...form.getInputProps('otherFoodPrefs')}
-              />
-            </div>
-          </FormLoadingOverlay>
-          <div className='flex justify-end p-2'>
-            <Button
-              className='bg-red-600'
-              disabled={!form.isTouched() || !form.isValid() || submitting}
-              loading={submitting}
-              type='submit'
-            >
-              Spara
-            </Button>
+                } else {
+                  toggleColorScheme();
+                }
+              }}
+            />
+          </div>
+          <div className='flex flex-col space-y-2'>
+            <h3>Kontaktuppgifter</h3>
+            <TextInput
+              label='Förnamn'
+              placeholder='Förnamn'
+              withAsterisk
+              {...form.getInputProps('firstName')}
+            />
+            <TextInput
+              label='Efternamn'
+              placeholder='Efternamn'
+              withAsterisk
+              {...form.getInputProps('lastName')}
+            />
+            <TextInput
+              label='Smeknamn'
+              placeholder='Smeknamn'
+              {...form.getInputProps('nickName')}
+            />
+            <TextInput
+              label='E-post'
+              placeholder='E-post'
+              withAsterisk
+              {...form.getInputProps('email')}
+            />
+          </div>
+          <div className='flex flex-col pl-2 space-y-2'>
+            <h3>Matpreferenser</h3>
+            <Switch
+              label='Vegetarian'
+              {...form.getInputProps('vegetarian', { type: 'checkbox' })}
+            />
+            <Switch
+              label='Vegan'
+              {...form.getInputProps('vegan', { type: 'checkbox' })}
+            />
+            <Switch
+              label='Glutenfritt'
+              {...form.getInputProps('glutenFree', {
+                type: 'checkbox',
+              })}
+            />
+            <Switch
+              label='Laktosfritt'
+              {...form.getInputProps('lactoseFree', {
+                type: 'checkbox',
+              })}
+            />
+            <TextInput
+              placeholder='Övriga matpreferenser...'
+              {...form.getInputProps('otherFoodPrefs')}
+            />
           </div>
         </div>
-      </form>
-    </div>
+      </FormLoadingOverlay>
+      <div className='flex justify-end p-2'>
+        <Button
+          disabled={!form.isTouched() || !form.isValid() || submitting}
+          type='submit'
+        >
+          Spara
+        </Button>
+      </div>
+    </form>
   );
 };
 
