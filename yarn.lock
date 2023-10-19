@@ -590,10 +590,10 @@
     "@tanstack/query-core" "4.35.7"
     use-sync-external-store "^1.2.0"
 
-"@trpc/client@10.0.0-proxy-beta.17":
-  version "10.0.0-proxy-beta.17"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.0.0-proxy-beta.17.tgz#f18b1fced6001760ad219d63bf1400912f215236"
-  integrity sha512-GhC39yiYdeW44SR/XiN/dF94deTZM/m0NGSlttWILDLfnGwxKgMeOSfZSiTNRwkAoXnn7Gy+g6ysexa1tVlM1g==
+"@trpc/client@^10.40.0":
+  version "10.40.0"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.40.0.tgz#edf1eb1221c611de911a85b3fa433fbb1421a47b"
+  integrity sha512-bT6BcdWjj0KzGQiimE6rB2tIaRYX0Ear4Gthb5szN/c01wrP0yC1Fbz2uCcm/QTVAwu4Lve5M+YjPoEaTHG6lg==
 
 "@trpc/next@10.0.0-proxy-beta.17":
   version "10.0.0-proxy-beta.17"
@@ -602,15 +602,20 @@
   dependencies:
     react-ssr-prepass "^1.5.0"
 
+"@trpc/react-query@^10.40.0":
+  version "10.40.0"
+  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-10.40.0.tgz#11be7e6860417aa699555e2f2757c18028f8fbc3"
+  integrity sha512-DpJrV3lmYNo9xtPtcg49lfh9CUFap3ZivjhlSmfe4QPf7H6xBjAE+ml4OdJ0RmKvSTFvbLSOiNdB1k5O8zIdzQ==
+
 "@trpc/react@10.0.0-proxy-beta.17":
   version "10.0.0-proxy-beta.17"
   resolved "https://registry.yarnpkg.com/@trpc/react/-/react-10.0.0-proxy-beta.17.tgz#8a8c854cf7261e095742d20e45d70dba99cd71d7"
   integrity sha512-xSLEsKL8+mBgWxW/z2oJs0qSYz/TZd/xqpKa8DcPpXTtp0Oa6iT8DychoF+FztjlBL+jULcqfzF1JRJ5z2iFJg==
 
-"@trpc/server@10.0.0-proxy-beta.17":
-  version "10.0.0-proxy-beta.17"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.0.0-proxy-beta.17.tgz#7e56a95d213f52e328d90b3aa6b999d499b2ba21"
-  integrity sha512-q3Cl4RC5q0kRg8KGt0sWQ11hKrLaIxK2FYGy7fQ6E+k9Yo8r2VDxn++PskZk9LTzgKRi1JtfZVJO15oXoXJHyw==
+"@trpc/server@^10.40.0":
+  version "10.40.0"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.40.0.tgz#34b8dbc1ae58193003de01b25b44861bd338a72a"
+  integrity sha512-49SUOMWzSZtu5+OdrADmJD+u+sjSE0qj1cWgYk2FY4jLkPJunLuNRuhzM7aOeBhiUjyfhg2YTfur8FN1WBmvEw==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
