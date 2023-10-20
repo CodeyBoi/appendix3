@@ -21,7 +21,7 @@ const GigAdminInfo = async ({ params }: { params: { id: string } }) => {
   return (
     <div className='max-w-4xl'>
       <Suspense fallback={<GigSkeleton />}>
-        <GigCard gigId={gigId} />
+        <GigCard gig={gigId} />
       </Suspense>
       <div className='h-2' />
       {gig && (

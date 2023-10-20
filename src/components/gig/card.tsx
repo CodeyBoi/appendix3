@@ -5,34 +5,29 @@ import Datebox from 'components/gig/datebox';
 import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
-import { Gig } from '@prisma/client';
+import { Gig as PrismaGig } from '@prisma/client';
+
+type GigId = string;
+type Gig = PrismaGig & {
+  type: { name: string };
+  hiddenFor: { corpsId: string }[];
+};
 
 interface GigCardProps {
-  gig?: Gig & {
-    type: { name: string };
-    hiddenFor: { corpsId: string }[];
-  };
-  gigId?: string;
+  gig: Gig | GigId;
 }
 
-const GigCard = async ({ gigId: gigIdProp, gig: gigProp }: GigCardProps) => {
-  // Either gig or gigId must be defined, but not both or neither
-  if ((!gigProp && !gigIdProp) || (gigProp && gigIdProp)) {
-    return (
-      <div>Error: A GigCard component got both a gig and a gigId as props.</div>
-    );
-  }
+const isGig = (gig: Gig | GigId): gig is Gig => {
+  return (gig as Gig).id !== undefined;
+};
 
-  const gig =
-    gigProp ?? (await api.gig.getWithId.query({ gigId: gigIdProp as string }));
+const GigCard = async ({ gig: gigProp }: GigCardProps) => {
+  const gig = isGig(gigProp)
+    ? gigProp
+    : await api.gig.getWithId.query({ gigId: gigProp });
 
   if (!gig) {
-    return (
-      <div>
-        Error: No gig found with props:{' '}
-        {`${{ gig: gigProp, gigId: gigIdProp }}`}.
-      </div>
-    );
+    return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
   }
 
   const corps = await api.corps.getSelf.query();

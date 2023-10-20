@@ -14,9 +14,9 @@ const GigPage = async ({ params }: { params: { id: string } }) => {
       </Head>
       <h2>Anmälningar</h2>
       <Suspense fallback={<GigSkeleton />}>
-        <GigCard gigId={gigId} />
+        <GigCard gig={gigId} />
       </Suspense>
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Loading msg='Laddar anmälningar...' />}>
         <SignupList gigId={gigId} />
       </Suspense>
     </div>
