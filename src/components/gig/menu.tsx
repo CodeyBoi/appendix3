@@ -1,3 +1,5 @@
+'use client';
+
 import { Menu } from '@mantine/core';
 import { Gig } from '@prisma/client';
 import {
@@ -13,10 +15,9 @@ import Link from 'next/link';
 type GigMenuProps = {
   gig: Gig & { type: { name: string } };
   isAdmin: boolean;
-  setOpened: (opened: boolean) => void;
 };
 
-const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
+const GigMenu = ({ gig, isAdmin }: GigMenuProps) => {
   const getCalendarLink = (startTime: string, endTime: string) => {
     const dateStr = dayjs(gig.date).format('YYYYMMDD');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -84,7 +85,11 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
           <>
             <Menu.Divider />
             <Menu.Label>Admin</Menu.Label>
-            <Menu.Item icon={<IconEdit />} onClick={() => setOpened(true)}>
+            <Menu.Item
+              icon={<IconEdit />}
+              component={Link}
+              href={`/admin/gig/${gig.id}`}
+            >
               Redigera
             </Menu.Item>
             <Menu.Item

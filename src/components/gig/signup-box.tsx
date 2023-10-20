@@ -1,3 +1,5 @@
+'use client';
+
 import { Checkbox, SegmentedControl, Select } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';

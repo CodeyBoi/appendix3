@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Button,
   Checkbox,
@@ -11,13 +13,14 @@ import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
 import { IconCalendar, IconClock } from '@tabler/icons';
 import React from 'react';
-import { trpc } from '../../utils/trpc';
+import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 import MultiSelectCorps from '../multi-select-corps';
+import { useRouter } from 'next/navigation';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
-  onSubmit?: () => void;
+  gigTypes: string[];
 }
 
 const initialValues = {
@@ -39,12 +42,13 @@ const initialValues = {
 };
 type FormValues = typeof initialValues;
 
-const GigForm = ({ gig, onSubmit }: GigFormProps) => {
-  const utils = trpc.useContext();
+const GigForm = ({ gig, gigTypes }: GigFormProps) => {
+  const utils = trpc.useUtils();
   const newGig = !gig;
   const gigId = gig?.id ?? 'new';
-  const { data: gigTypes } = trpc.gigType.getAll.useQuery();
   const [submitting, setSubmitting] = React.useState(false);
+
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     initialValues: newGig
@@ -68,7 +72,7 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      onSubmit?.();
+      router.push(`/gig/${gigId}`);
     },
   });
 
@@ -77,7 +81,7 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      onSubmit?.();
+      router.push('/');
     },
   });
 
@@ -114,8 +118,8 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
             placeholder='Välj typ...'
             data={
               gigTypes?.map((type) => ({
-                value: type.name,
-                label: type.name,
+                value: type,
+                label: type,
               })) ?? []
             }
             {...form.getInputProps('type')}

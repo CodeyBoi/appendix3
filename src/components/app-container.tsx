@@ -1,6 +1,6 @@
 import { AppShell, Navbar } from '@mantine/core';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 
@@ -9,8 +9,8 @@ const NavbarContent = dynamic(() => import('./navbar'));
 
 const AppContainer = ({ children }: { children: ReactElement }) => {
   const session = useSession();
-  const router = useRouter();
-  const verifiedPage = router.pathname === '/verified'; //? Is this ugly fix?? Please check me Hannes
+  const pathname = usePathname();
+  const verifiedPage = pathname === '/verified'; //? Is this ugly fix?? Please check me Hannes
 
   return (
     <AppShell

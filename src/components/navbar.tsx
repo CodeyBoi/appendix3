@@ -24,7 +24,7 @@ import {
 import cuid from 'cuid';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { getOperatingYear } from '../pages/stats/[paramYear]';
 import { trpc } from '../utils/trpc';
@@ -127,10 +127,11 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
 
   const theme = useMantineTheme();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    setActive(router.asPath);
-  }, [router.asPath]);
+    setActive(pathname ?? '');
+  }, [pathname]);
 
   const links = tabs[activeTab].map((tab) => (
     <div className='flex flex-col gap-2' key={tab.title || cuid()}>

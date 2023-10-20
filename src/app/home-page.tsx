@@ -1,9 +1,7 @@
-'use client';
-
 import { Gig } from '@prisma/client';
 import React, { Suspense } from 'react';
-import GigCard from '../components/gig/card';
-import GigSkeleton from '../components/gig/skeleton';
+import GigCard from 'components/gig/card';
+import GigSkeleton from 'components/gig/skeleton';
 
 type HomePageProps = {
   gigs: (Gig & { type: { name: string } } & {
