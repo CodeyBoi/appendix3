@@ -1,6 +1,6 @@
 import { CorpsFoodPrefs } from '@prisma/client';
 import { IconDownload } from '@tabler/icons';
-import Button from '../button';
+import Button from 'components/button';
 
 type Signup = {
   status: {

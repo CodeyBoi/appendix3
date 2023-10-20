@@ -5,17 +5,34 @@ import Datebox from 'components/gig/datebox';
 import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
-import GigSkeleton from 'components/gig/skeleton';
+import { Gig } from '@prisma/client';
 
 interface GigCardProps {
-  gigId: string;
+  gig?: Gig & {
+    type: { name: string };
+    hiddenFor: { corpsId: string }[];
+  };
+  gigId?: string;
 }
 
-const GigCard = async ({ gigId }: GigCardProps) => {
-  const gig = await api.gig.getWithId.query({ gigId });
+const GigCard = async ({ gigId: gigIdProp, gig: gigProp }: GigCardProps) => {
+  // Either gig or gigId must be defined, but not both or neither
+  if ((!gigProp && !gigIdProp) || (gigProp && gigIdProp)) {
+    return (
+      <div>Error: A GigCard component got both a gig and a gigId as props.</div>
+    );
+  }
+
+  const gig =
+    gigProp ?? (await api.gig.getWithId.query({ gigId: gigIdProp as string }));
 
   if (!gig) {
-    return <GigSkeleton />;
+    return (
+      <div>
+        Error: No gig found with props:{' '}
+        {`${{ gig: gigProp, gigId: gigIdProp }}`}.
+      </div>
+    );
   }
 
   const corps = await api.corps.getSelf.query();
