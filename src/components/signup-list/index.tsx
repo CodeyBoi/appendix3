@@ -220,8 +220,8 @@ const SignupList = ({ gig }: SignupListProps) => {
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
                   <tr>
-                    <td>
-                      <h5 className='mt-2 text-right first-letter:capitalize'>
+                    <td colSpan={2}>
+                      <h5 className='mt-2 first-letter:capitalize'>
                         {toPlural(signup.instrument.name)}
                       </h5>
                     </td>
