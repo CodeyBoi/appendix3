@@ -1,4 +1,3 @@
-import { Gig } from '@prisma/client';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import React from 'react';
@@ -6,12 +5,19 @@ import Datebox from 'components/gig/datebox';
 import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
+import GigSkeleton from 'components/gig/skeleton';
 
 interface GigCardProps {
-  gig: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
+  gigId: string;
 }
 
-const GigCard = async ({ gig }: GigCardProps) => {
+const GigCard = async ({ gigId }: GigCardProps) => {
+  const gig = await api.gig.getWithId.query({ gigId });
+
+  if (!gig) {
+    return <GigSkeleton />;
+  }
+
   const corps = await api.corps.getSelf.query();
   const isAdmin = corps?.role?.name === 'admin';
 

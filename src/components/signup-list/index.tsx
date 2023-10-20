@@ -1,8 +1,10 @@
+'use client';
+
 import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import Button from '../button';
 import Loading from '../loading';
@@ -10,12 +12,7 @@ import MultiSelectCorps from '../multi-select-corps';
 import Entry from './entry';
 
 interface SignupListProps {
-  gig: {
-    id: string;
-    date: Date;
-    checkbox1: string;
-    checkbox2: string;
-  };
+  gigId: string;
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -66,15 +63,15 @@ const toPlural = (instrument: string) => {
   return instrument + 'er';
 };
 
-const SignupList = ({ gig }: SignupListProps) => {
+const SignupList = ({ gigId }: SignupListProps) => {
   const queryClient = useQueryClient();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
+
+  const { data: gig } = trpc.gig.getWithId.useQuery({ gigId });
 
   const gigHasHappened = gig
     ? gig.date.getTime() < new Date().getTime() - 1000 * 60 * 60 * 24
     : false;
-
-  const gigId = gig.id;
 
   const { data: signups, isInitialLoading: signupsLoading } =
     trpc.gig.getSignups.useQuery({ gigId });
@@ -82,7 +79,7 @@ const SignupList = ({ gig }: SignupListProps) => {
   const { data: role } = trpc.corps.getRole.useQuery();
   const isAdmin = role === 'admin';
 
-  const [editMode, setEditMode] = React.useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const showAdminTools = isAdmin && editMode;
 
@@ -202,8 +199,8 @@ const SignupList = ({ gig }: SignupListProps) => {
               <>
                 <th className='pr-6 text-right'>#</th>
                 <th className='text-left'>Namn</th>
-                {gig.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
-                {gig.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
+                {gig?.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
+                {gig?.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
                 <th className='px-1'>Här?</th>
                 <th className='px-1'>Vask</th>
               </>
@@ -241,10 +238,10 @@ const SignupList = ({ gig }: SignupListProps) => {
                       })
                     }
                     checkbox1={
-                      !!gig.checkbox1.trim() ? signup.checkbox1 : undefined
+                      !!gig?.checkbox1.trim() ? signup.checkbox1 : undefined
                     }
                     checkbox2={
-                      !!gig.checkbox2.trim() ? signup.checkbox2 : undefined
+                      !!gig?.checkbox2.trim() ? signup.checkbox2 : undefined
                     }
                     handleDelete={() => handleDelete(signup.corpsId)}
                   />
