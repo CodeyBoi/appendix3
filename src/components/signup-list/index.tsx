@@ -200,7 +200,7 @@ const SignupList = ({ gig }: SignupListProps) => {
           <tr>
             {showAdminTools ? (
               <>
-                <th className='text-center'>#</th>
+                <th className='pr-6 text-right'>#</th>
                 <th className='text-left'>Namn</th>
                 {gig.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
                 {gig.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
@@ -220,11 +220,10 @@ const SignupList = ({ gig }: SignupListProps) => {
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
                   <tr>
-                    <td />
                     <td>
-                      <h4 className='mt-2 first-letter:capitalize'>
+                      <h5 className='mt-2 text-right first-letter:capitalize'>
                         {toPlural(signup.instrument.name)}
-                      </h4>
+                      </h5>
                     </td>
                   </tr>
                 )}
