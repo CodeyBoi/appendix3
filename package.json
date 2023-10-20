@@ -9,7 +9,7 @@
     "lint": "next lint",
     "start": "next start",
     "importolddb": "ts-node ./src/scripts/importOldDb",
-    "startstaging": "next start -p 5160",
+    "startstaging": "next start -p 3001",
     "stage": "yarn lint && ts-node ./src/scripts/stage",
     "deploy": "ts-node ./src/scripts/deploy"
   },
