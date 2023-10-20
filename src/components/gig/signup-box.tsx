@@ -10,7 +10,7 @@ interface GigSignupBoxProps {
 }
 
 const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const addSignup = trpc.gig.addSignup.useMutation({
     onSuccess: async () => {
@@ -48,6 +48,8 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
     } else {
       setStatus(signup.status.value);
       setInstrument(signup.instrument.name);
+      setCheckbox1Checked(signup.checkbox1);
+      setCheckbox2Checked(signup.checkbox2);
     }
   }, [mainInstrument, signupInitLoad, signup]);
 
