@@ -21,7 +21,7 @@ export const api = createTRPCProxyClient<AppRouter>({
       headers() {
         const heads = new Map(headers());
         heads.set('x-trpc-source', 'rsc');
-        return Object.fromEntries(heads);
+        return { ...Object.fromEntries(heads), connection: undefined };
       },
     }),
   ],
