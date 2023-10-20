@@ -171,6 +171,8 @@ export const gigRouter = router({
               value: true,
             },
           },
+          checkbox1: true,
+          checkbox2: true,
           instrument: {
             select: {
               name: true,

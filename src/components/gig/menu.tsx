@@ -17,8 +17,6 @@ type GigMenuProps = {
 };
 
 const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
-  const hasValidTimes = gig.meetup.includes(':') || gig.meetup.includes('.');
-
   const getCalendarLink = (startTime: string, endTime: string) => {
     const dateStr = dayjs(gig.date).format('YYYYMMDD');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -29,7 +27,7 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
   };
 
   const generateCalendarLink = () => {
-    if (!hasValidTimes) return '';
+    if (!(gig.meetup.includes(':') || gig.meetup.includes('.'))) return '';
     const [meetupHour, meetupMinute] = gig.meetup.split(/[:.]/);
     if (!meetupHour || !meetupMinute) return '';
 
@@ -60,6 +58,8 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
     return '';
   };
 
+  const calenderLink = generateCalendarLink();
+
   return (
     <Menu shadow='md' width={200} position='left-start' withArrow>
       <Menu.Target>
@@ -75,12 +75,8 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
         >
           Se anmälningar
         </Menu.Item>
-        <Menu.Item icon={<IconCalendarPlus />} disabled={!hasValidTimes}>
-          <a
-            href={generateCalendarLink()}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
+        <Menu.Item icon={<IconCalendarPlus />} disabled={calenderLink === ''}>
+          <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
             Lägg till i kalender
           </a>
         </Menu.Item>
