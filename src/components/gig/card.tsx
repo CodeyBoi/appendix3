@@ -39,6 +39,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
     return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
   }
 
+  const signup = await api.gig.getSignup.query({
+    gigId: gig.id,
+    corpsId: corps.id,
+  });
+
   const isAdmin = corps.role?.name === 'admin';
 
   const currentDate = dayjs().startOf('day');
@@ -89,6 +94,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 gigId={gig.id}
                 checkbox1={gig.checkbox1}
                 checkbox2={gig.checkbox2}
+                signup={signup ?? undefined}
               />
             )}
           </div>
