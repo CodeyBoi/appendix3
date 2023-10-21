@@ -1,10 +1,11 @@
 'use client';
 
-import { Checkbox, Select } from '@mantine/core';
+import { Select } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 import SegmentedControl from 'components/segmented-control';
+import Checkbox from 'components/checkbox';
 
 type Signup = {
   status: { value: string };
@@ -68,108 +69,105 @@ const GigSignupBox = ({
   const loading = !corps || !mainInstrument;
 
   return (
-    <FormLoadingOverlay visible={loading}>
-      <div className='flex flex-col gap-2'>
-        <SegmentedControl
-          defaultValue={signup?.status.value ?? ''}
-          onChange={(s) => {
-            if (!s || !corps) {
+    <div className='flex flex-col gap-2'>
+      <SegmentedControl
+        disabled={submitting || loading}
+        defaultValue={signup?.status.value ?? ''}
+        onChange={(s) => {
+          if (!s || !corps) {
+            return;
+          }
+          setSubmitting(true);
+          setStatus(s as string);
+          addSignup.mutate({
+            gigId,
+            corpsId: corps.id,
+            status: s as string,
+            instrument,
+            checkbox1: checkbox1Checked,
+            checkbox2: checkbox2Checked,
+          });
+        }}
+        options={[
+          { label: 'Ja', value: 'Ja' },
+          { label: 'Nej', value: 'Nej' },
+          { label: 'Kanske', value: 'Kanske' },
+        ]}
+      />
+      {(corps?.instruments.length ?? 0) > 1 && (
+        <Select
+          disabled={submitting || loading}
+          size='xs'
+          label='Instrument'
+          value={instrument}
+          onChange={(val) => {
+            if (!val || !corps) {
               return;
             }
             setSubmitting(true);
-            setStatus(s as string);
+            setInstrument(val);
             addSignup.mutate({
               gigId,
               corpsId: corps.id,
-              status: s as string,
-              instrument,
+              status: status,
+              instrument: val,
               checkbox1: checkbox1Checked,
               checkbox2: checkbox2Checked,
             });
           }}
-          options={[
-            { label: 'Ja', value: 'Ja' },
-            { label: 'Nej', value: 'Nej' },
-            { label: 'Kanske', value: 'Kanske' },
-          ]}
+          data={
+            corps?.instruments.map((i) => ({
+              label: i.instrument.name,
+              value: i.instrument.name,
+            })) ?? []
+          }
         />
-        {(corps?.instruments.length ?? 0) > 1 && (
-          <Select
-            disabled={submitting}
-            size='xs'
-            label='Instrument'
-            value={instrument}
-            onChange={(val) => {
-              if (!val || !corps) {
-                return;
-              }
-              setSubmitting(true);
-              setInstrument(val);
-              addSignup.mutate({
-                gigId,
-                corpsId: corps.id,
-                status: status,
-                instrument: val,
-                checkbox1: checkbox1Checked,
-                checkbox2: checkbox2Checked,
-              });
-            }}
-            data={
-              corps?.instruments.map((i) => ({
-                label: i.instrument.name,
-                value: i.instrument.name,
-              })) ?? []
+      )}
+      {checkbox1 && (
+        <Checkbox
+          disabled={submitting || loading}
+          checked={checkbox1Checked}
+          label={checkbox1}
+          onChange={(e) => {
+            if (!corps) {
+              return;
             }
-          />
-        )}
-        {checkbox1 && (
-          <Checkbox
-            disabled={submitting}
-            checked={checkbox1Checked}
-            label={checkbox1}
-            sx={{ lineHeight: 0 }}
-            onChange={(e) => {
-              if (!corps) {
-                return;
-              }
-              setSubmitting(true);
-              setCheckbox1Checked(e.currentTarget.checked);
-              addSignup.mutate({
-                gigId,
-                corpsId: corps.id,
-                status,
-                instrument,
-                checkbox1: e.currentTarget.checked,
-                checkbox2: checkbox2Checked,
-              });
-            }}
-          />
-        )}
-        {checkbox2 && (
-          <Checkbox
-            disabled={submitting}
-            checked={checkbox2Checked}
-            label={checkbox2}
-            sx={{ lineHeight: 0 }}
-            onChange={(e) => {
-              if (!corps) {
-                return;
-              }
-              setSubmitting(true);
-              setCheckbox2Checked(e.currentTarget.checked);
-              addSignup.mutateAsync({
-                gigId,
-                corpsId: corps.id,
-                status,
-                instrument,
-                checkbox1: checkbox1Checked,
-                checkbox2: e.currentTarget.checked,
-              });
-            }}
-          />
-        )}
-      </div>
-    </FormLoadingOverlay>
+            setSubmitting(true);
+            setCheckbox1Checked(e.currentTarget.checked);
+            addSignup.mutate({
+              gigId,
+              corpsId: corps.id,
+              status,
+              instrument,
+              checkbox1: e.currentTarget.checked,
+              checkbox2: checkbox2Checked,
+            });
+          }}
+        />
+      )}
+      {checkbox2 && (
+        <Checkbox
+          disabled={submitting || loading}
+          checked={checkbox2Checked}
+          label={checkbox2}
+          onChange={(e) => {
+            if (!corps) {
+              return;
+            }
+            setSubmitting(true);
+            setCheckbox2Checked(e.currentTarget.checked);
+            addSignup.mutateAsync({
+              gigId,
+              corpsId: corps.id,
+              status,
+              instrument,
+              checkbox1: checkbox1Checked,
+              checkbox2: e.currentTarget.checked,
+            });
+          }}
+        />
+      )}
+    </div>
   );
 };
 
