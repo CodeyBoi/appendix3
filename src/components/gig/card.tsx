@@ -66,7 +66,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
           </Link>
           <GigMenu
             target={
-              <button className='p-1 text-red-600 rounded hover:bg-red-600/10'>
+              <button className='p-1 text-red-600 transition-colors rounded hover:bg-red-600/10'>
                 <IconDotsVertical />
               </button>
             }

@@ -105,7 +105,7 @@ const GigSignupBox = ({
               }
               setSubmitting(true);
               setInstrument(val);
-              addSignup.mutateAsync({
+              addSignup.mutate({
                 gigId,
                 corpsId: corps.id,
                 status: status,
@@ -134,7 +134,7 @@ const GigSignupBox = ({
               }
               setSubmitting(true);
               setCheckbox1Checked(e.currentTarget.checked);
-              addSignup.mutateAsync({
+              addSignup.mutate({
                 gigId,
                 corpsId: corps.id,
                 status,

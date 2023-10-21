@@ -16,8 +16,7 @@ const NavbarControl = ({ userTab, adminTab }: NavbarContentProps) => {
     <>
       {isAdmin && (
         <SegmentedControl
-          bg='red-800'
-          notSelectedTextColor='gray-300'
+          color='red'
           defaultValue='user'
           onChange={(value) => setTab(value as TabValue)}
           options={[
