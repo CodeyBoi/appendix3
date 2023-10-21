@@ -6,6 +6,8 @@ import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
 import { Gig as PrismaGig } from '@prisma/client';
+import { IconDotsVertical } from '@tabler/icons';
+import GigMenuContent from './menu/content';
 
 type GigId = string;
 type Gig = PrismaGig & {
@@ -22,6 +24,9 @@ const isGig = (gig: Gig | GigId): gig is Gig => {
 };
 
 const GigCard = async ({ gig: gigProp }: GigCardProps) => {
+  const corps = await api.corps.getSelf.query();
+  const isAdmin = corps?.role?.name === 'admin';
+
   const gig = isGig(gigProp)
     ? gigProp
     : await api.gig.getWithId.query({ gigId: gigProp });
@@ -29,9 +34,6 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
   if (!gig) {
     return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
   }
-
-  const corps = await api.corps.getSelf.query();
-  const isAdmin = corps?.role?.name === 'admin';
 
   const currentDate = dayjs().startOf('day');
   const showSignup =
@@ -51,7 +53,14 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
           <Link className='flex-grow' href={`/gig/${gig.id}`}>
             <h4 className='cursor-pointer'>{gig.title}</h4>
           </Link>
-          <GigMenu gig={gig} isAdmin={isAdmin} />
+          <GigMenu
+            target={
+              <button className='p-1 text-red-600 rounded hover:bg-red-600/10'>
+                <IconDotsVertical />
+              </button>
+            }
+            dropdown={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
+          />
         </div>
         <div className='flex flex-col justify-between lg:flex-row'>
           <Link className='flex-grow' href={`/gig/${gig.id}`}>

@@ -149,7 +149,8 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
           <div className='h-96' />
           <Link href='/stats/for/nerds'>
             <div className='flex justify-center'>
-              <Button leftSection={<IconMoodNerd />}>
+              <Button>
+                <IconMoodNerd />
                 Statistik för nördar
               </Button>
             </div>

@@ -1,23 +1,21 @@
-'use client';
-
-import { Menu } from '@mantine/core';
 import { Gig } from '@prisma/client';
 import {
-  IconApple,
-  IconCalendarPlus,
-  IconDotsVertical,
-  IconEdit,
   IconUsers,
+  IconCalendarPlus,
+  IconEdit,
+  IconApple,
 } from '@tabler/icons';
+import Button from 'components/button';
+import Divider from 'components/divider';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
-type GigMenuProps = {
+type GigMenuContentProps = {
   gig: Gig & { type: { name: string } };
   isAdmin: boolean;
 };
 
-const GigMenu = ({ gig, isAdmin }: GigMenuProps) => {
+const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
   const getCalendarLink = (startTime: string, endTime: string) => {
     const dateStr = dayjs(gig.date).format('YYYYMMDD');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -61,49 +59,48 @@ const GigMenu = ({ gig, isAdmin }: GigMenuProps) => {
 
   const calenderLink = generateCalendarLink();
 
+  const buttonProps = {
+    color: 'black',
+    bg: 'white',
+    className: 'flex justify-start w-full hover:bg-red-600/10',
+  };
+
   return (
-    <Menu shadow='md' width={200} position='left-start' withArrow>
-      <Menu.Target>
-        <button className='p-1 text-red-600 rounded hover:bg-red-600/10'>
-          <IconDotsVertical />
-        </button>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Item
-          icon={<IconUsers />}
-          component={Link}
-          href={`/gig/${gig.id}`}
-        >
+    <>
+      <Link href={`/gig/${gig.id}`}>
+        <Button {...buttonProps}>
+          <IconUsers />
           Se anmälningar
-        </Menu.Item>
-        <Menu.Item icon={<IconCalendarPlus />} disabled={calenderLink === ''}>
-          <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
-            Lägg till i kalender
-          </a>
-        </Menu.Item>
-        {isAdmin && (
-          <>
-            <Menu.Divider />
-            <Menu.Label>Admin</Menu.Label>
-            <Menu.Item
-              icon={<IconEdit />}
-              component={Link}
-              href={`/admin/gig/${gig.id}`}
-            >
+        </Button>
+      </Link>
+      <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
+        <Button {...buttonProps} disabled={calenderLink === ''}>
+          <IconCalendarPlus />
+          Lägg till i kalender
+        </Button>
+      </a>
+      {isAdmin && (
+        <>
+          <div className='-mx-1'>
+            <Divider />
+          </div>
+          <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
+          <Link href={`/admin/gig/${gig.id}`}>
+            <Button {...buttonProps}>
+              <IconEdit />
               Redigera
-            </Menu.Item>
-            <Menu.Item
-              icon={<IconApple />}
-              component={Link}
-              href={`/admin/gig/${gig.id}/info`}
-            >
-              Matpreffar
-            </Menu.Item>
-          </>
-        )}
-      </Menu.Dropdown>
-    </Menu>
+            </Button>
+          </Link>
+          <Link href={`/admin/gig/${gig.id}/info`}>
+            <Button {...buttonProps}>
+              <IconApple />
+              Matpreferenser
+            </Button>
+          </Link>
+        </>
+      )}
+    </>
   );
 };
 
-export default GigMenu;
+export default GigMenuContent;

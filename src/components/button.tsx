@@ -1,35 +1,41 @@
 import React, { ButtonHTMLAttributes } from 'react';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  leftSection?: React.ReactNode;
+  color?: string;
+  bg?: string;
 };
 
-const Button = ({ disabled, children, leftSection, ...props }: ButtonProps) => {
+const Button = ({
+  color = 'white',
+  bg = 'red',
+  disabled,
+  children,
+  ...props
+}: ButtonProps) => {
+  const classNames = [];
   if (disabled) {
-    return (
-      <button
-        {...props}
-        className='px-5 pb-2.5 pt-2.5 text-neutral-700 dark:text-neutral-300 dark:bg-neutral-700 bg-neutral-300 rounded h-min opacity-50 cursor-not-allowed'
-      >
-        <div className='flex items-center justify-center space-x-2'>
-          {leftSection}
-          <div className='font-display whitespace-nowrap'>{children}</div>
-        </div>
-      </button>
+    classNames.push(
+      `opacity-50 cursor-not-allowed bg-${bg}-300 text-${color}-700 dark:bg-${bg}-700 dark:text-${color}-300`,
     );
   } else {
-    return (
-      <button
-        {...props}
-        className='px-5 pb-2.5 pt-2.5 text-white bg-red-600 rounded hover:bg-red-700 h-min'
-      >
-        <div className='flex items-center justify-center space-x-2'>
-          {leftSection}
-          <div className='font-display whitespace-nowrap'>{children}</div>
-        </div>
-      </button>
-    );
+    classNames.push(`bg-${bg}-600 hover:bg-${bg}-700 text-${color}`);
   }
+
+  return (
+    <button
+      {...props}
+      className={
+        'px-3 py-2.5 rounded h-min ' +
+        classNames.join(' ') +
+        ' ' +
+        props.className
+      }
+    >
+      <div className='flex items-center justify-center gap-2 flex-nowrap font-display whitespace-nowrap'>
+        {children}
+      </div>
+    </button>
+  );
 };
 
 export default Button;
