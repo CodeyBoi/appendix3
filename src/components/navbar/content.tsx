@@ -13,7 +13,6 @@ import {
 import Button from 'components/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
-import { getOperatingYear } from 'pages/stats/[paramYear]';
 import NavbarControl from './control';
 
 type NavbarLink = {
@@ -28,6 +27,14 @@ type NavbarLinkGroup = {
 };
 
 export type TabValue = 'user' | 'admin';
+
+const getOperatingYear = () => {
+  const date = new Date();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  // If month is September or later, return current year, else return previous year
+  return month >= 8 ? year : year - 1;
+};
 
 const userTab: NavbarLinkGroup = {
   title: 'Användare',

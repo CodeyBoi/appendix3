@@ -70,6 +70,7 @@ const HomePage = async () => {
           </>
         }
       >
+        <h2 className='text-2xl md:text-4xl'>Kommande spelningar</h2>
         {await makeGigList()}
       </Suspense>
     </div>

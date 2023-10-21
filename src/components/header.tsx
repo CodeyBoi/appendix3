@@ -32,7 +32,7 @@ const AppendixHeader = () => {
       </div>
       <Drawer
         withCloseButton={false}
-        size={300}
+        size={288}
         opened={navbarOpen}
         onClose={() => setNavbarOpen(false)}
         position='right'

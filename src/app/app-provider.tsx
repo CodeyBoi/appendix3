@@ -10,7 +10,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ReactElement } from 'react';
-import { AppContainer } from '../components/app-container';
 import useColorScheme from '../hooks/use-color-scheme';
 import { GLOBAL_THEME } from '../utils/global-theme';
 
@@ -38,9 +37,7 @@ const AppProvider = ({
         withNormalizeCSS
         theme={{ ...GLOBAL_THEME, colorScheme }}
       >
-        <SessionProvider session={session}>
-          <AppContainer>{children}</AppContainer>
-        </SessionProvider>
+        <SessionProvider session={session}>{children}</SessionProvider>
         <ReactQueryDevtools />
       </MantineProvider>
     </ColorSchemeProvider>

@@ -7,7 +7,7 @@ const Logo = () => {
     <Link href='/'>
       <div
         style={{ fontFamily: 'Castellar' }}
-        className='text-2xl cursor-pointer'
+        className='text-2xl text-white cursor-pointer'
       >
         {isAprilFools ? 'Bihålan' : 'Blindtarmen'}
       </div>

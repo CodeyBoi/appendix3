@@ -16,7 +16,7 @@ const NavbarControl = ({ userTab, adminTab }: NavbarContentProps) => {
     <>
       {isAdmin && (
         <SegmentedControl
-          className='bg-red-700 active:bg-red-800'
+          className='bg-red-700'
           color={'rgb(180 7 0 / var(--tw-bg-opacity))'}
           fullWidth
           value={tab}
