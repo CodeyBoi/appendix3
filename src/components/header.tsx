@@ -1,7 +1,7 @@
 import { Burger, Drawer, Header } from '@mantine/core';
 import { useState } from 'react';
 import Logo from './logo';
-import NavbarContent from './navbar';
+import NavbarBody from './navbar/react';
 
 const AppendixHeader = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -47,7 +47,7 @@ const AppendixHeader = () => {
           },
         }}
       >
-        <NavbarContent onLinkClicked={() => setNavbarOpen(false)} />
+        <NavbarBody />
       </Drawer>
     </Header>
   );

@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 
 const AppendixHeader = dynamic(() => import('./header'));
-const NavbarContent = dynamic(() => import('./navbar'));
+const NavbarContent = dynamic(() => import('./navbar/react'));
 
 const AppContainer = ({ children }: { children: ReactElement }) => {
   const session = useSession();
@@ -16,7 +16,7 @@ const AppContainer = ({ children }: { children: ReactElement }) => {
     <AppShell
       header={<AppendixHeader />}
       navbar={
-        <Navbar width={{ sm: 300, base: 0 }} hidden hiddenBreakpoint='sm'>
+        <Navbar width={{ sm: 288, base: 0 }} hidden hiddenBreakpoint='sm'>
           <NavbarContent />
         </Navbar>
       }

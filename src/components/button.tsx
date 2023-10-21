@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import React, { ButtonHTMLAttributes } from 'react';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: string;
   bg?: string;
+  href?: string;
 };
 
 const Button = ({
@@ -10,6 +12,7 @@ const Button = ({
   bg = 'red',
   disabled,
   children,
+  href,
   ...props
 }: ButtonProps) => {
   const classNames = [];
@@ -21,7 +24,7 @@ const Button = ({
     classNames.push(`bg-${bg}-600 hover:bg-${bg}-700 text-${color}`);
   }
 
-  return (
+  const buttonElement = (
     <button
       {...props}
       className={
@@ -36,6 +39,8 @@ const Button = ({
       </div>
     </button>
   );
+
+  return href ? <Link href={href}>{buttonElement}</Link> : buttonElement;
 };
 
 export default Button;
