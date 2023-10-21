@@ -16,20 +16,11 @@ const NavbarControl = ({ userTab, adminTab }: NavbarContentProps) => {
     <>
       {isAdmin && (
         <SegmentedControl
-          className='bg-red-700'
-          color={'rgb(180 7 0 / var(--tw-bg-opacity))'}
-          fullWidth
-          value={tab}
-          onChange={(value: TabValue) => setTab(value)}
-          transitionTimingFunction='ease'
-          styles={{
-            active: { backgroundColor: 'rgb(129 3 0 / var(--tw-bg-opacity))' },
-            label: {
-              color: '#cccccc',
-              ':hover': { color: 'white' },
-            },
-          }}
-          data={[
+          bg='red-800'
+          notSelectedTextColor='gray-300'
+          defaultValue='user'
+          onChange={(value) => setTab(value as TabValue)}
+          options={[
             { label: 'Användare', value: 'user' },
             { label: 'Admin', value: 'admin' },
           ]}

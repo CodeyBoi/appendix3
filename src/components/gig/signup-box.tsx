@@ -1,9 +1,10 @@
 'use client';
 
-import { Checkbox, SegmentedControl, Select } from '@mantine/core';
+import { Checkbox, Select } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
+import SegmentedControl from 'components/segmented-control';
 
 interface GigSignupBoxProps {
   gigId: string;
@@ -61,26 +62,22 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
     <FormLoadingOverlay visible={loading}>
       <div className='flex flex-col gap-2'>
         <SegmentedControl
-          disabled={signupRefetching || submitting}
-          value={status}
-          fullWidth
-          color='red'
           onChange={(s) => {
             if (!s || !corps) {
               return;
             }
             setSubmitting(true);
-            setStatus(s);
-            addSignup.mutateAsync({
+            setStatus(s as string);
+            addSignup.mutate({
               gigId,
               corpsId: corps.id,
-              status: s,
+              status: s as string,
               instrument,
               checkbox1: checkbox1Checked,
               checkbox2: checkbox2Checked,
             });
           }}
-          data={[
+          options={[
             { label: 'Ja', value: 'Ja' },
             { label: 'Nej', value: 'Nej' },
             { label: 'Kanske', value: 'Kanske' },

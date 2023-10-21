@@ -28,7 +28,7 @@ const Button = ({
     <button
       {...props}
       className={
-        'px-3 py-2.5 rounded h-min ' +
+        'px-3 py-2.5 rounded h-min transition-colors ' +
         classNames.join(' ') +
         ' ' +
         props.className

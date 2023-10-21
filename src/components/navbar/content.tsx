@@ -82,7 +82,7 @@ const adminTab: NavbarLinkGroup = {
 
 const toElement = (link: NavbarLink) => (
   <Link href={link.href} key={link.label}>
-    <Button bg='red-700' className='flex justify-start w-full hover:bg-red-800'>
+    <Button bg='red-700' className='flex justify-start w-full hover:bg-red-600'>
       {link.icon}
       {link.label}
     </Button>
@@ -111,7 +111,7 @@ const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
         <Button
           href='/about'
           bg='red-700'
-          className='flex justify-start w-full hover:bg-red-800'
+          className='flex justify-start w-full hover:bg-red-600'
         >
           <IconInfoSquare />
           Om sidan

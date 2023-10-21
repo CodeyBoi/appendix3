@@ -24,16 +24,22 @@ const isGig = (gig: Gig | GigId): gig is Gig => {
 };
 
 const GigCard = async ({ gig: gigProp }: GigCardProps) => {
-  const corps = await api.corps.getSelf.query();
-  const isAdmin = corps?.role?.name === 'admin';
+  const [corps, gig] = await Promise.all([
+    api.corps.getSelf.query(),
+    isGig(gigProp)
+      ? gigProp
+      : await api.gig.getWithId.query({ gigId: gigProp }),
+  ]);
 
-  const gig = isGig(gigProp)
-    ? gigProp
-    : await api.gig.getWithId.query({ gigId: gigProp });
+  if (!corps) {
+    return <div>Error: No corps found.</div>;
+  }
 
   if (!gig) {
     return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
   }
+
+  const isAdmin = corps.role?.name === 'admin';
 
   const currentDate = dayjs().startOf('day');
   const showSignup =
