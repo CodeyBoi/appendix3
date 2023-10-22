@@ -38,6 +38,7 @@ const SegmentedControl = (props: SegmentedControlProps) => {
         const cns = [];
         if (selected) {
           cns.push(classes.selected);
+          cns.push('font-bold translate-y-px');
         } else {
           cns.push(classes.notSelected);
         }

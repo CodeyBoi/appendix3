@@ -32,7 +32,7 @@ const Button = ({
     <button
       {...props}
       className={
-        'rounded h-min transition-colors hover:shadow ' +
+        'rounded h-min transition-colors hover:shadow active:translate-y-px ' +
         classNames.join(' ') +
         ' ' +
         (compact ? 'px-1 py-0.5' : 'px-3 py-2.5') +
