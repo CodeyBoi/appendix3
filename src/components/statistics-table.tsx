@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 import { trpc } from '../utils/trpc';
 import AlertError from './alert-error';
-import Button from './button';
+import Button from './input/button';
 import Loading from './loading';
 
 interface StatisticsTableProps {

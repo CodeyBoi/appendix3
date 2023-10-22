@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
-import SegmentedControl from 'components/segmented-control';
-import Checkbox from 'components/checkbox';
-import Select from 'components/select';
+import SegmentedControl from 'components/input/segmented-control';
+import Checkbox from 'components/input/checkbox';
+import Select from 'components/input/select';
 
 type Signup = {
   status: { value: string };

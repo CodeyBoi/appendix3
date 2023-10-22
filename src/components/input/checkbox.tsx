@@ -5,7 +5,6 @@ type CheckboxProps = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 const Checkbox = (props: CheckboxProps) => {
-  const id = Math.random().toString(36).substring(2);
   return (
     <div
       className={
@@ -13,13 +12,12 @@ const Checkbox = (props: CheckboxProps) => {
         (props.disabled ? ' pointer-events-none opacity-50' : '')
       }
     >
-      <input
-        className='w-4 h-4 rounded cursor-pointer accent-red-600'
-        type='checkbox'
-        id={id}
-        {...props}
-      />
-      <label className='pl-2 leading-none cursor-pointer ' htmlFor={id}>
+      <label className='flex items-end gap-2 leading-none cursor-pointer'>
+        <input
+          className='w-4 h-4 rounded shadow cursor-pointer accent-red-600'
+          type='checkbox'
+          {...props}
+        />
         {props.label}
       </label>
     </div>

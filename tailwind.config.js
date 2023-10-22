@@ -23,6 +23,7 @@ module.exports = {
           900: '#500000',
           DEFAULT: '#ce0c00',
         },
+        white: '#FAFFFC',
         currentColor: '#ce0c00',
       },
     },

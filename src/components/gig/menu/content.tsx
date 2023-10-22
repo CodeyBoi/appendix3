@@ -5,7 +5,7 @@ import {
   IconEdit,
   IconApple,
 } from '@tabler/icons';
-import Button from 'components/button';
+import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -59,22 +59,23 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
 
   const calenderLink = generateCalendarLink();
 
-  const buttonProps = {
-    color: 'black',
-    bg: 'white',
-    className: 'flex justify-start w-full hover:bg-red-600/10',
-  };
-
   return (
     <>
       <Link href={`/gig/${gig.id}`}>
-        <Button {...buttonProps}>
+        <Button
+          className='flex justify-start w-full hover:bg-red-600/10'
+          color='transparent'
+        >
           <IconUsers />
           Se anmälningar
         </Button>
       </Link>
       <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
-        <Button {...buttonProps} disabled={calenderLink === ''}>
+        <Button
+          className='flex justify-start w-full hover:bg-red-600/10'
+          color='transparent'
+          disabled={calenderLink === ''}
+        >
           <IconCalendarPlus />
           Lägg till i kalender
         </Button>
@@ -86,13 +87,19 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
           </div>
           <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
           <Link href={`/admin/gig/${gig.id}`}>
-            <Button {...buttonProps}>
+            <Button
+              className='flex justify-start w-full hover:bg-red-600/10'
+              color='transparent'
+            >
               <IconEdit />
               Redigera
             </Button>
           </Link>
           <Link href={`/admin/gig/${gig.id}/info`}>
-            <Button {...buttonProps}>
+            <Button
+              className='flex justify-start w-full hover:bg-red-600/10'
+              color='transparent'
+            >
               <IconApple />
               Matpreferenser
             </Button>

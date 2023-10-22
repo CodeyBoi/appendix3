@@ -6,7 +6,7 @@ import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { trpc } from '../../utils/trpc';
-import Button from '../button';
+import Button from '../input/button';
 import Loading from '../loading';
 import MultiSelectCorps from '../multi-select-corps';
 import Entry from './entry';

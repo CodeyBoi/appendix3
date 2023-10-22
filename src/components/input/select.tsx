@@ -20,7 +20,6 @@ const Select = ({
   disabled = false,
   ...props
 }: SelectProps) => {
-  const id = Math.random().toString(36).substring(2);
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange?.(e.currentTarget.value);
   };
@@ -31,7 +30,7 @@ const Select = ({
       }
     >
       {label && (
-        <label htmlFor={id} className='flex flex-col gap-1'>
+        <label className='flex flex-col gap-1'>
           <div className='flex gap-1'>
             {label}
             {withAsterisk && <span className='text-red-600'>*</span>}
@@ -39,12 +38,16 @@ const Select = ({
         </label>
       )}
       <select
-        className='p-2 border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:bg-neutral-900 dark:text-gray-300'
+        className='p-2 bg-transparent bg-white border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300'
         onChange={handleChange}
         {...props}
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option
+            className='text-black'
+            key={option.value}
+            value={option.value}
+          >
             {option.label}
           </option>
         ))}

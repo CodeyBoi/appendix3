@@ -3,7 +3,7 @@ import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
 import FormLoadingOverlay from './form-loading-overlay';
-import Select from './select';
+import Select from './input/select';
 
 const initialValues = {
   firstName: '',

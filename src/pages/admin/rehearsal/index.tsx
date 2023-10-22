@@ -4,9 +4,9 @@ import { newUTCDate } from 'utils/date';
 import { trpc } from 'utils/trpc';
 import { getOperatingYear } from 'pages/stats/[paramYear]';
 import dynamic from 'next/dynamic';
-import Select, { SelectItem } from 'components/select';
+import Select, { SelectItem } from 'components/input/select';
 
-const Button = dynamic(() => import('components/button'));
+const Button = dynamic(() => import('components/input/button'));
 const Loading = dynamic(() => import('components/loading'));
 const RehearsalForm = dynamic(() => import('components/rehearsal/form'));
 const RehearsalList = dynamic(() => import('components/rehearsal/list'));

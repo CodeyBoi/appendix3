@@ -2,7 +2,7 @@ import { Switch, TextInput, useMantineColorScheme } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
 import { trpc } from '../../utils/trpc';
-import Button from '../button';
+import Button from '../input/button';
 import FormLoadingOverlay from '../form-loading-overlay';
 
 const initialValues = {

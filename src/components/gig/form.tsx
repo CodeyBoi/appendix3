@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Button,
-  Checkbox,
-  NumberInput,
-  TextInput,
-  Textarea,
-} from '@mantine/core';
+import { Button, Checkbox, NumberInput, Textarea } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
@@ -16,7 +10,8 @@ import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 import MultiSelectCorps from '../multi-select-corps';
 import { useRouter } from 'next/navigation';
-import Select from 'components/select';
+import Select from 'components/input/select';
+import TextInput from 'components/input/text-input';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };

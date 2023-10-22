@@ -84,3 +84,7 @@ h6 {
   line-height: 1.3125rem;
   font-weight: 600;
 }
+
+::placeholder {
+  font-weight: 350;
+}

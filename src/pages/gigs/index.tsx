@@ -4,10 +4,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Button from '../../components/button';
+import Button from '../../components/input/button';
 import Loading from '../../components/loading';
 import { trpc } from '../../utils/trpc';
-import Select from 'components/select';
+import Select from 'components/input/select';
 
 type Tab = 'all-gigs' | 'my-gigs';
 interface GigsProps {

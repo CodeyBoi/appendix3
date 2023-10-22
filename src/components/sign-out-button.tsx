@@ -3,7 +3,7 @@
 import { IconLogout } from '@tabler/icons';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Button from './button';
+import Button from './input/button';
 
 const SignOutButton = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const SignOutButton = () => {
 
   return (
     <Button
-      bg='red-700'
+      color='navbutton'
       className='flex justify-start w-full transition-colors hover:bg-red-600'
       onClick={handleSignOut}
     >

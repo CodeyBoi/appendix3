@@ -10,7 +10,7 @@ import {
   IconSpeakerphone,
   IconUser,
 } from '@tabler/icons';
-import Button from 'components/button';
+import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
 import NavbarControl from './control';
@@ -82,7 +82,10 @@ const adminTab: NavbarLinkGroup = {
 
 const toElement = (link: NavbarLink) => (
   <Link href={link.href} key={link.label}>
-    <Button bg='red-700' className='flex justify-start w-full hover:bg-red-600'>
+    <Button
+      color='navbutton'
+      className='flex justify-start w-full hover:bg-red-600'
+    >
       {link.icon}
       {link.label}
     </Button>
@@ -110,7 +113,7 @@ const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
       <div className='flex flex-col'>
         <Button
           href='/about'
-          bg='red-700'
+          color='navbutton'
           className='flex justify-start w-full hover:bg-red-600'
         >
           <IconInfoSquare />

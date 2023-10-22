@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import SegmentedControl from 'components/segmented-control';
+import SegmentedControl from 'components/input/segmented-control';
 import { TabValue } from './content';
 
 interface NavbarContentProps {

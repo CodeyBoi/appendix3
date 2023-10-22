@@ -2,7 +2,7 @@ import { Modal } from '@mantine/core';
 import { Rehearsal as RehearsalPrisma } from '@prisma/client';
 import { IconEdit } from '@tabler/icons';
 import React from 'react';
-import Button from '../button';
+import Button from '../input/button';
 import RehearsalAttendence from './attendence';
 import RehearsalForm from './form';
 

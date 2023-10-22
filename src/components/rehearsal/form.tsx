@@ -5,7 +5,7 @@ import { Rehearsal } from '@prisma/client';
 import { IconCalendar, IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
-import Select from 'components/select';
+import Select from 'components/input/select';
 
 const defaultValues = {
   title: '',
