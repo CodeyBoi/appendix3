@@ -99,23 +99,25 @@ const FoodPrefs = ({
   });
 
   return (
-    <>
-      <table className='table'>
-        <thead>
-          <tr>
-            <th className='px-1 text-right'>Namn</th>
-            {checkbox1 !== undefined && <th className='px-1'>{checkbox1}</th>}
-            {checkbox2 !== undefined && <th className='px-1'>{checkbox2}</th>}
-            <th className='px-1'>Vegetarian</th>
-            <th className='px-1'>Vegan</th>
-            <th className='px-1'>Gluten</th>
-            <th className='px-1'>Laktos</th>
-            <th className='px-1'>Alkohol (gammal)</th>
-            <th className='px-1'>Övrigt</th>
-          </tr>
-        </thead>
-        <tbody className='gap-1 divide-y divide-solid'>{rows}</tbody>
-      </table>
+    <div className='flex flex-col'>
+      <div className='overflow-x-auto'>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th className='px-1 text-right'>Namn</th>
+              {checkbox1 !== undefined && <th className='px-1'>{checkbox1}</th>}
+              {checkbox2 !== undefined && <th className='px-1'>{checkbox2}</th>}
+              <th className='px-1'>Vegetarian</th>
+              <th className='px-1'>Vegan</th>
+              <th className='px-1'>Gluten</th>
+              <th className='px-1'>Laktos</th>
+              <th className='px-1'>Alkohol (gammal)</th>
+              <th className='px-1'>Övrigt</th>
+            </tr>
+          </thead>
+          <tbody className='gap-1 divide-y divide-solid'>{rows}</tbody>
+        </table>
+      </div>
       {dataRows && (
         <>
           <div className='h-4' />
@@ -123,13 +125,14 @@ const FoodPrefs = ({
             href={csvDownloadLink}
             download={`Matpreffar ${gigTitle.trim() ?? ''}.csv`}
           >
-            <Button className='bg-red-600' leftSection={<IconDownload />}>
+            <Button className='bg-red-600'>
+              <IconDownload />
               Ladda ner som CSV
             </Button>
           </a>
         </>
       )}
-    </>
+    </div>
   );
 };
 
