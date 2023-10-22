@@ -324,9 +324,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
               excludeIds={signups?.map((s) => s.corpsId) ?? []}
               {...form.getInputProps('corpsIds')}
             />
-            <Button className='bg-red-600' type='submit'>
-              Lägg till anmälningar
-            </Button>
+            <Button type='submit'>Lägg till anmälningar</Button>
           </div>
         </form>
       )}

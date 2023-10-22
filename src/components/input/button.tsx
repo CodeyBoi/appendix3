@@ -4,6 +4,7 @@ import React, { ButtonHTMLAttributes } from 'react';
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: Color;
   href?: string;
+  compact?: boolean;
 };
 
 type Color = 'red' | 'transparent' | 'navbutton';
@@ -19,19 +20,22 @@ const Button = ({
   disabled,
   children,
   href,
+  compact = false,
   ...props
 }: ButtonProps) => {
   const classNames = [colorVariants[color]];
   if (disabled) {
-    classNames.push('opacity-50 cursor-not-allowed');
+    classNames.push('opacity-50 pointer-events-none');
   }
 
   const buttonElement = (
     <button
       {...props}
       className={
-        'px-3 py-2.5 rounded h-min transition-colors hover:shadow ' +
+        'rounded h-min transition-colors hover:shadow ' +
         classNames.join(' ') +
+        ' ' +
+        (compact ? 'px-1 py-0.5' : 'px-3 py-2.5') +
         ' ' +
         props.className
       }

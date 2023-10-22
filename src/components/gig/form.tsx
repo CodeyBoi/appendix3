@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Checkbox, NumberInput, Textarea } from '@mantine/core';
+import { Checkbox, NumberInput, Textarea } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
@@ -12,6 +12,7 @@ import MultiSelectCorps from '../multi-select-corps';
 import { useRouter } from 'next/navigation';
 import Select from 'components/input/select';
 import TextInput from 'components/input/text-input';
+import Button from 'components/input/button';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -218,9 +219,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           <div className='flex items-center justify-end space-x-4'>
             {!newGig && (
               <Button
-                variant='outline'
+                className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+                color='transparent'
                 compact
-                uppercase
                 onClick={() => {
                   if (
                     window.confirm(
@@ -231,7 +232,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
                   }
                 }}
               >
-                Radera spelning
+                RADERA SPELNING
               </Button>
             )}
             <Button

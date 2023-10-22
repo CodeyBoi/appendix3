@@ -1,4 +1,4 @@
-import { Button, Checkbox, TextInput } from '@mantine/core';
+import { Checkbox, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
@@ -6,6 +6,7 @@ import { IconCalendar, IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Select from 'components/input/select';
+import Button from 'components/input/button';
 
 const defaultValues = {
   title: '',
@@ -118,8 +119,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
         <div className='flex items-center justify-end gap-4'>
           {!newRehearsal && (
             <Button
-              type='button'
-              variant='outline'
+              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              color='transparent'
               compact
               onClick={() => {
                 if (!confirm('Är du säker på att du vill ta bort rep?')) return;
@@ -129,12 +130,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
               Ta bort
             </Button>
           )}
-          <Button
-            type='submit'
-            leftIcon={<IconSend />}
-            loading={mutation.isLoading}
-            className='bg-red-600'
-          >
+          <Button color='red' type='submit' disabled={mutation.isLoading}>
+            <IconSend />
             {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
         </div>

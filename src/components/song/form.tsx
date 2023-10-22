@@ -1,7 +1,8 @@
-import { Button, TextInput, Textarea } from '@mantine/core';
+import { TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
+import Button from 'components/input/button';
 
 const defaultValues = {
   title: '',
@@ -94,7 +95,8 @@ const SongForm = ({ song }: SongFormProps) => {
         <div className='flex items-center justify-end gap-4'>
           {song && (
             <Button
-              variant='outline'
+              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              color='transparent'
               compact
               onClick={async () => {
                 if (
@@ -107,7 +109,7 @@ const SongForm = ({ song }: SongFormProps) => {
               RADERA SÅNG
             </Button>
           )}
-          <Button className='bg-red-600' type='submit'>
+          <Button type='submit'>
             {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
           </Button>
         </div>

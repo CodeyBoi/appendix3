@@ -125,7 +125,7 @@ const FoodPrefs = ({
             href={csvDownloadLink}
             download={`Matpreffar ${gigTitle.trim() ?? ''}.csv`}
           >
-            <Button className='bg-red-600'>
+            <Button>
               <IconDownload />
               Ladda ner som CSV
             </Button>

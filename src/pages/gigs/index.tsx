@@ -4,9 +4,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Button from '../../components/input/button';
-import Loading from '../../components/loading';
-import { trpc } from '../../utils/trpc';
+import Button from 'components/input/button';
+import Loading from 'components/loading';
+import { trpc } from 'utils/trpc';
 import Select from 'components/input/select';
 
 type Tab = 'all-gigs' | 'my-gigs';
@@ -111,11 +111,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
           value={year.toString()}
           onChange={changeYear}
         />
-        {isAdmin && (
-          <Link href='/admin/gig/new'>
-            <Button>Skapa spelning</Button>
-          </Link>
-        )}
+        {isAdmin && <Button href='/admin/gig/new'>Skapa spelning</Button>}
       </div>
 
       <Tabs value={tab} onTabChange={changeTab}>

@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
-import Button from '../../../components/input/button';
-import CorpsForm from '../../../components/corps-form';
-import SelectCorps from '../../../components/select-corps';
+import Button from 'components/input/button';
+import CorpsForm from 'components/corps-form';
+import SelectCorps from 'components/select-corps';
 
 const ViewCorps = () => {
   const [corpsId, setCorpsId] = useState<string | null>(null);

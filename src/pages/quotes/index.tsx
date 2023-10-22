@@ -1,10 +1,11 @@
-import { Button, Table } from '@mantine/core';
+import { Table } from '@mantine/core';
 import Head from 'next/head';
 import React, { useMemo } from 'react';
 import Loading from '../../components/loading';
 import Quote from '../../components/quote';
 import QuoteForm from '../../components/quote/form';
 import { trpc } from '../../utils/trpc';
+import Button from 'components/input/button';
 
 const getDayMessage = (date: Date) => {
   const today = new Date();
@@ -95,10 +96,9 @@ const Quotes = () => {
       {hasNextPage && (
         <div className='flex justify-center'>
           <Button
-            className='bg-red-600'
-            sx={{ width: 'min-content' }}
+            className='w-min'
             onClick={() => fetchNextPage()}
-            loading={isFetchingNextPage}
+            disabled={isFetchingNextPage}
           >
             Ladda fler citat
           </Button>

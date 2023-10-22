@@ -85,9 +85,7 @@ const Rehearsals = () => {
             onChange={(value) => setYear(parseInt(value as string))}
             options={years}
           />
-          <Button className='bg-red-600' onClick={() => setModalOpen(true)}>
-            Skapa repa
-          </Button>
+          <Button onClick={() => setModalOpen(true)}>Skapa repa</Button>
         </div>
         <Tabs defaultValue='all-rehearsals'>
           <Tabs.List>
