@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   NumberInput,
-  Select,
   TextInput,
   Textarea,
 } from '@mantine/core';
@@ -17,6 +16,7 @@ import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 import MultiSelectCorps from '../multi-select-corps';
 import { useRouter } from 'next/navigation';
+import Select from 'components/select';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -116,7 +116,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             withAsterisk
             label='Spelningstyp'
             placeholder='Välj typ...'
-            data={
+            options={
               gigTypes?.map((type) => ({
                 value: type,
                 label: type,

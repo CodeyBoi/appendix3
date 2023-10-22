@@ -1,4 +1,3 @@
-import { Select } from '@mantine/core';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
@@ -7,6 +6,7 @@ import React from 'react';
 import Loading from 'components/loading';
 import { getServerAuthSession } from 'server/common/get-server-auth-session';
 import dynamic from 'next/dynamic';
+import Select from 'components/select';
 
 const StatisticsTable = dynamic(() => import('components/statistics-table'), {
   loading: () => <Loading msg='Laddar statistik...' />,
@@ -104,8 +104,7 @@ const Statistics: NextPage = () => {
         <Select
           label='Verksamhetsår'
           defaultValue={paramYear}
-          maxDropdownHeight={250}
-          data={yearData}
+          options={yearData}
           onChange={handleYearChange}
         />
       </div>

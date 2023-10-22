@@ -1,9 +1,10 @@
-import { Modal, Select, SelectItem, Tabs } from '@mantine/core';
+import { Modal, Tabs } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { newUTCDate } from 'utils/date';
 import { trpc } from 'utils/trpc';
 import { getOperatingYear } from 'pages/stats/[paramYear]';
 import dynamic from 'next/dynamic';
+import Select, { SelectItem } from 'components/select';
 
 const Button = dynamic(() => import('components/button'));
 const Loading = dynamic(() => import('components/loading'));
@@ -82,7 +83,7 @@ const Rehearsals = () => {
             label='Verksamhetsår'
             value={year.toString()}
             onChange={(value) => setYear(parseInt(value as string))}
-            data={years}
+            options={years}
           />
           <Button className='bg-red-600' onClick={() => setModalOpen(true)}>
             Skapa repa

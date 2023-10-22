@@ -73,7 +73,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             dropdown={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
           />
         </div>
-        <div className='flex flex-col justify-between lg:flex-row'>
+        <div className='flex flex-col justify-between gap-2 lg:flex-row'>
           <Link className='flex-grow' href={`/gig/${gig.id}`}>
             <div className='flex items-center flex-grow space-x-4 cursor-pointer'>
               <Datebox date={dayjs(gig.date)} />

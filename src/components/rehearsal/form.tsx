@@ -1,10 +1,11 @@
-import { Button, Checkbox, Select, TextInput } from '@mantine/core';
+import { Button, Checkbox, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
 import { IconCalendar, IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
+import Select from 'components/select';
 
 const defaultValues = {
   title: '',
@@ -100,7 +101,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
           withAsterisk
           label='Typ av repa'
           placeholder='Välj typ...'
-          data={
+          options={
             rehearsalTypes?.map((type) => ({
               label: type.name,
               value: type.id.toString(),

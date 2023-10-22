@@ -18,7 +18,8 @@ type SegmentedControlProps = {
 const colorVariants = {
   gray: {
     selected: 'bg-red-600 text-white',
-    notSelected: 'bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white',
+    notSelected:
+      'bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white dark:bg-neutral-800 dark:text-gray-300',
   },
   red: {
     selected: 'bg-red-600 text-white',

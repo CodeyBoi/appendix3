@@ -1,8 +1,9 @@
-import { Button, MultiSelect, Select, TextInput } from '@mantine/core';
+import { Button, MultiSelect, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
 import FormLoadingOverlay from './form-loading-overlay';
+import Select from './select';
 
 const initialValues = {
   firstName: '',
@@ -141,8 +142,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
-            nothingFound='Instrument kunde inte laddas'
-            data={
+            options={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
             withAsterisk
@@ -152,7 +152,6 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             label='Övriga instrument'
             placeholder='Välj instrument...'
             clearable
-            nothingFound='Instrument kunde inte laddas'
             data={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
@@ -167,7 +166,9 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <Select
             label='Behörighetsroll'
             placeholder='Välj behörighet...'
-            data={roles?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+            options={
+              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
             withAsterisk
             {...form.getInputProps('role')}
           />

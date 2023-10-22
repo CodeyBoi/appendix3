@@ -1,11 +1,10 @@
 'use client';
 
-import { Select } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
-import FormLoadingOverlay from '../form-loading-overlay';
 import SegmentedControl from 'components/segmented-control';
 import Checkbox from 'components/checkbox';
+import Select from 'components/select';
 
 type Signup = {
   status: { value: string };
@@ -94,35 +93,6 @@ const GigSignupBox = ({
           { label: 'Kanske', value: 'Kanske' },
         ]}
       />
-      {(corps?.instruments.length ?? 0) > 1 && (
-        <Select
-          disabled={submitting || loading}
-          size='xs'
-          label='Instrument'
-          value={instrument}
-          onChange={(val) => {
-            if (!val || !corps) {
-              return;
-            }
-            setSubmitting(true);
-            setInstrument(val);
-            addSignup.mutate({
-              gigId,
-              corpsId: corps.id,
-              status: status,
-              instrument: val,
-              checkbox1: checkbox1Checked,
-              checkbox2: checkbox2Checked,
-            });
-          }}
-          data={
-            corps?.instruments.map((i) => ({
-              label: i.instrument.name,
-              value: i.instrument.name,
-            })) ?? []
-          }
-        />
-      )}
       {checkbox1 && (
         <Checkbox
           disabled={submitting || loading}
@@ -165,6 +135,34 @@ const GigSignupBox = ({
               checkbox2: e.currentTarget.checked,
             });
           }}
+        />
+      )}
+      {(corps?.instruments.length ?? 0) > 1 && (
+        <Select
+          disabled={submitting || loading}
+          label='Instrument'
+          value={instrument}
+          onChange={(val) => {
+            if (!val || !corps) {
+              return;
+            }
+            setSubmitting(true);
+            setInstrument(val);
+            addSignup.mutate({
+              gigId,
+              corpsId: corps.id,
+              status: status,
+              instrument: val,
+              checkbox1: checkbox1Checked,
+              checkbox2: checkbox2Checked,
+            });
+          }}
+          options={
+            corps?.instruments.map((i) => ({
+              label: i.instrument.name,
+              value: i.instrument.name,
+            })) ?? []
+          }
         />
       )}
     </div>

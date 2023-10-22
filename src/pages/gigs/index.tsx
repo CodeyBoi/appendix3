@@ -1,4 +1,4 @@
-import { Select, Tabs } from '@mantine/core';
+import { Tabs } from '@mantine/core';
 import dayjs from 'dayjs';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import React from 'react';
 import Button from '../../components/button';
 import Loading from '../../components/loading';
 import { trpc } from '../../utils/trpc';
+import Select from 'components/select';
 
 type Tab = 'all-gigs' | 'my-gigs';
 interface GigsProps {
@@ -106,8 +107,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
       <div className='flex items-end gap-4'>
         <Select
           label='År'
-          maxDropdownHeight={280}
-          data={years}
+          options={years}
           value={year.toString()}
           onChange={changeYear}
         />
