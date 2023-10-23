@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import SegmentedControl from 'components/input/segmented-control';
 import { TabValue } from './content';
+import { usePathname } from 'next/navigation';
 
 interface NavbarContentProps {
   userTab: React.ReactNode;
@@ -10,7 +11,10 @@ interface NavbarContentProps {
 }
 
 const NavbarControl = ({ userTab, adminTab }: NavbarContentProps) => {
-  const [tab, setTab] = useState<TabValue>('user');
+  const pathname = usePathname();
+  const [tab, setTab] = useState<TabValue>(
+    pathname?.startsWith('/admin') ? 'admin' : 'user',
+  );
   const isAdmin = adminTab !== undefined;
   return (
     <>

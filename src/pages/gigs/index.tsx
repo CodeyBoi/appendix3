@@ -8,6 +8,7 @@ import Button from 'components/input/button';
 import Loading from 'components/loading';
 import { trpc } from 'utils/trpc';
 import Select from 'components/input/select';
+import { IconPlus } from '@tabler/icons';
 
 type Tab = 'all-gigs' | 'my-gigs';
 interface GigsProps {
@@ -104,14 +105,19 @@ const Gigs = ({ initialTab }: GigsProps) => {
         <title>Spelningar</title>
       </Head>
       <h2>Spelningar</h2>
-      <div className='flex items-end gap-4'>
+      <div className='flex items-end justify-between'>
         <Select
           label='År'
           options={years}
           value={year.toString()}
           onChange={changeYear}
         />
-        {isAdmin && <Button href='/admin/gig/new'>Skapa spelning</Button>}
+        {isAdmin && (
+          <Button href='/admin/gig/new'>
+            <IconPlus />
+            Skapa spelning
+          </Button>
+        )}
       </div>
 
       <Tabs value={tab} onTabChange={changeTab}>
