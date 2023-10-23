@@ -12,16 +12,15 @@ interface NavbarContentProps {
 
 const NavbarControl = ({ userTab, adminTab }: NavbarContentProps) => {
   const pathname = usePathname();
-  const [tab, setTab] = useState<TabValue>(
-    pathname?.startsWith('/admin') ? 'admin' : 'user',
-  );
+  const initialTab = pathname?.startsWith('/admin') ? 'admin' : 'user';
+  const [tab, setTab] = useState<TabValue>(initialTab);
   const isAdmin = adminTab !== undefined;
   return (
     <>
       {isAdmin && (
         <SegmentedControl
           color='red'
-          defaultValue='user'
+          defaultValue={initialTab}
           onChange={(value) => setTab(value as TabValue)}
           options={[
             { label: 'Användare', value: 'user' },
