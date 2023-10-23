@@ -3,16 +3,16 @@ import { Rehearsal } from '@prisma/client';
 import { IconPlus } from '@tabler/icons';
 import dayjs from 'dayjs';
 import React from 'react';
-import { trpc } from '../../utils/trpc';
-import SelectCorps from '../select-corps';
-import RehearsalCheckbox from './checkbox';
+import { trpc } from 'utils/trpc';
+import SelectCorps from 'components/select-corps';
+import RehearsalCheckbox from 'components/rehearsal/checkbox';
 
 type RehearsalAttendenceProps = {
   rehearsal: Rehearsal;
 };
 
 const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const start = dayjs(rehearsal?.date ?? new Date())
     .subtract(6, 'week')
