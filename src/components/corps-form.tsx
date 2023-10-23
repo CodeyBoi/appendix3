@@ -1,10 +1,11 @@
-import { MultiSelect, TextInput } from '@mantine/core';
+import { MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { trpc } from '../utils/trpc';
-import FormLoadingOverlay from './form-loading-overlay';
-import Select from './input/select';
-import Button from './input/button';
+import { trpc } from 'utils/trpc';
+import FormLoadingOverlay from 'components/form-loading-overlay';
+import Select from 'components/input/select';
+import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
 
 const initialValues = {
   firstName: '',

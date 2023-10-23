@@ -1,4 +1,4 @@
-import { Checkbox, TextInput } from '@mantine/core';
+import { Checkbox } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Select from 'components/input/select';
 import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
 
 const defaultValues = {
   title: '',

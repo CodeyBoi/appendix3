@@ -12,6 +12,7 @@ type TextAreaProps = Omit<
   onDebounce?: (value: string) => void;
   debounceTime?: number;
   autoSize?: boolean;
+  rightSection?: React.ReactNode;
 };
 
 const TextArea = ({
@@ -21,6 +22,7 @@ const TextArea = ({
   onDebounce,
   debounceTime = 200,
   autoSize = false,
+  rightSection,
   ...props
 }: TextAreaProps) => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
@@ -29,7 +31,7 @@ const TextArea = ({
     if (autoSize) {
       const element = e.currentTarget;
       element.style.height = 'inherit';
-      element.style.height = `${element.scrollHeight}px`;
+      element.style.height = `${element.scrollHeight + 16}px`;
     }
   };
 
@@ -62,11 +64,19 @@ const TextArea = ({
           {withAsterisk && <span className='text-red-600'>*</span>}
         </label>
       )}
-      <textarea
-        className='h-12 p-2 bg-transparent border rounded shadow-sm cursor-text font-display dark:border-neutral-800'
-        onChange={handleChange}
-        {...props}
-      />
+      <div className='relative flex'>
+        <textarea
+          className={
+            'h-16 bg-transparent border rounded shadow-sm cursor-text font-display dark:border-neutral-800 flex-grow resize-none' +
+            (rightSection ? ' pr-9 py-2 pl-2' : ' p-2')
+          }
+          onChange={handleChange}
+          {...props}
+        />
+        {rightSection && (
+          <div className='absolute top-0 right-0 p-2'>{rightSection}</div>
+        )}
+      </div>
     </div>
   );
 };

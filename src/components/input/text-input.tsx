@@ -1,6 +1,6 @@
 import { InputHTMLAttributes } from 'react';
 
-type TextInputProps = Omit<
+export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'onChange'
 > & {
@@ -24,7 +24,7 @@ const TextInput = ({
   };
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col flex-shrink min-w-0'>
       {label && (
         <label className='flex flex-col gap-1'>
           <div className='flex gap-1'>
@@ -38,7 +38,7 @@ const TextInput = ({
           {description}
         </span>
       )}
-      <div className='relative flex items-center bg-transparent border rounded shadow-sm h-9 dark:border-neutral-800'>
+      <div className='relative flex items-center border rounded shadow-sm g-transparent h-9 dark:border-neutral-800'>
         {icon && <div className='absolute px-2'>{icon}</div>}
         <input
           className={

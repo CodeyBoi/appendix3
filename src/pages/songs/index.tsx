@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core';
 import { IconPlus, IconSearch } from '@tabler/icons';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
@@ -7,6 +6,7 @@ import React, { useMemo } from 'react';
 import Loading from '../../components/loading';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
+import TextInput from 'components/input/text-input';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
@@ -80,8 +80,7 @@ const Songs = () => {
         <div className='flex-grow'>
           <TextInput
             placeholder='Sök...'
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             icon={<IconSearch />}
           />
         </div>

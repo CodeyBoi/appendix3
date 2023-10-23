@@ -1,9 +1,10 @@
-import { Switch, TextInput, useMantineColorScheme } from '@mantine/core';
+import { Switch, useMantineColorScheme } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
 import { trpc } from '../../utils/trpc';
 import Button from '../input/button';
 import FormLoadingOverlay from '../form-loading-overlay';
+import TextInput from 'components/input/text-input';
 
 const initialValues = {
   firstName: '',

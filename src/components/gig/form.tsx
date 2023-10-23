@@ -140,7 +140,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             spellCheck={false}
             {...form.getInputProps('location')}
           />
-          <div className='grid grid-cols-2 space-x-4'>
+          <div className='grid grid-cols-2 gap-x-4'>
             <TextInput
               icon={<IconClock />}
               label='Samlingstid'
@@ -161,7 +161,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
               autoSize
               label='Beskrivning'
               placeholder='Beskrivning'
-              onDebounce={console.log}
               {...form.getInputProps('description')}
             />
           </div>

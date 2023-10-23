@@ -1,8 +1,9 @@
-import { TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
+import TextInput from 'components/input/text-input';
 
 const defaultValues = {
   title: '',
@@ -85,11 +86,11 @@ const SongForm = ({ song }: SongFormProps) => {
           spellCheck={false}
           {...form.getInputProps('melody')}
         />
-        <Textarea
+        <TextArea
           label='Sångtext'
           placeholder='Sångtext'
           withAsterisk
-          autosize
+          autoSize
           {...form.getInputProps('lyrics')}
         />
         <div className='flex items-center justify-end gap-4'>

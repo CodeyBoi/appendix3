@@ -1,10 +1,11 @@
-import { TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';
 import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
+import TextInput from 'components/input/text-input';
 
 const defaultValues = {
   quote: '',
@@ -74,12 +75,12 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
             {...form.getInputProps('location')}
           />
         </div>
-        <Textarea
+        <TextArea
           rightSection={newQuote && <IconSend />}
           label='Vad sades?'
           placeholder='Citat'
           withAsterisk
-          autosize
+          autoSize
           {...form.getInputProps('quote')}
         />
         {!newQuote && (
