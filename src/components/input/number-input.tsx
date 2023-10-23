@@ -33,7 +33,10 @@ const NumberInput = ({
       )}
       <input
         type='number'
-        className='flex-grow flex-shrink min-w-0 p-2 bg-transparent border rounded dark:border-neutral-800 cursor-text font-display dark:text-gray-300'
+        className={
+          'flex-grow flex-shrink min-w-0 p-2 bg-transparent border rounded dark:border-neutral-800 cursor-text font-display dark:text-gray-300' +
+          (error ? ' ' + errorStyle : '')
+        }
         onChange={(e) => onChange?.(Number(e.currentTarget.value))}
         {...props}
       />
