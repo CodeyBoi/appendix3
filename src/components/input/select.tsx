@@ -10,7 +10,11 @@ type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> & {
   label?: string;
   onChange?: (value: string) => void;
   withAsterisk?: boolean;
+  error?: string;
 };
+
+const errorStyle =
+  'border-red-600 dark:border-red-600 text-red-600 dark:text-red-600';
 
 const Select = ({
   options,
@@ -18,6 +22,7 @@ const Select = ({
   onChange,
   withAsterisk = false,
   disabled = false,
+  error,
   ...props
 }: SelectProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -30,15 +35,19 @@ const Select = ({
       }
     >
       {label && (
-        <label className='flex flex-col gap-1'>
+        <label className='flex items-center justify-between'>
           <div className='flex gap-1'>
             {label}
             {withAsterisk && <span className='text-red-600'>*</span>}
           </div>
+          {error && <span className='text-xs text-red-600'>{error}</span>}
         </label>
       )}
       <select
-        className='p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300'
+        className={
+          'p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300' +
+          (error ? ' ' + errorStyle : '')
+        }
         onChange={handleChange}
         {...props}
       >

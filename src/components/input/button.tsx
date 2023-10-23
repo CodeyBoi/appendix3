@@ -30,6 +30,7 @@ const Button = ({
 
   const buttonElement = (
     <button
+      type='button'
       {...props}
       className={
         'rounded h-min transition-colors hover:shadow active:translate-y-px ' +

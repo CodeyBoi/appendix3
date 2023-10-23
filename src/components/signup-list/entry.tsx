@@ -1,5 +1,5 @@
-import { Checkbox } from '@mantine/core';
 import { IconX } from '@tabler/icons';
+import Checkbox from 'components/input/checkbox';
 
 interface SignupEntryProps {
   name: string;
@@ -36,13 +36,10 @@ const Entry = ({
             <td className='px-2 text-center'>{checkbox2 ? 'Ja' : 'Nej'}</td>
           )}
           <td className='px-2'>
-            <div className='flex place-content-center'>
-              <Checkbox
-                styles={{ root: { display: 'flex' } }}
-                defaultChecked={attended}
-                onChange={(event) => setAttendance(event.target.checked)}
-              />
-            </div>
+            <Checkbox
+              defaultChecked={attended}
+              onChange={(event) => setAttendance(event.target.checked)}
+            />
           </td>
           <td className='flex px-2 place-content-center'>
             <button
