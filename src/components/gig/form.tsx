@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox, NumberInput, Textarea } from '@mantine/core';
+import { Checkbox, NumberInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import Select from 'components/input/select';
 import TextInput from 'components/input/text-input';
 import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -156,10 +157,11 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             />
           </div>
           <div className='col-span-1 md:col-span-2'>
-            <Textarea
-              autosize
+            <TextArea
+              autoSize
               label='Beskrivning'
               placeholder='Beskrivning'
+              onDebounce={console.log}
               {...form.getInputProps('description')}
             />
           </div>

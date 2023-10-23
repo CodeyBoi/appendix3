@@ -38,7 +38,7 @@ const Select = ({
         </label>
       )}
       <select
-        className='p-2 bg-transparent bg-white border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300'
+        className='p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300'
         onChange={handleChange}
         {...props}
       >

@@ -38,10 +38,13 @@ const TextInput = ({
           {description}
         </span>
       )}
-      <div className='flex items-center gap-2 p-2 bg-transparent border rounded shadow-sm dark:border-neutral-800'>
-        {icon}
+      <div className='relative flex items-center bg-transparent border rounded shadow-sm h-9 dark:border-neutral-800'>
+        {icon && <div className='absolute px-2'>{icon}</div>}
         <input
-          className='flex-grow flex-shrink min-w-0 bg-transparent outline-none cursor-text font-display dark:text-gray-300'
+          className={
+            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300' +
+            (icon ? ' py-2 pr-2 pl-9' : ' p-2')
+          }
           onChange={handleChange}
           {...props}
         />

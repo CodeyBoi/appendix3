@@ -88,3 +88,9 @@ h6 {
 ::placeholder {
   font-weight: 350;
 }
+
+:focus-visible {
+  @apply outline-none;
+  box-shadow: 0 0 2px 1px var(--corps-red);
+  transition: .1s;
+}
