@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes, useState } from 'react';
+import React, { InputHTMLAttributes, useState } from 'react';
 
 export type ErrorColor = 'red' | 'white';
 export type TextInputVariant = 'default' | 'login';
@@ -83,12 +83,12 @@ const TextInput = ({
           </label>
         </div>
       </div>
-      {/* {description && (
+      {description && (
         <span className='-mt-1 text-xs leading-6 tracking-tight text-gray-400'>
           {description}
         </span>
       )}
-      {error && <span className={'text-xs' + ' ' + errorStyle}>{error}</span>} */}
+      {error && <span className={'text-xs' + ' ' + errorStyle}>{error}</span>}
     </div>
   );
 };
