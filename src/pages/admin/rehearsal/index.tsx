@@ -2,7 +2,7 @@ import { Modal, Tabs } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { newUTCDate } from 'utils/date';
 import { trpc } from 'utils/trpc';
-import { getOperatingYear } from 'pages/stats/[paramYear]';
+import { getOperatingYear } from 'utils/date';
 import dynamic from 'next/dynamic';
 import Select, { SelectItem } from 'components/input/select';
 

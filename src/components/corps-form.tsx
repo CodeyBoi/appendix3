@@ -100,7 +100,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     const bNumber = values.bNumber.trim()
       ? parseInt(values.bNumber.trim())
       : null;
-    mutation.mutateAsync({
+    await mutation.mutateAsync({
       ...values,
       number,
       bNumber,

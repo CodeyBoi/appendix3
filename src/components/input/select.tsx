@@ -1,3 +1,5 @@
+'use client';
+
 import { SelectHTMLAttributes } from 'react';
 
 export type SelectItem = {
@@ -5,7 +7,10 @@ export type SelectItem = {
   label: string;
 };
 
-type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> & {
+export type SelectProps = Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  'onChange'
+> & {
   options: SelectItem[];
   label?: string;
   onChange?: (value: string) => void;

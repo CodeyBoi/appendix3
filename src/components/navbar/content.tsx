@@ -28,14 +28,6 @@ type NavbarLinkGroup = {
 
 export type TabValue = 'user' | 'admin';
 
-const getOperatingYear = () => {
-  const date = new Date();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  // If month is September or later, return current year, else return previous year
-  return month >= 8 ? year : year - 1;
-};
-
 const userTab: NavbarLinkGroup = {
   title: 'Användare',
   value: 'user',
@@ -44,7 +36,7 @@ const userTab: NavbarLinkGroup = {
     { label: 'Mina sidor', href: '/account', icon: <IconUser /> },
     {
       label: 'Statistik',
-      href: `/stats/${getOperatingYear()}`,
+      href: `/stats`,
       icon: <IconClipboard />,
     },
     { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },

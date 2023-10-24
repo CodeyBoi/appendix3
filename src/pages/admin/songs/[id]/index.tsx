@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
-import AlertError from '../../../../components/alert-error';
-import Loading from '../../../../components/loading';
-import SongForm from '../../../../components/song/form';
-import { trpc } from '../../../../utils/trpc';
+import AlertError from 'components/alert-error';
+import Loading from 'components/loading';
+import SongForm from 'components/song/form';
+import { trpc } from 'utils/trpc';
 
 const MAX_TRIES = 3;
 

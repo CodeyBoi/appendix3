@@ -14,7 +14,7 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import { getOperatingYear } from '../pages/stats/[paramYear]';
+import { getOperatingYear } from 'utils/date';
 import { trpc } from '../utils/trpc';
 
 const encouragements = [

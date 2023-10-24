@@ -1,3 +1,5 @@
+'use client';
+
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -92,6 +94,7 @@ const Login = () => {
               <div className='flex w-full gap-2 p-2 max-lg:flex-col'>
                 <div className='flex-grow'>
                   <TextInput
+                    variant='login'
                     className='text-white placeholder:text-white'
                     icon={
                       <span className='text-white'>

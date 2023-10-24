@@ -1,31 +1,26 @@
-import { Divider } from '@mantine/core';
 import { IconMoodNerd } from '@tabler/icons';
 import Link from 'next/link';
 import React from 'react';
-import { trpc } from '../utils/trpc';
-import AlertError from './alert-error';
-import Button from './input/button';
-import Loading from './loading';
+import Button from 'components/input/button';
+import { api } from 'trpc/server';
 
 interface StatisticsTableProps {
   start: Date;
   end: Date;
 }
 
-const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
-  const { data: stats, status: statsStatus } = trpc.stats.get.useQuery({
+const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
+  const stats = await api.stats.get.query({
     start,
     end,
   });
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
 
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-
-  const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery(
-    { corpsIds },
-    { enabled: !!corpsIds },
-  );
+  const [corps, corpsPoints] = await Promise.all([
+    api.corps.getSelf.query(),
+    api.stats.getManyPoints.query({ corpsIds }),
+  ]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -57,14 +52,6 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
           ownAttendence * 100,
         )}% närvaro.`
       : undefined;
-
-  if (!corpsStats || !corpsPoints) {
-    return <Loading msg='Laddar statistik...' />;
-  }
-
-  if (statsStatus === 'error') {
-    return <AlertError msg='Kunde inte hämta spelningsstatistik.' />;
-  }
 
   let lastAttendence = -516.0;
 
@@ -121,11 +108,13 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                     {addMemberDivider && (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
-                          <Divider
-                            color='red'
-                            label='Nummer'
-                            labelPosition='center'
-                          />
+                          <div className='flex items-center py-1 flex-nowrap'>
+                            <div className='flex-grow h-px bg-red-600' />
+                            <div className='px-2 text-xs text-red-600'>
+                              Nummer
+                            </div>
+                            <div className='flex-grow h-px bg-red-600' />
+                          </div>
                         </td>
                       </tr>
                     )}
