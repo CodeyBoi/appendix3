@@ -10,6 +10,7 @@ import AppProvider from './app-provider';
 import NavbarBody from 'components/navbar';
 import { IconMenu2 } from '@tabler/icons';
 import Logo from 'components/logo';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -23,6 +24,9 @@ type RootLayoutProps = {
 const RootLayout = async ({ children }: RootLayoutProps) => {
   const defaultColorScheme = 'light'; // TODO: Fix later, right now it's always light on first load/refresh
   const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/login');
+  }
   return (
     <html lang='sv'>
       <head>
