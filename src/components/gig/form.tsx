@@ -102,7 +102,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   return (
     <FormLoadingOverlay visible={submitting}>
       <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
-        <div className='grid items-stretch grid-cols-1 place-content-baseline gap-x-4 gap-y-2 md:grid-cols-2'>
+        <div className='grid items-stretch grid-cols-1 align-bottom gap-x-4 gap-y-2 md:grid-cols-2'>
           <TextInput
             label='Titel'
             withAsterisk

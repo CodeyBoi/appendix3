@@ -48,7 +48,7 @@ const TextInput = ({
   };
 
   return (
-    <div className='flex flex-col flex-shrink min-w-0'>
+    <div className='flex flex-col self-end flex-shrink min-w-0'>
       <div
         className={
           'relative flex items-center bg-transparent border rounded shadow-sm h-11 dark:border-neutral-800' +
