@@ -1,5 +1,4 @@
 import { IconPlus, IconSearch } from '@tabler/icons';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
@@ -7,6 +6,7 @@ import Loading from '../../components/loading';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
 import TextInput from 'components/input/text-input';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,

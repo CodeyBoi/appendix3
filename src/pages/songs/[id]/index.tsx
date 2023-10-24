@@ -1,42 +1,20 @@
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from 'next';
+import Loading from 'components/loading';
+import { useRouter } from 'next/router';
+import { trpc } from 'utils/trpc';
 import SongView from '../../../components/song/view';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
-import { prisma } from '../../../server/db/client';
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext,
-) => {
-  const session = await getServerAuthSession(ctx);
-  const songId = ctx.query.id as string;
-  const song = await prisma?.song.findUnique({
-    where: {
-      id: songId,
-    },
+const Song = () => {
+  const router = useRouter();
+  const songId = router.query.id as string;
+  const { data: song, isLoading } = trpc.song.get.useQuery({
+    id: songId,
   });
-  if (!session) {
-    return {
-      redirect: {
-        destination: 'api/auth/signin',
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      session,
-      song: JSON.stringify(song),
-    },
-  };
-};
-
-const Song = ({
-  song,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  return <SongView song={JSON.parse(song)} />;
+  return (
+    <>
+      {isLoading && <Loading msg='Laddar sånger...' />}
+      {song && <SongView song={song} />}
+    </>
+  );
 };
 
 export default Song;
