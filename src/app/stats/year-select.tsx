@@ -1,18 +1,21 @@
 'use client';
 
 import Select, { SelectProps } from 'components/input/select';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import dayjs from 'dayjs';
 import { calcOperatingYearInterval } from 'utils/date';
+import React from 'react';
 
 const StatsYearSelect = (props: Omit<SelectProps, 'onChange'>) => {
   const router = useRouter();
-
-  const handleChange = (value: number | string) => {
-    if (typeof value === 'string') {
-      value = parseInt(value);
+  const searchParams = useSearchParams();
+  const startParam = searchParams?.get('start');
+  const start = startParam ? dayjs(startParam).year() : dayjs().year();
+  const handleChange = (val: number | string) => {
+    if (typeof val === 'string') {
+      val = parseInt(val);
     }
-    const { start, end } = calcOperatingYearInterval(value);
+    const { start, end } = calcOperatingYearInterval(val);
     router.replace(
       `/stats?start=${dayjs(start).format('YYYY-MM-DD')}&end=${dayjs(
         end,
@@ -20,7 +23,7 @@ const StatsYearSelect = (props: Omit<SelectProps, 'onChange'>) => {
     );
   };
 
-  return <Select {...props} onChange={handleChange} />;
+  return <Select {...props} onChange={handleChange} defaultValue={start} />;
 };
 
 export default StatsYearSelect;
