@@ -1,4 +1,3 @@
-import { Card } from '@mantine/core';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
@@ -15,17 +14,17 @@ const RehearsalList = ({ rehearsals }: RehearsalsProps) => {
   return (
     <div className='flex flex-col gap-2'>
       {rehearsals?.map((rehearsal) => (
-        <Card
-          key={rehearsal.id}
-          shadow='sm'
-          component={Link}
-          href={`/admin/rehearsal/${rehearsal.id}`}
-        >
-          <div className='flex gap-4'>
-            <div>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</div>
-            <div>{rehearsal.title}</div>
+        <Link href={`/admin/rehearsal/${rehearsal.id}`}>
+          <div
+            className='p-4 border rounded shadow-md dark:border-neutral-800'
+            key={rehearsal.id}
+          >
+            <div className='flex gap-4'>
+              <div>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</div>
+              <div>{rehearsal.title}</div>
+            </div>
           </div>
-        </Card>
+        </Link>
       ))}
       {rehearsals && rehearsals.length === 0 && (
         <div>Inga rep finns registrerade detta år</div>
