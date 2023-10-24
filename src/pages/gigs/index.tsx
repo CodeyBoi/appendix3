@@ -105,7 +105,7 @@ const Gigs = ({ initialTab }: GigsProps) => {
         <title>Spelningar</title>
       </Head>
       <h2>Spelningar</h2>
-      <div className='flex items-end justify-between'>
+      <div className='flex items-end'>
         <Select
           label='År'
           options={years}

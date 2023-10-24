@@ -8,9 +8,9 @@ import '../styles/globals.css';
 import { TRPCReactProvider } from '../trpc/react';
 import AppProvider from './app-provider';
 import NavbarBody from 'components/navbar';
-import { IconMenu2 } from '@tabler/icons';
 import Logo from 'components/logo';
 import { redirect } from 'next/navigation';
+import NavbarButton from './navbar-button';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -65,13 +65,15 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
                 className='box-border sticky top-0 flex items-center justify-between flex-none w-full bg-red-600 shadow-md h-14'
                 style={{ zIndex: 516 }}
               >
-                <div className='pl-3'>
+                <div className='p-3'>
                   <Logo />
                 </div>
-                {/* Navbar button */}
-                <button className='p-1 pr-3 text-white rounded lg:hidden hover:bg-red-600/10'>
-                  <IconMenu2 />
-                </button>
+                {/* Navbar burger */}
+                <div className='lg:hidden'>
+                  <NavbarButton>
+                    <NavbarBody />
+                  </NavbarButton>
+                </div>
               </header>
               <div className='fixed flex-none w-72 top-14 max-lg:hidden'>
                 <NavbarBody />
