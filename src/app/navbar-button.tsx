@@ -11,8 +11,8 @@ const NavbarButton = ({ children }: { children: React.ReactNode }) => {
       <Burger active={open} onClick={() => setOpen(!open)} />
       <div
         className={
-          'fixed top-0 bottom-0 left-0 z-10 right-0 w-screen transition-colors mt-14' +
-          (open ? ' bg-black/50' : '')
+          'fixed top-0 bottom-0 left-0 z-10 right-0 w-screen duration-200 transition-colors mt-14' +
+          (open ? ' bg-black/50' : ' bg-transparent pointer-events-none')
         }
         style={{ height: 'calc(100vh - 56px)' }}
         onClick={() => setOpen(false)}
