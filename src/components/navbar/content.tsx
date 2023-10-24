@@ -99,7 +99,7 @@ const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
   return (
     <div
       style={{ height: 'calc(100vh - 56px)' }}
-      className='flex flex-col gap-2 px-3 pt-3 pb-4 bg-red-700 border-0 w-72'
+      className='flex flex-col gap-2 px-3 pt-3 pb-16 bg-red-700 border-0 lg:pb-4 w-72'
     >
       <NavbarControl userTab={userTabElement} adminTab={adminTabElement} />
       <div className='flex flex-col'>
