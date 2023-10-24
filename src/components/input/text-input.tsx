@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, ReactNode, useState } from 'react';
 
 export type ErrorColor = 'red' | 'white';
 
@@ -11,7 +11,7 @@ export type TextInputProps = Omit<
   label?: string;
   withAsterisk?: boolean;
   onChange?: (value: string) => void;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   description?: string;
   error?: string;
   errorColor?: ErrorColor;
@@ -39,7 +39,7 @@ const TextInput = ({
 
   const errorStyle = errorColorVariants[errorColor];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.currentTarget.value);
     onChange?.(e.currentTarget.value);
   };
@@ -58,9 +58,9 @@ const TextInput = ({
           {...props}
           className={
             'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300 pb-1 pt-3 pointer-events-auto' +
-            (icon ? ' pr-2 pl-9' : ' px-2') +
-            ' ' +
-            props.className
+              (icon ? ' pr-2 pl-9' : ' px-2') +
+              ' ' +
+              props.className ?? ''
           }
           onChange={handleChange}
           onFocus={() => setFocused(true)}

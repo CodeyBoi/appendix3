@@ -34,11 +34,11 @@ const Button = ({
       {...props}
       className={
         'rounded h-min transition-colors hover:shadow active:translate-y-px ' +
-        classNames.join(' ') +
-        ' ' +
-        (compact ? 'px-1 py-0.5' : 'px-3 py-2.5') +
-        ' ' +
-        props.className
+          classNames.join(' ') +
+          ' ' +
+          (compact ? 'px-1 py-0.5' : 'px-3 py-2.5') +
+          ' ' +
+          props.className ?? ''
       }
     >
       <div className='flex items-center justify-center gap-2 flex-nowrap font-display whitespace-nowrap'>
