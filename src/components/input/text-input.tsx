@@ -1,9 +1,8 @@
 'use client';
 
-import { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, useState, useId, useRef } from 'react';
 
 export type ErrorColor = 'red' | 'white';
-export type TextInputVariant = 'default' | 'login';
 
 export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -14,7 +13,6 @@ export type TextInputProps = Omit<
   onChange?: (value: string) => void;
   icon?: React.ReactNode;
   description?: string;
-  variant?: TextInputVariant;
   error?: string;
   errorColor?: ErrorColor;
 };
@@ -32,7 +30,6 @@ const TextInput = ({
   onChange,
   icon,
   description,
-  variant = 'default',
   error,
   errorColor = 'red',
   ...props
@@ -51,7 +48,7 @@ const TextInput = ({
     <div className='flex flex-col flex-shrink min-w-0'>
       <div
         className={
-          'relative flex items-center bg-transparent border rounded shadow-sm h-11 dark:border-neutral-800' +
+          'relative flex items-center bg-transparent border rounded shadow-sm h-9 dark:border-neutral-800' +
           (error ? ' ' + errorStyle : '')
         }
       >
@@ -60,7 +57,7 @@ const TextInput = ({
           type='text'
           {...props}
           className={
-            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300 pb-1 pt-5 pointer-events-auto' +
+            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300 pb-1 pt-3 pointer-events-auto' +
             (icon ? ' pr-2 pl-9' : ' px-2') +
             ' ' +
             props.className
@@ -70,12 +67,11 @@ const TextInput = ({
           onBlur={() => setFocused(false)}
         />
         <div className='absolute left-0 flex pointer-events-none'>
-          <div className={icon ? 'w-9' : 'w-2'} />
+          <div className={icon ? 'w-9' : ''} />
           <label
             className={
-              'flex gap-1 cursor-text transition-transform origin-left duration-100' +
-              (focused || value !== '' ? ' ' + floatingLabelClass : '') +
-              (variant === 'login' ? ' ' + 'text-white' : '')
+              'text-white cursor-text transition-transform origin-left duration-100' +
+              (focused || value !== '' ? ' ' + floatingLabelClass : '')
             }
           >
             {label}
@@ -83,12 +79,12 @@ const TextInput = ({
           </label>
         </div>
       </div>
-      {/* {description && (
+      {description && (
         <span className='-mt-1 text-xs leading-6 tracking-tight text-gray-400'>
           {description}
         </span>
       )}
-      {error && <span className={'text-xs' + ' ' + errorStyle}>{error}</span>} */}
+      {error && <span className={'text-xs' + ' ' + errorStyle}>{error}</span>}
     </div>
   );
 };
