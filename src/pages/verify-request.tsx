@@ -1,5 +1,3 @@
-import { Center, Title, useMantineTheme } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
@@ -23,15 +21,8 @@ export const getServerSideProps: GetServerSideProps = async (
   return { props: { unverifiedToken } };
 };
 
-const VerifyRequest = ({
-  unverifiedToken,
-}: {
-  unverifiedToken: string;
-}) => {
+const VerifyRequest = ({ unverifiedToken }: { unverifiedToken: string }) => {
   const router = useRouter();
-  const theme = useMantineTheme();
-
-  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
 
   trpc.auth.checkVerified.useQuery(unverifiedToken, {
     refetchOnMount: true,
@@ -43,30 +34,13 @@ const VerifyRequest = ({
     },
   });
   return (
-    <div
-      style={{
-        padding: 24,
-        height: '100vh',
-        background: theme.fn.linearGradient(
-          215,
-          theme?.colors?.red?.[7] as string,
-          theme?.colors?.red?.[9] as string,
-        ),
-      }}
-    >
-      <Center>
-        <div style={{ marginTop: onMobile ? '25vh' : '35vh' }}>
-          <Title
-            order={4}
-            color='white'
-            align='center'
-            style={{ maxWidth: 800 }}
-          >
-            En inloggningslänk har skickats till din mailadress, när du klickat
-            på den kan du återvända till denna flik.
-          </Title>
-        </div>
-      </Center>
+    <div className='flex items-center justify-center h-screen polka'>
+      <div className='p-4 bg-red-600 rounded shadow-2xl'>
+        <h4 className='max-w-3xl text-center text-white'>
+          En inloggningslänk har skickats till din mailadress, när du klickat på
+          den kan du återvända till denna flik.
+        </h4>
+      </div>
     </div>
   );
 };
