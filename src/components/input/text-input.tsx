@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes, useState, useId, useRef } from 'react';
+import { InputHTMLAttributes, useState } from 'react';
 
 export type ErrorColor = 'red' | 'white';
 
