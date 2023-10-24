@@ -86,7 +86,6 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
       <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
-          placeholder='Titel'
           withAsterisk
           spellCheck={false}
           {...form.getInputProps('title')}

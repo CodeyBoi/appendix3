@@ -71,7 +71,6 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
           />
           <TextInput
             label='Var sades detta?'
-            placeholder='Plats'
             {...form.getInputProps('location')}
           />
         </div>

@@ -94,3 +94,12 @@ h6 {
   box-shadow: 0 0 2px 1px var(--corps-red);
   transition: .1s;
 }
+
+.polka {
+  background-image: 
+    radial-gradient(var(--corps-white) 30%, transparent 30%),
+    radial-gradient(var(--corps-white) 30%, transparent 30%);
+  background-position: 0px 0px, 25px 25px;
+  background-size: 50px 50px;
+  background-color: var(--corps-red);
+}

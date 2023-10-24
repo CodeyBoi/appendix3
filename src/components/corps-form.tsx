@@ -115,31 +115,17 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <TextInput
             withAsterisk
             label='Förnamn'
-            placeholder='Förnamn'
             {...form.getInputProps('firstName')}
           />
           <TextInput
             withAsterisk
             label='Efternamn'
-            placeholder='Efternamn'
             {...form.getInputProps('lastName')}
           />
-          <TextInput
-            label='Smeknamn'
-            placeholder='Smeknamn'
-            {...form.getInputProps('nickName')}
-          />
+          <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <div className='flex gap-4'>
-            <TextInput
-              label='Nummer'
-              placeholder='Nummer'
-              {...form.getInputProps('number')}
-            />
-            <TextInput
-              label='Balettnr.'
-              placeholder='Balettnr.'
-              {...form.getInputProps('bNumber')}
-            />
+            <TextInput label='Nummer' {...form.getInputProps('number')} />
+            <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
           </div>
           <Select
             label='Huvudinstrument'
@@ -162,7 +148,6 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <TextInput
             withAsterisk
             label='Email'
-            placeholder='exempel@domän.se'
             {...form.getInputProps('email')}
           />
           <Select

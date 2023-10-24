@@ -69,20 +69,17 @@ const SongForm = ({ song }: SongFormProps) => {
       <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
-          placeholder='Titel'
           withAsterisk
           spellCheck={false}
           {...form.getInputProps('title')}
         />
         <TextInput
           label='Författare'
-          placeholder='Författare'
           spellCheck={false}
           {...form.getInputProps('author')}
         />
         <TextInput
           label='Melodi'
-          placeholder='Melodi'
           spellCheck={false}
           {...form.getInputProps('melody')}
         />

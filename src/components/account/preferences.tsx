@@ -110,24 +110,17 @@ const AccountPreferences = () => {
             <h3>Kontaktuppgifter</h3>
             <TextInput
               label='Förnamn'
-              placeholder='Förnamn'
               withAsterisk
               {...form.getInputProps('firstName')}
             />
             <TextInput
               label='Efternamn'
-              placeholder='Efternamn'
               withAsterisk
               {...form.getInputProps('lastName')}
             />
-            <TextInput
-              label='Smeknamn'
-              placeholder='Smeknamn'
-              {...form.getInputProps('nickName')}
-            />
+            <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
             <TextInput
               label='E-post'
-              placeholder='E-post'
               withAsterisk
               {...form.getInputProps('email')}
             />

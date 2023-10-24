@@ -105,7 +105,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
         <div className='grid grid-cols-1 content-baseline gap-x-4 gap-y-2 md:grid-cols-2'>
           <TextInput
             label='Titel'
-            placeholder='Titel'
             withAsterisk
             spellCheck={false}
             {...form.getInputProps('title')}
@@ -137,7 +136,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           />
           <TextInput
             label='Plats'
-            placeholder='Plats'
             spellCheck={false}
             {...form.getInputProps('location')}
           />
@@ -145,14 +143,12 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             <TextInput
               icon={<IconClock />}
               label='Samlingstid'
-              placeholder='Samlingstid'
               spellCheck='false'
               {...form.getInputProps('meetup')}
             />
             <TextInput
               icon={<IconClock />}
               label='Spelningstart'
-              placeholder='Spelningstart'
               spellCheck='false'
               {...form.getInputProps('start')}
             />
@@ -183,13 +179,11 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           />
           <TextInput
             label='Kryssruta 1'
-            placeholder='Kryssruta 1'
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox1')}
           />
           <TextInput
             label='Kryssruta 2'
-            placeholder='Kryssruta 2'
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
@@ -200,7 +194,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
               disabled={form.values.isPublic}
               defaultValue={form.values.hiddenFor}
               description='Spelningsanmälan kommer inte att synas för dessa corps'
-              placeholder='Välj corps...'
               {...form.getInputProps('hiddenFor')}
             />
           </div>
