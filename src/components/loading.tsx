@@ -6,8 +6,8 @@ interface LoadingProps {
 
 const Loading = ({ msg }: LoadingProps) => {
   return (
-    <div className='flex flex-col gap-2 p-3 w-fit'>
-      <div>{msg}</div>
+    <div className='flex gap-4 p-3 w-fit'>
+      <div className='text-xl'>{msg}</div>
       <div className='flex items-center justify-center h-full'>
         <div role='status'>
           <svg
