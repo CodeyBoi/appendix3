@@ -14,11 +14,8 @@ const RehearsalList = ({ rehearsals }: RehearsalsProps) => {
   return (
     <div className='flex flex-col gap-2'>
       {rehearsals?.map((rehearsal) => (
-        <Link href={`/admin/rehearsal/${rehearsal.id}`}>
-          <div
-            className='p-4 border rounded shadow-md dark:border-neutral-800'
-            key={rehearsal.id}
-          >
+        <Link key={rehearsal.id} href={`/admin/rehearsal/${rehearsal.id}`}>
+          <div className='p-4 border rounded shadow-md dark:border-neutral-800'>
             <div className='flex gap-4'>
               <div>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</div>
               <div>{rehearsal.title}</div>
