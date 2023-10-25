@@ -1,6 +1,6 @@
 'use client';
 
-import React, { InputHTMLAttributes, useState } from 'react';
+import React, { InputHTMLAttributes, useEffect, useState } from 'react';
 
 export type ErrorColor = 'red' | 'white';
 export type TextInputVariant = 'default' | 'login';
@@ -18,6 +18,7 @@ export type TextInputProps = Omit<
   error?: string;
   errorColor?: ErrorColor;
   defaultValue?: string;
+  value?: string;
 };
 
 const errorColorVariants = {
@@ -37,6 +38,7 @@ const TextInput = ({
   error,
   errorColor = 'red',
   defaultValue,
+  value: propValue,
   ...props
 }: TextInputProps) => {
   const [value, setValue] = useState('');
@@ -44,6 +46,12 @@ const TextInput = ({
     setValue(defaultValue);
     onChange?.(defaultValue);
   }
+
+  useEffect(() => {
+    if (propValue) {
+      setValue(propValue);
+    }
+  }, [propValue]);
 
   const [focused, setFocused] = useState(false);
 
@@ -64,7 +72,7 @@ const TextInput = ({
       >
         {icon && <div className='absolute px-2'>{icon}</div>}
         <input
-          value={value}
+          value={propValue ?? value}
           type='text'
           {...props}
           className={

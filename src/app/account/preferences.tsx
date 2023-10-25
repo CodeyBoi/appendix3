@@ -7,6 +7,7 @@ import { trpc } from 'utils/trpc';
 import Button from 'components/input/button';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import TextInput from 'components/input/text-input';
+import TextArea from 'components/input/text-area';
 
 const initialValues = {
   firstName: '',
@@ -108,7 +109,7 @@ const AccountPreferences = () => {
               }}
             />
           </div>
-          <div className='flex flex-col space-y-2'>
+          <div className='flex flex-col space-y-2 w-min'>
             <h3>Kontaktuppgifter</h3>
             <TextInput
               label='Förnamn'
@@ -149,7 +150,7 @@ const AccountPreferences = () => {
                 type: 'checkbox',
               })}
             />
-            <TextInput
+            <TextArea
               placeholder='Övriga matpreferenser...'
               {...form.getInputProps('otherFoodPrefs')}
             />
