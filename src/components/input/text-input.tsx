@@ -7,7 +7,7 @@ export type TextInputVariant = 'default' | 'login';
 
 export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  'onChange' | 'defaultValue'
+  'onChange' | 'defaultValue' | 'value'
 > & {
   label?: string;
   withAsterisk?: boolean;
@@ -17,8 +17,8 @@ export type TextInputProps = Omit<
   variant?: TextInputVariant;
   error?: string;
   errorColor?: ErrorColor;
-  defaultValue?: string;
   value?: string;
+  defaultValue?: string;
 };
 
 const errorColorVariants = {

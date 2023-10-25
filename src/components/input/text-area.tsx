@@ -1,10 +1,10 @@
 'use client';
 
-import { TextareaHTMLAttributes, useState } from 'react';
+import { TextareaHTMLAttributes, useEffect, useState } from 'react';
 
 type TextAreaProps = Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'onChange'
+  'onChange' | 'defaultValue' | 'value'
 > & {
   label?: string;
   onChange?: (value: string) => void;
@@ -13,6 +13,8 @@ type TextAreaProps = Omit<
   debounceTime?: number;
   autoSize?: boolean;
   rightSection?: React.ReactNode;
+  value?: string;
+  defaultValue?: string;
 };
 
 const TextArea = ({
@@ -23,9 +25,23 @@ const TextArea = ({
   debounceTime = 200,
   autoSize = false,
   rightSection,
+  value: propValue,
+  defaultValue,
   ...props
 }: TextAreaProps) => {
+  const [value, setValue] = useState('');
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
+
+  if (defaultValue && value === '') {
+    setValue(defaultValue);
+    onChange?.(defaultValue);
+  }
+
+  useEffect(() => {
+    if (propValue) {
+      setValue(propValue);
+    }
+  }, [propValue]);
 
   const handleAutosize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (autoSize) {
