@@ -1,4 +1,4 @@
-import { ColorScheme } from '@mantine/core';
+type ColorScheme = 'light' | 'dark';
 import { useState } from 'react';
 
 const useColorScheme = (initialColorScheme: ColorScheme) => {
