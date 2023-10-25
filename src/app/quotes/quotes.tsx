@@ -2,10 +2,10 @@
 
 import React from 'react';
 import QuoteForm from 'components/quote/form';
-import { trpc } from 'utils/trpc';
 import Button from 'components/input/button';
 import { Metadata } from 'next';
 import QuotePage from './list';
+import { api } from 'trpc/react';
 
 export const metadata: Metadata = {
   title: 'Citat',
@@ -17,7 +17,7 @@ const Quotes = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = trpc.quote.infiniteScroll.useInfiniteQuery(
+  } = api.quote.infiniteScroll.useInfiniteQuery(
     {},
     { getNextPageParam: (last) => last.nextCursor },
   );

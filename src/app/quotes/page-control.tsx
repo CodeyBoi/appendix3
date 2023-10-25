@@ -1,3 +1,5 @@
+'use client';
+
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons';
 import Button from 'components/input/button';
 import { useSearchParamsState } from 'hooks/use-search-params-state';
