@@ -3,7 +3,6 @@ import GigCard from 'components/gig/card';
 import SignupList from 'components/signup-list';
 import { Suspense } from 'react';
 import GigSkeleton from 'components/gig/skeleton';
-import { Metadata } from 'next';
 import { api } from 'trpc/server';
 
 export const generateMetadata = async ({
@@ -20,11 +19,6 @@ export const generateMetadata = async ({
     : {
         title: 'Spelning finns inte',
       };
-};
-
-export const metadata: Metadata = {
-  title: 'Anmälningar',
-  description: 'Anmälningar till spelningar',
 };
 
 const GigPage = async ({ params }: { params: { id: string } }) => {
