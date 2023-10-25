@@ -9,7 +9,7 @@ const SongSearch = () => {
   const [search, setSearch] = useSearchParamsState('search', '');
   return (
     <div className='flex items-center justify-between gap-4'>
-      <div className='flex-grow'>
+      <div className='flex-grow bg-white dark:bg-darkBg'>
         <TextInput
           label='Sök...'
           defaultValue={search}

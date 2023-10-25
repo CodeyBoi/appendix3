@@ -25,6 +25,7 @@ module.exports = {
         },
         white: '#FAFFFC',
         currentColor: '#ce0c00',
+        darkBg: '#1A1B1E',
       },
     },
   },
