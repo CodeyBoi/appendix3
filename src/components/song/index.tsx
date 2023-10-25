@@ -1,7 +1,6 @@
 import { Song } from '@prisma/client';
 // import { trpc } from '../../utils/trpc';
 import { IconPencil } from '@tabler/icons';
-import Head from 'next/head';
 import Link from 'next/link';
 import { api } from 'trpc/server';
 
@@ -28,9 +27,6 @@ const Song = async ({ song: songProp }: SongProps) => {
 
   return (
     <div className='flex flex-col max-w-3xl'>
-      <Head>
-        <title>{song.title}</title>
-      </Head>
       <div className='flex justify-between flex-nowrap'>
         <h3>{song.title}</h3>
         {isAdmin && (

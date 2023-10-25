@@ -7,7 +7,7 @@ export type TextInputVariant = 'default' | 'login';
 
 export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  'onChange'
+  'onChange' | 'defaultValue'
 > & {
   label?: string;
   withAsterisk?: boolean;
@@ -17,6 +17,7 @@ export type TextInputProps = Omit<
   variant?: TextInputVariant;
   error?: string;
   errorColor?: ErrorColor;
+  defaultValue?: string;
 };
 
 const errorColorVariants = {
@@ -35,9 +36,14 @@ const TextInput = ({
   variant = 'default',
   error,
   errorColor = 'red',
+  defaultValue,
   ...props
 }: TextInputProps) => {
   const [value, setValue] = useState('');
+  if (defaultValue && value === '') {
+    setValue(defaultValue);
+  }
+
   const [focused, setFocused] = useState(false);
 
   const errorStyle = errorColorVariants[errorColor];
@@ -57,6 +63,7 @@ const TextInput = ({
       >
         {icon && <div className='absolute px-2'>{icon}</div>}
         <input
+          value={value}
           type='text'
           {...props}
           className={

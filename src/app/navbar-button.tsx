@@ -1,10 +1,16 @@
 'use client';
 
 import Burger from 'components/burger';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const NavbarButton = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <>
