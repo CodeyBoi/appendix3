@@ -1,11 +1,11 @@
 import 'dayjs/locale/sv';
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { ReactElement } from 'react';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
-import '../styles/globals.css';
-import { TRPCReactProvider } from '../trpc/react';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import 'styles/globals.css';
+import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
 import NavbarBody from 'components/navbar';
 import Logo from 'components/logo';
@@ -22,7 +22,9 @@ type RootLayoutProps = {
 };
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
-  const defaultColorScheme = 'light'; // TODO: Fix later, right now it's always light on first load/refresh
+  const cookiesList = cookies();
+  const colorScheme =
+    cookiesList.get('tw-color-scheme')?.value === 'dark' ? 'dark' : 'light';
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect('/login');
@@ -54,12 +56,9 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='theme-color' content='#B80900'></meta>
       </head>
-      <body className='overflow-y-auto'>
+      <body className='overflow-y-auto text-black bg-white dark:bg-darkBg dark:text-darkText'>
         <TRPCReactProvider headers={headers()}>
-          <AppProvider
-            defaultColorScheme={defaultColorScheme}
-            session={session}
-          >
+          <AppProvider defaultColorScheme={colorScheme} session={session}>
             <>
               <header
                 className='box-border sticky top-0 flex items-center justify-between flex-none w-full bg-red-600 shadow-md h-14'

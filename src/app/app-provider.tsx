@@ -1,21 +1,17 @@
 'use client';
 
-import {
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ReactElement } from 'react';
-import useColorScheme from '../hooks/use-color-scheme';
-import { GLOBAL_THEME } from '../utils/global-theme';
+import useColorScheme from 'hooks/use-color-scheme';
+import { GLOBAL_THEME } from 'utils/global-theme';
 
 type StyleProviderProps = {
   children: ReactElement;
-  defaultColorScheme: ColorScheme;
+  defaultColorScheme: 'light' | 'dark';
   session: Session | null;
 };
 
@@ -28,19 +24,14 @@ const AppProvider = ({
   // Allows user to toggle between light and dark mode by pressing `mod+Y`
   useHotkeys([['mod+Y', () => toggleColorScheme()]]);
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
+    <MantineProvider
+      withGlobalStyles
+      withNormalizeCSS
+      theme={{ ...GLOBAL_THEME, colorScheme }}
     >
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{ ...GLOBAL_THEME, colorScheme }}
-      >
-        <SessionProvider session={session}>{children}</SessionProvider>
-        <ReactQueryDevtools />
-      </MantineProvider>
-    </ColorSchemeProvider>
+      <SessionProvider session={session}>{children}</SessionProvider>
+      <ReactQueryDevtools />
+    </MantineProvider>
   );
 };
 

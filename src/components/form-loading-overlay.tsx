@@ -20,7 +20,7 @@ const LoadingOverlay = ({
     <div className='relative p-2 rounded'>
       {children}
       {visible && (
-        <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded'>
+        <div className='absolute inset-0 flex items-center justify-center rounded bg-white/50 dark:bg-darkBg/50'>
           <div className='flex flex-col items-center justify-center'>
             {showSpinner && <Loading msg={msg} />}
           </div>

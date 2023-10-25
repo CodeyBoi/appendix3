@@ -374,7 +374,8 @@ export const corpsRouter = router({
     .input(z.string())
     .query(async ({ ctx, input }) => {
       const { req, res } = { req: ctx.req, res: ctx.res };
-      setCookie('mantine-color-scheme', input, {
+      console.log('Setting color scheme to ', input);
+      setCookie('tw-color-scheme', input, {
         req,
         res,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50),

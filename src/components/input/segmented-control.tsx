@@ -32,7 +32,7 @@ const SegmentedControl = (props: SegmentedControlProps) => {
   const color = props.color ?? 'gray';
   const classes = colorVariants[color];
   return (
-    <div className='flex divide-x rounded shadow select-none basis-0 divide-gray-300/20'>
+    <div className='flex divide-x rounded shadow select-none basis-0 divide-gray-500/20'>
       {props.options.map((option, i) => {
         const selected = option.value === value;
         const cns = [];

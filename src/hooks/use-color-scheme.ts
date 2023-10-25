@@ -1,30 +1,28 @@
 type ColorScheme = 'light' | 'dark';
 import { useState } from 'react';
+import { trpc } from 'utils/trpc';
 
-const useColorScheme = (initialColorScheme: ColorScheme) => {
-  const [colorScheme, setColorScheme] =
-    useState<ColorScheme>(initialColorScheme);
-  const toggleColorScheme = (value?: ColorScheme) => {
-    const newColorScheme =
-      value || (colorScheme === 'light' ? 'dark' : 'light');
-    setColorScheme(newColorScheme);
-    if (typeof window !== 'undefined') {
-      if (newColorScheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-  };
-  // trpc.corps.setColorScheme.useQuery(colorScheme);
-
+const applyScheme = (scheme: ColorScheme) => {
   if (typeof window !== 'undefined') {
-    if (colorScheme === 'dark') {
+    if (scheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
   }
+};
+
+const useColorScheme = (initialColorScheme?: ColorScheme) => {
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(
+    initialColorScheme ?? 'light',
+  );
+  const toggleColorScheme = (value?: ColorScheme) => {
+    const newColorScheme =
+      value || (colorScheme === 'light' ? 'dark' : 'light');
+    setColorScheme(newColorScheme);
+    applyScheme(newColorScheme);
+  };
+  trpc.corps.setColorScheme.useQuery(colorScheme);
 
   /* April Fools */
   const date = new Date();

@@ -1,6 +1,6 @@
 'use client';
 
-import { Switch, useMantineColorScheme } from '@mantine/core';
+import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
 import { trpc } from 'utils/trpc';
@@ -8,6 +8,7 @@ import Button from 'components/input/button';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import TextInput from 'components/input/text-input';
 import TextArea from 'components/input/text-area';
+import useColorScheme from 'hooks/use-color-scheme';
 
 const initialValues = {
   firstName: '',
@@ -25,10 +26,10 @@ type FormValues = typeof initialValues;
 const AccountPreferences = () => {
   const { data: corps, isLoading: corpsLoading } =
     trpc.corps.getSelf.useQuery();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const [submitting, setSubmitting] = React.useState(false);
 
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   const form = useForm<FormValues>({
     initialValues,

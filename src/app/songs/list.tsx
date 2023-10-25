@@ -13,7 +13,7 @@ const filterSongs = (songs: SongListElementProps[], search: string) => {
 const genSongList = (songs: SongListElementProps[]) => {
   let prevTitleLetter: string | undefined;
   return (
-    <div className='flex flex-col text-base divide-y divide-solid'>
+    <div className='flex flex-col text-base divide-y divide-solid dark:divide-neutral-700'>
       {songs.map((song) => {
         const titleLetter = song.title[0]?.toUpperCase() ?? '';
         let shouldAddLetter = false;

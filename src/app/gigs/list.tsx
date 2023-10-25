@@ -31,7 +31,7 @@ const GigList = async ({ year, tab }: GigListProps) => {
 
   let lastGigMonth: number;
   return (
-    <div className='flex flex-col divide-y divide-solid'>
+    <div className='flex flex-col divide-y divide-solid dark:divide-neutral-700'>
       {gigs.map((gig) => {
         const gigMonth = gig.date.getMonth();
         let shouldAddMonth = false;

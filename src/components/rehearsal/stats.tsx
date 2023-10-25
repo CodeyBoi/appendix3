@@ -9,7 +9,7 @@ type RehearsalStatsProps = {
 const RehearsalStats = ({ totalRehearsals, stats }: RehearsalStatsProps) => {
   return (
     <table className='table'>
-      <tbody className='divide-y divide-solid'>
+      <tbody className='divide-y divide-solid dark:divide-neutral-800'>
         {stats.map((stat) => (
           <tr key={stat.corps.id}>
             <td className='pr-1 text-right'>

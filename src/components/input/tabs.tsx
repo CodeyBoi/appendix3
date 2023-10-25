@@ -20,7 +20,7 @@ const Tabs = ({
   const [tab, setTab] = useSearchParamsState(name, defaultTab);
   const tabIndex = options.findIndex((o) => o.value === tab);
   return (
-    <div className='relative flex px-2 border-b-2 flex-nowrap border-b-neutral-300'>
+    <div className='relative flex px-2 border-b-2 flex-nowrap border-b-neutral-300 dark:border-b-neutral-700'>
       <div
         className={`absolute w-36 h-full my-0.5 duration-200 transition-transform border-b-2 border-b-red-600 ${translateX[tabIndex]}`}
       />

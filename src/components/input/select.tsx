@@ -50,7 +50,7 @@ const Select = ({
       )}
       <select
         className={
-          'p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-gray-300' +
+          'p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-700 dark:text-gray-300' +
           (error ? ' ' + errorStyle : '')
         }
         onChange={handleChange}

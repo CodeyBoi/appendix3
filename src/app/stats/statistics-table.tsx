@@ -66,7 +66,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
             {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
           </div>
           {ownPointsString && <div>{ownPointsString}</div>}
-          <table className='divide-y divide-solid'>
+          <table className='divide-y divide-solid dark:border-neutral-700'>
             <thead>
               <tr>
                 <th>#</th>
@@ -76,7 +76,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                 <th className='px-1 text-center'>Totala poäng</th>
               </tr>
             </thead>
-            <tbody className='text-sm divide-y divide-solid'>
+            <tbody className='text-sm divide-y divide-solid dark:border-neutral-700'>
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;

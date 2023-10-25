@@ -78,7 +78,10 @@ const FoodPrefs = ({
 
   const rows = dataRows?.map((row) => {
     return (
-      <tr key={row.corpsId} className='divide-x divide-solid'>
+      <tr
+        key={row.corpsId}
+        className='divide-x divide-solid dark:divide-neutral-800'
+      >
         <td className='pr-2 text-right' style={{ whiteSpace: 'nowrap' }}>
           {row.data[0]}
         </td>
@@ -115,7 +118,9 @@ const FoodPrefs = ({
               <th className='px-1'>Övrigt</th>
             </tr>
           </thead>
-          <tbody className='gap-1 divide-y divide-solid'>{rows}</tbody>
+          <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
+            {rows}
+          </tbody>
         </table>
       </div>
       {dataRows && (
