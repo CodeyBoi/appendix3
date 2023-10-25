@@ -57,7 +57,7 @@ export const songRouter = router({
     }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.song.findMany({
+    const songs = await ctx.prisma.song.findMany({
       select: {
         id: true,
         title: true,
@@ -66,6 +66,8 @@ export const songRouter = router({
         title: 'asc',
       },
     });
+    songs.sort((a, b) => a.title.localeCompare(b.title, 'sv-SE'));
+    return songs;
   }),
 
   // infiniteScroll: protectedProcedure
