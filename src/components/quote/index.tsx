@@ -1,16 +1,18 @@
-import { Quote } from '@prisma/client';
+import { Quote as PrismaQuote } from '@prisma/client';
 import { IconPencil } from '@tabler/icons';
 import Link from 'next/link';
 import { trpc } from '../../utils/trpc';
 
-interface QuoteProps {
-  quote: Quote & {
-    saidBy: {
-      lastName: string;
-      number: number | null;
-    };
-    writtenBy: { firstName: string; lastName: string; number: number | null };
+export type QuoteType = PrismaQuote & {
+  saidBy: {
+    lastName: string;
+    number: number | null;
   };
+  writtenBy: { firstName: string; lastName: string; number: number | null };
+};
+
+export interface QuoteProps {
+  quote: QuoteType;
 }
 
 const Quote = ({ quote }: QuoteProps) => {
