@@ -18,8 +18,10 @@ const SongSearch = () => {
         />
       </div>
       <Link href='/admin/songs/new'>
-        <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
-          <IconPlus />
+        <div className='scale-150'>
+          <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
+            <IconPlus />
+          </div>
         </div>
       </Link>
     </div>

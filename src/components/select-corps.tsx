@@ -1,3 +1,5 @@
+'use client';
+
 import { Select, SelectProps } from '@mantine/core';
 import React, { useMemo } from 'react';
 import { trpc } from '../utils/trpc';

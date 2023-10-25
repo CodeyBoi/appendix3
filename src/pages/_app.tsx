@@ -12,12 +12,12 @@ import { SessionProvider } from 'next-auth/react';
 import type { AppContext, AppProps } from 'next/app';
 import App from 'next/app';
 import Head from 'next/head';
-import { AppContainer } from '../components/app-container';
-import useColorScheme from '../hooks/use-color-scheme';
-import '../styles/globals.css';
-import cookieParser from '../utils/cookie-parser';
-import { GLOBAL_THEME } from '../utils/global-theme';
-import { trpc } from '../utils/trpc';
+import { AppContainer } from 'components/app-container';
+import useColorScheme from 'hooks/use-color-scheme';
+import 'styles/globals.css';
+import cookieParser from 'utils/cookie-parser';
+import { GLOBAL_THEME } from 'utils/global-theme';
+import { trpc } from 'utils/trpc';
 
 interface CustomAppProps {
   session: Session | null;

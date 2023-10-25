@@ -81,7 +81,9 @@ const TextInput = ({
           <label
             className={
               'flex gap-1 cursor-text transition-transform origin-left duration-100' +
-              (focused || value !== '' ? ' ' + floatingLabelClass : '') +
+              (focused || value !== ''
+                ? ' ' + floatingLabelClass
+                : ' ' + 'text-gray-500') +
               (variant === 'login' ? ' ' + 'text-white' : '')
             }
           >

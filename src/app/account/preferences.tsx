@@ -1,9 +1,11 @@
+'use client';
+
 import { Switch, useMantineColorScheme } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
-import { trpc } from '../../utils/trpc';
-import Button from '../input/button';
-import FormLoadingOverlay from '../form-loading-overlay';
+import { trpc } from 'utils/trpc';
+import Button from 'components/input/button';
+import FormLoadingOverlay from 'components/form-loading-overlay';
 import TextInput from 'components/input/text-input';
 
 const initialValues = {

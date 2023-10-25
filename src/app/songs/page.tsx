@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const SongsLayout = () => {
   return (
     <div className='flex flex-col max-w-lg gap-4'>
-      <div className='fixed top-0 left-0 w-full max-w-lg px-2 py-2 lg:px-8 mt-14 lg:ml-72'>
+      <div className='fixed top-0 left-0 w-full max-w-lg px-6 py-2 lg:px-8 mt-14 lg:ml-72'>
         <div className='bg-white'>
           <SongSearch />
         </div>

@@ -30,11 +30,7 @@ const Statistics = ({
   return (
     <Suspense
       key={`${start}_${end}`}
-      fallback={
-        <Loading
-          msg={`Hämtar statistik för verksamhetsår ${start.getFullYear()}-${end.getFullYear()}...`}
-        />
-      }
+      fallback={<Loading msg={`Hämtar statistik...`} />}
     >
       <StatisticsTable start={start} end={end} />
     </Suspense>
