@@ -2,7 +2,7 @@
 
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/router';
-import { trpc } from '../../utils/trpc';
+import { api } from 'trpc/react';
 import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
 import TextInput from 'components/input/text-input';
@@ -20,7 +20,7 @@ type SongFormProps = {
 
 const SongForm = ({ song }: SongFormProps) => {
   const router = useRouter();
-  const utils = trpc.useContext();
+  const utils = api.useUtils();
 
   const newSong = !song;
 
@@ -39,7 +39,7 @@ const SongForm = ({ song }: SongFormProps) => {
     },
   });
 
-  const mutation = trpc.song.upsert.useMutation({
+  const mutation = api.song.upsert.useMutation({
     onSuccess: () => {
       if (song) {
         utils.song.get.invalidate({ id: song.id });
@@ -56,7 +56,7 @@ const SongForm = ({ song }: SongFormProps) => {
     }
   };
 
-  const removeMutation = trpc.song.remove.useMutation({
+  const removeMutation = api.song.remove.useMutation({
     onSuccess: () => {
       if (song) {
         utils.song.get.invalidate({ id: song.id });
