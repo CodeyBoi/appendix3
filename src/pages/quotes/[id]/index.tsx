@@ -3,12 +3,14 @@
 import AlertError from 'components/alert-error';
 import Loading from 'components/loading';
 import QuoteForm from 'components/quote/form';
+import { useParams } from 'next/navigation';
 import { api } from 'trpc/react';
 
 const MAX_TRIES = 3;
 
-const QuotePage = ({ params }: { params: { id: string } }) => {
-  const quoteId = params.id;
+const QuotePage = () => {
+  const params = useParams();
+  const quoteId = params?.id as string | undefined;
   const newQuote = quoteId === 'new';
 
   const { data: quote, failureCount } = api.quote.get.useQuery(

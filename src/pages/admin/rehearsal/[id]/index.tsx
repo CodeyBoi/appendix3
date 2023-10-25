@@ -4,13 +4,15 @@ import AlertError from 'components/alert-error';
 import dynamic from 'next/dynamic';
 import Loading from 'components/loading';
 import { api } from 'trpc/react';
+import { useParams } from 'next/navigation';
 
 const Rehearsal = dynamic(() => import('components/rehearsal'));
 
 const MAX_TRIES = 3;
 
-const AdminRehearsal = ({ params }: { params: { id: string } }) => {
-  const rehearsalId = params.id;
+const AdminRehearsal = () => {
+  const params = useParams();
+  const rehearsalId = params?.id as string | undefined;
 
   const { data: rehearsal, failureCount } = api.rehearsal.getWithId.useQuery(
     rehearsalId ?? '',
