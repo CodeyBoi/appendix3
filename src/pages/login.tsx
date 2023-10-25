@@ -103,7 +103,7 @@ const Login = () => {
                     }
                     name='email'
                     spellCheck='false'
-                    label='Mailadress'
+                    label='Mailadress (eller #)'
                     onChange={() => error && setError(undefined)}
                     onSubmit={(e) => setEmail(e.currentTarget.value)}
                     error={error}

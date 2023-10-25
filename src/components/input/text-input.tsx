@@ -42,6 +42,7 @@ const TextInput = ({
   const [value, setValue] = useState('');
   if (defaultValue && value === '') {
     setValue(defaultValue);
+    onChange?.(defaultValue);
   }
 
   const [focused, setFocused] = useState(false);
