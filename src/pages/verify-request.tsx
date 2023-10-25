@@ -1,5 +1,5 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 import { trpc } from '../utils/trpc';
 
@@ -29,7 +29,7 @@ const VerifyRequest = ({ unverifiedToken }: { unverifiedToken: string }) => {
     refetchInterval: 1000,
     onSuccess: (data) => {
       if (data) {
-        router.reload();
+        router.refresh();
       }
     },
   });

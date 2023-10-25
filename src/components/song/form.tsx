@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from '@mantine/form';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';

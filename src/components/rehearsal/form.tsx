@@ -2,7 +2,7 @@ import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
 import { IconCalendar, IconSend } from '@tabler/icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { trpc } from '../../utils/trpc';
 import Select from 'components/input/select';
 import Button from 'components/input/button';
@@ -22,7 +22,7 @@ type RehearsalFormProps = {
 };
 
 const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const router = useRouter();
 
   const { data: rehearsalTypes } = trpc.rehearsal.getTypes.useQuery();

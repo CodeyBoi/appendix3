@@ -2,7 +2,7 @@
 
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getServerAuthSession } from 'server/common/get-server-auth-session';
 import { trpc } from 'utils/trpc';

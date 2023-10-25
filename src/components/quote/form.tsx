@@ -2,7 +2,7 @@
 
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';
 import Button from 'components/input/button';

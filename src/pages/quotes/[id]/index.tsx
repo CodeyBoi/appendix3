@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import AlertError from '../../../components/alert-error';
 import Loading from '../../../components/loading';
 import QuoteForm from '../../../components/quote/form';
@@ -7,8 +7,8 @@ import { trpc } from '../../../utils/trpc';
 const MAX_TRIES = 3;
 
 const QuotePage = () => {
-  const router = useRouter();
-  const quoteId = router.query.id as string | undefined;
+  const params = useParams();
+  const quoteId = params?.['id'] as string | undefined;
   const newQuote = quoteId === 'new';
 
   const { data: quote, failureCount } = trpc.quote.get.useQuery(

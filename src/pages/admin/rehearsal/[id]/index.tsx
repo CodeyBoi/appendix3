@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import AlertError from 'components/alert-error';
 import { trpc } from 'utils/trpc';
 import dynamic from 'next/dynamic';
@@ -9,8 +9,8 @@ const Rehearsal = dynamic(() => import('components/rehearsal'));
 const MAX_TRIES = 3;
 
 const AdminRehearsal = () => {
-  const router = useRouter();
-  const rehearsalId = router.query.id as string | undefined;
+  const params = useParams();
+  const rehearsalId = params?.['id'] as string | undefined;
 
   const { data: rehearsal, failureCount } = trpc.rehearsal.getWithId.useQuery(
     rehearsalId ?? '',
