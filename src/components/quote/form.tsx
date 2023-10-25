@@ -1,3 +1,5 @@
+'use client';
+
 import { useForm } from '@mantine/form';
 import { IconSend } from '@tabler/icons';
 import { useRouter } from 'next/router';

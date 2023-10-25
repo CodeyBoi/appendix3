@@ -5,18 +5,24 @@ interface LoadingOverlayProps {
   children: React.ReactNode;
   msg?: string;
   visible: boolean;
+  showSpinner?: boolean;
 }
 
-const LoadingOverlay = (props: LoadingOverlayProps) => {
+const LoadingOverlay = ({
+  children,
+  visible,
+  msg,
+  showSpinner = true,
+}: LoadingOverlayProps) => {
   // This element should be placed as a parent to the element that should be
   // overlayed with a loading screen.
   return (
     <div className='relative p-2 rounded'>
-      {props.children}
-      {props.visible && (
+      {children}
+      {visible && (
         <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded'>
           <div className='flex flex-col items-center justify-center'>
-            <Loading msg={props.msg} />
+            {showSpinner && <Loading msg={msg} />}
           </div>
         </div>
       )}

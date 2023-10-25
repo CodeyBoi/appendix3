@@ -1,3 +1,5 @@
+'use client';
+
 import { Quote as PrismaQuote } from '@prisma/client';
 import { IconPencil } from '@tabler/icons';
 import Link from 'next/link';

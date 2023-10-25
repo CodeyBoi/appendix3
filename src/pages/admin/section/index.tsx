@@ -1,9 +1,9 @@
-import Loading from '../../../components/loading';
-import SelectCorps from '../../../components/select-corps';
-import { trpc } from '../../../utils/trpc';
+import Loading from 'components/loading';
+import SelectCorps from 'components/select-corps';
+import { trpc } from 'utils/trpc';
 
 const AdminSection = () => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const { data: sections, isInitialLoading } =
     trpc.section.getSectionLeaders.useQuery();
 
