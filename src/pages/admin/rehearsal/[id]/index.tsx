@@ -1,9 +1,9 @@
 'use client';
 
 import AlertError from 'components/alert-error';
-import { trpc } from 'utils/trpc';
 import dynamic from 'next/dynamic';
 import Loading from 'components/loading';
+import { api } from 'trpc/react';
 
 const Rehearsal = dynamic(() => import('components/rehearsal'));
 
@@ -12,7 +12,7 @@ const MAX_TRIES = 3;
 const AdminRehearsal = ({ params }: { params: { id: string } }) => {
   const rehearsalId = params.id;
 
-  const { data: rehearsal, failureCount } = trpc.rehearsal.getWithId.useQuery(
+  const { data: rehearsal, failureCount } = api.rehearsal.getWithId.useQuery(
     rehearsalId ?? '',
     { enabled: !!rehearsalId },
   );

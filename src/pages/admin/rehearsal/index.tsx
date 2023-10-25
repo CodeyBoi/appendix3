@@ -1,10 +1,12 @@
+'use client';
+
 import { Modal, Tabs } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { newUTCDate } from 'utils/date';
-import { trpc } from 'utils/trpc';
 import { getOperatingYear } from 'utils/date';
 import dynamic from 'next/dynamic';
 import Select, { SelectItem } from 'components/input/select';
+import { api } from 'trpc/react';
 
 const Button = dynamic(() => import('components/input/button'));
 const Loading = dynamic(() => import('components/loading'));
@@ -29,18 +31,18 @@ const Rehearsals = () => {
   }
 
   const { data: rehearsals, isInitialLoading: rehearsalsLoading } =
-    trpc.rehearsal.getMany.useQuery({
+    api.rehearsal.getMany.useQuery({
       start,
       end,
     });
   const { data: orchestraStats, isInitialLoading: orchestraStatsLoading } =
-    trpc.rehearsal.getOrchestraStats.useQuery({
+    api.rehearsal.getOrchestraStats.useQuery({
       start,
       end,
     });
 
   const { data: balletStats, isInitialLoading: balletStatsLoading } =
-    trpc.rehearsal.getBalletStats.useQuery({
+    api.rehearsal.getBalletStats.useQuery({
       start,
       end,
     });

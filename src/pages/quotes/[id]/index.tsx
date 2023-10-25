@@ -3,7 +3,7 @@
 import AlertError from 'components/alert-error';
 import Loading from 'components/loading';
 import QuoteForm from 'components/quote/form';
-import { trpc } from 'utils/trpc';
+import { api } from 'trpc/react';
 
 const MAX_TRIES = 3;
 
@@ -11,7 +11,7 @@ const QuotePage = ({ params }: { params: { id: string } }) => {
   const quoteId = params.id;
   const newQuote = quoteId === 'new';
 
-  const { data: quote, failureCount } = trpc.quote.get.useQuery(
+  const { data: quote, failureCount } = api.quote.get.useQuery(
     { id: quoteId ?? '' },
     {
       enabled: !newQuote && !!quoteId,
