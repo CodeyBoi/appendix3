@@ -4,6 +4,23 @@ import SignupList from 'components/signup-list';
 import { Suspense } from 'react';
 import GigSkeleton from 'components/gig/skeleton';
 import { Metadata } from 'next';
+import { api } from 'trpc/server';
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { id: string };
+}) => {
+  const gig = await api.gig.getWithId.query({ gigId: params.id });
+  return gig
+    ? {
+        title: gig.title,
+        description: gig.description,
+      }
+    : {
+        title: 'Spelning finns inte',
+      };
+};
 
 export const metadata: Metadata = {
   title: 'Anmälningar',
