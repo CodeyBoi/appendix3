@@ -82,9 +82,7 @@ const FoodPrefs = ({
         key={row.corpsId}
         className='divide-x divide-solid dark:divide-neutral-800'
       >
-        <td className='pr-2 text-right' style={{ whiteSpace: 'nowrap' }}>
-          {row.data[0]}
-        </td>
+        <td className='pr-2 text-right w-44'>{row.data[0]}</td>
         {checkbox1 !== undefined && (
           <td className='text-center'>{row.data[1]}</td>
         )}
@@ -104,17 +102,17 @@ const FoodPrefs = ({
   return (
     <div className='flex flex-col'>
       <div className='overflow-x-auto'>
-        <table className='table'>
+        <table className='table text-sm'>
           <thead>
             <tr>
               <th className='px-1 text-right'>Namn</th>
               {checkbox1 !== undefined && <th className='px-1'>{checkbox1}</th>}
               {checkbox2 !== undefined && <th className='px-1'>{checkbox2}</th>}
-              <th className='px-1'>Vegetarian</th>
-              <th className='px-1'>Vegan</th>
-              <th className='px-1'>Gluten</th>
-              <th className='px-1'>Laktos</th>
-              <th className='px-1'>Alkohol (gammal)</th>
+              <th className='px-1'>Veg</th>
+              <th className='px-1'>Veg*</th>
+              <th className='px-1'>Glut</th>
+              <th className='px-1'>Lak</th>
+              <th className='px-1'>Alk (gammal)</th>
               <th className='px-1'>Övrigt</th>
             </tr>
           </thead>
