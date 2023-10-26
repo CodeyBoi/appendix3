@@ -29,7 +29,7 @@ const VerifyRequest = ({ unverifiedToken }: { unverifiedToken: string }) => {
     refetchInterval: 1000,
     onSuccess: (data) => {
       if (data) {
-        router.replace('/verified');
+        router.replace('/');
       }
     },
   });

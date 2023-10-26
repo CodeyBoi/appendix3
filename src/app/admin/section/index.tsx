@@ -1,13 +1,15 @@
+'use client';
+
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
-import { trpc } from 'utils/trpc';
+import { api } from 'trpc/react';
 
 const AdminSection = () => {
-  const utils = trpc.useUtils();
+  const utils = api.useUtils();
   const { data: sections, isInitialLoading } =
-    trpc.section.getSectionLeaders.useQuery();
+    api.section.getSectionLeaders.useQuery();
 
-  const setSectionLeader = trpc.section.setSectionLeader.useMutation({
+  const setSectionLeader = api.section.setSectionLeader.useMutation({
     onSuccess: () => utils.section.getSectionLeaders.invalidate(),
   });
 

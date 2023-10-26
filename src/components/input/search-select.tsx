@@ -136,6 +136,12 @@ function SelectSearch(props: SelectSearchProps) {
     onChange?.(v.value);
     setFocused(false);
     setSelected(undefined);
+    handleSearchChange(v.label);
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(true);
+    e.target.select();
   };
 
   const toOption = (item: SelectSearchItem, i: number) => {
@@ -158,8 +164,6 @@ function SelectSearch(props: SelectSearchProps) {
 
   const optionElements = options.flatMap(toOption);
 
-  console.log({ search });
-
   return (
     <div className={`flex flex-col ${className}`}>
       <TextInput
@@ -167,7 +171,7 @@ function SelectSearch(props: SelectSearchProps) {
         icon={icon}
         value={search}
         onChange={handleSearchChange}
-        onFocus={() => setFocused(true)}
+        onFocus={handleFocus}
         onBlur={() => setTimeout(() => setFocused(false), 100)}
       />
       <div className='relative'>
