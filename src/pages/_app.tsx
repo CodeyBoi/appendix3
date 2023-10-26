@@ -1,10 +1,4 @@
 // src/pages/_app.tsx
-import {
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from '@mantine/core';
-import { useHotkeys } from '@mantine/hooks';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'dayjs/locale/sv';
 import type { Session } from 'next-auth';
@@ -13,11 +7,11 @@ import type { AppContext, AppProps } from 'next/app';
 import App from 'next/app';
 import Head from 'next/head';
 import { AppContainer } from 'components/app-container';
-import useColorScheme from 'hooks/use-color-scheme';
+import useColorScheme, { ColorScheme } from 'hooks/use-color-scheme';
 import 'styles/globals.css';
 import cookieParser from 'utils/cookie-parser';
-import { GLOBAL_THEME } from 'utils/global-theme';
 import { trpc } from 'utils/trpc';
+import useKeyDown from 'hooks/use-key-down';
 
 interface CustomAppProps {
   session: Session | null;
@@ -28,38 +22,27 @@ const MyApp = ({
   Component,
   pageProps: { session, colorScheme: fetchedColorScheme, ...pageProps },
 }: AppProps<CustomAppProps>) => {
-  const { colorScheme, toggleColorScheme } = useColorScheme(
-    fetchedColorScheme ?? 'light',
-  );
-  // Allows user to toggle between light and dark mode by pressing `mod+Y`
-  useHotkeys([['mod+Y', () => toggleColorScheme()]]);
+  const { toggleColorScheme } = useColorScheme(fetchedColorScheme ?? 'light');
+  // Allows user to toggle between light and dark mode by pressing `ctrl+y`
+  useKeyDown('ctrl+y', () => toggleColorScheme());
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{ ...GLOBAL_THEME, colorScheme }}
-      >
-        <SessionProvider session={session}>
-          <Head>
-            <title>Blindtarmen</title>
-            <meta property='og:title' content='Blindtarmen' key='title' />
-            <meta
-              name='viewport'
-              content='width=device-width, initial-scale=1, viewport-fit=cover'
-            />
-          </Head>
-          <AppContainer>
-            <Component {...pageProps} />
-          </AppContainer>
-        </SessionProvider>
-        <ReactQueryDevtools />
-      </MantineProvider>
-    </ColorSchemeProvider>
+    <>
+      <SessionProvider session={session}>
+        <Head>
+          <title>Blindtarmen</title>
+          <meta property='og:title' content='Blindtarmen' key='title' />
+          <meta
+            name='viewport'
+            content='width=device-width, initial-scale=1, viewport-fit=cover'
+          />
+        </Head>
+        <AppContainer>
+          <Component {...pageProps} />
+        </AppContainer>
+      </SessionProvider>
+      <ReactQueryDevtools />
+    </>
   );
 };
 
@@ -73,7 +56,7 @@ MyApp.getInitialProps = async (context: AppContext) => {
 
   if (cookie) {
     const cookies = cookieParser(cookie);
-    const colorScheme = cookies['mantine-color-scheme'];
+    const colorScheme = cookies['tw-color-scheme'];
     appProps.pageProps['colorScheme'] = colorScheme;
   }
 

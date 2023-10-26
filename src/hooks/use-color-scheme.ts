@@ -1,4 +1,4 @@
-type ColorScheme = 'light' | 'dark';
+export type ColorScheme = 'light' | 'dark';
 import { useState } from 'react';
 import { trpc } from 'utils/trpc';
 
