@@ -7,10 +7,8 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import 'styles/globals.css';
 import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
-import NavbarBody from 'components/navbar';
-import Logo from 'components/logo';
 import { redirect } from 'next/navigation';
-import NavbarButton from './navbar-button';
+import AppShell from './app-shell';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -59,26 +57,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <body className='overflow-y-auto text-black bg-white dark:bg-darkBg dark:text-darkText'>
         <TRPCReactProvider headers={headers()}>
           <AppProvider defaultColorScheme={colorScheme} session={session}>
-            <>
-              <header
-                className='box-border sticky top-0 flex items-center justify-between flex-none w-full bg-red-600 shadow-md h-14'
-                style={{ zIndex: 516 }}
-              >
-                <div className='p-3'>
-                  <Logo />
-                </div>
-                {/* Navbar burger */}
-                <div className='lg:hidden'>
-                  <NavbarButton>
-                    <NavbarBody />
-                  </NavbarButton>
-                </div>
-              </header>
-              <div className='fixed flex-none w-72 top-14 max-lg:hidden'>
-                <NavbarBody />
-              </div>
-              <div className='p-6 lg:ml-72'>{children}</div>
-            </>
+            <AppShell>{children}</AppShell>
           </AppProvider>
         </TRPCReactProvider>
       </body>

@@ -7,7 +7,7 @@ import { ReactElement } from 'react';
 import useColorScheme from 'hooks/use-color-scheme';
 import useKeyDown from 'hooks/use-key-down';
 
-type StyleProviderProps = {
+type AppProviderProps = {
   children: ReactElement;
   defaultColorScheme: 'light' | 'dark';
   session: Session | null;
@@ -17,7 +17,7 @@ const AppProvider = ({
   children,
   defaultColorScheme,
   session,
-}: StyleProviderProps) => {
+}: AppProviderProps) => {
   const { toggleColorScheme } = useColorScheme(defaultColorScheme);
   // Allows user to toggle between light and dark mode by pressing `Control + y`
   useKeyDown('ctrl+y', () => toggleColorScheme());
