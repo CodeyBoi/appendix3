@@ -1,6 +1,6 @@
 'use client';
 
-import { SelectHTMLAttributes } from 'react';
+import { SelectHTMLAttributes, useState } from 'react';
 
 export type SelectItem = {
   value: string | number;
@@ -28,11 +28,37 @@ const Select = ({
   withAsterisk = false,
   disabled = false,
   error,
+  placeholder,
   ...props
 }: SelectProps) => {
+  const [selected, setSelected] = useState<string>('');
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelected(e.currentTarget.value);
     onChange?.(e.currentTarget.value);
   };
+
+  console.log({ options, placeholder });
+
+  const optionElements = [];
+  if (placeholder) {
+    optionElements.push(
+      <option value='' disabled={true}>
+        {placeholder}
+      </option>,
+    );
+  }
+
+  optionElements.push(
+    options.map((option) => (
+      <option className='text-black' key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    )),
+  );
+
+  console.log(optionElements);
+
   return (
     <div
       className={
@@ -54,17 +80,10 @@ const Select = ({
           (error ? ' ' + errorStyle : '')
         }
         onChange={handleChange}
+        value={selected}
         {...props}
       >
-        {options.map((option) => (
-          <option
-            className='text-black'
-            key={option.value}
-            value={option.value}
-          >
-            {option.label}
-          </option>
-        ))}
+        {optionElements}
       </select>
     </div>
   );

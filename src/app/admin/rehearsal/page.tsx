@@ -53,7 +53,7 @@ const AdminRehearsalsPage = async ({
       <div className='flex items-end gap-4'>
         <SelectParams label='Verksamhetsår' options={years} paramName='year' />
         {isAdmin && (
-          <Button href='/admin/rehearsal/new'>
+          <Button href='/admin/rehearsal/edit/new'>
             <IconPlus />
             Skapa repa
           </Button>

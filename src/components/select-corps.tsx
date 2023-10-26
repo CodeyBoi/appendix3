@@ -24,7 +24,7 @@ type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeSelf?: boolean;
 };
 
-const SelectCorps = (props: SelectCorpsProps) => {
+const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
   const [searchValue, setSearchValue] = React.useState('');
 
@@ -41,10 +41,10 @@ const SelectCorps = (props: SelectCorpsProps) => {
   // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery(
     {
-      id: props.defaultValue as string,
+      id: defaultValue as string,
     },
     {
-      enabled: !!props.defaultValue,
+      enabled: !!defaultValue,
     },
   );
 
@@ -80,10 +80,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
   const nothingFound =
     corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
 
-  if (
-    props.defaultValue &&
-    !corpsiiData?.find((c) => c.value === props.defaultValue)
-  ) {
+  if (defaultValue && !corpsiiData?.find((c) => c.value === defaultValue)) {
     return null;
   }
 

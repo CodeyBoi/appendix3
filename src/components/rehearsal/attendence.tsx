@@ -1,18 +1,19 @@
-import { ActionIcon } from '@mantine/core';
+'use client';
+
 import { Rehearsal } from '@prisma/client';
 import { IconPlus } from '@tabler/icons';
 import dayjs from 'dayjs';
 import React from 'react';
-import { trpc } from 'utils/trpc';
 import SelectCorps from 'components/select-corps';
 import RehearsalCheckbox from 'components/rehearsal/checkbox';
+import { api } from 'trpc/react';
 
 type RehearsalAttendenceProps = {
   rehearsal: Rehearsal;
 };
 
 const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
-  const utils = trpc.useUtils();
+  const utils = api.useUtils();
 
   const start = dayjs(rehearsal?.date ?? new Date())
     .subtract(6, 'week')
@@ -23,16 +24,14 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
     .toDate();
   const [corpsId, setCorpsId] = React.useState('');
 
-  const { data: attendence } = trpc.rehearsal.getAttendedRehearsalList.useQuery(
-    {
-      id: rehearsal.id,
-      start,
-      end,
-      typeId: rehearsal.typeId,
-    },
-  );
+  const { data: attendence } = api.rehearsal.getAttendedRehearsalList.useQuery({
+    id: rehearsal.id,
+    start,
+    end,
+    typeId: rehearsal.typeId,
+  });
 
-  const mutation = trpc.rehearsal.updateAttendance.useMutation({
+  const mutation = api.rehearsal.updateAttendance.useMutation({
     onSuccess: () => {
       utils.rehearsal.getAttendedRehearsalList.invalidate({
         id: rehearsal.id,
@@ -51,7 +50,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
       <div className='flex space-x-2'>
         <SelectCorps
           error={
-            selectedAlreadyAttendedCorps ? 'Corps har redan närvaro' : null
+            selectedAlreadyAttendedCorps ? 'Corps har redan närvaro' : undefined
           }
           placeholder='Lägg till närvaro...'
           value={corpsId}
@@ -60,7 +59,8 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
             setCorpsId(corpsId);
           }}
         />
-        <ActionIcon
+        <button
+          className='p-1 text-red-600 transition-colors rounded hover:bg-red-600/10'
           onClick={() => {
             if (!corpsId) return;
             mutation.mutate({
@@ -69,11 +69,12 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
               attended: true,
             });
           }}
-          loading={mutation.isLoading}
-          disabled={selectedAlreadyAttendedCorps || !corpsId}
+          disabled={
+            selectedAlreadyAttendedCorps || !corpsId || mutation.isLoading
+          }
         >
           <IconPlus />
-        </ActionIcon>
+        </button>
       </div>
       <div className='flex flex-col space-y-2'>
         {attendence?.corpsiiBySection &&

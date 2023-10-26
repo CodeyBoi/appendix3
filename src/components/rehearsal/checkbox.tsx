@@ -1,8 +1,8 @@
 import { Corps, Rehearsal } from '@prisma/client';
 import React from 'react';
-import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
 import Checkbox from 'components/input/checkbox';
+import { api } from 'trpc/react';
 
 type RehearsalCheckboxProps = {
   rehearsal: Rehearsal;
@@ -15,8 +15,8 @@ const RehearsalCheckbox = ({
   corps,
   attended,
 }: RehearsalCheckboxProps) => {
-  const utils = trpc.useUtils();
-  const mutation = trpc.rehearsal.updateAttendance.useMutation({
+  const utils = api.useUtils();
+  const mutation = api.rehearsal.updateAttendance.useMutation({
     onSuccess: () => {
       utils.rehearsal.getAttendence.invalidate({
         id: rehearsal.id,

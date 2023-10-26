@@ -21,7 +21,7 @@ type QuoteFormProps = {
 
 const QuoteForm = ({ quote }: QuoteFormProps) => {
   const router = useRouter();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const newQuote = !quote;
 
@@ -67,7 +67,6 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
           <SelectCorps
             label='Vem sade detta?'
             placeholder='Välj corps...'
-            withAsterisk
             defaultValue={quote?.saidByCorpsId}
             {...form.getInputProps('saidByCorpsId')}
           />
