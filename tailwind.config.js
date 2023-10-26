@@ -6,6 +6,7 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
+      sans: ['Bahnschrift', 'sans-serif'],
       display: ['Bahnschrift', 'sans-serif'],
       body: ['Bahnschrift', 'sans-serif'],
     },
