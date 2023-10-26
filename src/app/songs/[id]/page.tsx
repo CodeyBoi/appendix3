@@ -1,5 +1,5 @@
-import Loading from 'components/loading';
 import Song from 'components/song';
+import SongSkeleton from 'components/song/skeleton';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
 
@@ -23,7 +23,7 @@ export const generateMetadata = async ({
 const SongPage = ({ params }: { params: { id: string } }) => {
   const id = params.id;
   return (
-    <Suspense fallback={<Loading msg='Hämtar text...' />}>
+    <Suspense fallback={<SongSkeleton />}>
       <Song song={id} />
     </Suspense>
   );
