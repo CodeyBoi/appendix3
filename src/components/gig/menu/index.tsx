@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu } from '@mantine/core';
+import { useState } from 'react';
 
 type GigMenuProps = {
   target: React.ReactNode;
@@ -8,11 +8,20 @@ type GigMenuProps = {
 };
 
 const GigMenu = ({ target, dropdown }: GigMenuProps) => {
+  const [open, setOpen] = useState(false);
   return (
-    <Menu shadow='md' width={200} position='left-start' withArrow>
-      <Menu.Target>{target}</Menu.Target>
-      <Menu.Dropdown>{dropdown}</Menu.Dropdown>
-    </Menu>
+    <div>
+      <div onClick={() => setOpen(!open)}>{target}</div>
+      <div className='relative'>
+        <div
+          className={`absolute rounded shadow z-10 bg-white dark:bg-darkBg transition-opacity -translate-x-full ${
+            open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          {dropdown}
+        </div>
+      </div>
+    </div>
   );
 };
 

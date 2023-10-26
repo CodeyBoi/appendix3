@@ -1,3 +1,5 @@
+'use client';
+
 import { MultiSelect, MultiSelectProps } from '@mantine/core';
 import { useMemo } from 'react';
 import { trpc } from '../utils/trpc';
