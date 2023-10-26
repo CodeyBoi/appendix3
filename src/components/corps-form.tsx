@@ -31,7 +31,7 @@ interface AdminCorpsProps {
 }
 
 const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const creatingCorps = corpsId === 'new';
   const [loading, setLoading] = useState(!creatingCorps);
   const [submitting, setSubmitting] = useState(false);
