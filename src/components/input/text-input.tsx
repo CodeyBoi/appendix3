@@ -26,8 +26,6 @@ const errorColorVariants = {
   white: 'border-white dark:border-white text-white dark:text-white',
 };
 
-const floatingLabelClass = 'scale-75 -translate-y-2.5';
-
 const TextInput = ({
   label,
   withAsterisk,
@@ -91,7 +89,7 @@ const TextInput = ({
             className={
               'flex gap-1 cursor-text transition-transform origin-left duration-100' +
               (focused || value !== ''
-                ? ' ' + floatingLabelClass
+                ? ' ' + 'scale-75 -translate-y-2.5'
                 : ' ' + 'text-gray-500') +
               (variant === 'login' ? ' ' + 'text-white' : '')
             }
