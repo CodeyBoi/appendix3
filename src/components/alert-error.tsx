@@ -1,27 +1,54 @@
 'use client';
 
-import React from 'react';
-import { IconAlertTriangle } from '@tabler/icons';
-import { Alert } from '@mantine/core';
+import React, { useEffect } from 'react';
+import { IconAlertTriangle, IconX } from '@tabler/icons';
 
-const AlertError = ({
-  title = 'Något gick fel!',
-  withCloseButton,
-  msg,
-}: {
+export type AlertErrorProps = {
+  icon?: React.ReactNode;
   title?: string;
   withCloseButton?: boolean;
-  msg: string;
-}) => {
+  msg?: string;
+  visible: boolean;
+};
+
+const AlertError = ({
+  icon = <IconAlertTriangle />,
+  title = 'Något gick fel!',
+  withCloseButton = false,
+  msg,
+  visible = false,
+}: AlertErrorProps) => {
+  const [show, setShow] = React.useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        setShow(true);
+      }, 100);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    setShow(visible);
+  }, [visible]);
+
   return (
-    <Alert
-      withCloseButton={withCloseButton}
-      color='red'
-      icon={<IconAlertTriangle />}
-      title={title}
+    <div
+      className={`fixed right-4 transition-all top-20 flex flex-col items-start gap-2 p-4 text-base text-white bg-red-600 rounded-md ${
+        show ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
     >
-      {msg}
-    </Alert>
+      <div className='flex items-start w-full gap-2'>
+        <div className='p-0.5'>{icon}</div>
+        <div className='flex-grow font-bold'>{title}</div>
+        {withCloseButton && (
+          <button type='button' onClick={() => setShow(false)}>
+            <IconX />
+          </button>
+        )}
+      </div>
+      {msg && <div className='pl-8'>{msg}</div>}
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ type SwitchProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'onChange' | 'checked' | 'defaultChecked' | 'value'
 > & {
-  onChange?: (value?: boolean) => void;
+  onChange?: ((value: boolean) => void) | (() => void);
   defaultChecked?: boolean;
   className?: string;
   label?: string;

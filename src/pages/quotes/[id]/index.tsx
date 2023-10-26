@@ -26,9 +26,10 @@ const QuotePage = () => {
       {!newQuote && !quote && failureCount < MAX_TRIES && (
         <Loading msg='Laddar citat...' />
       )}
-      {!newQuote && failureCount >= MAX_TRIES && (
-        <AlertError msg='Kunde inte hämta citat. Har du mixtrat med URL:en?' />
-      )}
+      <AlertError
+        msg='Kunde inte hämta citat. Har du mixtrat med URL:en?'
+        visible={!newQuote && failureCount >= MAX_TRIES}
+      />
       {!newQuote && quote && <QuoteForm quote={quote} />}
       {newQuote && <QuoteForm />}
     </div>

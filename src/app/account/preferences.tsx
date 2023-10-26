@@ -1,6 +1,5 @@
 'use client';
 
-import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React, { useEffect } from 'react';
 import { trpc } from 'utils/trpc';
@@ -9,6 +8,7 @@ import FormLoadingOverlay from 'components/form-loading-overlay';
 import TextInput from 'components/input/text-input';
 import TextArea from 'components/input/text-area';
 import useColorScheme from 'hooks/use-color-scheme';
+import Switch from 'components/input/switch';
 
 const initialValues = {
   firstName: '',
@@ -66,6 +66,7 @@ const AccountPreferences = () => {
     },
   });
   const handleSubmit = async (values: FormValues) => {
+    console.log(values);
     setSubmitting(true);
     await mutation.mutateAsync(values);
     form.resetTouched();
@@ -86,7 +87,6 @@ const AccountPreferences = () => {
           <div className='flex flex-col space-y-2'>
             <h3>Allmänt</h3>
             <Switch
-              pl='xs'
               label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
               checked={colorScheme === 'dark'}
               onChange={() => {

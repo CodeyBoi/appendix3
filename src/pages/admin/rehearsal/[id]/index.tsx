@@ -24,9 +24,10 @@ const AdminRehearsal = () => {
       {!rehearsal && failureCount < MAX_TRIES && (
         <Loading msg='Laddar repa...' />
       )}
-      {failureCount >= MAX_TRIES && (
-        <AlertError msg='Kunde inte hämta repa. Har du mixtrat med URL:en?' />
-      )}
+      <AlertError
+        visible={failureCount >= MAX_TRIES}
+        msg='Kunde inte hämta repa. Har du mixtrat med URL:en?'
+      />
       {rehearsal && <Rehearsal rehearsal={rehearsal} />}
     </div>
   );

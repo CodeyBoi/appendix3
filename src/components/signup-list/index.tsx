@@ -1,15 +1,15 @@
 'use client';
 
-import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
-import { trpc } from '../../utils/trpc';
-import Button from '../input/button';
-import Loading from '../loading';
-import MultiSelectCorps from '../multi-select-corps';
+import { trpc } from 'utils/trpc';
+import Button from 'components/input/button';
+import Loading from 'components/loading';
+import MultiSelectCorps from 'components/multi-select-corps';
 import Entry from './entry';
+import Switch from 'components/input/switch';
 
 interface SignupListProps {
   gigId: string;
@@ -296,8 +296,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
           <Switch
             label='Redigera anmälningar'
             checked={editMode}
-            onChange={(event) => {
-              setEditMode(event.currentTarget.checked);
+            onChange={(val) => {
+              setEditMode(val);
               utils.gig.getSignups.invalidate({ gigId });
             }}
           />
