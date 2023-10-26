@@ -1,8 +1,8 @@
 'use client';
 
-import { Select, SelectProps } from '@mantine/core';
 import React, { useMemo } from 'react';
-import { trpc } from '../utils/trpc';
+import { trpc } from 'utils/trpc';
+import SelectSearch, { SelectSearchProps } from './input/search-select';
 
 const MIN_SEARCH_LENGTH = 2;
 
@@ -20,7 +20,9 @@ export const formatName = (c: {
   return `${corpsNumber} ${name}`;
 };
 
-type SelectCorpsProps = Omit<SelectProps, 'data'> & { excludeSelf?: boolean };
+type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
+  excludeSelf?: boolean;
+};
 
 const SelectCorps = (props: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
@@ -78,11 +80,17 @@ const SelectCorps = (props: SelectCorpsProps) => {
   const nothingFound =
     corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
 
-  const selectProps: SelectProps = {
+  if (
+    props.defaultValue &&
+    !corpsiiData?.find((c) => c.value === props.defaultValue)
+  ) {
+    return null;
+  }
+
+  const selectProps: SelectSearchProps = {
     ...props,
-    searchable: true,
-    clearable: true,
-    data: corpsiiData ?? [],
+    options: corpsiiData ?? [],
+    label: props.label ?? 'Sök...',
     placeholder:
       queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading'
         ? 'Laddar corps...'
@@ -96,7 +104,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
     onSearchChange,
   };
 
-  return <Select zIndex={516} {...selectProps} />;
+  return <SelectSearch {...selectProps} />;
 };
 
 export default SelectCorps;

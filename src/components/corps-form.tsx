@@ -147,11 +147,13 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             }
             {...form.getInputProps('otherInstruments')}
           />
-          <TextInput
-            withAsterisk
-            label='Email'
-            {...form.getInputProps('email')}
-          />
+          <span className='self-end'>
+            <TextInput
+              withAsterisk
+              label='Email'
+              {...form.getInputProps('email')}
+            />
+          </span>
           <Select
             label='Behörighetsroll'
             placeholder='Välj behörighet...'

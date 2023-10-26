@@ -37,6 +37,8 @@ const TextInput = ({
   errorColor = 'red',
   defaultValue,
   value: propValue,
+  onFocus,
+  onBlur,
   ...props
 }: TextInputProps) => {
   const [value, setValue] = useState('');
@@ -60,8 +62,18 @@ const TextInput = ({
     onChange?.(e.currentTarget.value);
   };
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(false);
+    onBlur?.(e);
+  };
+
   return (
-    <div className='flex flex-col self-end flex-shrink min-w-0'>
+    <div className='flex flex-col flex-shrink min-w-0'>
       <div
         className={
           'relative flex items-center bg-transparent border rounded shadow-sm h-11 dark:border-neutral-800' +
@@ -70,9 +82,9 @@ const TextInput = ({
       >
         {icon && <div className='absolute px-2'>{icon}</div>}
         <input
-          value={propValue ?? value}
           type='text'
           {...props}
+          value={value}
           className={
             'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300 pb-1 pt-5 pointer-events-auto' +
               (icon ? ' pr-2 pl-9' : ' px-2') +
@@ -80,8 +92,8 @@ const TextInput = ({
               props.className ?? ''
           }
           onChange={handleChange}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
         <div className='absolute left-0 flex pointer-events-none'>
           <div className={icon ? 'w-9' : 'w-2'} />
