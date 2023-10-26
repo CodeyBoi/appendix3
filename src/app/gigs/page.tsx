@@ -4,14 +4,17 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
-import GigsYearSelect from './year-select';
 import { IconPlus } from '@tabler/icons';
 import Tabs from 'components/input/tabs';
 import GigList from './list';
+import SelectParams from 'components/input/select-params';
+import { SelectItem } from 'components/input/select';
 
 export const metadata: Metadata = {
   title: 'Spelningar',
 };
+
+const startYear = 2010;
 
 const tabs = [
   { value: 'my', label: 'Mina spelningar' },
@@ -36,14 +39,30 @@ const GigsPage = async ({
   ) {
     redirect(`/gigs?year=${currentYear}&tab=my`);
   }
+
+  const endYear = new Date().getFullYear();
+  const years = [] as SelectItem[];
+  for (let i = endYear; i >= startYear; i--) {
+    years.push({
+      value: i.toString(),
+      label: i.toString(),
+    });
+  }
+
   const corps = await api.corps.getSelf.query();
   const isAdmin = corps?.role?.name === 'admin';
+
   return (
     <div className='flex flex-col max-w-fit'>
       <div className='flex flex-col gap-2'>
         <h2>Spelningar</h2>
         <div className='flex items-end gap-4'>
-          <GigsYearSelect defaultValue={year} />
+          <SelectParams
+            label='År'
+            options={years}
+            paramName='year'
+            defaultValue={year}
+          />
           {isAdmin && (
             <Button href='/admin/gig/new'>
               <IconPlus />
