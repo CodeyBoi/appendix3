@@ -66,7 +66,6 @@ const AccountPreferences = () => {
     },
   });
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
     setSubmitting(true);
     await mutation.mutateAsync(values);
     form.resetTouched();

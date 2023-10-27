@@ -374,7 +374,6 @@ export const corpsRouter = router({
     .input(z.string())
     .query(async ({ ctx, input }) => {
       const { req, res } = { req: ctx.req, res: ctx.res };
-      console.log('Setting color scheme to ', input);
       setCookie('tw-color-scheme', input, {
         req,
         res,

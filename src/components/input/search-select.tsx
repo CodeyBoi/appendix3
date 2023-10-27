@@ -66,7 +66,6 @@ function SelectSearch(props: SelectSearchProps) {
   }
 
   if (!value) {
-    console.log({ options, valueProp, defaultValue });
     if (valueProp && !defaultValue) {
       setValue(valueProp);
       const searchValue =

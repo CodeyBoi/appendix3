@@ -38,8 +38,6 @@ const Select = ({
     onChange?.(e.currentTarget.value);
   };
 
-  console.log({ options, placeholder });
-
   const optionElements = [];
   if (placeholder) {
     optionElements.push(
@@ -56,8 +54,6 @@ const Select = ({
       </option>
     )),
   );
-
-  console.log(optionElements);
 
   return (
     <div
