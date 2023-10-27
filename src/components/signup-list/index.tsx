@@ -2,7 +2,6 @@
 
 import { useForm } from '@mantine/form';
 import { IconUser } from '@tabler/icons';
-import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
@@ -64,7 +63,6 @@ const toPlural = (instrument: string) => {
 };
 
 const SignupList = ({ gigId }: SignupListProps) => {
-  const queryClient = useQueryClient();
   const utils = api.useUtils();
 
   const { data: gig } = api.gig.getWithId.useQuery({ gigId });

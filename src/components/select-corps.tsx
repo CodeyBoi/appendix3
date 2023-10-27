@@ -25,7 +25,11 @@ type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeIds?: string[];
 };
 
-const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
+const SelectCorps = ({
+  defaultValue,
+  excludeIds,
+  ...props
+}: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
   const [searchValue, setSearchValue] = React.useState('');
 
@@ -64,7 +68,7 @@ const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
           .filter(
             (c) =>
               (!initialCorps || initialCorps.id !== c.id) &&
-              (!props.excludeIds || !props.excludeIds.includes(c.id)),
+              (!excludeIds || !excludeIds.includes(c.id)),
           )
           .map((c) => ({
             label: formatName(c),
@@ -73,7 +77,7 @@ const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
       );
     }
     return data;
-  }, [corpsii, initialCorps]);
+  }, [corpsii, initialCorps, excludeIds]);
 
   const onSearchChange = (value: string) => {
     setSearchValue(value);
