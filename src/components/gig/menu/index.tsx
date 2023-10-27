@@ -11,7 +11,13 @@ const GigMenu = ({ target, dropdown }: GigMenuProps) => {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <div onClick={() => setOpen(!open)}>{target}</div>
+      <div
+        onClick={() => setOpen(!open)}
+        onBlur={() => setOpen(false)}
+        className='cursor-pointer'
+      >
+        {target}
+      </div>
       <div className='relative'>
         <div
           className={`absolute rounded shadow z-10 bg-white dark:bg-darkBg transition-opacity -translate-x-full ${
