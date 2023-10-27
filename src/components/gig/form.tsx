@@ -7,7 +7,7 @@ import { IconCalendar, IconClock } from '@tabler/icons';
 import React, { useState } from 'react';
 import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
-import MultiSelectCorps from '../multi-select-corps';
+import MultiSelect from '../multi-select';
 import { useRouter } from 'next/navigation';
 import Select from 'components/input/select';
 import TextInput from 'components/input/text-input';
@@ -205,7 +205,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           />
           <div className='flex flex-col col-span-1 md:col-span-2 focus-visible:ring-red-600'>
             <div>Dölj spelning</div>
-            <MultiSelectCorps
+            <MultiSelect
               placeholder='Välj corps...'
               className='outline-none focus-visible:outline-none'
               options={corpsiiOptions ?? []}

@@ -22,6 +22,7 @@ export const formatName = (c: {
 
 type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeSelf?: boolean;
+  excludeIds?: string[];
 };
 
 const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
@@ -60,7 +61,11 @@ const SelectCorps = ({ defaultValue, ...props }: SelectCorpsProps) => {
     if (corpsii) {
       return data.concat(
         corpsii
-          .filter((c) => !initialCorps || initialCorps.id !== c.id)
+          .filter(
+            (c) =>
+              (!initialCorps || initialCorps.id !== c.id) &&
+              (!props.excludeIds || !props.excludeIds.includes(c.id)),
+          )
           .map((c) => ({
             label: formatName(c),
             value: c.id,

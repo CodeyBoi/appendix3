@@ -18,7 +18,7 @@ type MultiSelectCorpsProps = {
   placeholder?: string;
 };
 
-const MultiSelectCorps = ({
+const MultiSelect = ({
   options,
   value,
   defaultValue: defaultValueProp,
@@ -52,10 +52,8 @@ const MultiSelectCorps = ({
       noOptionsMessage={() => 'Inga corps hittades'}
       onChange={handleChange}
       placeholder={placeholder}
-      unstyled
-      classNames={{}}
     />
   );
 };
 
-export default MultiSelectCorps;
+export default MultiSelect;

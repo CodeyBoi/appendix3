@@ -1,6 +1,6 @@
 import React from 'react';
 import { api } from 'trpc/server';
-import MultiSelectCorps from './multi-select-corps';
+import MultiSelect from './multi-select';
 
 type OptionType = {
   label: string;
@@ -28,7 +28,7 @@ const MultiSelectCorpsFetch = async ({
   defaultValue,
 }: MultiSelectCorpsProps) => {
   const options = await fetchOptions();
-  return <MultiSelectCorps options={options} defaultValue={defaultValue} />;
+  return <MultiSelect options={options} defaultValue={defaultValue} />;
 };
 
 export default MultiSelectCorpsFetch;

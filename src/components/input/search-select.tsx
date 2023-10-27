@@ -176,7 +176,7 @@ function SelectSearch(props: SelectSearchProps) {
       />
       <div className='relative'>
         <div
-          className={`fixed z-20 flex flex-col overflow-y-auto bg-white border border-solid dark:border-neutral-700 rounded-b max-w-max max-h-96 dark:bg-darkBg ${
+          className={`absolute z-20 flex flex-col overflow-y-auto bg-white border border-solid dark:border-neutral-700 rounded-b max-w-max max-h-96 dark:bg-darkBg ${
             focused ? '' : 'hidden'
           }`}
         >

@@ -1,6 +1,5 @@
 'use client';
 
-import { MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { trpc } from 'utils/trpc';
@@ -8,6 +7,7 @@ import FormLoadingOverlay from 'components/form-loading-overlay';
 import Select from 'components/input/select';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
+import MultiSelect from './multi-select';
 
 const initialValues = {
   firstName: '',
@@ -141,8 +141,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <MultiSelect
             label='Övriga instrument'
             placeholder='Välj instrument...'
-            clearable
-            data={
+            options={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
             {...form.getInputProps('otherInstruments')}
