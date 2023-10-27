@@ -3,7 +3,6 @@ import Document, {
   DocumentContext,
   Head,
   Html,
-  Main,
   NextScript,
 } from 'next/document';
 
@@ -54,7 +53,7 @@ export default class _Document extends Document {
           <meta name='theme-color' content='#B80900'></meta>
         </Head>
         <body>
-          <Main />
+          <main />
           <NextScript />
         </body>
       </Html>

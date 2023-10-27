@@ -77,7 +77,7 @@ const Login = () => {
   }, [router, session]);
 
   return (
-    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka'>
+    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -12,6 +12,7 @@ import 'styles/globals.css';
 import cookieParser from 'utils/cookie-parser';
 import { trpc } from 'utils/trpc';
 import useKeyDown from 'hooks/use-key-down';
+import { bahnschrift } from 'app/fonts';
 
 interface CustomAppProps {
   session: Session | null;
@@ -27,7 +28,7 @@ const MyApp = ({
   useKeyDown('ctrl+y', () => toggleColorScheme());
 
   return (
-    <>
+    <div className={bahnschrift.variable}>
       <SessionProvider session={session}>
         <Head>
           <title>Blindtarmen</title>
@@ -42,7 +43,7 @@ const MyApp = ({
         </AppContainer>
       </SessionProvider>
       <ReactQueryDevtools />
-    </>
+    </div>
   );
 };
 

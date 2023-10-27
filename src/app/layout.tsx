@@ -1,6 +1,5 @@
 import 'dayjs/locale/sv';
 import { Metadata } from 'next';
-import localFont from 'next/font/local';
 import { getServerSession } from 'next-auth';
 import { cookies, headers } from 'next/headers';
 import { ReactElement } from 'react';
@@ -10,6 +9,7 @@ import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
 import { redirect } from 'next/navigation';
 import AppShell from './app-shell';
+import { bahnschrift, castelar } from 'app/fonts';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -19,18 +19,6 @@ export const metadata: Metadata = {
 type RootLayoutProps = {
   children: ReactElement;
 };
-
-// Defining fonts
-const bahnschrift = localFont({
-  src: './bahnschrift.woff2',
-  variable: '--font-bahnschrift',
-});
-
-const castelar = localFont({
-  src: './castelar.woff2',
-  variable: '--font-castelar',
-});
-//
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
   const cookiesList = cookies();

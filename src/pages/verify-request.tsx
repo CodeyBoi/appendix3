@@ -34,7 +34,7 @@ const VerifyRequest = ({ unverifiedToken }: { unverifiedToken: string }) => {
     },
   });
   return (
-    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka'>
+    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
       <div className='p-4 bg-red-600 rounded shadow-2xl'>
         <h4 className='max-w-3xl text-center text-white'>
           En inloggningslänk har skickats till din mailadress, när du klickat på
