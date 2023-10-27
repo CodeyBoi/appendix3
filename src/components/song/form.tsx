@@ -40,12 +40,12 @@ const SongForm = ({ song }: SongFormProps) => {
   });
 
   const mutation = api.song.upsert.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ id }) => {
       if (song) {
-        utils.song.get.invalidate({ id: song.id });
+        utils.song.get.invalidate({ id });
       }
       utils.song.getAll.invalidate();
-      router.push(`/songs/${song?.id ?? ''}`);
+      router.push(`/songs/${id}`);
     },
   });
   const handleSubmit = async (values: FormValues) => {
