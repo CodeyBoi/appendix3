@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus } from '@tabler/icons-react';
 import Tabs from 'components/input/tabs';
 import GigList from './list';
 import SelectParams from 'components/input/select-params';

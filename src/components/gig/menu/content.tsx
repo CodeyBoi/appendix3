@@ -4,7 +4,7 @@ import {
   IconCalendarPlus,
   IconEdit,
   IconApple,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';

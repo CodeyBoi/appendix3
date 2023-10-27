@@ -1,5 +1,5 @@
 import { Rehearsal as RehearsalPrisma } from '@prisma/client';
-import { IconEdit } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons-react';
 import React from 'react';
 import Button from '../input/button';
 import RehearsalAttendence from './attendence';

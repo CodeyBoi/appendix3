@@ -9,7 +9,7 @@ import {
   IconQuote,
   IconSpeakerphone,
   IconUser,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
@@ -40,7 +40,7 @@ const userTab: NavbarLinkGroup = {
       icon: <IconClipboard />,
     },
     { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
-    { label: 'Sånger', href: '/songs', icon: <IconPencil /> },
+    { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
     { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
   ],
@@ -57,7 +57,7 @@ const adminTab: NavbarLinkGroup = {
     {
       label: 'Spelningar',
       href: '/admin/gigs',
-      icon: <IconMusic />,
+      icon: <IconSpeakerphone />,
     },
     {
       label: 'Repor',

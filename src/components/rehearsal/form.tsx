@@ -2,7 +2,7 @@
 
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
-import { IconCalendar, IconSend } from '@tabler/icons';
+import { IconCalendar, IconSend } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import Select from 'components/input/select';
 import Button from 'components/input/button';

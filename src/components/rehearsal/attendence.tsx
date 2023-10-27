@@ -1,7 +1,7 @@
 'use client';
 
 import { Rehearsal } from '@prisma/client';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React from 'react';
 import SelectCorps from 'components/select-corps';

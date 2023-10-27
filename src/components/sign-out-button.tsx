@@ -1,9 +1,9 @@
 'use client';
 
-import { IconLogout } from '@tabler/icons';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Button from './input/button';
+import { IconLogout } from '@tabler/icons-react';
 
 const SignOutButton = () => {
   const router = useRouter();

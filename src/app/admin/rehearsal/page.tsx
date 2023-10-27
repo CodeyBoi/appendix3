@@ -1,4 +1,4 @@
-import { IconPlus } from '@tabler/icons';
+import { IconPlus } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import { SelectItem } from 'components/input/select';
 import SelectParams from 'components/input/select-params';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from '@mantine/form';
-import { IconSend } from '@tabler/icons';
+import { IconSend } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';

@@ -8,7 +8,7 @@ import { getServerAuthSession } from 'server/common/get-server-auth-session';
 import { trpc } from 'utils/trpc';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
-import { IconMail } from '@tabler/icons';
+import { IconMail } from '@tabler/icons-react';
 
 const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date('2023-03-01');
 

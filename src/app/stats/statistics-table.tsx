@@ -1,4 +1,4 @@
-import { IconMoodNerd } from '@tabler/icons';
+import { IconMoodNerd } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
 import Button from 'components/input/button';

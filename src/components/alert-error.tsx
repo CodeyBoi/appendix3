@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { IconAlertTriangle, IconX } from '@tabler/icons';
+import { IconAlertTriangle, IconX } from '@tabler/icons-react';
 
 export type AlertErrorProps = {
   icon?: React.ReactNode;

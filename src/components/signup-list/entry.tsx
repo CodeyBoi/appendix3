@@ -1,4 +1,4 @@
-import { IconX } from '@tabler/icons';
+import { IconX } from '@tabler/icons-react';
 import Checkbox from 'components/input/checkbox';
 
 interface SignupEntryProps {

@@ -6,7 +6,7 @@ import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
 import { Gig as PrismaGig } from '@prisma/client';
-import { IconDotsVertical } from '@tabler/icons';
+import { IconDotsVertical } from '@tabler/icons-react';
 import GigMenuContent from './menu/content';
 
 type GigId = string;

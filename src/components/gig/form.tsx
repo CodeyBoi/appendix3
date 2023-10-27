@@ -2,7 +2,7 @@
 
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
-import { IconCalendar, IconClock } from '@tabler/icons';
+import { IconCalendar, IconClock } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';

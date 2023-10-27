@@ -1,9 +1,9 @@
 'use client';
 
 import TextInput from 'components/input/text-input';
-import { IconPlus, IconSearch } from '@tabler/icons';
 import Link from 'next/link';
 import { useSearchParamsState } from 'hooks/use-search-params-state';
+import { IconMusicPlus, IconSearch } from '@tabler/icons-react';
 
 const SongSearch = () => {
   const [search, setSearch] = useSearchParamsState('search', '');
@@ -20,7 +20,7 @@ const SongSearch = () => {
       <Link href='/admin/songs/new'>
         <div className='scale-150'>
           <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
-            <IconPlus />
+            <IconMusicPlus />
           </div>
         </div>
       </Link>

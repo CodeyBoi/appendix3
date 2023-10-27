@@ -1,7 +1,7 @@
 'use client';
 
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons';
+import { IconUser } from '@tabler/icons-react';
 import React, { useMemo, useState } from 'react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';

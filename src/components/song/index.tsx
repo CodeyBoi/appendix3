@@ -1,6 +1,6 @@
 import { Song } from '@prisma/client';
 // import { trpc } from '../../utils/trpc';
-import { IconPencil } from '@tabler/icons';
+import { IconPencil } from '@tabler/icons-react';
 import Link from 'next/link';
 import { api } from 'trpc/server';
 
