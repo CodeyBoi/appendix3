@@ -1,6 +1,5 @@
 'use client';
 
-import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
 import { IconCalendar, IconSend } from '@tabler/icons';
@@ -10,6 +9,7 @@ import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import Checkbox from 'components/input/checkbox';
 import { api } from 'trpc/react';
+import DatePicker from 'components/input/date-picker';
 
 const defaultValues = {
   title: '',
@@ -93,12 +93,12 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
           {...form.getInputProps('title')}
         />
         <DatePicker
-          label='Datum'
-          withAsterisk
-          placeholder='Välj datum'
-          icon={<IconCalendar />}
-          clearable={false}
-          {...form.getInputProps('date')}
+        // label='Datum'
+        // withAsterisk
+        // placeholder='Välj datum'
+        // icon={<IconCalendar />}
+        // clearable={false}
+        // {...form.getInputProps('date')}
         />
         <Select
           withAsterisk

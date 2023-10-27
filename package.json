@@ -16,7 +16,6 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
-    "@mantine/dates": "^5.6.0",
     "@mantine/form": "^5.6.3",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "5",

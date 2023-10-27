@@ -1,6 +1,5 @@
 'use client';
 
-import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
 import { IconCalendar, IconClock } from '@tabler/icons';
@@ -15,6 +14,7 @@ import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
 import NumberInput from 'components/input/number-input';
 import Checkbox from 'components/input/checkbox';
+import DatePicker from 'components/input/date-picker';
 import { api } from 'trpc/react';
 
 interface GigFormProps {
@@ -143,12 +143,12 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             {...form.getInputProps('points')}
           />
           <DatePicker
-            withAsterisk
-            label='Spelningsdatum'
-            placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={false}
-            {...form.getInputProps('date')}
+          // withAsterisk
+          // label='Spelningsdatum'
+          // placeholder='Välj datum...'
+          // icon={<IconCalendar />}
+          // clearable={false}
+          // {...form.getInputProps('date')}
           />
           <TextInput
             label='Plats'
@@ -178,20 +178,20 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             />
           </div>
           <DatePicker
-            label='Anmälningsstart'
-            description='Lämna tom för att tillåta anmälan omedelbart'
-            placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={true}
-            {...form.getInputProps('signupStart')}
+          // label='Anmälningsstart'
+          // description='Lämna tom för att tillåta anmälan omedelbart'
+          // placeholder='Välj datum...'
+          // icon={<IconCalendar />}
+          // clearable={true}
+          // {...form.getInputProps('signupStart')}
           />
           <DatePicker
-            label='Anmälningsstopp'
-            description='Lämna tom för att tillåta anmälan tills spelningen börjar'
-            placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={true}
-            {...form.getInputProps('signupEnd')}
+          // label='Anmälningsstopp'
+          // description='Lämna tom för att tillåta anmälan tills spelningen börjar'
+          // placeholder='Välj datum...'
+          // icon={<IconCalendar />}
+          // clearable={true}
+          // {...form.getInputProps('signupEnd')}
           />
           <TextInput
             label='Kryssruta 1'
