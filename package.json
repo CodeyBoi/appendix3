@@ -36,8 +36,10 @@
     "next-auth": "^4.12.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-select": "^5.7.7",
     "recharts": "^2.9.0",
     "superjson": "1.9.1",
+    "tailwind-merge": "^1.14.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {

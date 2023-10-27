@@ -15,6 +15,7 @@ import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
 import NumberInput from 'components/input/number-input';
 import Checkbox from 'components/input/checkbox';
+import { api } from 'trpc/react';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -47,6 +48,18 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   const [submitting, setSubmitting] = useState(false);
 
   const router = useRouter();
+
+  const { data: corpsii } = api.corps.getMany.useQuery({});
+  const corpsiiOptions = corpsii?.map((c) => ({
+    label:
+      (c.number ? '#' + c.number : 'p.e.') +
+      ' ' +
+      c.firstName +
+      ' ' +
+      (c.nickName ? '"' + c.nickName + '" ' : '') +
+      c.lastName,
+    value: c.id,
+  }));
 
   const form = useForm<FormValues>({
     initialValues: newGig
@@ -100,7 +113,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   };
 
   return (
-    <FormLoadingOverlay visible={submitting}>
+    <FormLoadingOverlay visible={!corpsiiOptions || submitting}>
       <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
         <div className='grid items-stretch grid-cols-1 align-bottom gap-x-4 gap-y-2 md:grid-cols-2'>
           <span className='self-end'>
@@ -190,13 +203,13 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
-          <div className='col-span-1 md:col-span-2'>
+          <div className='flex flex-col col-span-1 md:col-span-2 focus-visible:ring-red-600'>
+            <div>Dölj spelning</div>
             <MultiSelectCorps
-              maxDropdownHeight={260}
-              label='Dölj spelning'
-              disabled={form.values.isPublic}
+              placeholder='Välj corps...'
+              className='outline-none focus-visible:outline-none'
+              options={corpsiiOptions ?? []}
               defaultValue={form.values.hiddenFor}
-              description='Spelningsanmälan kommer inte att synas för dessa corps'
               {...form.getInputProps('hiddenFor')}
             />
           </div>

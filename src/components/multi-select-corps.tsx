@@ -1,57 +1,61 @@
 'use client';
 
-import { MultiSelect, MultiSelectProps } from '@mantine/core';
-import { useMemo } from 'react';
-import { trpc } from '../utils/trpc';
-import { formatName } from './select-corps';
+import React, { useEffect, useState } from 'react';
+import Select, { MultiValue } from 'react-select';
 
-type MultiSelectCorpsProps = Omit<MultiSelectProps, 'data'> & {
-  excludeSelf?: boolean;
-  excludeIds?: string[];
+type OptionType = {
+  label: string;
+  value: string;
 };
 
-const MultiSelectCorps = (props: MultiSelectCorpsProps) => {
-  const { excludeIds, excludeSelf } = props;
-  const { data: corpsii, status: corpsiiStatus } = trpc.corps.getMany.useQuery({
-    excludeSelf,
-  });
+type MultiSelectCorpsProps = {
+  options: OptionType[];
+  value?: string[];
+  defaultValue?: string[];
+  onChange?: (value: string[]) => void;
+  className?: string;
+  label?: string;
+  placeholder?: string;
+};
 
-  // TODO: Fetch multiple corps if `defaultValue` is set
-
-  const corpsiiData = useMemo(() => {
-    const excludeSet = new Set(excludeIds ?? []);
-    return (
-      corpsii
-        ?.filter((c) => !excludeSet.has(c.id))
-        .map((c) => ({
-          label: formatName(c),
-          value: c.id,
-        })) ?? []
-    );
-  }, [corpsii, excludeIds]);
-
-  const nothingFound =
-    corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
-
-  const multiSelectProps: MultiSelectProps = {
-    ...{
-      ...props,
-      excludeSelf: undefined,
-      excludeIds: undefined,
-    },
-    searchable: true,
-    clearable: true,
-    data: corpsiiData,
-    placeholder:
-      corpsiiStatus === 'loading'
-        ? 'Laddar corps...'
-        : props.placeholder ?? 'Välj corps...',
-    nothingFound,
-    limit: props.limit ?? 30,
-    filter: () => true,
+const MultiSelectCorps = ({
+  options,
+  value,
+  defaultValue: defaultValueProp,
+  onChange,
+  className = '',
+  placeholder,
+}: MultiSelectCorpsProps) => {
+  const [selected, setSelected] = useState<MultiValue<OptionType>>([]);
+  const handleChange = (selectedOptions: MultiValue<OptionType>) => {
+    setSelected(selectedOptions);
+    onChange?.(selectedOptions.map((o) => o.value));
   };
 
-  return <MultiSelect {...multiSelectProps} />;
+  const defaultValue = options.filter(
+    (o) => defaultValueProp?.includes(o.value),
+  );
+
+  useEffect(() => {
+    const selectedOptions = options.filter((o) => value?.includes(o.value));
+    setSelected(selectedOptions);
+  }, [options, value]);
+
+  return (
+    <Select
+      className={className}
+      isMulti
+      isSearchable
+      options={options}
+      value={selected}
+      defaultValue={defaultValue}
+      noOptionsMessage={() => 'Inga corps hittades'}
+      onChange={handleChange}
+      placeholder={placeholder}
+      unstyled
+      classNames={{}}
+    />
+  );
 };
 
 export default MultiSelectCorps;

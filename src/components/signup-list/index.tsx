@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { trpc } from 'utils/trpc';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
-import MultiSelectCorps from 'components/multi-select-corps';
+import MultiSelectCorps from 'components/multi-select-corps-fetch';
 import Entry from './entry';
 import Switch from 'components/input/switch';
 
