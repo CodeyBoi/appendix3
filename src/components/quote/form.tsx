@@ -1,6 +1,6 @@
 import { Button, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconSend } from '@tabler/icons';
+import { IconSend } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';

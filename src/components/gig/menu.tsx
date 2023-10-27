@@ -6,7 +6,7 @@ import {
   IconDotsVertical,
   IconEdit,
   IconUsers,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 

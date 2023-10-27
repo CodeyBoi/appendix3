@@ -1,5 +1,5 @@
 import { TextInput } from '@mantine/core';
-import { IconPlus, IconSearch } from '@tabler/icons';
+import { IconMusicPlus, IconSearch } from '@tabler/icons-react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -87,7 +87,7 @@ const Songs = () => {
         </div>
         <Link href='/admin/songs/new'>
           <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
-            <IconPlus />
+            <IconMusicPlus />
           </div>
         </Link>
       </div>

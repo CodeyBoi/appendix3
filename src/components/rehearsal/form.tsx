@@ -2,7 +2,7 @@ import { Button, Checkbox, Select, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
-import { IconCalendar, IconSend } from '@tabler/icons';
+import { IconCalendar, IconSend } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 

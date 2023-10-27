@@ -20,7 +20,7 @@ import {
   IconQuote,
   IconSpeakerphone,
   IconUser,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import cuid from 'cuid';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
@@ -78,7 +78,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
           icon: <IconClipboard />,
         },
         { label: 'Keikat', href: '/gigs', icon: <IconSpeakerphone /> },
-        { label: 'Laulut', href: '/songs', icon: <IconPencil /> },
+        { label: 'Laulut', href: '/songs', icon: <IconMusic /> },
         { label: 'Sitaatit', href: '/quotes', icon: <IconQuote /> },
         { label: 'Linkit', href: '/links', icon: <IconLink /> },
       ],
@@ -95,7 +95,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
         {
           label: 'Spelningar',
           href: '/admin/gigs',
-          icon: <IconMusic />,
+          icon: <IconSpeakerphone />,
         },
         {
           label: 'Repor',

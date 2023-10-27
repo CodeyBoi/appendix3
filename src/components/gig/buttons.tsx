@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, MediaQuery, Modal, Stack, Title } from '@mantine/core';
-import { IconCalendarPlus, IconEdit } from '@tabler/icons';
+import { IconCalendarPlus, IconEdit } from '@tabler/icons-react';
 import GigSignupBox from './signup-box';
 import dayjs from 'dayjs';
 import { Gig } from '@prisma/client';
