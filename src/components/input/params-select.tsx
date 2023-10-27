@@ -3,15 +3,15 @@
 import { useSearchParamsState } from 'hooks/use-search-params-state';
 import Select, { SelectProps } from './select';
 
-type SelectParamsProps = SelectProps & {
+type ParamsSelectProps = SelectProps & {
   paramName: string;
 };
 
-const SelectParams = ({
+const ParamsSelect = ({
   paramName,
   defaultValue,
   ...props
-}: SelectParamsProps) => {
+}: ParamsSelectProps) => {
   const [value, setValue] = useSearchParamsState(
     paramName,
     defaultValue?.toString(),
@@ -19,4 +19,4 @@ const SelectParams = ({
   return <Select {...props} value={value} onChange={(v) => setValue(v)} />;
 };
 
-export default SelectParams;
+export default ParamsSelect;

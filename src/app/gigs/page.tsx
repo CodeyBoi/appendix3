@@ -7,7 +7,7 @@ import { api } from 'trpc/server';
 import { IconPlus } from '@tabler/icons-react';
 import Tabs from 'components/input/tabs';
 import GigList from './list';
-import SelectParams from 'components/input/select-params';
+import ParamsSelect from 'components/input/params-select';
 import { SelectItem } from 'components/input/select';
 
 export const metadata: Metadata = {
@@ -57,7 +57,7 @@ const GigsPage = async ({
       <div className='flex flex-col gap-2'>
         <h2>Spelningar</h2>
         <div className='flex items-end gap-4'>
-          <SelectParams
+          <ParamsSelect
             label='År'
             options={years}
             paramName='year'

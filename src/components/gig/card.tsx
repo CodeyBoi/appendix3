@@ -8,6 +8,7 @@ import { api } from 'trpc/server';
 import { Gig as PrismaGig } from '@prisma/client';
 import { IconDotsVertical } from '@tabler/icons-react';
 import GigMenuContent from './menu/content';
+import ActionIcon from 'components/input/action-icon';
 
 type GigId = string;
 type Gig = PrismaGig & {
@@ -66,9 +67,9 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
           </Link>
           <GigMenu
             target={
-              <button className='p-1 text-red-600 transition-colors rounded hover:bg-red-600/10'>
+              <ActionIcon variant='subtle'>
                 <IconDotsVertical />
-              </button>
+              </ActionIcon>
             }
             dropdown={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
           />

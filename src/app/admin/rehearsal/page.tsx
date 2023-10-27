@@ -1,7 +1,7 @@
 import { IconPlus } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import { SelectItem } from 'components/input/select';
-import SelectParams from 'components/input/select-params';
+import ParamsSelect from 'components/input/params-select';
 import Tabs from 'components/input/tabs';
 import Loading from 'components/loading';
 import { redirect } from 'next/navigation';
@@ -51,7 +51,7 @@ const AdminRehearsalsPage = async ({
     <div className='flex flex-col gap-2 max-w-max'>
       <h2>Repor</h2>
       <div className='flex items-end gap-4'>
-        <SelectParams label='Verksamhetsår' options={years} paramName='year' />
+        <ParamsSelect label='Verksamhetsår' options={years} paramName='year' />
         {isAdmin && (
           <Button href='/admin/rehearsal/edit/new'>
             <IconPlus />
