@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ButtonHTMLAttributes } from 'react';
 
 type ActionIconVariant = 'default' | 'subtle';
 const variants: Record<ActionIconVariant, string> = {
@@ -6,7 +7,7 @@ const variants: Record<ActionIconVariant, string> = {
   subtle: 'bg-transparent hover:bg-red-600/10 text-red-600',
 };
 
-type ActionIconProps = {
+type ActionIconProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: ActionIconVariant;
@@ -18,14 +19,16 @@ const ActionIcon = ({
   onClick,
   variant = 'default',
   href,
+  ...props
 }: ActionIconProps) => {
   const element = (
-    <div
+    <button
       className={`flex items-center justify-center p-1 rounded ${variants[variant]}`}
       onClick={onClick}
+      {...props}
     >
       {children}
-    </div>
+    </button>
   );
 
   if (href) {
