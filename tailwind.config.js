@@ -6,9 +6,10 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      sans: ['Bahnschrift', 'sans-serif'],
-      display: ['Bahnschrift', 'sans-serif'],
-      body: ['Bahnschrift', 'sans-serif'],
+      sans: ['var(--font-bahnschrift)', 'sans-serif'],
+      display: ['var(--font-bahnschrift)', 'sans-serif'],
+      body: ['var(--font-bahnschrift)', 'sans-serif'],
+      castelar: ['var(--font-castelar)', 'serif'],
     },
     extend: {
       colors: {

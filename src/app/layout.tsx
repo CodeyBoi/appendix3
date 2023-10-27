@@ -1,5 +1,6 @@
 import 'dayjs/locale/sv';
 import { Metadata } from 'next';
+import localFont from 'next/font/local';
 import { getServerSession } from 'next-auth';
 import { cookies, headers } from 'next/headers';
 import { ReactElement } from 'react';
@@ -19,6 +20,18 @@ type RootLayoutProps = {
   children: ReactElement;
 };
 
+// Defining fonts
+const bahnschrift = localFont({
+  src: './bahnschrift.woff2',
+  variable: '--font-bahnschrift',
+});
+
+const castelar = localFont({
+  src: './castelar.woff2',
+  variable: '--font-castelar',
+});
+//
+
 const RootLayout = async ({ children }: RootLayoutProps) => {
   const cookiesList = cookies();
   const colorScheme =
@@ -28,7 +41,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     redirect('/login');
   }
   return (
-    <html lang='sv'>
+    <html lang='sv' className={`${bahnschrift.variable} ${castelar.variable}`}>
       <head>
         <meta
           name='viewport'
