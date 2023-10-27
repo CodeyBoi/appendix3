@@ -13,7 +13,7 @@ const GigMenu = ({ target, dropdown }: GigMenuProps) => {
     <div>
       <div
         onClick={() => setOpen(!open)}
-        onBlur={() => setOpen(false)}
+        onBlur={() => setTimeout(() => setOpen(false), 100)}
         className='cursor-pointer'
       >
         {target}
