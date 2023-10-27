@@ -20,7 +20,7 @@ import {
   IconQuote,
   IconSpeakerphone,
   IconUser,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import cuid from 'cuid';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
@@ -44,7 +44,7 @@ type TabLabel = 'user' | 'admin';
 
 const useStyles = createStyles((theme) => ({
   navbar: {
-    backgroundColor: theme?.colors?.red?.[6],
+    backgroundColor: theme?.colors?.blue?.[8],
     border: 0,
     height: '100%',
     display: 'flex',
@@ -52,17 +52,17 @@ const useStyles = createStyles((theme) => ({
   },
   link: {
     ...theme.fn.focusStyles(),
-    backgroundColor: theme?.colors?.red?.[6],
+    backgroundColor: theme?.colors?.blue?.[8],
 
     '&:hover': {
-      backgroundColor: theme?.colors?.red?.[7],
+      backgroundColor: theme?.colors?.blue?.[7],
     },
   },
   activeLink: {
-    backgroundColor: theme?.colors?.red?.[7],
+    backgroundColor: theme?.colors?.blue?.[7],
   },
   control: {
-    backgroundColor: theme?.colors?.red?.[6],
+    backgroundColor: theme?.colors?.blue?.[7],
   },
 }));
 
@@ -70,17 +70,17 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
   user: [
     {
       links: [
-        { label: 'Huvudsida', href: '/', icon: <IconHome /> },
-        { label: 'Mina sidor', href: '/account', icon: <IconUser /> },
+        { label: 'Pääsivu', href: '/', icon: <IconHome /> },
+        { label: 'Minun sivujani', href: '/account', icon: <IconUser /> },
         {
-          label: 'Statistik',
+          label: 'Tilastot',
           href: `/stats/${getOperatingYear()}`,
           icon: <IconClipboard />,
         },
-        { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
-        { label: 'Sånger', href: '/songs', icon: <IconPencil /> },
-        { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
-        { label: 'Länkar', href: '/links', icon: <IconLink /> },
+        { label: 'Keikat', href: '/gigs', icon: <IconSpeakerphone /> },
+        { label: 'Laulut', href: '/songs', icon: <IconMusic /> },
+        { label: 'Sitaatit', href: '/quotes', icon: <IconQuote /> },
+        { label: 'Linkit', href: '/links', icon: <IconLink /> },
       ],
     },
   ],
@@ -95,7 +95,7 @@ const tabs: { [key in TabLabel]: LinkGroup[] } = {
         {
           label: 'Spelningar',
           href: '/admin/gigs',
-          icon: <IconMusic />,
+          icon: <IconSpeakerphone />,
         },
         {
           label: 'Repor',
@@ -166,20 +166,20 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
         <Navbar.Section pt='sm' mx='sm'>
           <SegmentedControl
             className={classes.control}
-            color={theme?.colors?.red?.[6]}
+            color={theme?.colors?.blue?.[8]}
             fullWidth
             value={activeTab}
             onChange={(value: TabLabel) => setActiveTab(value)}
             transitionTimingFunction='ease'
             styles={{
-              active: { backgroundColor: theme?.colors?.red?.[7] },
+              active: { backgroundColor: theme?.colors?.blue?.[8] },
               label: {
                 color: theme?.colors?.gray?.[4],
                 ':hover': { color: theme.white },
               },
             }}
             data={[
-              { label: 'Användare', value: 'user' },
+              { label: 'Käyttäjä', value: 'user' },
               { label: 'Admin', value: 'admin' },
             ]}
           />
@@ -203,7 +203,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
             setActive('/about');
           }}
         >
-          Om sidan
+          Tietoja sivusta
         </Button>
         <Button
           px={6}
@@ -216,7 +216,7 @@ const NavbarContent = ({ onLinkClicked }: NavbarContentProps) => {
           styles={{ inner: { justifyContent: 'flex-start' } }}
           style={{ width: '100%' }}
         >
-          Logga ut
+          Kirjautua ulos
         </Button>
       </Navbar.Section>
     </Box>

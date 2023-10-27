@@ -6,7 +6,7 @@ import {
   IconDotsVertical,
   IconEdit,
   IconUsers,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
@@ -73,11 +73,11 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
           component={Link}
           href={`/gig/${gig.id}`}
         >
-          Se anmälningar
+          Katso ilmoitukset
         </Menu.Item>
         <Menu.Item icon={<IconCalendarPlus />} disabled={calenderLink === ''}>
           <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
-            Lägg till i kalender
+            Lisää kalenteriin
           </a>
         </Menu.Item>
         {isAdmin && (
@@ -85,14 +85,14 @@ const GigMenu = ({ gig, isAdmin, setOpened }: GigMenuProps) => {
             <Menu.Divider />
             <Menu.Label>Admin</Menu.Label>
             <Menu.Item icon={<IconEdit />} onClick={() => setOpened(true)}>
-              Redigera
+              Muokkaa
             </Menu.Item>
             <Menu.Item
               icon={<IconApple />}
               component={Link}
               href={`/admin/gig/${gig.id}/info`}
             >
-              Matpreffar
+              Ruokamieltymykset
             </Menu.Item>
           </>
         )}

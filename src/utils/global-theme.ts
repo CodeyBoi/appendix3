@@ -28,9 +28,21 @@ const GLOBAL_THEME: MantineThemeOverride = {
       '#663B00',
       '#331E00',
     ],
+    blue: [
+      '#e5f1ff',
+      '#b3d4ff',
+      '#80b7ff',
+      '#4d9aff',
+      '#1a7dff',
+      '#0064e6',
+      '#004eb3',
+      '#003780',
+      '#00214d',
+      '#000b1a',
+    ],
   },
-  primaryColor: 'red',
-  primaryShade: 5,
+  primaryColor: 'blue',
+  primaryShade: 7,
   fontFamily: 'Bahnschrift, sans-serif',
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   fontSizes: {
@@ -107,7 +119,7 @@ const GLOBAL_THEME: MantineThemeOverride = {
     },
     ActionIcon: {
       defaultProps: {
-        color: 'red',
+        color: 'blue',
         variant: 'filled',
       },
     },

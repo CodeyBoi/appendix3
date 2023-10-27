@@ -1,5 +1,5 @@
 import { TextInput } from '@mantine/core';
-import { IconPlus, IconSearch } from '@tabler/icons';
+import { IconMusicPlus, IconSearch } from '@tabler/icons-react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -37,7 +37,7 @@ const Songs = () => {
   const songList = useMemo(() => {
     let prevTitleLetter: string | undefined;
     return loading ? (
-      <Loading msg='Laddar sånger...' />
+      <Loading msg='Ladataan kappaleita...' />
     ) : songs && songs.length > 0 ? (
       <div className='flex flex-col text-base divide-y divide-solid'>
         {songs.map((song) => {
@@ -79,7 +79,7 @@ const Songs = () => {
       <div className='flex items-center justify-between gap-4'>
         <div className='flex-grow'>
           <TextInput
-            placeholder='Sök...'
+            placeholder='Hae...'
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
             icon={<IconSearch />}
@@ -87,7 +87,7 @@ const Songs = () => {
         </div>
         <Link href='/admin/songs/new'>
           <div className='p-1 text-white bg-red-600 rounded cursor-pointer w-min h-min hover:bg-red-700'>
-            <IconPlus />
+            <IconMusicPlus />
           </div>
         </Link>
       </div>

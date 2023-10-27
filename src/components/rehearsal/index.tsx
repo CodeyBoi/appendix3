@@ -1,6 +1,6 @@
 import { Modal } from '@mantine/core';
 import { Rehearsal as RehearsalPrisma } from '@prisma/client';
-import { IconEdit } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons-react';
 import React from 'react';
 import Button from '../button';
 import RehearsalAttendence from './attendence';
@@ -34,7 +34,7 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
           onClick={() => setOpened(true)}
           leftSection={<IconEdit />}
         >
-          Redigera
+          Muokata
         </Button>
         <RehearsalAttendence rehearsal={rehearsal} />
       </div>

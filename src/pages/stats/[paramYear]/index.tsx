@@ -84,7 +84,7 @@ const Statistics: NextPage = () => {
   };
 
   if (!router.isReady) {
-    return <Loading msg='Laddar statistik...' />;
+    return <Loading msg='Tilastojen hakeminen...' />;
   }
 
   const yearData =
@@ -97,12 +97,12 @@ const Statistics: NextPage = () => {
   return (
     <div className='flex flex-col gap-2 max-w-max'>
       <Head>
-        <title>{`Statistik ${year}-${year + 1}`}</title>
+        <title>{`Tilastot ${year}-${year + 1}`}</title>
       </Head>
-      <h2>Statistik</h2>
+      <h2>Tilastot</h2>
       <div className='w-36'>
         <Select
-          label='Verksamhetsår'
+          label='Toimintavuosi'
           defaultValue={paramYear}
           maxDropdownHeight={250}
           data={yearData}

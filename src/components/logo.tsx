@@ -9,7 +9,7 @@ const Logo = () => {
         style={{ fontFamily: 'Castellar' }}
         className='text-2xl cursor-pointer'
       >
-        {isAprilFools ? 'Bihålan' : 'Blindtarmen'}
+        {isAprilFools ? 'Bihålan' : 'Umpisuoli'}
       </div>
     </Link>
   );

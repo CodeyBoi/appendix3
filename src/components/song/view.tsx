@@ -1,6 +1,6 @@
 import { Song } from '@prisma/client';
 // import { trpc } from '../../utils/trpc';
-import { IconPencil } from '@tabler/icons';
+import { IconPencil } from '@tabler/icons-react';
 import Head from 'next/head';
 import Link from 'next/link';
 
@@ -27,8 +27,8 @@ const SongView = ({ song }: SongProps) => {
           </Link>
         )}
       </div>
-      {song.melody && <i>{`Melodi: ${song.melody}`}</i>}
-      {song.author && <i>{`Skriven av: ${song.author}`}</i>}
+      {song.melody && <i>{`Melodia: ${song.melody}`}</i>}
+      {song.author && <i>{`Kirjoittanut: ${song.author}`}</i>}
       <div className='h-4' />
       <div className='whitespace-pre-wrap'>{`${song.lyrics}`}</div>
     </div>
