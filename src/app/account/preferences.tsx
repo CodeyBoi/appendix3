@@ -152,7 +152,7 @@ const AccountPreferences = () => {
               })}
             />
             <TextArea
-              placeholder='Övriga matpreferenser...'
+              label='Övriga matpreferenser...'
               {...form.getInputProps('otherFoodPrefs')}
             />
           </div>

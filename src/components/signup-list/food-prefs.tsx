@@ -113,7 +113,7 @@ const FoodPrefs = ({
               <th className='px-1'>Glut</th>
               <th className='px-1'>Lak</th>
               <th className='px-1'>Alk (gammal)</th>
-              <th className='px-1'>Övrigt</th>
+              <th className='px-1 text-left'>Övrigt</th>
             </tr>
           </thead>
           <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
