@@ -1,26 +1,22 @@
-import { Select, SelectProps } from '@mantine/core';
+'use client';
+
 import React, { useMemo } from 'react';
-import { trpc } from '../utils/trpc';
+import { trpc } from 'utils/trpc';
+import SelectSearch, { SelectSearchProps } from './input/search-select';
+import { detailedName } from 'utils/name-format';
 
 const MIN_SEARCH_LENGTH = 2;
 
-export const formatName = (c: {
-  number: number | null;
-  firstName: string;
-  lastName: string;
-  nickName: string | null;
-}) => {
-  const { number, firstName, lastName, nickName } = c;
-  const corpsNumber = number ? '#' + number.toString() : 'p.e.';
-  const name = `${firstName.trim()}${
-    nickName ? ' "' + nickName.trim() + '"' : ''
-  } ${lastName.trim()}`;
-  return `${corpsNumber} ${name}`;
+type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
+  excludeSelf?: boolean;
+  excludeIds?: string[];
 };
 
-type SelectCorpsProps = Omit<SelectProps, 'data'> & { excludeSelf?: boolean };
-
-const SelectCorps = (props: SelectCorpsProps) => {
+const SelectCorps = ({
+  defaultValue,
+  excludeIds,
+  ...props
+}: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
   const [searchValue, setSearchValue] = React.useState('');
 
@@ -37,10 +33,10 @@ const SelectCorps = (props: SelectCorpsProps) => {
   // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery(
     {
-      id: props.defaultValue as string,
+      id: defaultValue as string,
     },
     {
-      enabled: !!props.defaultValue,
+      enabled: !!defaultValue,
     },
   );
 
@@ -48,7 +44,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
     const data = initialCorps
       ? [
           {
-            label: formatName(initialCorps),
+            label: detailedName(initialCorps),
             value: initialCorps.id,
           },
         ]
@@ -56,15 +52,19 @@ const SelectCorps = (props: SelectCorpsProps) => {
     if (corpsii) {
       return data.concat(
         corpsii
-          .filter((c) => !initialCorps || initialCorps.id !== c.id)
+          .filter(
+            (c) =>
+              (!initialCorps || initialCorps.id !== c.id) &&
+              (!excludeIds || !excludeIds.includes(c.id)),
+          )
           .map((c) => ({
-            label: formatName(c),
+            label: detailedName(c),
             value: c.id,
           })),
       );
     }
     return data;
-  }, [corpsii, initialCorps]);
+  }, [corpsii, initialCorps, excludeIds]);
 
   const onSearchChange = (value: string) => {
     setSearchValue(value);
@@ -76,11 +76,14 @@ const SelectCorps = (props: SelectCorpsProps) => {
   const nothingFound =
     corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
 
-  const selectProps: SelectProps = {
+  if (defaultValue && !corpsiiData?.find((c) => c.value === defaultValue)) {
+    return null;
+  }
+
+  const selectProps: SelectSearchProps = {
     ...props,
-    searchable: true,
-    clearable: true,
-    data: corpsiiData ?? [],
+    options: corpsiiData ?? [],
+    label: props.label ?? 'Sök...',
     placeholder:
       queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading'
         ? 'Laddar corps...'
@@ -94,7 +97,7 @@ const SelectCorps = (props: SelectCorpsProps) => {
     onSearchChange,
   };
 
-  return <Select zIndex={516} {...selectProps} />;
+  return <SelectSearch {...selectProps} />;
 };
 
 export default SelectCorps;

@@ -1,9 +1,13 @@
-import { Button, TextInput, Textarea } from '@mantine/core';
+'use client';
+
 import { useForm } from '@mantine/form';
-import { IconSend } from '@tabler/icons';
-import { useRouter } from 'next/router';
+import { IconSend } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import { trpc } from '../../utils/trpc';
 import SelectCorps from '../select-corps';
+import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
+import TextInput from 'components/input/text-input';
 
 const defaultValues = {
   quote: '',
@@ -17,7 +21,7 @@ type QuoteFormProps = {
 
 const QuoteForm = ({ quote }: QuoteFormProps) => {
   const router = useRouter();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const newQuote = !quote;
 
@@ -63,28 +67,27 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
           <SelectCorps
             label='Vem sade detta?'
             placeholder='Välj corps...'
-            withAsterisk
             defaultValue={quote?.saidByCorpsId}
             {...form.getInputProps('saidByCorpsId')}
           />
           <TextInput
             label='Var sades detta?'
-            placeholder='Plats'
             {...form.getInputProps('location')}
           />
         </div>
-        <Textarea
+        <TextArea
           rightSection={newQuote && <IconSend />}
           label='Vad sades?'
           placeholder='Citat'
           withAsterisk
-          autosize
+          autoSize
           {...form.getInputProps('quote')}
         />
         {!newQuote && (
           <div className='flex items-center justify-end gap-4'>
             <Button
-              variant='outline'
+              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              color='transparent'
               compact
               onClick={async () => {
                 if (
@@ -97,7 +100,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
             >
               RADERA CITAT
             </Button>
-            <Button type='submit' className='bg-red-600'>
+            <Button type='submit' color='red'>
               Uppdatera citat
             </Button>
           </div>

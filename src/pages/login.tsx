@@ -1,18 +1,14 @@
-import {
-  Box,
-  Button,
-  Center,
-  Group,
-  TextInput,
-  useMantineTheme,
-} from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+'use client';
+
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getServerAuthSession } from '../server/common/get-server-auth-session';
-import { trpc } from '../utils/trpc';
+import { getServerAuthSession } from 'server/common/get-server-auth-session';
+import { trpc } from 'utils/trpc';
+import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
+import { IconMail } from '@tabler/icons-react';
 
 const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date('2023-03-01');
 
@@ -34,9 +30,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState(false);
-  const theme = useMantineTheme();
   const isTheNewBlindtarmenStillNew =
     dateWhenTheNewBlindtarmenIsntNewAnymore > new Date();
 
@@ -73,8 +68,6 @@ const Login = () => {
     enabled: !!numberInput && !isNaN(numberInput),
   });
 
-  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
-
   const router = useRouter();
   const { data: session } = useSession();
   useEffect(() => {
@@ -84,68 +77,50 @@ const Login = () => {
   }, [router, session]);
 
   return (
-    <div
-      style={{
-        height: '100vh',
-        background: theme.fn.linearGradient(
-          215,
-          theme?.colors?.red?.[7] || 'red',
-          theme?.colors?.red?.[9] || 'darkred',
-        ),
-      }}
-    >
-      <Center>
-        <Box
-          sx={(theme) => ({
-            marginTop: '35vh',
-            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-              marginTop: '25vh',
-            },
-          })}
-        >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setEmail(e.currentTarget.email.value);
-            }}
-          >
-            <div className='flex flex-col gap-2'>
-              <h2 className='text-center text-white md:text-5xl'>
-                {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
-                <span style={{ color: theme?.colors?.red?.[5] }}>
-                  Blindtarmen
-                </span>
-                !
-              </h2>
-              {!success && (
-                <Group align='baseline'>
+    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setEmail(e.currentTarget.email.value);
+        }}
+      >
+        <div className='flex flex-col items-center gap-6 p-4 bg-red-600 rounded shadow-2xl'>
+          <h2 className='text-center text-white md:text-5xl'>
+            {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
+            <span className='text-red-400'>Blindtarmen</span>!
+          </h2>
+          {!success && (
+            <div className='w-4/5 scale-125 lg:w-2/3 lg:scale-150'>
+              <div className='flex w-full gap-2 p-2 max-lg:flex-col'>
+                <div className='flex-grow'>
                   <TextInput
+                    variant='login'
+                    className='text-white placeholder:text-white'
+                    icon={
+                      <span className='text-white'>
+                        <IconMail />
+                      </span>
+                    }
                     name='email'
                     spellCheck='false'
-                    style={{ flexGrow: 1 }}
-                    mx='sm'
-                    size={onMobile ? 'lg' : 'xl'}
-                    placeholder='Mailadress'
-                    onChange={() => error && setError(null)}
+                    label='Mailadress (eller #)'
+                    onChange={() => error && setError(undefined)}
                     onSubmit={(e) => setEmail(e.currentTarget.value)}
                     error={error}
+                    errorColor='white'
                   />
-                  <Button
-                    mx='sm'
-                    fullWidth={onMobile}
-                    size={onMobile ? 'lg' : 'xl'}
-                    type='submit'
-                    variant='gradient'
-                    gradient={{ from: 'red', to: 'darkred', deg: 185 }}
-                  >
-                    Logga in
-                  </Button>
-                </Group>
-              )}
+                </div>
+                <Button
+                  className='flex-shrink border border-white'
+                  type='submit'
+                >
+                  Logga in
+                </Button>
+              </div>
             </div>
-          </form>
-        </Box>
-      </Center>
+          )}
+        </div>
+      </form>
     </div>
   );
 };

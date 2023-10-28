@@ -1,47 +1,20 @@
-import { Button, Center, Title, useMantineTheme } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
-import Link from 'next/link';
+import Button from 'components/input/button';
 
 const Verified = () => {
-  const theme = useMantineTheme();
-
-  const onMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`);
   return (
-    <div
-      style={{
-        padding: 24,
-        height: '100vh',
-        background: theme.fn.linearGradient(
-          215,
-          theme?.colors?.red?.[7],
-          theme?.colors?.red?.[9],
-        ),
-      }}
-    >
-      <Center>
-        <div style={{ marginTop: onMobile ? '25vh' : '35vh' }}>
-          <Title
-            order={4}
-            color='white'
-            align='center'
-            style={{ maxWidth: 800 }}
-          >
-            Din inloggning har blivit bekräftad! Du kan nu återgå till din
-            föregående flik, eller klicka på länken nedan för att komma direkt
-            till startsidan.
-          </Title>
-          <Center>
-            <Button
-              style={{ marginTop: 12 }}
-              component={Link}
-              href='/'
-              gradient={{ from: 'red', to: 'darkred', deg: 185 }}
-            >
-              Till startsidan
-            </Button>
-          </Center>
+    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
+      <div className='flex flex-col items-center gap-3 p-4 bg-red-600 shadow-2xl'>
+        <h4 className='max-w-3xl text-center text-white'>
+          Din inloggning har blivit bekräftad! Du kan nu återgå till din
+          föregående flik, eller klicka på knappen nedan för att komma direkt
+          till startsidan.
+        </h4>
+        <div className='flex justify-center'>
+          <Button className='border border-white' href='/'>
+            Till startsidan
+          </Button>
         </div>
-      </Center>
+      </div>
     </div>
   );
 };

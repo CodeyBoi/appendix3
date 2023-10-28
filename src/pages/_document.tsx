@@ -1,13 +1,9 @@
-import { ServerStyles, createStylesServer } from '@mantine/next';
 import Document, {
   DocumentContext,
   Head,
   Html,
-  Main,
   NextScript,
 } from 'next/document';
-
-const stylesServer = createStylesServer();
 
 export default class _Document extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -15,14 +11,7 @@ export default class _Document extends Document {
 
     return {
       ...initialProps,
-      styles: [
-        initialProps.styles,
-        <ServerStyles
-          html={initialProps.html}
-          server={stylesServer}
-          key='styles'
-        />,
-      ],
+      styles: [initialProps.styles],
     };
   }
 
@@ -54,7 +43,7 @@ export default class _Document extends Document {
           <meta name='theme-color' content='#B80900'></meta>
         </Head>
         <body>
-          <Main />
+          <main />
           <NextScript />
         </body>
       </Html>

@@ -1,12 +1,15 @@
 import 'dayjs/locale/sv';
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { ReactElement } from 'react';
-import { authOptions } from '../pages/api/auth/[...nextauth]';
-import '../styles/globals.css';
-import { TRPCReactProvider } from '../trpc/react';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import 'styles/globals.css';
+import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
+import { redirect } from 'next/navigation';
+import AppShell from './app-shell';
+import { bahnschrift, castelar } from 'app/fonts';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -18,10 +21,15 @@ type RootLayoutProps = {
 };
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
-  const defaultColorScheme = 'light'; // TODO: Fix later, right now it's always light on first load/refresh
+  const cookiesList = cookies();
+  const colorScheme =
+    cookiesList.get('tw-color-scheme')?.value === 'dark' ? 'dark' : 'light';
   const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/login');
+  }
   return (
-    <html lang='sv'>
+    <html lang='sv' className={`${bahnschrift.variable} ${castelar.variable}`}>
       <head>
         <meta
           name='viewport'
@@ -47,13 +55,10 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='theme-color' content='#B80900'></meta>
       </head>
-      <body>
+      <body className='overflow-y-auto text-black bg-white dark:bg-darkBg dark:text-darkText'>
         <TRPCReactProvider headers={headers()}>
-          <AppProvider
-            defaultColorScheme={defaultColorScheme}
-            session={session}
-          >
-            {children}
+          <AppProvider defaultColorScheme={colorScheme} session={session}>
+            <AppShell>{children}</AppShell>
           </AppProvider>
         </TRPCReactProvider>
       </body>

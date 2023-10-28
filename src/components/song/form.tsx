@@ -1,7 +1,11 @@
-import { Button, TextInput, Textarea } from '@mantine/core';
+'use client';
+
 import { useForm } from '@mantine/form';
-import { useRouter } from 'next/router';
-import { trpc } from '../../utils/trpc';
+import { useRouter } from 'next/navigation';
+import { api } from 'trpc/react';
+import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
+import TextInput from 'components/input/text-input';
 
 const defaultValues = {
   title: '',
@@ -16,7 +20,7 @@ type SongFormProps = {
 
 const SongForm = ({ song }: SongFormProps) => {
   const router = useRouter();
-  const utils = trpc.useContext();
+  const utils = api.useUtils();
 
   const newSong = !song;
 
@@ -35,13 +39,13 @@ const SongForm = ({ song }: SongFormProps) => {
     },
   });
 
-  const mutation = trpc.song.upsert.useMutation({
-    onSuccess: () => {
+  const mutation = api.song.upsert.useMutation({
+    onSuccess: ({ id }) => {
       if (song) {
-        utils.song.get.invalidate({ id: song.id });
+        utils.song.get.invalidate({ id });
       }
       utils.song.getAll.invalidate();
-      router.push(`/songs/${song?.id ?? ''}`);
+      router.push(`/songs/${id}`);
     },
   });
   const handleSubmit = async (values: FormValues) => {
@@ -52,7 +56,7 @@ const SongForm = ({ song }: SongFormProps) => {
     }
   };
 
-  const removeMutation = trpc.song.remove.useMutation({
+  const removeMutation = api.song.remove.useMutation({
     onSuccess: () => {
       if (song) {
         utils.song.get.invalidate({ id: song.id });
@@ -67,34 +71,32 @@ const SongForm = ({ song }: SongFormProps) => {
       <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
-          placeholder='Titel'
           withAsterisk
           spellCheck={false}
           {...form.getInputProps('title')}
         />
         <TextInput
           label='Författare'
-          placeholder='Författare'
           spellCheck={false}
           {...form.getInputProps('author')}
         />
         <TextInput
           label='Melodi'
-          placeholder='Melodi'
           spellCheck={false}
           {...form.getInputProps('melody')}
         />
-        <Textarea
+        <TextArea
           label='Sångtext'
           placeholder='Sångtext'
           withAsterisk
-          autosize
+          autoSize
           {...form.getInputProps('lyrics')}
         />
         <div className='flex items-center justify-end gap-4'>
           {song && (
             <Button
-              variant='outline'
+              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              color='transparent'
               compact
               onClick={async () => {
                 if (
@@ -107,7 +109,7 @@ const SongForm = ({ song }: SongFormProps) => {
               RADERA SÅNG
             </Button>
           )}
-          <Button className='bg-red-600' type='submit'>
+          <Button type='submit'>
             {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
           </Button>
         </div>

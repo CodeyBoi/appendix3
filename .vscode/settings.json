@@ -1,5 +1,7 @@
 {
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "WillLuke.nextjs.hasPrompted": true
+  "WillLuke.nextjs.hasPrompted": true,
+  // To enable Tailwind IntelliSense in variables containing the string `Classes`:
+  "tailwindCSS.classAttributes": ["class", "className", ".*Classes.*"]
 }

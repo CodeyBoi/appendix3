@@ -1,21 +1,17 @@
-import { Switch } from '@mantine/core';
+'use client';
+
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons';
-import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
-import { trpc } from '../../utils/trpc';
-import Button from '../button';
-import Loading from '../loading';
-import MultiSelectCorps from '../multi-select-corps';
+import { IconUser } from '@tabler/icons-react';
+import React, { useMemo, useState } from 'react';
+import Button from 'components/input/button';
+import Loading from 'components/loading';
+import SelectCorps from 'components/select-corps';
 import Entry from './entry';
+import Switch from 'components/input/switch';
+import { api } from 'trpc/react';
 
 interface SignupListProps {
-  gig: {
-    id: string;
-    date: Date;
-    checkbox1: string;
-    checkbox2: string;
-  };
+  gigId: string;
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -66,27 +62,26 @@ const toPlural = (instrument: string) => {
   return instrument + 'er';
 };
 
-const SignupList = ({ gig }: SignupListProps) => {
-  const queryClient = useQueryClient();
-  const utils = trpc.useContext();
+const SignupList = ({ gigId }: SignupListProps) => {
+  const utils = api.useUtils();
+
+  const { data: gig } = api.gig.getWithId.useQuery({ gigId });
 
   const gigHasHappened = gig
     ? gig.date.getTime() < new Date().getTime() - 1000 * 60 * 60 * 24
     : false;
 
-  const gigId = gig.id;
-
   const { data: signups, isInitialLoading: signupsLoading } =
-    trpc.gig.getSignups.useQuery({ gigId });
+    api.gig.getSignups.useQuery({ gigId });
 
-  const { data: role } = trpc.corps.getRole.useQuery();
+  const { data: role } = api.corps.getRole.useQuery();
   const isAdmin = role === 'admin';
 
-  const [editMode, setEditMode] = React.useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const showAdminTools = isAdmin && editMode;
 
-  const { data: instruments } = trpc.instrument.getAll.useQuery();
+  const { data: instruments } = api.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
   const instrumentPrecedence: { [key: string]: number } = useMemo(
     () =>
@@ -154,25 +149,24 @@ const SignupList = ({ gig }: SignupListProps) => {
   const noList = splitList?.noList;
 
   const form = useForm({
-    initialValues: { corpsIds: [] as string[] },
+    initialValues: { corpsId: '' },
     validate: {
-      corpsIds: (value) =>
-        value.length > 0 ? null : 'Du måste välja minst ett corps',
+      corpsId: (value) => (value ? null : 'Välj ett corps'),
     },
   });
 
-  const addSignups = trpc.gig.addSignups.useMutation({
+  const addSignup = api.gig.addSignup.useMutation({
     onMutate: async () => {
       form.reset();
     },
     onSettled: () => {
-      queryClient.invalidateQueries([['gig', 'getSignups'], { gigId }]);
+      utils.gig.getSignups.invalidate({ gigId });
     },
   });
 
-  const editAttendance = trpc.gig.editAttendance.useMutation();
+  const editAttendance = api.gig.editAttendance.useMutation();
 
-  const removeSignup = trpc.gig.removeSignup.useMutation({
+  const removeSignup = api.gig.removeSignup.useMutation({
     onSuccess: async ({ corpsId, gigId }) => {
       await utils.gig.getSignup.invalidate({ corpsId, gigId });
       await utils.gig.getSignups.invalidate({ gigId });
@@ -200,10 +194,9 @@ const SignupList = ({ gig }: SignupListProps) => {
           <tr>
             {showAdminTools ? (
               <>
-                <th className='pr-6 text-right'>#</th>
                 <th className='text-left'>Namn</th>
-                {gig.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
-                {gig.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
+                {gig?.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
+                {gig?.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
                 <th className='px-1'>Här?</th>
                 <th className='px-1'>Vask</th>
               </>
@@ -221,17 +214,16 @@ const SignupList = ({ gig }: SignupListProps) => {
                 {addNewline && (
                   <tr>
                     <td colSpan={2}>
-                      <h5 className='mt-2 first-letter:capitalize'>
+                      <h6 className='mt-2 first-letter:capitalize'>
                         {toPlural(signup.instrument.name)}
-                      </h5>
+                      </h6>
                     </td>
                   </tr>
                 )}
                 <tr>
                   <Entry
-                    name={signup.corps.displayName}
+                    corps={signup.corps}
                     attended={signup.attended}
-                    number={signup.corps.number}
                     isAdmin={showAdminTools}
                     setAttendance={(attended) =>
                       editAttendance.mutate({
@@ -241,10 +233,10 @@ const SignupList = ({ gig }: SignupListProps) => {
                       })
                     }
                     checkbox1={
-                      !!gig.checkbox1.trim() ? signup.checkbox1 : undefined
+                      !!gig?.checkbox1.trim() ? signup.checkbox1 : undefined
                     }
                     checkbox2={
-                      !!gig.checkbox2.trim() ? signup.checkbox2 : undefined
+                      !!gig?.checkbox2.trim() ? signup.checkbox2 : undefined
                     }
                     handleDelete={() => handleDelete(signup.corpsId)}
                   />
@@ -299,8 +291,8 @@ const SignupList = ({ gig }: SignupListProps) => {
           <Switch
             label='Redigera anmälningar'
             checked={editMode}
-            onChange={(event) => {
-              setEditMode(event.currentTarget.checked);
+            onChange={(val) => {
+              setEditMode(val);
               utils.gig.getSignups.invalidate({ gigId });
             }}
           />
@@ -308,28 +300,25 @@ const SignupList = ({ gig }: SignupListProps) => {
       )}
       {showAdminTools && (
         <form
-          onSubmit={form.onSubmit((values) =>
-            addSignups.mutateAsync({
-              corpsIds: values.corpsIds,
-              gigId,
-              status: 'Ja',
-            }),
+          onSubmit={form.onSubmit(
+            async (values) =>
+              await addSignup.mutateAsync({
+                corpsId: values.corpsId,
+                gigId,
+                status: 'Ja',
+                checkbox1: false,
+                checkbox2: false,
+              }),
           )}
         >
-          <div className='flex justify-between flex-grow space-x-4 flex-nowrap'>
-            <MultiSelectCorps
-              sx={{ width: '100%' }}
-              searchable
-              placeholder='Välj corps...'
-              limit={30}
-              maxDropdownHeight={350}
+          <div className='flex gap-4 flex-nowrap'>
+            <SelectCorps
+              label='Välj corps...'
               icon={<IconUser />}
               excludeIds={signups?.map((s) => s.corpsId) ?? []}
-              {...form.getInputProps('corpsIds')}
+              {...form.getInputProps('corpsId')}
             />
-            <Button className='bg-red-600' type='submit'>
-              Lägg till anmälningar
-            </Button>
+            <Button type='submit'>Lägg till anmälning</Button>
           </div>
         </form>
       )}

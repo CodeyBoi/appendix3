@@ -1,28 +1,30 @@
-import {
-  Button,
-  Checkbox,
-  NumberInput,
-  Select,
-  TextInput,
-  Textarea,
-} from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
+'use client';
+
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
-import { IconCalendar, IconClock } from '@tabler/icons';
-import React from 'react';
-import { trpc } from '../../utils/trpc';
+import { IconClock } from '@tabler/icons-react';
+import React, { useState } from 'react';
+import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';
-import MultiSelectCorps from '../multi-select-corps';
+import MultiSelect from '../multi-select';
+import { useRouter } from 'next/navigation';
+import Select from 'components/input/select';
+import TextInput from 'components/input/text-input';
+import Button from 'components/input/button';
+import TextArea from 'components/input/text-area';
+import NumberInput from 'components/input/number-input';
+import Checkbox from 'components/input/checkbox';
+import DatePicker from 'components/input/date-picker';
+import { api } from 'trpc/react';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
-  onSubmit?: () => void;
+  gigTypes: string[];
 }
 
 const initialValues = {
   title: '',
-  type: '',
+  type: 'Pärmspelning!',
   description: '',
   location: '',
   date: null as unknown as Date,
@@ -39,12 +41,25 @@ const initialValues = {
 };
 type FormValues = typeof initialValues;
 
-const GigForm = ({ gig, onSubmit }: GigFormProps) => {
-  const utils = trpc.useContext();
+const GigForm = ({ gig, gigTypes }: GigFormProps) => {
+  const utils = trpc.useUtils();
   const newGig = !gig;
   const gigId = gig?.id ?? 'new';
-  const { data: gigTypes } = trpc.gigType.getAll.useQuery();
-  const [submitting, setSubmitting] = React.useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const router = useRouter();
+
+  const { data: corpsii } = api.corps.getMany.useQuery({});
+  const corpsiiOptions = corpsii?.map((c) => ({
+    label:
+      (c.number ? '#' + c.number : 'p.e.') +
+      ' ' +
+      c.firstName +
+      ' ' +
+      (c.nickName ? '"' + c.nickName + '" ' : '') +
+      c.lastName,
+    value: c.id,
+  }));
 
   const form = useForm<FormValues>({
     initialValues: newGig
@@ -64,11 +79,11 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
   });
 
   const mutation = trpc.gig.upsert.useMutation({
-    onSuccess: () => {
-      utils.gig.getWithId.invalidate({ gigId });
+    onSuccess: ({ id }) => {
+      utils.gig.getWithId.invalidate({ gigId: id });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      onSubmit?.();
+      router.push(`/gig/${id}`);
     },
   });
 
@@ -77,11 +92,11 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
       utils.gig.getWithId.invalidate({ gigId });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      onSubmit?.();
+      router.push('/');
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
@@ -91,31 +106,33 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
       hiddenFor: values.isPublic ? [] : values.hiddenFor,
     };
     if (newGig) {
-      mutation.mutateAsync(data);
+      mutation.mutate(data);
     } else {
-      mutation.mutateAsync({ ...data, gigId });
+      mutation.mutate({ ...data, gigId });
     }
   };
 
   return (
-    <FormLoadingOverlay visible={submitting}>
+    <FormLoadingOverlay visible={!corpsiiOptions || submitting}>
       <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
-        <div className='grid grid-cols-1 content-baseline gap-x-4 gap-y-2 md:grid-cols-2'>
-          <TextInput
-            label='Titel'
-            placeholder='Titel'
-            withAsterisk
-            spellCheck={false}
-            {...form.getInputProps('title')}
-          />
+        <div className='grid items-stretch grid-cols-1 align-bottom gap-x-4 gap-y-2 md:grid-cols-2'>
+          <span className='self-end'>
+            <TextInput
+              className='flex-grow'
+              label='Titel'
+              withAsterisk
+              spellCheck={false}
+              {...form.getInputProps('title')}
+            />
+          </span>
           <Select
             withAsterisk
             label='Spelningstyp'
             placeholder='Välj typ...'
-            data={
+            options={
               gigTypes?.map((type) => ({
-                value: type.name,
-                label: type.name,
+                value: type,
+                label: type,
               })) ?? []
             }
             {...form.getInputProps('type')}
@@ -129,35 +146,31 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
             withAsterisk
             label='Spelningsdatum'
             placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={false}
+            // clearable={false}
             {...form.getInputProps('date')}
           />
           <TextInput
             label='Plats'
-            placeholder='Plats'
             spellCheck={false}
             {...form.getInputProps('location')}
           />
-          <div className='grid grid-cols-2 space-x-4'>
+          <div className='grid grid-cols-2 gap-x-4'>
             <TextInput
               icon={<IconClock />}
               label='Samlingstid'
-              placeholder='Samlingstid'
               spellCheck='false'
               {...form.getInputProps('meetup')}
             />
             <TextInput
               icon={<IconClock />}
               label='Spelningstart'
-              placeholder='Spelningstart'
               spellCheck='false'
               {...form.getInputProps('start')}
             />
           </div>
           <div className='col-span-1 md:col-span-2'>
-            <Textarea
-              autosize
+            <TextArea
+              autoSize
               label='Beskrivning'
               placeholder='Beskrivning'
               {...form.getInputProps('description')}
@@ -165,52 +178,43 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
           </div>
           <DatePicker
             label='Anmälningsstart'
-            description='Lämna tom för att tillåta anmälan omedelbart'
             placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={true}
             {...form.getInputProps('signupStart')}
+            // clearable={true}
           />
           <DatePicker
             label='Anmälningsstopp'
-            description='Lämna tom för att tillåta anmälan tills spelningen börjar'
             placeholder='Välj datum...'
-            icon={<IconCalendar />}
-            clearable={true}
             {...form.getInputProps('signupEnd')}
+            // clearable={true}
           />
           <TextInput
             label='Kryssruta 1'
-            placeholder='Kryssruta 1'
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox1')}
           />
           <TextInput
             label='Kryssruta 2'
-            placeholder='Kryssruta 2'
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
-          <div className='col-span-1 md:col-span-2'>
-            <MultiSelectCorps
-              maxDropdownHeight={260}
-              label='Dölj spelning'
-              disabled={form.values.isPublic}
-              defaultValue={form.values.hiddenFor}
-              description='Spelningsanmälan kommer inte att synas för dessa corps'
+          <div className='flex flex-col col-span-1 md:col-span-2 focus-visible:ring-red-600'>
+            <div>Dölj spelning</div>
+            <MultiSelect
               placeholder='Välj corps...'
+              className='outline-none focus-visible:outline-none'
+              options={corpsiiOptions ?? []}
+              defaultValue={form.values.hiddenFor}
               {...form.getInputProps('hiddenFor')}
             />
           </div>
           <div className='flex space-x-4 whitespace-nowrap'>
             <Checkbox
               label='Allmän spelning?'
-              radius='xl'
               {...form.getInputProps('isPublic', { type: 'checkbox' })}
             />
             <Checkbox
               label='Räknas positivt?'
-              radius='xl'
               {...form.getInputProps('countsPositively', {
                 type: 'checkbox',
               })}
@@ -219,20 +223,20 @@ const GigForm = ({ gig, onSubmit }: GigFormProps) => {
           <div className='flex items-center justify-end space-x-4'>
             {!newGig && (
               <Button
-                variant='outline'
+                className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+                color='transparent'
                 compact
-                uppercase
                 onClick={() => {
                   if (
                     window.confirm(
                       'Detta kommer att radera spelningen och går inte att ångra. Är du säker?',
                     )
                   ) {
-                    removeGig.mutateAsync({ gigId });
+                    removeGig.mutate({ gigId });
                   }
                 }}
               >
-                Radera spelning
+                RADERA SPELNING
               </Button>
             )}
             <Button

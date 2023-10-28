@@ -6,8 +6,10 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      display: ['Bahnschrift', 'sans-serif'],
-      body: ['Bahnschrift', 'sans-serif'],
+      sans: ['var(--font-bahnschrift)', 'sans-serif'],
+      display: ['var(--font-bahnschrift)', 'sans-serif'],
+      body: ['var(--font-bahnschrift)', 'sans-serif'],
+      castelar: ['var(--font-castelar)', 'serif'],
     },
     extend: {
       colors: {
@@ -23,7 +25,10 @@ module.exports = {
           900: '#500000',
           DEFAULT: '#ce0c00',
         },
+        white: '#FAFFFC',
         currentColor: '#ce0c00',
+        darkBg: '#1A1B1E',
+        darkText: '#C1C2C5',
       },
     },
   },

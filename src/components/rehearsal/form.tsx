@@ -1,10 +1,15 @@
-import { Button, Checkbox, Select, TextInput } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
+'use client';
+
 import { useForm } from '@mantine/form';
 import { Rehearsal } from '@prisma/client';
-import { IconCalendar, IconSend } from '@tabler/icons';
-import { useRouter } from 'next/router';
-import { trpc } from '../../utils/trpc';
+import { IconSend } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import Select from 'components/input/select';
+import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
+import Checkbox from 'components/input/checkbox';
+import { api } from 'trpc/react';
+import DatePicker from 'components/input/date-picker';
 
 const defaultValues = {
   title: '',
@@ -19,10 +24,10 @@ type RehearsalFormProps = {
 };
 
 const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
-  const utils = trpc.useContext();
+  const utils = api.useUtils();
   const router = useRouter();
 
-  const { data: rehearsalTypes } = trpc.rehearsal.getTypes.useQuery();
+  const { data: rehearsalTypes } = api.rehearsal.getTypes.useQuery();
 
   const newRehearsal = !rehearsal;
 
@@ -42,7 +47,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
     },
   });
 
-  const mutation = trpc.rehearsal.upsert.useMutation({
+  const mutation = api.rehearsal.upsert.useMutation({
     onSuccess: ({ id }) => {
       utils.rehearsal.getWithId.invalidate(id);
       utils.rehearsal.getMany.invalidate();
@@ -53,7 +58,7 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
     },
   });
 
-  const removeMutation = trpc.rehearsal.remove.useMutation({
+  const removeMutation = api.rehearsal.remove.useMutation({
     onSuccess: () => {
       utils.rehearsal.getMany.invalidate();
       router.replace('/admin/rehearsal');
@@ -79,28 +84,27 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   };
 
   return (
-    <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <div className='flex flex-col gap-2'>
         <TextInput
           label='Titel'
-          placeholder='Titel'
           withAsterisk
           spellCheck={false}
           {...form.getInputProps('title')}
         />
         <DatePicker
-          label='Datum'
-          withAsterisk
-          placeholder='Välj datum'
-          icon={<IconCalendar />}
-          clearable={false}
-          {...form.getInputProps('date')}
+        // label='Datum'
+        // withAsterisk
+        // placeholder='Välj datum'
+        // icon={<IconCalendar />}
+        // clearable={false}
+        // {...form.getInputProps('date')}
         />
         <Select
           withAsterisk
           label='Typ av repa'
           placeholder='Välj typ...'
-          data={
+          options={
             rehearsalTypes?.map((type) => ({
               label: type.name,
               value: type.id.toString(),
@@ -117,8 +121,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
         <div className='flex items-center justify-end gap-4'>
           {!newRehearsal && (
             <Button
-              type='button'
-              variant='outline'
+              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              color='transparent'
               compact
               onClick={() => {
                 if (!confirm('Är du säker på att du vill ta bort rep?')) return;
@@ -128,12 +132,8 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
               Ta bort
             </Button>
           )}
-          <Button
-            type='submit'
-            leftIcon={<IconSend />}
-            loading={mutation.isLoading}
-            className='bg-red-600'
-          >
+          <Button color='red' type='submit' disabled={mutation.isLoading}>
+            <IconSend />
             {newRehearsal ? 'Skapa' : 'Uppdatera'}
           </Button>
         </div>

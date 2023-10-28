@@ -1,4 +1,5 @@
-import { useMantineTheme } from '@mantine/core';
+'use client';
+
 import Head from 'next/head';
 import { useMemo } from 'react';
 import {
@@ -14,7 +15,7 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import { getOperatingYear } from '../pages/stats/[paramYear]';
+import { getOperatingYear } from 'utils/date';
 import { trpc } from '../utils/trpc';
 
 const encouragements = [
@@ -135,10 +136,6 @@ const PersonalStats = () => {
     [pentagon],
   );
 
-  const theme = useMantineTheme();
-  const primaryColor =
-    theme.colors[theme.primaryColor]?.[theme.primaryShade as number];
-
   const start = new Date(operatingYear, 8, 1);
   const end = new Date(operatingYear + 1, 7, 31);
   const { data: corpsRelations } = trpc.stats.getCorpsBuddy.useQuery({
@@ -250,14 +247,14 @@ const PersonalStats = () => {
                 type='monotone'
                 dataKey='points'
                 stroke='none'
-                fill={primaryColor}
+                fill={'#ce0c00'}
                 fillOpacity={0.9}
               />
               <Area
                 name='Corpsets spelningar'
                 type='monotone'
                 dataKey='maxGigs'
-                stroke={primaryColor}
+                stroke={'#ce0c00'}
                 strokeDasharray='3 3'
                 fill='none'
               />
@@ -286,8 +283,8 @@ const PersonalStats = () => {
                   <Radar
                     name='Poäng'
                     dataKey='value'
-                    stroke={primaryColor}
-                    fill={primaryColor}
+                    stroke={'#ce0c00'}
+                    fill={'#ce0c00'}
                     fillOpacity={0.6}
                     dot={true}
                   />

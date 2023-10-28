@@ -1,22 +1,15 @@
 'use client';
 
-import {
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from '@mantine/core';
-import { useHotkeys } from '@mantine/hooks';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ReactElement } from 'react';
-import { AppContainer } from '../components/app-container';
-import useColorScheme from '../hooks/use-color-scheme';
-import { GLOBAL_THEME } from '../utils/global-theme';
+import useColorScheme from 'hooks/use-color-scheme';
+import useKeyDown from 'hooks/use-key-down';
 
-type StyleProviderProps = {
+type AppProviderProps = {
   children: ReactElement;
-  defaultColorScheme: ColorScheme;
+  defaultColorScheme: 'light' | 'dark';
   session: Session | null;
 };
 
@@ -24,26 +17,15 @@ const AppProvider = ({
   children,
   defaultColorScheme,
   session,
-}: StyleProviderProps) => {
-  const { colorScheme, toggleColorScheme } = useColorScheme(defaultColorScheme);
-  // Allows user to toggle between light and dark mode by pressing `mod+Y`
-  useHotkeys([['mod+Y', () => toggleColorScheme()]]);
+}: AppProviderProps) => {
+  const { toggleColorScheme } = useColorScheme(defaultColorScheme);
+  // Allows user to toggle between light and dark mode by pressing `Control + y`
+  useKeyDown('ctrl+y', () => toggleColorScheme());
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{ ...GLOBAL_THEME, colorScheme }}
-      >
-        <SessionProvider session={session}>
-          <AppContainer>{children}</AppContainer>
-        </SessionProvider>
-        <ReactQueryDevtools />
-      </MantineProvider>
-    </ColorSchemeProvider>
+    <>
+      <SessionProvider session={session}>{children}</SessionProvider>
+      <ReactQueryDevtools />
+    </>
   );
 };
 

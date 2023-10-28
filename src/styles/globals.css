@@ -6,8 +6,6 @@ html,
 body {
   padding: 0;
   margin: 0;
-  /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
 }
 
 a {
@@ -26,21 +24,6 @@ a {
 
 body {
   overflow-y: scroll;
-}
-
-@font-face {
-  font-family: Castellar;
-  src: url(../../public/fonts/castelar.ttf);
-}
-
-@font-face {
-  font-family: Bahnschrift;
-  src: url(../../public/fonts/bahnschrift.ttf);
-}
-
-@font-face {
-  font-family: Haettenschweiler;
-  src: url(../../public/fonts/hatten.ttf);
 }
 
 svg.icon.icon-tabler {
@@ -83,4 +66,24 @@ h6 {
   font-size: 0.875rem;
   line-height: 1.3125rem;
   font-weight: 600;
+}
+
+::placeholder {
+  font-weight: 350;
+}
+
+:focus-visible {
+  @apply outline-none;
+  box-shadow: 0 0 2px 1px var(--corps-red);
+  transition: 0.1s;
+}
+
+.polka {
+  background-image: radial-gradient(var(--corps-white) 30%, transparent 30%),
+    radial-gradient(var(--corps-white) 30%, transparent 30%);
+  background-position:
+    0px 0px,
+    25px 25px;
+  background-size: 50px 50px;
+  background-color: var(--corps-red);
 }

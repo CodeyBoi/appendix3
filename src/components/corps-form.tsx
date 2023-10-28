@@ -1,8 +1,13 @@
-import { Button, MultiSelect, Select, TextInput } from '@mantine/core';
+'use client';
+
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { trpc } from '../utils/trpc';
-import FormLoadingOverlay from './form-loading-overlay';
+import { trpc } from 'utils/trpc';
+import FormLoadingOverlay from 'components/form-loading-overlay';
+import Select from 'components/input/select';
+import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
+import MultiSelect from './multi-select';
 
 const initialValues = {
   firstName: '',
@@ -26,7 +31,7 @@ interface AdminCorpsProps {
 }
 
 const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const creatingCorps = corpsId === 'new';
   const [loading, setLoading] = useState(!creatingCorps);
   const [submitting, setSubmitting] = useState(false);
@@ -97,7 +102,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     const bNumber = values.bNumber.trim()
       ? parseInt(values.bNumber.trim())
       : null;
-    mutation.mutateAsync({
+    await mutation.mutateAsync({
       ...values,
       number,
       bNumber,
@@ -112,37 +117,22 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <TextInput
             withAsterisk
             label='Förnamn'
-            placeholder='Förnamn'
             {...form.getInputProps('firstName')}
           />
           <TextInput
             withAsterisk
             label='Efternamn'
-            placeholder='Efternamn'
             {...form.getInputProps('lastName')}
           />
-          <TextInput
-            label='Smeknamn'
-            placeholder='Smeknamn'
-            {...form.getInputProps('nickName')}
-          />
+          <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <div className='flex gap-4'>
-            <TextInput
-              label='Nummer'
-              placeholder='Nummer'
-              {...form.getInputProps('number')}
-            />
-            <TextInput
-              label='Balettnr.'
-              placeholder='Balettnr.'
-              {...form.getInputProps('bNumber')}
-            />
+            <TextInput label='Nummer' {...form.getInputProps('number')} />
+            <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
           </div>
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
-            nothingFound='Instrument kunde inte laddas'
-            data={
+            options={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
             withAsterisk
@@ -151,23 +141,24 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           <MultiSelect
             label='Övriga instrument'
             placeholder='Välj instrument...'
-            clearable
-            nothingFound='Instrument kunde inte laddas'
-            data={
+            options={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
             {...form.getInputProps('otherInstruments')}
           />
-          <TextInput
-            withAsterisk
-            label='Email'
-            placeholder='exempel@domän.se'
-            {...form.getInputProps('email')}
-          />
+          <span className='self-end'>
+            <TextInput
+              withAsterisk
+              label='Email'
+              {...form.getInputProps('email')}
+            />
+          </span>
           <Select
             label='Behörighetsroll'
             placeholder='Välj behörighet...'
-            data={roles?.map((i) => ({ value: i.name, label: i.name })) ?? []}
+            options={
+              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
             withAsterisk
             {...form.getInputProps('role')}
           />
