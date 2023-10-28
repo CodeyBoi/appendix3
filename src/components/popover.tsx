@@ -56,7 +56,7 @@ const Popover = ({
 
   useEffect(() => {
     onChange?.(open);
-  }, [open, onChange]);
+  }, [open]);
 
   return (
     <div>

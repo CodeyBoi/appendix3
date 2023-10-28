@@ -34,7 +34,7 @@ const DatePicker = ({
     if (date) {
       onChange?.(date);
     }
-  }, [date, onChange]);
+  }, [date]);
 
   const getDateString = (date: Date | null) => {
     if (!date) {
