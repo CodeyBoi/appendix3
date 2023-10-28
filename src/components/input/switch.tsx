@@ -65,6 +65,7 @@ const Switch = ({
           type='checkbox'
           className='hidden'
           checked={checked}
+          readOnly
           {...props}
         />
       </button>

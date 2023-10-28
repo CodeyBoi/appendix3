@@ -86,7 +86,7 @@ const TextInput = ({
           {...props}
           value={value}
           className={
-            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-gray-300 pb-1 pt-5 pointer-events-auto' +
+            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-darkText pb-1 pt-5 pointer-events-auto' +
               (icon ? ' pr-2 pl-9' : ' px-2') +
               ' ' +
               props.className ?? ''
@@ -102,7 +102,7 @@ const TextInput = ({
               'flex gap-1 cursor-text transition-transform origin-left duration-100' +
               (focused || value !== ''
                 ? ' ' + 'scale-75 -translate-y-2.5'
-                : ' ' + 'text-gray-500') +
+                : ' ' + 'text-neutral-500') +
               (variant === 'login' ? ' ' + 'text-white' : '')
             }
           >

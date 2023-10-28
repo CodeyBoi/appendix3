@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Position =
   | 'bottom'
@@ -32,6 +32,9 @@ type PopoverProps = {
   position?: Position;
   bgColor?: BgColor;
   withArrow?: boolean;
+  closeOnBlur?: boolean;
+  opened?: boolean;
+  onChange?: (opened: boolean) => void;
 };
 
 const Popover = ({
@@ -39,15 +42,34 @@ const Popover = ({
   popover: dropdown,
   position = 'bottom-right',
   bgColor = 'default',
+  closeOnBlur = true,
+  opened,
+  onChange,
 }: PopoverProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(opened ?? false);
+
+  useEffect(() => {
+    console.log('Opened changed to ', opened, ' from ', open);
+    if (opened !== undefined) {
+      setOpen(opened);
+    }
+  }, [opened]);
+
+  useEffect(() => {
+    onChange?.(open);
+  }, [open]);
+
   return (
     <div>
       <div className='relative'>
         <div
           tabIndex={0}
           onClick={() => setOpen(!open)}
-          onBlur={() => setTimeout(() => setOpen(false), 100)}
+          onBlur={() => {
+            if (closeOnBlur) {
+              setTimeout(() => setOpen(false), 100);
+            }
+          }}
           className='cursor-pointer'
         >
           {target}

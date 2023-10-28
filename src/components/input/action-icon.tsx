@@ -23,6 +23,7 @@ const ActionIcon = ({
 }: ActionIconProps) => {
   const element = (
     <button
+      type='button'
       className={`flex items-center justify-center p-1 rounded ${variants[variant]}`}
       onClick={onClick}
       {...props}

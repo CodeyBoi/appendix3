@@ -41,7 +41,7 @@ const Select = ({
   const optionElements = [];
   if (placeholder) {
     optionElements.push(
-      <option value='' disabled={true}>
+      <option value='' disabled={true} key='placeholder'>
         {placeholder}
       </option>,
     );
@@ -58,21 +58,22 @@ const Select = ({
   return (
     <div
       className={
-        'flex flex-col' + (disabled ? ' opacity-50 pointer-events-none' : '')
+        'relative flex flex-col pt-2' +
+        (disabled ? ' opacity-50 pointer-events-none' : '')
       }
     >
       {label && (
-        <label className='flex items-center justify-between'>
+        <label className='absolute flex items-center justify-between px-1 text-sm translate-x-2 -translate-y-2.5 bg-white text-neutral-500 dark:bg-darkBg'>
           <div className='flex gap-1'>
             {label}
-            {withAsterisk && <span className='text-red-600'>*</span>}
+            {withAsterisk && <span className='text-base text-red-600'>*</span>}
           </div>
           {error && <span className='text-xs text-red-600'>{error}</span>}
         </label>
       )}
       <select
         className={
-          'p-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-700 dark:text-gray-300' +
+          'px-2 pt-3 pb-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-darkText' +
           (error ? ' ' + errorStyle : '')
         }
         onChange={handleChange}

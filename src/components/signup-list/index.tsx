@@ -214,9 +214,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
                 {addNewline && (
                   <tr>
                     <td colSpan={2}>
-                      <h5 className='mt-2 first-letter:capitalize'>
+                      <h6 className='mt-2 first-letter:capitalize'>
                         {toPlural(signup.instrument.name)}
-                      </h5>
+                      </h6>
                     </td>
                   </tr>
                 )}

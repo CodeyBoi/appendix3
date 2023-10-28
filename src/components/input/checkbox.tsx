@@ -14,7 +14,7 @@ const Checkbox = (props: CheckboxProps) => {
     >
       <label className='flex items-start gap-2 leading-none cursor-pointer'>
         <input
-          className='w-4 h-4 rounded shadow-sm cursor-pointer accent-red-600'
+          className='w-4 h-4 text-white rounded shadow-sm cursor-pointer accent-red-600'
           type='checkbox'
           {...props}
         />

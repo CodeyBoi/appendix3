@@ -143,12 +143,11 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             {...form.getInputProps('points')}
           />
           <DatePicker
-          // withAsterisk
-          // label='Spelningsdatum'
-          // placeholder='Välj datum...'
-          // icon={<IconCalendar />}
-          // clearable={false}
-          // {...form.getInputProps('date')}
+            withAsterisk
+            label='Spelningsdatum'
+            placeholder='Välj datum...'
+            // clearable={false}
+            {...form.getInputProps('date')}
           />
           <TextInput
             label='Plats'
@@ -178,20 +177,16 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             />
           </div>
           <DatePicker
-          // label='Anmälningsstart'
-          // description='Lämna tom för att tillåta anmälan omedelbart'
-          // placeholder='Välj datum...'
-          // icon={<IconCalendar />}
-          // clearable={true}
-          // {...form.getInputProps('signupStart')}
+            label='Anmälningsstart'
+            placeholder='Välj datum...'
+            {...form.getInputProps('signupStart')}
+            // clearable={true}
           />
           <DatePicker
-          // label='Anmälningsstopp'
-          // description='Lämna tom för att tillåta anmälan tills spelningen börjar'
-          // placeholder='Välj datum...'
-          // icon={<IconCalendar />}
-          // clearable={true}
-          // {...form.getInputProps('signupEnd')}
+            label='Anmälningsstopp'
+            placeholder='Välj datum...'
+            {...form.getInputProps('signupEnd')}
+            // clearable={true}
           />
           <TextInput
             label='Kryssruta 1'
