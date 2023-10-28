@@ -11,15 +11,14 @@ const cookieParser = (cookieString: string) => {
 
   const cookieObj = splittedPairs.reduce(
     (obj: ObjectType, cookie: string[]) => {
-      obj[decodeURIComponent(cookie[0]!.trim())] = decodeURIComponent(
-        cookie[1]!.trim(),
-      );
-
+      const [c1, c2] = cookie;
+      if (c1 && c2) {
+        obj[decodeURIComponent(c1.trim())] = decodeURIComponent(c2.trim());
+      }
       return obj;
     },
     {},
   );
-
   return cookieObj;
 };
 

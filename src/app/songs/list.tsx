@@ -90,7 +90,7 @@ const SongList = ({ songs }: { songs: Song[] }) => {
   const search = searchParams?.get('search') ?? '';
   const songList = useMemo(
     () => genSongList(filterSongs(songs, search)),
-    [songs, search, filterSongs, genSongList],
+    [songs, search],
   );
   return songList;
 };
