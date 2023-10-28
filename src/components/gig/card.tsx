@@ -2,13 +2,13 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import React from 'react';
 import Datebox from 'components/gig/datebox';
-import GigMenu from 'components/gig/menu';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
 import { Gig as PrismaGig } from '@prisma/client';
 import { IconDotsVertical } from '@tabler/icons-react';
-import GigMenuContent from './menu/content';
+import GigMenuContent from './menu-content';
 import ActionIcon from 'components/input/action-icon';
+import Popover from 'components/popover';
 
 type GigId = string;
 type Gig = PrismaGig & {
@@ -65,7 +65,8 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
           <Link className='flex-grow' href={`/gig/${gig.id}`}>
             <h4 className='cursor-pointer'>{gig.title}</h4>
           </Link>
-          <GigMenu
+          <Popover
+            position='left-bottom'
             target={
               <ActionIcon variant='subtle'>
                 <IconDotsVertical />
