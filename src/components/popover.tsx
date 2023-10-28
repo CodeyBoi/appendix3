@@ -7,14 +7,8 @@ type Position =
   | 'bottom-right'
   | 'bottom-left'
   | 'left-bottom'
-  | 'top';
-
-type GigMenuProps = {
-  target: React.ReactNode;
-  dropdown: React.ReactNode;
-  position?: Position;
-  withArrow?: boolean;
-};
+  | 'top'
+  | 'top-right';
 
 const positionClasses: Record<Position, string> = {
   'bottom-right': '',
@@ -22,28 +16,46 @@ const positionClasses: Record<Position, string> = {
   'bottom-left': 'right-0',
   'left-bottom': 'top-0 right-full',
   top: 'bottom-full left-1/2 -translate-x-1/2',
+  'top-right': 'bottom-full',
+};
+
+type BgColor = 'red' | 'default';
+
+const bgColorClasses: Record<BgColor, string> = {
+  red: 'bg-red-600 text-white',
+  default: 'bg-white dark:bg-darkBg',
+};
+
+type PopoverProps = {
+  target: React.ReactNode;
+  popover: React.ReactNode;
+  position?: Position;
+  bgColor?: BgColor;
+  withArrow?: boolean;
 };
 
 const Popover = ({
   target,
-  dropdown,
+  popover: dropdown,
   position = 'bottom-right',
-}: GigMenuProps) => {
+  bgColor = 'default',
+}: PopoverProps) => {
   const [open, setOpen] = useState(false);
   return (
     <div>
       <div className='relative'>
         <div
+          tabIndex={0}
           onClick={() => setOpen(!open)}
-          // onBlur={() => setTimeout(() => setOpen(false), 100)}
+          onBlur={() => setTimeout(() => setOpen(false), 100)}
           className='cursor-pointer'
         >
           {target}
         </div>
         <div
-          className={`absolute rounded shadow z-10 bg-white dark:bg-darkBg transition-opacity ${
+          className={`absolute rounded shadow z-10 transition-opacity ${
             open ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          } ${positionClasses[position]}`}
+          } ${positionClasses[position]} ${bgColorClasses[bgColor]}`}
         >
           {dropdown}
         </div>

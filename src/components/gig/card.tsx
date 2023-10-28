@@ -72,7 +72,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 <IconDotsVertical />
               </ActionIcon>
             }
-            dropdown={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
+            popover={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
           />
         </div>
         <div className='flex flex-col justify-between gap-2 lg:flex-row'>

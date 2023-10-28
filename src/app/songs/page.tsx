@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import Loading from 'components/loading';
 import ParamsTextInput from 'components/input/params-text-input';
 import { IconSearch, IconMusicPlus } from '@tabler/icons-react';
-import Link from 'next/link';
 import ActionIcon from 'components/input/action-icon';
 
 export const metadata: Metadata = {

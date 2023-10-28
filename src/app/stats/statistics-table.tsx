@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import Button from 'components/input/button';
 import { api } from 'trpc/server';
+import CorpsDisplay from 'components/corps/display';
 
 interface StatisticsTableProps {
   start: Date;
@@ -17,10 +18,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
 
-  const [corps, corpsPoints] = await Promise.all([
-    api.corps.getSelf.query(),
-    api.stats.getManyPoints.query({ corpsIds }),
-  ]);
+  const corps = await api.corps.getSelf.query();
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -60,7 +58,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
       {corpsIds && corpsIds.length === 0 && (
         <div>Det finns inga statistikuppgifter för denna period.</div>
       )}
-      {corpsIds && corpsIds.length !== 0 && corpsPoints && corpsStats && (
+      {corpsIds && corpsIds.length !== 0 && corpsStats && (
         <div className='flex flex-col gap-2'>
           <div>
             {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
@@ -69,11 +67,9 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
           <table className='divide-y divide-solid dark:border-neutral-700'>
             <thead>
               <tr>
-                <th>#</th>
                 <th className='text-left'>Namn</th>
                 <th className='px-1 text-center'>Poäng</th>
                 <th className='px-1 text-center'>Närvaro</th>
-                <th className='px-1 text-center'>Totala poäng</th>
               </tr>
             </thead>
             <tbody className='text-sm divide-y divide-solid dark:border-neutral-700'>
@@ -119,16 +115,14 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                       </tr>
                     )}
                     <tr>
-                      <td className='py-1 pr-2 text-right'>
-                        {stat.number ?? 'p.e.'}
+                      <td className='py-1'>
+                        <CorpsDisplay corps={stat} />
                       </td>
-                      <td>{`${stat.displayName}`}</td>
                       <td className='text-center'>{stat.gigsAttended}</td>
                       <td
                         align='center'
                         style={{ paddingLeft: '0px' }}
                       >{`${Math.ceil(stat.attendence * 100)}%`}</td>
-                      <td align='center'>{corpsPoints.points[id]}</td>
                     </tr>
                   </React.Fragment>
                 );

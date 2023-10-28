@@ -3,22 +3,9 @@
 import React, { useMemo } from 'react';
 import { trpc } from 'utils/trpc';
 import SelectSearch, { SelectSearchProps } from './input/search-select';
+import { detailedName } from 'utils/name-format';
 
 const MIN_SEARCH_LENGTH = 2;
-
-export const formatName = (c: {
-  number: number | null;
-  firstName: string;
-  lastName: string;
-  nickName: string | null;
-}) => {
-  const { number, firstName, lastName, nickName } = c;
-  const corpsNumber = number ? '#' + number.toString() : 'p.e.';
-  const name = `${firstName.trim()}${
-    nickName ? ' "' + nickName.trim() + '"' : ''
-  } ${lastName.trim()}`;
-  return `${corpsNumber} ${name}`;
-};
 
 type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeSelf?: boolean;
@@ -57,7 +44,7 @@ const SelectCorps = ({
     const data = initialCorps
       ? [
           {
-            label: formatName(initialCorps),
+            label: detailedName(initialCorps),
             value: initialCorps.id,
           },
         ]
@@ -71,7 +58,7 @@ const SelectCorps = ({
               (!excludeIds || !excludeIds.includes(c.id)),
           )
           .map((c) => ({
-            label: formatName(c),
+            label: detailedName(c),
             value: c.id,
           })),
       );

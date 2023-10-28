@@ -1,9 +1,17 @@
 import { IconX } from '@tabler/icons-react';
+import CorpsDisplay from 'components/corps/display';
 import Checkbox from 'components/input/checkbox';
 
-interface SignupEntryProps {
-  name: string;
+type Corps = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  nickName: string | null;
   number: number | null;
+};
+
+interface SignupEntryProps {
+  corps: Corps;
   attended: boolean;
   checkbox1?: boolean;
   checkbox2?: boolean;
@@ -13,8 +21,7 @@ interface SignupEntryProps {
 }
 
 const Entry = ({
-  name,
-  number,
+  corps,
   attended,
   checkbox1,
   checkbox2,
@@ -22,11 +29,11 @@ const Entry = ({
   setAttendance,
   handleDelete,
 }: SignupEntryProps) => {
-  const corpsNumber = number ? '#' + number.toString() : 'p.e.';
   return (
     <>
-      <td className='pr-1 text-right w-max'>{corpsNumber}</td>
-      <td>{name}</td>
+      <td>
+        <CorpsDisplay corps={corps} />
+      </td>
       {isAdmin && (
         <>
           {checkbox1 !== undefined && (

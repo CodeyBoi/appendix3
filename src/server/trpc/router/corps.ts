@@ -34,7 +34,7 @@ export const corpsRouter = router({
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.corps.findUnique({
+      const corpsQuery = ctx.prisma.corps.findUnique({
         include: {
           instruments: {
             select: {
@@ -61,6 +61,27 @@ export const corpsRouter = router({
           id: input.id,
         },
       });
+      const pointsQuery = ctx.prisma.gig.aggregate({
+        _sum: {
+          points: true,
+        },
+        where: {
+          signups: {
+            some: {
+              corpsId: input.id,
+              attended: true,
+            },
+          },
+        },
+      });
+      const [corps, points] = await Promise.all([corpsQuery, pointsQuery]);
+      if (!corps) {
+        return null;
+      }
+      return {
+        ...corps,
+        points: points._sum.points ?? 0,
+      };
     }),
 
   updateSelf: protectedProcedure

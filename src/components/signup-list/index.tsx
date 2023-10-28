@@ -194,7 +194,6 @@ const SignupList = ({ gigId }: SignupListProps) => {
           <tr>
             {showAdminTools ? (
               <>
-                <th className='pr-6 text-right'>#</th>
                 <th className='text-left'>Namn</th>
                 {gig?.checkbox1 && <th className='px-2'>{gig.checkbox1}</th>}
                 {gig?.checkbox2 && <th className='px-2'>{gig.checkbox2}</th>}
@@ -223,9 +222,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
                 )}
                 <tr>
                   <Entry
-                    name={signup.corps.displayName}
+                    corps={signup.corps}
                     attended={signup.attended}
-                    number={signup.corps.number}
                     isAdmin={showAdminTools}
                     setAttendance={(attended) =>
                       editAttendance.mutate({

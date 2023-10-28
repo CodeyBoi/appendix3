@@ -61,6 +61,8 @@ export const songRouter = router({
       select: {
         id: true,
         title: true,
+        melody: true,
+        author: true,
       },
       orderBy: {
         title: 'asc',
