@@ -20,9 +20,9 @@ const Song = () => {
 
   return (
     <div className='flex flex-col max-w-sm'>
-      <h2>{(newSong ? 'Luo' : 'Päivitä') + ' kappale'}</h2>
+      <h2>{(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}</h2>
       {!newSong && !song && failureCount < MAX_TRIES && (
-        <Loading msg='Noutava laulu...' />
+        <Loading msg='Laddar sång...' />
       )}
       {!newSong && failureCount >= MAX_TRIES && (
         <AlertError msg='Kunde inte hämta sång. Har du mixtrat med URL:en?' />

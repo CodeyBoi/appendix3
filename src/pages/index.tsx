@@ -56,7 +56,7 @@ const makeGigList = (
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
-    const month = gigDate?.toLocaleDateString('fi-FI', { month: 'long' });
+    const month = gigDate?.toLocaleDateString('sv-SE', { month: 'long' });
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
@@ -80,14 +80,14 @@ const Home: NextPage = () => {
     startDate: currentDate,
   });
 
-  const month = currentDate.toLocaleDateString('fi-FI', { month: 'long' });
+  const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
   return (
     <div className='flex flex-col max-w-4xl space-y-4'>
       <h2 className='text-2xl md:text-4xl'>
         {gigs && gigs.length === 0
           ? 'Inga kommande spelningar :('
-          : 'Tulevia keikkoja'}
+          : 'Kommande spelningar'}
       </h2>
       <div className='flex flex-col space-y-4'>
         {gigsLoading && (

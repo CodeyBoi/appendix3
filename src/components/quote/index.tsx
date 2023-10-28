@@ -1,5 +1,5 @@
 import { Quote } from '@prisma/client';
-import { IconPencil } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons';
 import Link from 'next/link';
 import { trpc } from '../../utils/trpc';
 

@@ -46,8 +46,8 @@ const MyApp = ({
       >
         <SessionProvider session={session}>
           <Head>
-            <title>Umpisuoli</title>
-            <meta property='og:title' content='Umpisuoli' key='title' />
+            <title>Blindtarmen</title>
+            <meta property='og:title' content='Blindtarmen' key='title' />
             <meta
               name='viewport'
               content='width=device-width, initial-scale=1, viewport-fit=cover'

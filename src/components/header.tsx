@@ -9,7 +9,7 @@ const AppendixHeader = () => {
     <Header
       height={56}
       sx={(theme) => ({
-        backgroundColor: theme?.colors?.blue?.[7],
+        backgroundColor: theme?.colors?.red?.[5],
         color: theme.white,
         zIndex: 516,
         boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.3)',

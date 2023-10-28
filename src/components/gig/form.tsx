@@ -9,7 +9,7 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Gig } from '@prisma/client';
-import { IconCalendar, IconClock } from '@tabler/icons-react';
+import { IconCalendar, IconClock } from '@tabler/icons';
 import React from 'react';
 import { trpc } from '../../utils/trpc';
 import FormLoadingOverlay from '../form-loading-overlay';

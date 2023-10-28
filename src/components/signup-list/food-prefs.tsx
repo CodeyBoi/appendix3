@@ -1,5 +1,5 @@
 import { CorpsFoodPrefs } from '@prisma/client';
-import { IconDownload } from '@tabler/icons-react';
+import { IconDownload } from '@tabler/icons';
 import Button from '../button';
 
 type Signup = {

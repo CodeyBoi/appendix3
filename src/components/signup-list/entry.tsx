@@ -1,5 +1,5 @@
 import { Checkbox } from '@mantine/core';
-import { IconX } from '@tabler/icons-react';
+import { IconX } from '@tabler/icons';
 
 interface SignupEntryProps {
   name: string;

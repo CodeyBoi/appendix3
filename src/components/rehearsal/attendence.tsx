@@ -1,6 +1,6 @@
 import { ActionIcon } from '@mantine/core';
 import { Rehearsal } from '@prisma/client';
-import { IconPlus } from '@tabler/icons-react';
+import { IconPlus } from '@tabler/icons';
 import dayjs from 'dayjs';
 import React from 'react';
 import { trpc } from '../../utils/trpc';

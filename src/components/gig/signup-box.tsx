@@ -62,7 +62,7 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
           disabled={signupRefetching || submitting}
           value={status}
           fullWidth
-          color='blue'
+          color='red'
           onChange={(s) => {
             if (!s || !corps) {
               return;
@@ -79,16 +79,16 @@ const GigSignupBox = ({ gigId, checkbox1, checkbox2 }: GigSignupBoxProps) => {
             });
           }}
           data={[
-            { label: 'Joo', value: 'Ja' },
-            { label: 'Ei', value: 'Nej' },
-            { label: 'Kenties', value: 'Kanske' },
+            { label: 'Ja', value: 'Ja' },
+            { label: 'Nej', value: 'Nej' },
+            { label: 'Kanske', value: 'Kanske' },
           ]}
         />
         {(corps?.instruments.length ?? 0) > 1 && (
           <Select
             disabled={signupRefetching || submitting}
             size='xs'
-            label='Instrumentti'
+            label='Instrument'
             value={instrument}
             onChange={(val) => {
               if (!val || !corps) {

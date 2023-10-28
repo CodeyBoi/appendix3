@@ -66,27 +66,27 @@ const SongForm = ({ song }: SongFormProps) => {
     <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
       <div className='flex flex-col gap-2'>
         <TextInput
-          label='Otsikko'
-          placeholder='Otsikko'
+          label='Titel'
+          placeholder='Titel'
           withAsterisk
           spellCheck={false}
           {...form.getInputProps('title')}
         />
         <TextInput
-          label='Tekijä'
-          placeholder='Tekijä'
+          label='Författare'
+          placeholder='Författare'
           spellCheck={false}
           {...form.getInputProps('author')}
         />
         <TextInput
-          label='Melodia'
-          placeholder='Melodia'
+          label='Melodi'
+          placeholder='Melodi'
           spellCheck={false}
           {...form.getInputProps('melody')}
         />
         <Textarea
-          label='Sanoitukset'
-          placeholder='Sanoitukset'
+          label='Sångtext'
+          placeholder='Sångtext'
           withAsterisk
           autosize
           {...form.getInputProps('lyrics')}
@@ -104,11 +104,11 @@ const SongForm = ({ song }: SongFormProps) => {
                 }
               }}
             >
-              POISTA KAPPALE
+              RADERA SÅNG
             </Button>
           )}
           <Button className='bg-red-600' type='submit'>
-            {(newSong ? 'Luo' : 'Päivitä') + ' kappale'}
+            {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
           </Button>
         </div>
       </div>

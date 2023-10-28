@@ -1,6 +1,6 @@
 import { Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons-react';
+import { IconUser } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { trpc } from '../../utils/trpc';
@@ -297,7 +297,7 @@ const SignupList = ({ gig }: SignupListProps) => {
       {isAdmin && (
         <>
           <Switch
-            label='Muokkaa ilmoituksia'
+            label='Redigera anmälningar'
             checked={editMode}
             onChange={(event) => {
               setEditMode(event.currentTarget.checked);

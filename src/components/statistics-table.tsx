@@ -1,5 +1,5 @@
 import { Divider } from '@mantine/core';
-import { IconMoodNerd } from '@tabler/icons-react';
+import { IconMoodNerd } from '@tabler/icons';
 import Link from 'next/link';
 import React from 'react';
 import { trpc } from '../utils/trpc';
@@ -17,7 +17,10 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
     start,
     end,
   });
-  const { nbrOfGigs, corpsStats, corpsIds } = stats ?? {};
+  const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
+    stats ?? {};
+
+  const { data: corps } = trpc.corps.getSelf.useQuery();
 
   const { data: corpsPoints } = trpc.stats.getManyPoints.useQuery(
     { corpsIds },
@@ -26,15 +29,34 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const isNow = today <= end;
 
   const nbrOfGigsString =
-    'Sijoittajien ensimmäiset reaktiot euromaiden päätöslauselmaan olivat ristiriitaisia. ';
+    nbrOfGigs !== 0
+      ? `Denna period ${
+          isNow ? 'har vi hittills haft' : 'hade vi'
+        } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`
+      : '';
+  const positiveGigsString =
+    (positivelyCountedGigs ?? 0) > 0
+      ? `, där ${positivelyCountedGigs} ${
+          isNow ? 'räknats' : 'räknades'
+        } positivt.`
+      : '.';
 
-  const positiveGigsString = '';
-
+  const ownPoints =
+    corps && stats ? stats.corpsStats[corps.id]?.gigsAttended : undefined;
+  const ownAttendence =
+    corps && stats ? stats.corpsStats[corps.id]?.attendence : undefined;
   // Somehow ownPoints is a string, so == is used instead of ===
   const ownPointsString =
-    'Mitchellin tekniikkaa on verrattu venäläisiin maatuskanukkeihin.';
+    ownPoints && ownAttendence && nbrOfGigs !== 0
+      ? `Du ${isNow ? 'har varit' : 'var'} med på ${ownPoints} spelning${
+          ownPoints == 1 ? '' : 'ar'
+        }, vilket ${isNow ? 'motsvarar' : 'motsvarade'} ${Math.ceil(
+          ownAttendence * 100,
+        )}% närvaro.`
+      : undefined;
 
   if (!corpsStats || !corpsPoints) {
     return <Loading msg='Laddar statistik...' />;
@@ -53,21 +75,18 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
       )}
       {corpsIds && corpsIds.length !== 0 && corpsPoints && corpsStats && (
         <div className='flex flex-col gap-2'>
-          <div className='max-w-lg'>
-            <div>
-              {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
-            </div>
-            <br />
-            {ownPointsString && <div>{ownPointsString}</div>}
+          <div>
+            {nbrOfGigsString + (nbrOfGigs !== 0 ? positiveGigsString : '')}
           </div>
+          {ownPointsString && <div>{ownPointsString}</div>}
           <table className='divide-y divide-solid'>
             <thead>
               <tr>
                 <th>#</th>
-                <th className='text-left'>Nimi</th>
-                <th className='px-1 text-center'>Pisteet</th>
-                <th className='px-1 text-center'>Läsnäolo</th>
-                <th className='px-1 text-center'>Yhteensä pisteitä</th>
+                <th className='text-left'>Namn</th>
+                <th className='px-1 text-center'>Poäng</th>
+                <th className='px-1 text-center'>Närvaro</th>
+                <th className='px-1 text-center'>Totala poäng</th>
               </tr>
             </thead>
             <tbody className='text-sm divide-y divide-solid'>
@@ -103,8 +122,8 @@ const StatisticsTable = ({ start, end }: StatisticsTableProps) => {
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
                           <Divider
-                            color='blue'
-                            label='Numero'
+                            color='red'
+                            label='Nummer'
                             labelPosition='center'
                           />
                         </td>

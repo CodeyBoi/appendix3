@@ -87,9 +87,9 @@ const Quotes = () => {
   return (
     <div className='flex flex-col max-w-xl gap-2'>
       <Head>
-        <title>Sitaatit</title>
+        <title>Citat</title>
       </Head>
-      <h2>Sitaatit</h2>
+      <h2>Citat</h2>
       <QuoteForm />
       {quoteList}
       {hasNextPage && (

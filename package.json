@@ -9,7 +9,7 @@
     "lint": "next lint",
     "start": "next start",
     "importolddb": "ts-node ./src/scripts/importOldDb",
-    "startstaging": "next start -p 3001",
+    "startstaging": "next start -p 5160",
     "stage": "yarn lint && ts-node ./src/scripts/stage",
     "deploy": "ts-node ./src/scripts/deploy"
   },
@@ -23,7 +23,7 @@
     "@mantine/next": "^5.6.0",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "5",
-    "@tabler/icons-react": "^2.40.0",
+    "@tabler/icons": "^1.106.0",
     "@tanstack/react-query": "^4.10.0",
     "@trpc/client": "^10.41.0",
     "@trpc/next": "^10.41.0",
