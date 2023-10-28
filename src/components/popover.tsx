@@ -49,7 +49,6 @@ const Popover = ({
   const [open, setOpen] = useState(opened ?? false);
 
   useEffect(() => {
-    console.log('Opened changed to ', opened, ' from ', open);
     if (opened !== undefined) {
       setOpen(opened);
     }

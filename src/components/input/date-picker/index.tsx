@@ -71,7 +71,6 @@ const DatePicker = ({
             <DatePickerDropdown
               onDateChange={(date) => {
                 setDate(date);
-                console.log({ date, popoverOpened });
                 setPopoverOpened(false);
               }}
             />
