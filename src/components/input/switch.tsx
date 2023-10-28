@@ -65,7 +65,6 @@ const Switch = ({
           type='checkbox'
           className='hidden'
           checked={checked}
-          onChange={() => {}}
           {...props}
         />
       </button>
