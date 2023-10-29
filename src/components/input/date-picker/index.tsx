@@ -44,23 +44,23 @@ const DatePicker = ({
   };
 
   return (
-    <div className='relative flex h-10 mt-2 border rounded shadow-sm dark:border-neutral-800'>
+    <div className='relative mt-2 flex h-10 rounded border shadow-sm dark:border-neutral-800'>
       <input
-        className='absolute flex-grow w-full h-full px-3 pt-3 pb-1 text-left bg-transparent'
+        className='absolute h-full w-full grow bg-transparent px-3 pb-1 pt-3 text-left'
         type='text'
         value={getDateString(date)}
         placeholder={placeholder}
         readOnly
       />
       {label && (
-        <label className='absolute flex items-center justify-between px-1 text-sm translate-x-2 -translate-y-2.5 bg-white text-neutral-500 dark:text-neutral-500 dark:bg-darkBg'>
+        <label className='absolute flex -translate-y-2.5 translate-x-2 items-center justify-between bg-white px-1 text-sm text-neutral-500 dark:bg-darkBg dark:text-neutral-500'>
           <div className='flex gap-1'>
             {label}
             {withAsterisk && <span className='text-base text-red-600'>*</span>}
           </div>
         </label>
       )}
-      <div className='absolute right-0 flex items-center justify-center w-10 h-10'>
+      <div className='absolute right-0 flex h-10 w-10 items-center justify-center'>
         <Popover
           opened={popoverOpened}
           closeOnBlur={false}

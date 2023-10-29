@@ -59,10 +59,10 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
       currentDate.subtract(1, 'day').isBefore(gig.signupEnd, 'day'));
 
   return (
-    <div className='border rounded shadow-md dark:border-neutral-800'>
-      <div className='flex flex-col p-4 space-y-2'>
-        <div className='flex items-start justify-between flex-nowrap'>
-          <Link className='flex-grow' href={`/gig/${gig.id}`}>
+    <div className='rounded border shadow-md dark:border-neutral-800'>
+      <div className='flex flex-col space-y-2 p-4'>
+        <div className='flex flex-nowrap items-start justify-between'>
+          <Link className='grow' href={`/gig/${gig.id}`}>
             <h4 className='cursor-pointer'>{gig.title}</h4>
           </Link>
           <Popover
@@ -76,8 +76,8 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
           />
         </div>
         <div className='flex flex-col justify-between gap-2 lg:flex-row'>
-          <Link className='flex-grow' href={`/gig/${gig.id}`}>
-            <div className='flex items-center flex-grow space-x-4 cursor-pointer'>
+          <Link className='grow' href={`/gig/${gig.id}`}>
+            <div className='flex grow cursor-pointer items-center space-x-4'>
               <Datebox date={dayjs(gig.date)} />
               <div className='text-xs leading-normal'>
                 <i>{gig.type.name}</i>
@@ -101,7 +101,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             )}
           </div>
         </div>
-        <div className='text'>{gig.description}</div>
+        <div>{gig.description}</div>
       </div>
     </div>
   );

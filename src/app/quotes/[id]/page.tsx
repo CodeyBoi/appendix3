@@ -6,7 +6,7 @@ const QuotePage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const newQuote = id === 'new';
   return (
-    <div className='flex flex-col max-w-sm gap-2'>
+    <div className='flex max-w-sm flex-col gap-2'>
       <h2>{(newQuote ? 'Skapa' : 'Uppdatera') + ' citat'}</h2>
       <Suspense fallback={<Loading msg='Hämtar citat...' />}>
         <QuoteEdit id={id} />

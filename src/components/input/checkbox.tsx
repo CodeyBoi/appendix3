@@ -12,9 +12,9 @@ const Checkbox = (props: CheckboxProps) => {
         (props.disabled ? ' pointer-events-none opacity-50' : '')
       }
     >
-      <label className='flex items-start gap-2 leading-none cursor-pointer'>
+      <label className='flex cursor-pointer items-start gap-2 leading-none'>
         <input
-          className='w-4 h-4 text-white rounded shadow-sm cursor-pointer accent-red-600'
+          className='h-4 w-4 cursor-pointer rounded text-white accent-red-600 shadow-sm'
           type='checkbox'
           {...props}
         />

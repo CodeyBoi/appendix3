@@ -1,14 +1,12 @@
 {
   "recommendations": [
-    "heybourn.headwind",
-    "esbenp.prettier-vscode",
+    "rvest.vs-code-prettier-eslint",
     "Prisma.prisma",
+    "dbaeumer.vscode-eslint",
     "WillLuke.nextjs",
     "Akumzy.vscode-prisma-raw-query-sql",
     "bradlc.vscode-tailwindcss",
     "austenc.tailwind-docs",
-    "stivo.tailwind-fold",
-    "formulahendry.auto-rename-tag",
     "usernamehw.errorlens"
   ]
 }

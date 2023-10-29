@@ -21,7 +21,7 @@ const NumberInput = ({
   ...props
 }: NumberInputProps) => {
   return (
-    <div className='flex flex-col flex-shrink min-w-0'>
+    <div className='flex min-w-0 shrink flex-col'>
       {label && (
         <div className='flex items-center justify-between'>
           <label className='flex gap-1'>

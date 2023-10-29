@@ -7,29 +7,29 @@ const GigSkeleton = ({ widths = [] }: GigSkeletonProps) => {
     widths;
   const textWidth = Math.floor(textW * 100) + '%';
   return (
-    <div className='border rounded shadow-md border-neutral-500/20'>
-      <div className='flex flex-col p-4 space-y-2 animate-pulse'>
-        <div className='flex content-start justify-between flex-nowrap'>
+    <div className='rounded border border-neutral-500/20 shadow-md'>
+      <div className='flex animate-pulse flex-col space-y-2 p-4'>
+        <div className='flex flex-nowrap content-start justify-between'>
           <div
-            className='h-6 mt-1 mb-1 rounded bg-gray-500/20'
+            className='my-1 h-6 rounded bg-gray-500/20'
             style={{ width: titleWidth }}
           />
         </div>
         <div className='flex flex-col justify-between md:flex-row'>
-          <div className='flex flex-grow'>
-            <div className='flex flex-row items-center flex-grow space-x-4'>
-              <div className='h-20 m-1 rounded-sm bg-gray-500/20 w-14' />
+          <div className='flex grow'>
+            <div className='flex grow flex-row items-center space-x-4'>
+              <div className='m-1 h-20 w-14 rounded-sm bg-gray-500/20' />
               <div>
                 <div
-                  className='w-24 h-2 mt-1 mb-1 rounded bg-gray-500/20'
+                  className='my-1 h-2 w-24 rounded bg-gray-500/20'
                   style={{ width: typeWidth }}
                 />
                 <div
-                  className='w-24 h-2 mt-1 mb-1 rounded bg-gray-500/20'
+                  className='my-1 h-2 w-24 rounded bg-gray-500/20'
                   style={{ width: locationWidth }}
                 />
-                <div className='w-20 h-2 mt-1 mb-1 rounded bg-gray-500/20' />
-                <div className='w-24 h-2 mt-1 mb-1 rounded bg-gray-500/20' />
+                <div className='my-1 h-2 w-20 rounded bg-gray-500/20' />
+                <div className='my-1 h-2 w-24 rounded bg-gray-500/20' />
               </div>
             </div>
           </div>

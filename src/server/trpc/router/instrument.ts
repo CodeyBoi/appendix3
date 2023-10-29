@@ -1,12 +1,11 @@
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure } from '../trpc';
 
 export const instrumentRouter = router({
-  getAll: publicProcedure
-    .query(async ({ ctx }) => {
-      return ctx.prisma.instrument.findMany({
-        orderBy: {
-          id: "asc",
-        },
-      });
-    }),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.instrument.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
+  }),
 });

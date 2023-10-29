@@ -63,7 +63,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
     <>
       <Link href={`/gig/${gig.id}`}>
         <Button
-          className='flex justify-start w-full hover:bg-red-600/10'
+          className='flex w-full justify-start hover:bg-red-600/10'
           color='transparent'
         >
           <IconUsers />
@@ -72,7 +72,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
       </Link>
       <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
         <Button
-          className='flex justify-start w-full hover:bg-red-600/10'
+          className='flex w-full justify-start hover:bg-red-600/10'
           color='transparent'
           disabled={calenderLink === ''}
         >
@@ -88,7 +88,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
           <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
           <Link href={`/admin/gig/${gig.id}`}>
             <Button
-              className='flex justify-start w-full hover:bg-red-600/10'
+              className='flex w-full justify-start hover:bg-red-600/10'
               color='transparent'
             >
               <IconEdit />
@@ -97,7 +97,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
           </Link>
           <Link href={`/admin/gig/${gig.id}/info`}>
             <Button
-              className='flex justify-start w-full hover:bg-red-600/10'
+              className='flex w-full justify-start hover:bg-red-600/10'
               color='transparent'
             >
               <IconApple />

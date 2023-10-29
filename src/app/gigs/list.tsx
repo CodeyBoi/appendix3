@@ -47,8 +47,8 @@ const GigList = async ({ year, tab }: GigListProps) => {
               </h3>
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>
-              <div className='flex items-center gap-2 py-1 pl-2 cursor-pointer hover:bg-red-300/5'>
-                <div className='flex-shrink-0 w-24'>
+              <div className='flex cursor-pointer items-center gap-2 py-1 pl-2 hover:bg-red-300/5'>
+                <div className='w-24 shrink-0'>
                   {dayjs(gig.date).format('YYYY-MM-DD')}
                 </div>
                 {gig.title}

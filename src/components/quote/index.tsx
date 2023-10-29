@@ -42,7 +42,7 @@ const Quote = ({ quote }: QuoteProps) => {
   });
   return (
     <div className='flex flex-nowrap'>
-      <div className='flex-grow pl-3'>
+      <div className='grow pl-3'>
         <div className='flex items-baseline space-x-1'>
           <div className='font-bold'>{writtenByName}</div>
           <div className='text-xs font-thin text-gray-500'>{time}</div>

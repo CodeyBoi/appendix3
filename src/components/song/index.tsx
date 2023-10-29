@@ -26,8 +26,8 @@ const Song = async ({ song: songProp }: SongProps) => {
   }
 
   return (
-    <div className='flex flex-col max-w-3xl'>
-      <div className='flex items-start gap-2 flex-nowrap'>
+    <div className='flex max-w-3xl flex-col'>
+      <div className='flex flex-nowrap items-start gap-2'>
         <h3>{song.title}</h3>
         {isAdmin && (
           <Link href={`/admin/songs/${song.id}`}>

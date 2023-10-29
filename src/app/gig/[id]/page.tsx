@@ -23,7 +23,7 @@ export const generateMetadata = async ({
 const GigPage = async ({ params }: { params: { id: string } }) => {
   const gigId = params.id;
   return (
-    <div className='flex flex-col max-w-4xl space-y-4'>
+    <div className='flex max-w-4xl flex-col space-y-4'>
       <h2>Anmälningar</h2>
       <GigCard gig={gigId} />
       <Suspense fallback={<Loading msg='Laddar anmälningar...' />}>

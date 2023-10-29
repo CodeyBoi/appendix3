@@ -76,7 +76,7 @@ const toElement = (link: NavbarLink) => (
   <Link href={link.href} key={link.label}>
     <Button
       color='navbutton'
-      className='flex justify-start w-full hover:bg-red-600'
+      className='flex w-full justify-start hover:bg-red-600'
     >
       {link.icon}
       {link.label}
@@ -85,28 +85,26 @@ const toElement = (link: NavbarLink) => (
 );
 
 const userTabElement = (
-  <div className='flex flex-col flex-grow gap-1'>
-    {userTab.links.map(toElement)}
-  </div>
+  <div className='flex grow flex-col gap-1'>{userTab.links.map(toElement)}</div>
 );
 
 const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
   const adminTabElement = isAdmin ? (
-    <div className='flex flex-col flex-grow gap-1'>
+    <div className='flex grow flex-col gap-1'>
       {adminTab.links.map(toElement)}
     </div>
   ) : undefined;
   return (
     <div
       style={{ height: 'calc(100vh - 56px)' }}
-      className='flex flex-col justify-between gap-2 px-3 pt-3 pb-16 bg-red-700 border-0 lg:pb-4 w-72'
+      className='flex w-72 flex-col justify-between gap-2 border-0 bg-red-700 px-3 pb-16 pt-3 lg:pb-4'
     >
       <NavbarControl userTab={userTabElement} adminTab={adminTabElement} />
       <div className='flex flex-col'>
         <Button
           href='/about'
           color='navbutton'
-          className='flex justify-start w-full hover:bg-red-600'
+          className='flex w-full justify-start hover:bg-red-600'
         >
           <IconInfoSquare />
           Om sidan

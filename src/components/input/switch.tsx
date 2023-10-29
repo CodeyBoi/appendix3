@@ -52,12 +52,12 @@ const Switch = ({
       <button
         type='button'
         onClick={handleClick}
-        className={`flex items-center h-6 gap-2 rounded-full w-11 transition-all ${
+        className={`flex h-6 w-11 items-center gap-2 rounded-full transition-all ${
           checked ? 'bg-red-600' : 'bg-neutral-300 dark:bg-neutral-800'
         } ${className}`}
       >
         <span
-          className={`relative w-4 h-4 m-1 rounded-full transition-transform bg-white transform ${
+          className={`relative m-1 h-4 w-4 rounded-full bg-white transition-transform${
             checked ? 'translate-x-5' : ''
           }`}
         />
@@ -69,7 +69,7 @@ const Switch = ({
           {...props}
         />
       </button>
-      <span className='pl-2 text-sm text-gray-700 cursor-pointer dark:text-gray-300'>
+      <span className='cursor-pointer pl-2 text-sm text-gray-700 dark:text-gray-300'>
         {label}
       </span>
     </label>

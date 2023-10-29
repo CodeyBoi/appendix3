@@ -72,7 +72,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                 <th className='px-1 text-center'>Närvaro</th>
               </tr>
             </thead>
-            <tbody className='text-sm divide-y divide-solid dark:border-neutral-700'>
+            <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
@@ -104,12 +104,12 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                     {addMemberDivider && (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
-                          <div className='flex items-center py-1 flex-nowrap'>
-                            <div className='flex-grow h-px bg-red-600' />
+                          <div className='flex flex-nowrap items-center py-1'>
+                            <div className='h-px grow bg-red-600' />
                             <div className='px-2 text-xs text-red-600'>
                               Nummer
                             </div>
-                            <div className='flex-grow h-px bg-red-600' />
+                            <div className='h-px grow bg-red-600' />
                           </div>
                         </td>
                       </tr>

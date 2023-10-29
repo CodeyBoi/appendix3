@@ -6,13 +6,13 @@ interface LoadingProps {
 
 const Loading = ({ msg }: LoadingProps) => {
   return (
-    <div className='flex gap-4 p-3 w-fit'>
+    <div className='flex w-fit gap-4 p-3'>
       <div className='text-xl'>{msg}</div>
-      <div className='flex items-center justify-center h-full'>
+      <div className='flex h-full items-center justify-center'>
         <div role='status'>
           <svg
             aria-hidden='true'
-            className='w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600'
+            className='mr-2 h-8 w-8 animate-spin fill-red-600 text-gray-200 dark:text-gray-600'
             viewBox='0 0 100 101'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'

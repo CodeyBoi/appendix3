@@ -63,7 +63,7 @@ const Select = ({
       }
     >
       {label && (
-        <label className='absolute flex items-center justify-between px-1 text-sm translate-x-2 -translate-y-2.5 bg-white text-neutral-500 dark:bg-darkBg'>
+        <label className='absolute flex -translate-y-2.5 translate-x-2 items-center justify-between bg-white px-1 text-sm text-neutral-500 dark:bg-darkBg'>
           <div className='flex gap-1'>
             {label}
             {withAsterisk && <span className='text-base text-red-600'>*</span>}

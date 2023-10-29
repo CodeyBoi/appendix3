@@ -57,7 +57,7 @@ const HomePage = async () => {
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
   return (
-    <div className='flex flex-col max-w-4xl gap-4'>
+    <div className='flex max-w-4xl flex-col gap-4'>
       <Suspense
         fallback={
           <>

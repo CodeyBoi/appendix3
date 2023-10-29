@@ -59,11 +59,11 @@ const CorpsInfobox = ({ id }: CorpsInfoboxProps) => {
       : '') +
     '.';
   return (
-    <div className='flex flex-col p-2 text-sm w-min'>
-      <div className='text-lg font-bold whitespace-nowrap'>
+    <div className='flex w-min flex-col p-2 text-sm'>
+      <div className='whitespace-nowrap text-lg font-bold'>
         {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
         {nickName && (
-          <span className='text-xs font-light bg-transparent text-neutral-500'>
+          <span className='bg-transparent text-xs font-light text-neutral-500'>
             {'a.k.a. ' + nickName}
           </span>
         )}

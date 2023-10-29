@@ -16,7 +16,7 @@ const StatsLayout = ({ children }: { children: ReactNode }) => {
     })) ?? [];
 
   return (
-    <div className='flex flex-col gap-2 max-w-max'>
+    <div className='flex max-w-max flex-col gap-2'>
       <h2>Statistik</h2>
       <div className='w-36'>
         <StatsYearSelect options={yearData} label='Verksamhetsår' />

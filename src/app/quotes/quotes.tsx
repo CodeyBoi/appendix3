@@ -23,7 +23,7 @@ const Quotes = () => {
   );
 
   return (
-    <div className='flex flex-col max-w-xl gap-2'>
+    <div className='flex max-w-xl flex-col gap-2'>
       <h2>Citat</h2>
       <QuoteForm />
       {quotes?.pages.map((page) => (

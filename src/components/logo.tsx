@@ -5,7 +5,7 @@ const Logo = () => {
   const isAprilFools = date.getMonth() === 3 && date.getDate() === 1;
   return (
     <Link href='/'>
-      <div className='text-2xl text-white cursor-pointer font-castelar'>
+      <div className='cursor-pointer font-castelar text-2xl text-white'>
         {isAprilFools ? 'Bihålan' : 'Blindtarmen'}
       </div>
     </Link>

@@ -77,14 +77,14 @@ const Login = () => {
   }, [router, session]);
 
   return (
-    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
+    <div className='polka fixed left-0 top-0 flex h-screen w-screen items-center justify-center font-display'>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           setEmail(e.currentTarget.email.value);
         }}
       >
-        <div className='flex flex-col items-center gap-6 p-4 bg-red-600 rounded shadow-2xl'>
+        <div className='flex flex-col items-center gap-6 rounded bg-red-600 p-4 shadow-2xl'>
           <h2 className='text-center text-white md:text-5xl'>
             {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
             <span className='text-red-400'>Blindtarmen</span>!
@@ -92,7 +92,7 @@ const Login = () => {
           {!success && (
             <div className='w-4/5 scale-125 lg:w-2/3 lg:scale-150'>
               <div className='flex w-full gap-2 p-2 max-lg:flex-col'>
-                <div className='flex-grow'>
+                <div className='grow'>
                   <TextInput
                     variant='login'
                     className='text-white placeholder:text-white'
@@ -110,10 +110,7 @@ const Login = () => {
                     errorColor='white'
                   />
                 </div>
-                <Button
-                  className='flex-shrink border border-white'
-                  type='submit'
-                >
+                <Button className='shrink border border-white' type='submit'>
                   Logga in
                 </Button>
               </div>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ButtonHTMLAttributes } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 type ActionIconVariant = 'default' | 'subtle';
 const variants: Record<ActionIconVariant, string> = {
@@ -19,12 +20,16 @@ const ActionIcon = ({
   onClick,
   variant = 'default',
   href,
+  className,
   ...props
 }: ActionIconProps) => {
   const element = (
     <button
       type='button'
-      className={`flex items-center justify-center p-1 rounded ${variants[variant]}`}
+      className={twMerge(
+        `flex items-center justify-center p-1 rounded ${variants[variant]}`,
+        className,
+      )}
       onClick={onClick}
       {...props}
     >

@@ -101,7 +101,7 @@ const TextArea = ({
           onBlur={handleBlur}
           {...props}
         />
-        <div className='absolute left-0 flex pt-3 pl-2 pointer-events-none'>
+        <div className='pointer-events-none absolute left-0 flex pl-2 pt-3'>
           {floatingLabel && (
             <label
               className={
@@ -117,7 +117,7 @@ const TextArea = ({
           )}
         </div>
         {rightSection && (
-          <div className='absolute top-0 right-0 p-2'>{rightSection}</div>
+          <div className='absolute right-0 top-0 p-2'>{rightSection}</div>
         )}
       </div>
     </div>

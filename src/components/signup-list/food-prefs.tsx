@@ -82,7 +82,7 @@ const FoodPrefs = ({
         key={row.corpsId}
         className='divide-x divide-solid dark:divide-neutral-800'
       >
-        <td className='pr-2 text-right w-44'>{row.data[0]}</td>
+        <td className='w-44 pr-2 text-right'>{row.data[0]}</td>
         {checkbox1 !== undefined && (
           <td className='text-center'>{row.data[1]}</td>
         )}
