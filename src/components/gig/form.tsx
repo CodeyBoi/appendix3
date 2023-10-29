@@ -96,7 +96,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
     },
   });
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     setSubmitting(true);
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
@@ -106,9 +106,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       hiddenFor: values.isPublic ? [] : values.hiddenFor,
     };
     if (newGig) {
-      mutation.mutate(data);
+      await mutation.mutateAsync(data);
     } else {
-      mutation.mutate({ ...data, gigId });
+      await mutation.mutateAsync({ ...data, gigId });
     }
   };
 
@@ -122,6 +122,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
               label='Titel'
               withAsterisk
               spellCheck={false}
+              autoFocus
               {...form.getInputProps('title')}
             />
           </span>
@@ -170,9 +171,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           </div>
           <div className='col-span-1 md:col-span-2'>
             <TextArea
-              autoSize
               label='Beskrivning'
-              placeholder='Beskrivning'
               {...form.getInputProps('description')}
             />
           </div>

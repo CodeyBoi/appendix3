@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { cn } from '../utils/class-names';
-import ActionIcon from './input/action-icon';
 
 type Position =
   | 'bottom'
@@ -46,9 +45,9 @@ const Popover = ({
   return (
     <div>
       <div className='relative'>
-        <ActionIcon variant='subtle' onClick={() => setOpen(!open)}>
+        <div className='cursor-pointer' onClick={() => setOpen(!open)}>
           {target}
-        </ActionIcon>
+        </div>
         <div
           className={cn(
             'absolute z-20 rounded p-1 shadow transition-opacity',

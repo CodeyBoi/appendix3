@@ -1,17 +1,15 @@
 'use client';
 
-import { TextareaHTMLAttributes, useEffect, useState } from 'react';
+import { TextareaHTMLAttributes, useCallback, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 type TextAreaProps = Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'onChange' | 'defaultValue' | 'value'
+  'onChange' | 'defaultValue' | 'value' | 'placeholder'
 > & {
   label?: string;
   onChange?: (value: string) => void;
   withAsterisk?: boolean;
-  onDebounce?: (value: string) => void;
-  debounceTime?: number;
   autoSize?: boolean;
   rightSection?: React.ReactNode;
   value?: string;
@@ -22,72 +20,49 @@ const TextArea = ({
   label,
   onChange,
   withAsterisk = false,
-  onDebounce,
-  debounceTime = 200,
   autoSize = true,
   rightSection,
-  placeholder,
   onFocus,
   onBlur,
-  value: propValue,
-  defaultValue,
+  value,
   ...props
 }: TextAreaProps) => {
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
   const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState('');
-  if (defaultValue && value === '') {
-    setValue(defaultValue);
-    onChange?.(defaultValue);
-  }
 
-  useEffect(() => {
-    if (propValue) {
-      setValue(propValue);
-    }
-  }, [propValue]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const handleAutosize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (autoSize) {
+          const element = e.currentTarget;
+          element.style.height = 'inherit';
+          element.style.height = `${element.scrollHeight + 8}px`;
+        }
+      };
+      onChange?.(e.currentTarget.value);
+      if (autoSize) {
+        handleAutosize(e);
+      }
+    },
+    [autoSize, onChange],
+  );
 
-  const handleAutosize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (autoSize) {
-      const element = e.currentTarget;
-      element.style.height = 'inherit';
-      element.style.height = `${element.scrollHeight + 8}px`;
-    }
-  };
+  const handleFocus = useCallback(
+    (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setFocused(true);
+      onFocus?.(e);
+    },
+    [onFocus],
+  );
 
-  const handleDebounce = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    const value = e.currentTarget.value;
-    const timeout = setTimeout(() => {
-      onDebounce?.(value);
-    }, debounceTime);
-    setTimeoutId(timeout);
-  };
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setFocused(false);
+      onBlur?.(e);
+    },
+    [onBlur],
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (onDebounce) {
-      handleDebounce(e);
-    }
-    setValue(e.currentTarget.value);
-    onChange?.(e.currentTarget.value);
-    if (autoSize) {
-      handleAutosize(e);
-    }
-  };
-
-  const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    setFocused(true);
-    onFocus?.(e);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    setFocused(false);
-    onBlur?.(e);
-  };
-
-  const floatingLabel = label ?? placeholder;
+  const floatingLabel = label;
 
   return (
     <div className='flex flex-col'>
@@ -100,6 +75,7 @@ const TextArea = ({
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          value={value}
           {...props}
         />
         <div className='pointer-events-none absolute left-0 flex pl-2 pt-3'>

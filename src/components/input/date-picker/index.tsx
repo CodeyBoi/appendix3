@@ -5,6 +5,7 @@ import DatePickerDropdown from './dropdown';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
+import ActionIcon from '../action-icon';
 
 type DatePickerProps = {
   value?: Date;
@@ -63,7 +64,11 @@ const DatePicker = ({
       <div className='absolute right-0 flex h-10 w-10 items-center justify-center'>
         <Popover
           position='left-bottom'
-          target={<IconCalendar />}
+          target={
+            <ActionIcon variant='subtle'>
+              <IconCalendar />
+            </ActionIcon>
+          }
           popover={<DatePickerDropdown onDateChange={setDate} />}
         />
       </div>
