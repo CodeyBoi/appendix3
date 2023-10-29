@@ -3,6 +3,7 @@
 import { ReactNode, SelectHTMLAttributes, useEffect, useState } from 'react';
 import TextInput from './text-input';
 import useKeyDown from 'hooks/use-key-down';
+import { cn } from 'utils/class-names';
 
 export type SelectSearchItem = {
   label: string;
@@ -47,7 +48,7 @@ function SelectSearch(props: SelectSearchProps) {
     onChange,
     options,
     error,
-    className = '',
+    className,
     icon,
     filter = defaultFilter,
     nothingFound,
@@ -164,7 +165,7 @@ function SelectSearch(props: SelectSearchProps) {
   const optionElements = options.flatMap(toOption);
 
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={cn('flex flex-col', className)}>
       <TextInput
         label={label}
         icon={icon}
@@ -175,9 +176,10 @@ function SelectSearch(props: SelectSearchProps) {
       />
       <div className='relative'>
         <div
-          className={`absolute z-20 flex max-h-96 max-w-max flex-col overflow-y-auto rounded-b border border-solid bg-white dark:border-neutral-700 dark:bg-darkBg ${
-            focused ? '' : 'hidden'
-          }`}
+          className={cn(
+            'absolute z-20 flex max-h-96 max-w-max flex-col overflow-y-auto rounded-b border border-solid bg-white dark:border-neutral-700 dark:bg-darkBg',
+            !focused && 'hidden',
+          )}
         >
           {optionElements.length > 0 ? (
             optionElements
@@ -185,22 +187,6 @@ function SelectSearch(props: SelectSearchProps) {
             <div className='p-2'>{nothingFound ?? 'Inget hittades'}</div>
           )}
         </div>
-        {/* <select
-          value={value}
-          onChange={(e) => handleChange(e.currentTarget.value)}
-          disabled={disabled}
-          className={`z-20 font-display w-full px-4 py-2 pr-8 text-base text-gray-700 bg-white border hidden border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-            error ? 'border-red-500' : ''
-          } ${focused ? '' : ''}`}
-        >
-          {optionElements.length > 0 ? (
-            optionElements
-          ) : (
-            <option value='' disabled>
-              {nothingFound ?? 'Inget hittades'}
-            </option>
-          )}
-        </select> */}
       </div>
       {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
     </div>

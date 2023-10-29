@@ -1,6 +1,7 @@
 'use client';
 
 import { SelectHTMLAttributes, useState } from 'react';
+import { cn } from 'utils/class-names';
 
 export type SelectItem = {
   value: string | number;
@@ -29,6 +30,7 @@ const Select = ({
   disabled = false,
   error,
   placeholder,
+  className,
   ...props
 }: SelectProps) => {
   const [selected, setSelected] = useState<string>('');
@@ -57,10 +59,11 @@ const Select = ({
 
   return (
     <div
-      className={
-        'relative flex flex-col pt-2' +
-        (disabled ? ' opacity-50 pointer-events-none' : '')
-      }
+      className={cn(
+        'relative flex flex-col pt-2',
+        disabled && 'pointer-events-none opacity-50',
+        className,
+      )}
     >
       {label && (
         <label className='absolute flex -translate-y-2.5 translate-x-2 items-center justify-between bg-white px-1 text-sm text-neutral-500 dark:bg-darkBg'>
@@ -72,10 +75,10 @@ const Select = ({
         </label>
       )}
       <select
-        className={
-          'px-2 pt-3 pb-2 bg-transparent border rounded shadow-sm cursor-pointer font-display dark:border-neutral-800 dark:text-darkText' +
-          (error ? ' ' + errorStyle : '')
-        }
+        className={cn(
+          'cursor-pointer rounded border bg-transparent px-2 pb-2 pt-3 font-display shadow-sm dark:border-neutral-800 dark:text-darkText',
+          error && errorStyle,
+        )}
         onChange={handleChange}
         value={selected}
         {...props}

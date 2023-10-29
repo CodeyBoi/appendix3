@@ -1,7 +1,7 @@
+import clsx from 'clsx';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
-import clsx from 'clsx';
+import { cn } from 'utils/class-names';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: Color;
@@ -26,21 +26,17 @@ const Button = ({
   className,
   ...props
 }: ButtonProps) => {
-  const classNames = [colorClasses[color]];
-  if (disabled) {
-    classNames.push('opacity-50 pointer-events-none');
-  }
-
   const buttonElement = (
     <button
       type='button'
       {...props}
-      className={twMerge(
-        'rounded h-min transition-colors hover:shadow active:translate-y-px ' +
-          classNames.join(' ') +
-          ' ' +
-          (compact ? 'px-1 py-0.5' : 'px-3 py-2.5'),
+      className={cn(
+        'h-min rounded transition-colors hover:shadow active:translate-y-px',
+        colorClasses[color],
+        compact ? 'px-1 py-0.5' : 'px-3 py-2.5',
+        disabled && 'pointer-events-none opacity-50',
         className,
+        cn('px-1 py-2', 'bg-transparent text-white'),
       )}
     >
       <div className='flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap font-display'>

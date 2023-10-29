@@ -16,8 +16,15 @@
             "argsIgnorePattern": "^_",  // ignore unused variables starting with _
             "varsIgnorePattern": "^_"   // ignore unused variables starting with _
           }
+        ],
+        "tailwindcss/classnames-order": [
+          "warn",
+          {
+            "callees": ["classnames", "clsx", "twMerge", "cx", "cn"],
+            "tags": ["tw"]
+          }
         ]
       }
     }
-  ]
+  ]  
 }

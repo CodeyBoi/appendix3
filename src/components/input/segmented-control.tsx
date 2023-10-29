@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from 'utils/class-names';
 
 type Color = 'red' | 'gray';
 type SegmentedControlOption = {
@@ -13,6 +14,7 @@ type SegmentedControlProps = {
   onChange?: (value: string | number) => void;
   options: SegmentedControlOption[];
   disabled?: boolean;
+  className?: string;
 };
 
 const colorVariants = {
@@ -32,32 +34,26 @@ const SegmentedControl = (props: SegmentedControlProps) => {
   const color = props.color ?? 'gray';
   const classes = colorVariants[color];
   return (
-    <div className='flex basis-0 select-none divide-x divide-gray-500/20 rounded shadow'>
+    <div
+      className={cn(
+        'flex basis-0 select-none divide-x divide-gray-500/20 rounded shadow',
+        props.className,
+      )}
+    >
       {props.options.map((option, i) => {
         const selected = option.value === value;
-        const cns = [];
-        if (selected) {
-          cns.push(classes.selected);
-          cns.push('font-bold translate-y-px');
-        } else {
-          cns.push(classes.notSelected);
-        }
-        if (props.disabled) {
-          cns.push('opacity-50 pointer-events-none');
-        }
-        if (i === 0) {
-          cns.push('rounded-l');
-        }
-        if (i === props.options.length - 1) {
-          cns.push('rounded-r');
-        }
         return (
           <button
             key={option.value}
-            className={
-              'px-4 py-2 h-min flex-1 font-display text-center transition-colors ' +
-              cns.join(' ')
-            }
+            className={cn(
+              'h-min flex-1 px-4 py-2 text-center font-display transition-colors',
+              selected && classes.selected,
+              selected && 'translate-y-px font-bold',
+              !selected && classes.notSelected,
+              props.disabled && 'pointer-events-none opacity-50',
+              i === 0 && 'rounded-l',
+              i === props.options.length - 1 && 'rounded-r',
+            )}
             onClick={() => {
               setValue(option.value);
               props.onChange?.(option.value);

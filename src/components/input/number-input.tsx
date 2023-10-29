@@ -1,4 +1,5 @@
 import { InputHTMLAttributes } from 'react';
+import { cn } from 'utils/class-names';
 
 type NumberInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -18,6 +19,7 @@ const NumberInput = ({
   onChange,
   withAsterisk = false,
   error,
+  className,
   ...props
 }: NumberInputProps) => {
   return (
@@ -33,10 +35,11 @@ const NumberInput = ({
       )}
       <input
         type='number'
-        className={
-          'flex-grow flex-shrink min-w-0 p-2 bg-transparent border rounded dark:border-neutral-800 cursor-text font-display dark:text-gray-300' +
-          (error ? ' ' + errorStyle : '')
-        }
+        className={cn(
+          'min-w-0 flex-shrink flex-grow cursor-text rounded border bg-transparent p-2 font-display dark:border-neutral-800 dark:text-gray-300',
+          error && errorStyle,
+          className,
+        )}
         onChange={(e) => onChange?.(Number(e.currentTarget.value))}
         {...props}
       />

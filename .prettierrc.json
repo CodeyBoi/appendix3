@@ -1,4 +1,4 @@
 {
   "tailwindConfig": "./tailwind.config.js",
-  "tailwindFunctions": ["clsx", "tw", "twMerge"]
+  "tailwindFunctions": ["tw", "twMerge", "cn"]
 }
