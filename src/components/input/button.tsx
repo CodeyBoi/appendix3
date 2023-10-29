@@ -35,7 +35,6 @@ const Button = ({
         compact ? 'px-1 py-0.5' : 'px-3 py-2.5',
         disabled && 'pointer-events-none opacity-50',
         className,
-        cn('px-1 py-2', 'bg-transparent text-white'),
       )}
     >
       <div className='flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap font-display'>
