@@ -16,13 +16,15 @@ const useColorScheme = (initialColorScheme?: ColorScheme) => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     initialColorScheme ?? 'light',
   );
+
+  const mutation = trpc.corps.setColorScheme.useMutation();
   const toggleColorScheme = (value?: ColorScheme) => {
     const newColorScheme =
       value || (colorScheme === 'light' ? 'dark' : 'light');
     setColorScheme(newColorScheme);
+    mutation.mutate(newColorScheme);
     applyScheme(newColorScheme);
   };
-  trpc.corps.setColorScheme.useQuery(colorScheme);
 
   /* April Fools */
   const date = new Date();

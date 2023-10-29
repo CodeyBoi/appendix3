@@ -65,17 +65,18 @@ model VerifiedToken {
 }
 
 model Corps {
-  id        String   @id @default(cuid())
-  number    Int?
-  bNumber   Int?
-  firstName String
-  lastName  String
-  nickName  String?
-  isActive  Boolean  @default(true)
-  userId    String   @unique
-  roleId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  number      Int?
+  bNumber     Int?
+  firstName   String
+  lastName    String
+  nickName    String?
+  isActive    Boolean  @default(true)
+  userId      String   @unique
+  roleId      Int?
+  colorScheme String   @default("light")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   role            Role?             @relation(fields: [roleId], references: [id])
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
