@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { cn } from '../utils/class-names';
+import ActionIcon from './input/action-icon';
 
 type Position =
   | 'bottom'
@@ -32,9 +34,6 @@ type PopoverProps = {
   position?: Position;
   bgColor?: BgColor;
   withArrow?: boolean;
-  closeOnBlur?: boolean;
-  opened?: boolean;
-  onChange?: (opened: boolean) => void;
 };
 
 const Popover = ({
@@ -42,44 +41,30 @@ const Popover = ({
   popover: dropdown,
   position = 'bottom-right',
   bgColor = 'default',
-  closeOnBlur = true,
-  opened,
-  onChange,
 }: PopoverProps) => {
-  const [open, setOpen] = useState(opened ?? false);
-
-  useEffect(() => {
-    if (opened !== undefined) {
-      setOpen(opened);
-    }
-  }, [opened]);
-
-  useEffect(() => {
-    onChange?.(open);
-  }, [open]);
-
+  const [open, setOpen] = useState(false);
   return (
     <div>
       <div className='relative'>
-        <div
-          tabIndex={0}
-          onClick={() => setOpen(!open)}
-          onBlur={() => {
-            if (closeOnBlur) {
-              setTimeout(() => setOpen(false), 100);
-            }
-          }}
-          className='cursor-pointer'
-        >
+        <ActionIcon variant='subtle' onClick={() => setOpen(!open)}>
           {target}
-        </div>
+        </ActionIcon>
         <div
-          className={`absolute z-10 rounded shadow transition-opacity ${
-            open ? 'opacity-100' : 'pointer-events-none opacity-0'
-          } ${positionClasses[position]} ${bgColorClasses[bgColor]}`}
+          className={cn(
+            'absolute z-20 rounded p-1 shadow transition-opacity',
+            open ? 'opacity-100' : 'pointer-events-none opacity-0',
+            positionClasses[position],
+            bgColorClasses[bgColor],
+          )}
         >
           {dropdown}
         </div>
+        {open && (
+          <div
+            className='fixed right-0 top-0 z-10 h-screen w-screen'
+            onClick={() => setOpen(false)}
+          />
+        )}
       </div>
     </div>
   );

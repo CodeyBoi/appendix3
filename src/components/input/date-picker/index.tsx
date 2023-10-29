@@ -22,7 +22,6 @@ const DatePicker = ({
   placeholder,
 }: DatePickerProps) => {
   const [date, setDate] = useState<Date | null>(null);
-  const [popoverOpened, setPopoverOpened] = useState(false);
 
   useEffect(() => {
     if (value) {
@@ -34,6 +33,7 @@ const DatePicker = ({
     if (date) {
       onChange?.(date);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   const getDateString = (date: Date | null) => {
@@ -62,19 +62,9 @@ const DatePicker = ({
       )}
       <div className='absolute right-0 flex h-10 w-10 items-center justify-center'>
         <Popover
-          opened={popoverOpened}
-          closeOnBlur={false}
           position='left-bottom'
           target={<IconCalendar />}
-          onChange={setPopoverOpened}
-          popover={
-            <DatePickerDropdown
-              onDateChange={(date) => {
-                setDate(date);
-                setPopoverOpened(false);
-              }}
-            />
-          }
+          popover={<DatePickerDropdown onDateChange={setDate} />}
         />
       </div>
     </div>

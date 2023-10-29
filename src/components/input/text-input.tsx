@@ -1,6 +1,7 @@
 'use client';
 
 import React, { InputHTMLAttributes, useEffect, useState } from 'react';
+import { cn } from 'utils/class-names';
 
 export type ErrorColor = 'red' | 'white';
 export type TextInputVariant = 'default' | 'login';
@@ -75,22 +76,21 @@ const TextInput = ({
   return (
     <div className='flex min-w-0 shrink flex-col'>
       <div
-        className={
-          'relative flex items-center bg-transparent border rounded shadow-sm h-12 dark:border-neutral-800' +
-          (error ? ' ' + errorStyle : '')
-        }
+        className={cn(
+          'relative flex h-12 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
+          error && errorStyle,
+        )}
       >
         {icon && <div className='absolute px-2'>{icon}</div>}
         <input
           type='text'
           {...props}
           value={value}
-          className={
-            'flex-grow flex-shrink min-w-0 bg-transparent cursor-text font-display dark:text-darkText pb-1 pt-5 pointer-events-auto' +
-              (icon ? ' pr-2 pl-9' : ' px-2') +
-              ' ' +
-              props.className ?? ''
-          }
+          className={cn(
+            'pointer-events-auto min-w-0 flex-shrink flex-grow cursor-text bg-transparent pb-1 pt-5 font-display dark:text-darkText',
+            icon ? ' pl-9 pr-2' : ' px-2',
+            props.className,
+          )}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -98,13 +98,13 @@ const TextInput = ({
         <div className='pointer-events-none absolute left-0 flex'>
           <div className={icon ? 'w-9' : 'w-2'} />
           <label
-            className={
-              'flex gap-1 cursor-text transition-transform origin-left duration-100' +
-              (focused || value !== ''
-                ? ' ' + 'scale-75 -translate-y-2.5'
-                : ' ' + 'text-neutral-500') +
-              (variant === 'login' ? ' ' + 'text-white' : '')
-            }
+            className={cn(
+              'flex origin-left cursor-text gap-1 transition-transform duration-100',
+              focused || value !== ''
+                ? '-translate-y-2.5 scale-75'
+                : 'text-neutral-500',
+              variant === 'login' && 'text-white',
+            )}
           >
             {label}
             {withAsterisk && <span className='text-red-600'>*</span>}
@@ -116,7 +116,7 @@ const TextInput = ({
           {description}
         </span>
       )}
-      {error && <span className={'text-xs' + ' ' + errorStyle}>{error}</span>}
+      {error && <span className={cn('text-xs', errorStyle)}>{error}</span>}
     </div>
   );
 };

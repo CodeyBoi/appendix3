@@ -31,6 +31,8 @@ const AccountPreferences = () => {
 
   const { colorScheme, toggleColorScheme } = useColorScheme();
 
+  console.log({ colorScheme });
+
   const form = useForm<FormValues>({
     initialValues,
     validate: {

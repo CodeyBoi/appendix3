@@ -1,6 +1,7 @@
 'use client';
 
 import { InputHTMLAttributes, useEffect, useState } from 'react';
+import { cn } from '../../utils/class-names';
 
 type SwitchProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -52,14 +53,17 @@ const Switch = ({
       <button
         type='button'
         onClick={handleClick}
-        className={`flex h-6 w-11 items-center gap-2 rounded-full transition-all ${
-          checked ? 'bg-red-600' : 'bg-neutral-300 dark:bg-neutral-800'
-        } ${className}`}
+        className={cn(
+          'flex h-6 w-11 items-center gap-2 rounded-full transition-all',
+          checked ? 'bg-red-600' : 'bg-neutral-300 dark:bg-neutral-800',
+          className,
+        )}
       >
         <span
-          className={`relative m-1 h-4 w-4 rounded-full bg-white transition-transform${
-            checked ? 'translate-x-5' : ''
-          }`}
+          className={cn(
+            'relative m-1 h-4 w-4 rounded-full bg-white transition-transform',
+            checked && 'translate-x-5',
+          )}
         />
         <input
           type='checkbox'
