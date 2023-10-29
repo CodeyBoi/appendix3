@@ -1,5 +1,4 @@
 import { CorpsFoodPrefs } from '@prisma/client';
-import { setCookie } from 'cookies-next';
 import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
 import { adminProcedure } from './../trpc';
@@ -393,12 +392,15 @@ export const corpsRouter = router({
 
   setColorScheme: protectedProcedure
     .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const { req, res } = { req: ctx.req, res: ctx.res };
-      setCookie('tw-color-scheme', input, {
-        req,
-        res,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50),
+    .mutation(async ({ ctx, input }) => {
+      const corpsId = ctx.session.user.corps.id;
+      await ctx.prisma.corps.update({
+        where: {
+          id: corpsId,
+        },
+        data: {
+          colorScheme: input,
+        },
       });
       return { success: true };
     }),

@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-import { prisma } from '../../../server/db/client';
-import { GenerateToken } from '../../../server/utils/token';
-import { CustomPrismaAdapter } from '../../../utils/CustomPrismaAdapter';
-import sendVerificationRequest from '../../../utils/email-auth';
+import { prisma } from 'server/db/client';
+import { GenerateToken } from 'server/utils/token';
+import { CustomPrismaAdapter } from 'utils/CustomPrismaAdapter';
+import sendVerificationRequest from 'utils/email-auth';
 
 type NextAuthOptionsCallback = (
   req: NextApiRequest,

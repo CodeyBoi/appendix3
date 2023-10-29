@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParamsState } from 'hooks/use-search-params-state';
+import { cn } from '../../utils/class-names';
 
 type TabsProps = {
   options: { label: string; value: string }[];
@@ -22,7 +23,10 @@ const Tabs = ({
   return (
     <div className='relative flex flex-nowrap border-b-2 border-b-neutral-300 px-2 dark:border-b-neutral-700'>
       <div
-        className={`absolute my-0.5 h-full w-36 border-b-2 border-b-red-600 transition-transform duration-200 ${translateX[tabIndex]}`}
+        className={cn(
+          'absolute my-0.5 h-full w-36 border-b-2 border-b-red-600 transition-transform duration-200',
+          translateX[tabIndex],
+        )}
       />
       {options.map((o) => (
         <div

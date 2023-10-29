@@ -5,6 +5,7 @@ import DatePickerDropdown from './dropdown';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
+import ActionIcon from '../action-icon';
 
 type DatePickerProps = {
   value?: Date;
@@ -22,7 +23,6 @@ const DatePicker = ({
   placeholder,
 }: DatePickerProps) => {
   const [date, setDate] = useState<Date | null>(null);
-  const [popoverOpened, setPopoverOpened] = useState(false);
 
   useEffect(() => {
     if (value) {
@@ -34,6 +34,7 @@ const DatePicker = ({
     if (date) {
       onChange?.(date);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   const getDateString = (date: Date | null) => {
@@ -62,19 +63,13 @@ const DatePicker = ({
       )}
       <div className='absolute right-0 flex h-10 w-10 items-center justify-center'>
         <Popover
-          opened={popoverOpened}
-          closeOnBlur={false}
           position='left-bottom'
-          target={<IconCalendar />}
-          onChange={setPopoverOpened}
-          popover={
-            <DatePickerDropdown
-              onDateChange={(date) => {
-                setDate(date);
-                setPopoverOpened(false);
-              }}
-            />
+          target={
+            <ActionIcon variant='subtle'>
+              <IconCalendar />
+            </ActionIcon>
           }
+          popover={<DatePickerDropdown onDateChange={setDate} />}
         />
       </div>
     </div>

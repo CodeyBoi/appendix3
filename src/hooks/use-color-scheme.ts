@@ -1,9 +1,10 @@
 export type ColorScheme = 'light' | 'dark';
 import { useState } from 'react';
-import { trpc } from 'utils/trpc';
+import { api } from 'trpc/react';
 
 const applyScheme = (scheme: ColorScheme) => {
   if (typeof window !== 'undefined') {
+    sessionStorage.setItem('colorScheme', scheme);
     if (scheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -13,16 +14,19 @@ const applyScheme = (scheme: ColorScheme) => {
 };
 
 const useColorScheme = (initialColorScheme?: ColorScheme) => {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    initialColorScheme ?? 'light',
-  );
+  const initColor = (sessionStorage.getItem('colorScheme') ??
+    initialColorScheme ??
+    'light') as ColorScheme;
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(initColor);
+
+  const mutation = api.corps.setColorScheme.useMutation();
   const toggleColorScheme = (value?: ColorScheme) => {
     const newColorScheme =
       value || (colorScheme === 'light' ? 'dark' : 'light');
     setColorScheme(newColorScheme);
+    mutation.mutate(newColorScheme);
     applyScheme(newColorScheme);
   };
-  trpc.corps.setColorScheme.useQuery(colorScheme);
 
   /* April Fools */
   const date = new Date();

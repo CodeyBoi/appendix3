@@ -1,7 +1,7 @@
 import 'dayjs/locale/sv';
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { ReactElement } from 'react';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import 'styles/globals.css';
@@ -10,6 +10,9 @@ import AppProvider from './app-provider';
 import { redirect } from 'next/navigation';
 import AppShell from './app-shell';
 import { bahnschrift, castelar } from 'app/fonts';
+import { prisma } from '../server/db/client';
+import { ColorScheme } from 'hooks/use-color-scheme';
+import { cn } from 'utils/class-names';
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',
@@ -21,15 +24,28 @@ type RootLayoutProps = {
 };
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
-  const cookiesList = cookies();
-  const colorScheme =
-    cookiesList.get('tw-color-scheme')?.value === 'dark' ? 'dark' : 'light';
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect('/login');
   }
+
+  // Find the color scheme for this session and pass it to the provider
+  const colorScheme = (
+    await prisma.corps.findUnique({
+      where: { id: session.user?.corps?.id },
+      select: { colorScheme: true },
+    })
+  )?.colorScheme as ColorScheme;
+
   return (
-    <html lang='sv' className={`${bahnschrift.variable} ${castelar.variable}`}>
+    <html
+      lang='sv'
+      className={cn(
+        bahnschrift.variable,
+        castelar.variable,
+        colorScheme === 'dark' && 'dark',
+      )}
+    >
       <head>
         <meta
           name='viewport'

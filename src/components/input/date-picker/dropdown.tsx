@@ -46,7 +46,7 @@ const DatePickerDropdown = ({
     .toDate()
     .toLocaleDateString('sv-SE', { month: 'long' });
   return (
-    <div className='z-20 flex w-60 flex-col rounded border border-solid bg-white p-2 dark:border-neutral-800 dark:bg-darkBg'>
+    <div className='flex w-60 flex-col rounded bg-white p-2 dark:bg-darkBg'>
       <div className='flex items-center'>
         <h4 className='grow select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName} ${date.year()}`}</h4>
         <ActionIcon
