@@ -115,10 +115,10 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   return (
     <FormLoadingOverlay visible={!corpsiiOptions || submitting}>
       <form className='max-w-3xl' onSubmit={form.onSubmit(handleSubmit)}>
-        <div className='grid items-stretch grid-cols-1 align-bottom gap-x-4 gap-y-2 md:grid-cols-2'>
+        <div className='grid grid-cols-1 items-stretch gap-x-4 gap-y-2 align-bottom md:grid-cols-2'>
           <span className='self-end'>
             <TextInput
-              className='flex-grow'
+              className='grow'
               label='Titel'
               withAsterisk
               spellCheck={false}
@@ -198,7 +198,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
-          <div className='flex flex-col col-span-1 md:col-span-2 focus-visible:ring-red-600'>
+          <div className='col-span-1 flex flex-col focus-visible:ring-red-600 md:col-span-2'>
             <div>Dölj spelning</div>
             <MultiSelect
               placeholder='Välj corps...'
@@ -223,7 +223,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           <div className='flex items-center justify-end space-x-4'>
             {!newGig && (
               <Button
-                className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+                className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
                 color='transparent'
                 compact
                 onClick={() => {

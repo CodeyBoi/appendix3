@@ -74,8 +74,8 @@ const Popover = ({
           {target}
         </div>
         <div
-          className={`absolute rounded shadow z-10 transition-opacity ${
-            open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          className={`absolute z-10 rounded shadow transition-opacity ${
+            open ? 'opacity-100' : 'pointer-events-none opacity-0'
           } ${positionClasses[position]} ${bgColorClasses[bgColor]}`}
         >
           {dropdown}

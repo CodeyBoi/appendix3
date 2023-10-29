@@ -55,7 +55,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='theme-color' content='#B80900'></meta>
       </head>
-      <body className='overflow-y-auto text-black bg-white dark:bg-darkBg dark:text-darkText'>
+      <body className='overflow-y-auto bg-white text-black dark:bg-darkBg dark:text-darkText'>
         <TRPCReactProvider headers={headers()}>
           <AppProvider defaultColorScheme={colorScheme} session={session}>
             <AppShell>{children}</AppShell>

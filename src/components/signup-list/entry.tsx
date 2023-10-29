@@ -48,7 +48,7 @@ const Entry = ({
               onChange={(event) => setAttendance(event.target.checked)}
             />
           </td>
-          <td className='flex px-2 place-content-center'>
+          <td className='flex place-content-center px-2'>
             <button
               className='text-red-600'
               type='button'

@@ -189,7 +189,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
     }
     let lastInstrument = '';
     return (
-      <table className='text-sm table-auto'>
+      <table className='table-auto text-sm'>
         <thead>
           <tr>
             {showAdminTools ? (
@@ -311,7 +311,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
               }),
           )}
         >
-          <div className='flex gap-4 flex-nowrap'>
+          <div className='flex flex-nowrap gap-4'>
             <SelectCorps
               label='Välj corps...'
               icon={<IconUser />}

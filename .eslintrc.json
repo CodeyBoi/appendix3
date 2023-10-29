@@ -1,7 +1,7 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended", "prettier"],
+  "plugins": ["@typescript-eslint", "tailwindcss", "unused-imports"],
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:tailwindcss/recommended"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
@@ -16,8 +16,25 @@
             "argsIgnorePattern": "^_",  // ignore unused variables starting with _
             "varsIgnorePattern": "^_"   // ignore unused variables starting with _
           }
+        ],
+        "tailwindcss/classnames-order": [
+          "warn",
+          {
+            "callees": ["classnames", "clsx", "twMerge", "cx", "cn"],
+            "tags": ["tw"]
+          }
+        ],
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": [
+          "warn",
+          {
+            "vars": "all",
+            "varsIgnorePattern": "^_",
+            "args": "after-used",
+            "argsIgnorePattern": "^_"
+          }
         ]
       }
     }
-  ]
+  ]  
 }

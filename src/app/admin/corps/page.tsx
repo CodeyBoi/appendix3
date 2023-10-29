@@ -9,7 +9,7 @@ import SelectCorps from 'components/select-corps';
 const ViewCorps = () => {
   const [corpsId, setCorpsId] = useState<string | null>(null);
   return (
-    <div className='flex flex-col max-w-lg gap-2'>
+    <div className='flex max-w-lg flex-col gap-2'>
       <h1>Corps</h1>
       <div className='max-w-max'>
         <Link href='/admin/corps/new'>
@@ -20,7 +20,7 @@ const ViewCorps = () => {
       <h2>Uppdatera corps</h2>
       <SelectCorps placeholder='Välj corps...' onChange={setCorpsId} />
       {corpsId !== null && (
-        <div className='p-2 border rounded shadow-md dark:border-neutral-800'>
+        <div className='rounded border p-2 shadow-md dark:border-neutral-800'>
           <CorpsForm corpsId={corpsId} />
         </div>
       )}

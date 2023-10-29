@@ -46,7 +46,7 @@ const filterSongs = (songs: Song[], search: string) => {
 const genSongList = (songs: ReturnType<typeof filterSongs>) => {
   let prevTitleLetter: string | undefined;
   return (
-    <div className='flex flex-col text-base divide-y divide-solid dark:divide-neutral-700'>
+    <div className='flex flex-col divide-y divide-solid text-base dark:divide-neutral-700'>
       {songs.map(({ id, title, author, melody, matches }) => {
         const titleLetter = title[0]?.toUpperCase() ?? '';
         let shouldAddLetter = false;
@@ -58,7 +58,7 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
           <Fragment key={id}>
             {shouldAddLetter && <h5 className='py-2 pl-3'>{titleLetter}</h5>}
             <Link href={`/songs/${id}`}>
-              <div className='flex items-center gap-2 py-2 pl-6 cursor-pointer hover:bg-red-300/10'>
+              <div className='flex cursor-pointer items-center gap-2 py-2 pl-6 hover:bg-red-300/10'>
                 <div>{title}</div>
                 <div
                   className={

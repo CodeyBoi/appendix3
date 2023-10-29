@@ -17,7 +17,7 @@ const Account = async () => {
       : 'p.e. ' + corps?.lastName;
 
   return (
-    <div className='flex flex-col max-w-3xl gap-2'>
+    <div className='flex max-w-3xl flex-col gap-2'>
       <h2>{`Välkommen${corps ? ', ' + corpsName : ''}!`}</h2>
       <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
         <CorpsStats />

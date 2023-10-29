@@ -86,7 +86,7 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
         {!newQuote && (
           <div className='flex items-center justify-end gap-4'>
             <Button
-              className='text-red-600 border-red-600 hover:bg-red-600 hover:text-white'
+              className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
               color='transparent'
               compact
               onClick={async () => {

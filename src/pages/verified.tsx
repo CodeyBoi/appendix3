@@ -2,8 +2,8 @@ import Button from 'components/input/button';
 
 const Verified = () => {
   return (
-    <div className='fixed top-0 left-0 flex items-center justify-center w-screen h-screen polka font-display'>
-      <div className='flex flex-col items-center gap-3 p-4 bg-red-600 shadow-2xl'>
+    <div className='polka fixed left-0 top-0 flex h-screen w-screen items-center justify-center font-display'>
+      <div className='flex flex-col items-center gap-3 bg-red-600 p-4 shadow-2xl'>
         <h4 className='max-w-3xl text-center text-white'>
           Din inloggning har blivit bekräftad! Du kan nu återgå till din
           föregående flik, eller klicka på knappen nedan för att komma direkt

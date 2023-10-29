@@ -20,14 +20,14 @@ const Tabs = ({
   const [tab, setTab] = useSearchParamsState(name, defaultTab);
   const tabIndex = options.findIndex((o) => o.value === tab);
   return (
-    <div className='relative flex px-2 border-b-2 flex-nowrap border-b-neutral-300 dark:border-b-neutral-700'>
+    <div className='relative flex flex-nowrap border-b-2 border-b-neutral-300 px-2 dark:border-b-neutral-700'>
       <div
-        className={`absolute w-36 h-full my-0.5 duration-200 transition-transform border-b-2 border-b-red-600 ${translateX[tabIndex]}`}
+        className={`absolute my-0.5 h-full w-36 border-b-2 border-b-red-600 transition-transform duration-200 ${translateX[tabIndex]}`}
       />
       {options.map((o) => (
         <div
           key={o.value}
-          className='px-4 py-2 text-center cursor-pointer h-9 w-36 hover:bg-red-300/5 whitespace-nowrap'
+          className='h-9 w-36 cursor-pointer whitespace-nowrap px-4 py-2 text-center hover:bg-red-300/5'
           onClick={() => {
             setTab(o.value);
             onTabChange?.(o.value);

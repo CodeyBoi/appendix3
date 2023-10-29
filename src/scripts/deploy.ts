@@ -9,7 +9,7 @@ const hasUncommittedChanges =
   execSync('git status --porcelain').toString().trim().length > 0;
 if (hasUncommittedChanges) {
   console.log(
-    'You have uncommitted changes. Please commit or stash them before deploying.'
+    'You have uncommitted changes. Please commit or stash them before deploying.',
   );
   process.exit();
 }

@@ -73,7 +73,7 @@ const TextInput = ({
   };
 
   return (
-    <div className='flex flex-col flex-shrink min-w-0'>
+    <div className='flex min-w-0 shrink flex-col'>
       <div
         className={
           'relative flex items-center bg-transparent border rounded shadow-sm h-12 dark:border-neutral-800' +
@@ -95,7 +95,7 @@ const TextInput = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
-        <div className='absolute left-0 flex pointer-events-none'>
+        <div className='pointer-events-none absolute left-0 flex'>
           <div className={icon ? 'w-9' : 'w-2'} />
           <label
             className={

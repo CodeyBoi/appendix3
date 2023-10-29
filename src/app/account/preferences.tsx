@@ -109,7 +109,7 @@ const AccountPreferences = () => {
               }}
             />
           </div>
-          <div className='flex flex-col space-y-2 w-min'>
+          <div className='flex w-min flex-col space-y-2'>
             <h3>Kontaktuppgifter</h3>
             <TextInput
               label='Förnamn'
@@ -128,7 +128,7 @@ const AccountPreferences = () => {
               {...form.getInputProps('email')}
             />
           </div>
-          <div className='flex flex-col pl-2 space-y-2'>
+          <div className='flex flex-col space-y-2 pl-2'>
             <h3>Matpreferenser</h3>
             <Switch
               label='Vegetarian'

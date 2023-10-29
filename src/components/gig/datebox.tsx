@@ -7,19 +7,19 @@ interface DateboxProps {
 
 const Datebox = ({ date }: DateboxProps) => (
   <div
-    className='flex flex-col w-16 text-center border border-black rounded h-min'
+    className='flex h-min w-16 flex-col rounded border border-black text-center'
     style={{ boxShadow: '2px 3px #888888' }}
   >
-    <div className='pt-0.5 text-xs text-white uppercase font-light bg-red-600'>
+    <div className='bg-red-600 pt-0.5 text-xs font-light uppercase text-white'>
       {date
         .toDate()
         .toLocaleDateString('sv-SE', { month: 'short' })
         .slice(0, 3)}
     </div>
-    <div className='text-4xl text-white bg-red-600 font-castelar'>
+    <div className='bg-red-600 font-castelar text-4xl text-white'>
       {date.date()}
     </div>
-    <div className='text-black uppercase bg-neutral-300'>
+    <div className='bg-neutral-300 uppercase text-black'>
       {date
         .toDate()
         .toLocaleDateString('sv-SE', { weekday: 'short' })

@@ -60,7 +60,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
           }}
         />
         <button
-          className='p-1 text-red-600 transition-colors rounded hover:bg-red-600/10'
+          className='rounded p-1 text-red-600 transition-colors hover:bg-red-600/10'
           onClick={() => {
             if (!corpsId) return;
             mutation.mutate({

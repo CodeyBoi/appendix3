@@ -34,13 +34,13 @@ const AlertError = ({
 
   return (
     <div
-      className={`fixed right-4 transition-all top-20 flex flex-col items-start gap-2 p-4 text-base text-white bg-red-600 rounded-md ${
-        show ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      className={`fixed right-4 top-20 flex flex-col items-start gap-2 rounded-md bg-red-600 p-4 text-base text-white transition-all ${
+        show ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      <div className='flex items-start w-full gap-2'>
+      <div className='flex w-full items-start gap-2'>
         <div className='p-0.5'>{icon}</div>
-        <div className='flex-grow font-bold'>{title}</div>
+        <div className='grow font-bold'>{title}</div>
         {withCloseButton && (
           <button type='button' onClick={() => setShow(false)}>
             <IconX />

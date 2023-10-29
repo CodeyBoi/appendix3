@@ -12,7 +12,7 @@ const Song = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div className='flex flex-col max-w-sm'>
+    <div className='flex max-w-sm flex-col'>
       <h2>{(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}</h2>
       <SongForm song={song} />
     </div>

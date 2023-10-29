@@ -7,7 +7,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <header
-        className='box-border sticky top-0 flex items-center justify-between flex-none w-full bg-red-600 shadow-md h-14'
+        className='sticky top-0 box-border flex h-14 w-full flex-none items-center justify-between bg-red-600 shadow-md'
         style={{ zIndex: 516 }}
       >
         <div className='p-3'>
@@ -20,7 +20,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
           </NavbarButton>
         </div>
       </header>
-      <div className='fixed flex-none w-72 top-14 max-lg:hidden'>
+      <div className='fixed top-14 w-72 flex-none max-lg:hidden'>
         <NavbarBody />
       </div>
       <div className='p-6 lg:ml-72'>{children}</div>

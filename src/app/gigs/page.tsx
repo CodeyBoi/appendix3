@@ -53,7 +53,7 @@ const GigsPage = async ({
   const isAdmin = corps?.role?.name === 'admin';
 
   return (
-    <div className='flex flex-col max-w-fit'>
+    <div className='flex max-w-fit flex-col'>
       <div className='flex flex-col gap-2'>
         <h2>Spelningar</h2>
         <div className='flex items-end gap-4'>

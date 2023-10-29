@@ -226,7 +226,7 @@ const PersonalStats = () => {
   const reliabilityText = `Pålitlighet är hur mycket man kan lita på dig. Efter att du anmält dig brukar du ${avgSignupChangeText}`;
 
   return (
-    <div className='flex flex-col max-w-4xl text-base'>
+    <div className='flex max-w-4xl flex-col text-base'>
       <Head>
         <title>Statistik för nördar</title>
       </Head>

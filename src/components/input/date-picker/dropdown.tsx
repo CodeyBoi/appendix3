@@ -46,9 +46,9 @@ const DatePickerDropdown = ({
     .toDate()
     .toLocaleDateString('sv-SE', { month: 'long' });
   return (
-    <div className='z-20 flex flex-col p-2 bg-white border border-solid rounded w-60 dark:bg-darkBg dark:border-neutral-800'>
+    <div className='z-20 flex w-60 flex-col rounded border border-solid bg-white p-2 dark:border-neutral-800 dark:bg-darkBg'>
       <div className='flex items-center'>
-        <h4 className='flex-grow text-red-600 select-none first-letter:capitalize whitespace-nowrap'>{`${monthName} ${date.year()}`}</h4>
+        <h4 className='grow select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName} ${date.year()}`}</h4>
         <ActionIcon
           variant='subtle'
           onClick={() => {
@@ -70,7 +70,7 @@ const DatePickerDropdown = ({
         {['M', 'T', 'O', 'T', 'F', 'L', 'S'].map((day, i) => (
           <span
             key={`${day}-${i}`}
-            className='text-center text-red-600 select-none'
+            className='select-none text-center text-red-600'
           >
             {day}
           </span>
@@ -83,7 +83,7 @@ const DatePickerDropdown = ({
               <button
                 key={`${i}-${j}`}
                 type='button'
-                className='text-center rounded-full text-neutral-500 hover:bg-red-600/10'
+                className='rounded-full text-center text-neutral-500 hover:bg-red-600/10'
                 onClick={() => {
                   if (day) {
                     const newDate = date.date(day);

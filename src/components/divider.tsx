@@ -8,7 +8,7 @@ const Divider = ({ ...props }: DividerProps) => {
   return (
     <hr
       {...props}
-      className='flex w-full h-px my-2 border-neutral-300 dark:border-neutral-700'
+      className='my-2 flex h-px w-full border-neutral-300 dark:border-neutral-700'
     />
   );
 };

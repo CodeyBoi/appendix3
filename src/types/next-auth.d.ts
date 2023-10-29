@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { DefaultSession } from "next-auth";
 
-declare module "next-auth" {
+declare module 'next-auth' {
   /**
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
@@ -14,8 +13,8 @@ declare module "next-auth" {
           corps: {
             id: string;
             role: {
-              name: string
-            } | null
+              name: string;
+            } | null;
           } | null;
         })
       | null;

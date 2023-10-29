@@ -17,7 +17,7 @@ const LoadingOverlay = ({
   // This element should be placed as a parent to the element that should be
   // overlayed with a loading screen.
   return (
-    <div className='relative p-2 rounded'>
+    <div className='relative rounded p-2'>
       {children}
       {visible && (
         <div className='absolute inset-0 flex items-center justify-center rounded bg-white/50 dark:bg-darkBg/50'>
