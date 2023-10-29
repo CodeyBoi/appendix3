@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes } from 'react';
 import { cn } from 'utils/class-names';
