@@ -87,7 +87,6 @@ const SongForm = ({ song }: SongFormProps) => {
         />
         <TextArea
           label='Sångtext'
-          placeholder='Sångtext'
           withAsterisk
           autoSize
           {...form.getInputProps('lyrics')}

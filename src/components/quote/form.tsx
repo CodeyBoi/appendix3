@@ -78,7 +78,6 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
         <TextArea
           rightSection={newQuote && <IconSend />}
           label='Vad sades?'
-          placeholder='Citat'
           withAsterisk
           autoSize
           {...form.getInputProps('quote')}
