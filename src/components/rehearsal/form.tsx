@@ -35,11 +35,11 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
     initialValues: newRehearsal
       ? defaultValues
       : {
-        title: rehearsal.title,
-        date: rehearsal.date,
-        typeId: rehearsal.typeId.toString(),
-        countsPositively: rehearsal.countsPositively,
-      },
+          title: rehearsal.title,
+          date: rehearsal.date,
+          typeId: rehearsal.typeId.toString(),
+          countsPositively: rehearsal.countsPositively,
+        },
     validate: {
       title: (title) => (title ? null : 'Fyll i titel'),
       date: (date) => (date ? null : 'Välj datum'),
