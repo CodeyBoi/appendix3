@@ -12,8 +12,6 @@ import Switch from 'components/input/switch';
 import Select from 'components/input/select';
 
 const initialValues = {
-  firstName: '',
-  lastName: '',
   nickName: '',
   vegetarian: false,
   vegan: false,
@@ -36,8 +34,6 @@ const AccountPreferences = () => {
   const form = useForm<FormValues>({
     initialValues,
     validate: {
-      firstName: (firstName) => (firstName.length > 0 ? null : 'Ange förnamn'),
-      lastName: (lastName) => (lastName.length > 0 ? null : 'Ange efternamn'),
       email: (email) => (email.length > 0 ? null : 'Ange e-postadress'),
     },
   });
@@ -49,8 +45,6 @@ const AccountPreferences = () => {
     const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
       ?.instrument.name;
     form.setValues({
-      firstName: corps.firstName,
-      lastName: corps.lastName,
       nickName: corps.nickName ?? '',
       vegetarian: corps.foodPrefs?.vegetarian ?? false,
       vegan: corps.foodPrefs?.vegan ?? false,
