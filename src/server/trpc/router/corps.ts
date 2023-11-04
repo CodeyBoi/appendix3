@@ -86,8 +86,6 @@ export const corpsRouter = router({
   updateSelf: protectedProcedure
     .input(
       z.object({
-        firstName: z.string(),
-        lastName: z.string(),
         nickName: z.string(),
         email: z.string(),
         vegetarian: z.boolean(),
@@ -153,8 +151,6 @@ export const corpsRouter = router({
           id: corps.id,
         },
         data: {
-          firstName: input.firstName.trim(),
-          lastName: input.lastName.trim(),
           nickName:
             input.nickName.trim().length > 0 ? input.nickName.trim() : null,
           user: {
@@ -193,8 +189,8 @@ export const corpsRouter = router({
       }
       const instruments = await ctx.prisma.instrument.findMany({});
       const queryData = {
-        firstName: input.firstName,
-        lastName: input.lastName,
+        firstName: input.firstName.trim(),
+        lastName: input.lastName.trim(),
         nickName:
           input.nickName.trim().length > 0 ? input.nickName.trim() : null,
         number: input.number,
