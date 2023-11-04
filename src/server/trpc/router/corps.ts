@@ -95,6 +95,7 @@ export const corpsRouter = router({
         glutenFree: z.boolean(),
         lactoseFree: z.boolean(),
         otherFoodPrefs: z.string().optional(),
+        mainInstrument: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -115,6 +116,37 @@ export const corpsRouter = router({
         lactoseFree: input.lactoseFree,
         other: input.otherFoodPrefs,
       };
+
+      // Update main instrument (set all to false, then set main instrument to true)
+      if (input.mainInstrument) {
+        const instruments = await ctx.prisma.instrument.findMany({});
+        const mainInstrument = instruments.find(
+          (instrument) => instrument.name === input.mainInstrument,
+        );
+        if (!mainInstrument) {
+          throw new Error('Invalid instrument');
+        }
+        const mainInstrumentId = mainInstrument.id;
+        await ctx.prisma.corpsInstrument.updateMany({
+          where: {
+            corpsId: corps.id,
+          },
+          data: {
+            isMainInstrument: false,
+          },
+        });
+        await ctx.prisma.corpsInstrument.update({
+          where: {
+            corpsId_instrumentId: {
+              corpsId: corps.id,
+              instrumentId: mainInstrumentId,
+            },
+          },
+          data: {
+            isMainInstrument: true,
+          },
+        });
+      }
 
       return ctx.prisma.corps.update({
         where: {
