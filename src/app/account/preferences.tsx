@@ -9,10 +9,9 @@ import TextInput from 'components/input/text-input';
 import TextArea from 'components/input/text-area';
 import useColorScheme from 'hooks/use-color-scheme';
 import Switch from 'components/input/switch';
+import Select from 'components/input/select';
 
 const initialValues = {
-  firstName: '',
-  lastName: '',
   nickName: '',
   vegetarian: false,
   vegan: false,
@@ -20,6 +19,7 @@ const initialValues = {
   lactoseFree: false,
   otherFoodPrefs: '',
   email: '',
+  mainInstrument: '',
 };
 type FormValues = typeof initialValues;
 
@@ -34,8 +34,6 @@ const AccountPreferences = () => {
   const form = useForm<FormValues>({
     initialValues,
     validate: {
-      firstName: (firstName) => (firstName.length > 0 ? null : 'Ange förnamn'),
-      lastName: (lastName) => (lastName.length > 0 ? null : 'Ange efternamn'),
       email: (email) => (email.length > 0 ? null : 'Ange e-postadress'),
     },
   });
@@ -44,9 +42,9 @@ const AccountPreferences = () => {
     if (!corps) {
       return;
     }
+    const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
+      ?.instrument.name;
     form.setValues({
-      firstName: corps.firstName,
-      lastName: corps.lastName,
       nickName: corps.nickName ?? '',
       vegetarian: corps.foodPrefs?.vegetarian ?? false,
       vegan: corps.foodPrefs?.vegan ?? false,
@@ -54,6 +52,7 @@ const AccountPreferences = () => {
       lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
       otherFoodPrefs: corps.foodPrefs?.other ?? '',
       email: corps.user.email || undefined,
+      mainInstrument,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
@@ -78,6 +77,11 @@ const AccountPreferences = () => {
   const date = new Date();
   const isAprilFools = date.getMonth() === 3 && date.getDate() === 1;
   /* April fools */
+
+  const instrumentOptions = corps?.instruments.map((i) => ({
+    value: i.instrument.name,
+    label: i.instrument.name,
+  }));
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -110,23 +114,23 @@ const AccountPreferences = () => {
             />
           </div>
           <div className='flex w-min flex-col space-y-2'>
-            <h3>Kontaktuppgifter</h3>
+            <h3>Corpsiga uppgifter</h3>
             <TextInput
-              label='Förnamn'
-              withAsterisk
-              {...form.getInputProps('firstName')}
+              label='Visningsnamn'
+              {...form.getInputProps('nickName')}
             />
-            <TextInput
-              label='Efternamn'
-              withAsterisk
-              {...form.getInputProps('lastName')}
-            />
-            <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
             <TextInput
               label='E-post'
               withAsterisk
               {...form.getInputProps('email')}
             />
+            {instrumentOptions && instrumentOptions.length > 1 && (
+              <Select
+                label='Huvudinstrument'
+                options={instrumentOptions ?? []}
+                {...form.getInputProps('mainInstrument')}
+              />
+            )}
           </div>
           <div className='flex flex-col space-y-2 pl-2'>
             <h3>Matpreferenser</h3>

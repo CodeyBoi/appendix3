@@ -86,8 +86,6 @@ export const corpsRouter = router({
   updateSelf: protectedProcedure
     .input(
       z.object({
-        firstName: z.string(),
-        lastName: z.string(),
         nickName: z.string(),
         email: z.string(),
         vegetarian: z.boolean(),
@@ -95,6 +93,7 @@ export const corpsRouter = router({
         glutenFree: z.boolean(),
         lactoseFree: z.boolean(),
         otherFoodPrefs: z.string().optional(),
+        mainInstrument: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -116,13 +115,42 @@ export const corpsRouter = router({
         other: input.otherFoodPrefs,
       };
 
+      // Update main instrument (set all to false, then set main instrument to true)
+      if (input.mainInstrument) {
+        const instruments = await ctx.prisma.instrument.findMany({});
+        const mainInstrument = instruments.find(
+          (instrument) => instrument.name === input.mainInstrument,
+        );
+        if (!mainInstrument) {
+          throw new Error('Invalid instrument');
+        }
+        const mainInstrumentId = mainInstrument.id;
+        await ctx.prisma.corpsInstrument.updateMany({
+          where: {
+            corpsId: corps.id,
+          },
+          data: {
+            isMainInstrument: false,
+          },
+        });
+        await ctx.prisma.corpsInstrument.update({
+          where: {
+            corpsId_instrumentId: {
+              corpsId: corps.id,
+              instrumentId: mainInstrumentId,
+            },
+          },
+          data: {
+            isMainInstrument: true,
+          },
+        });
+      }
+
       return ctx.prisma.corps.update({
         where: {
           id: corps.id,
         },
         data: {
-          firstName: input.firstName.trim(),
-          lastName: input.lastName.trim(),
           nickName:
             input.nickName.trim().length > 0 ? input.nickName.trim() : null,
           user: {
@@ -161,8 +189,8 @@ export const corpsRouter = router({
       }
       const instruments = await ctx.prisma.instrument.findMany({});
       const queryData = {
-        firstName: input.firstName,
-        lastName: input.lastName,
+        firstName: input.firstName.trim(),
+        lastName: input.lastName.trim(),
         nickName:
           input.nickName.trim().length > 0 ? input.nickName.trim() : null,
         number: input.number,
