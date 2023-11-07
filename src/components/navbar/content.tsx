@@ -8,6 +8,7 @@ import {
   IconPencil,
   IconQuote,
   IconSpeakerphone,
+  IconSwords,
   IconUser,
 } from '@tabler/icons-react';
 import Button from 'components/input/button';
@@ -43,6 +44,7 @@ const userTab: NavbarLinkGroup = {
     { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
     { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
+    { label: 'Killer', href: '/killer', icon: <IconSwords /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
