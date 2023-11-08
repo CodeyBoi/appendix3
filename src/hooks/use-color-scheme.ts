@@ -14,7 +14,7 @@ const applyScheme = (scheme: ColorScheme) => {
 };
 
 const useColorScheme = (initialColorScheme?: ColorScheme) => {
-  const initColor = (sessionStorage.getItem('colorScheme') ??
+  const initColor = (sessionStorage?.getItem('colorScheme') ??
     initialColorScheme ??
     'light') as ColorScheme;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(initColor);
