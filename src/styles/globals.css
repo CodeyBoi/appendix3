@@ -113,3 +113,31 @@ html.lang-en .lang-sv, html.lang-sv .lang-en {
 .slagverk *:not(header):not(nav) {
   background-color: transparent;
 }
+@keyframes slagverk-animation {
+  0% {
+    background-image: url('/imgs/drum-emoji.png');
+    background-size: 0% 0%;
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  50% {
+    background-size: 100% 100%;
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    background-image: url('/imgs/drum-emoji.png');
+    background-size: 0% 0%;
+    transform: rotate(0deg);
+  }
+}
+
+.slagverk *:not(header):not(nav):not(main) {
+  background-position: center;
+  background-repeat: no-repeat;
+  animation-name: slagverk-animation;
+  animation-duration: 5s;
+}
