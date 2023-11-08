@@ -7,6 +7,7 @@ import { ReactElement } from 'react';
 import useColorScheme from 'hooks/use-color-scheme';
 import useKeyDown from 'hooks/use-key-down';
 import useLanguage, { Language } from 'hooks/use-language';
+import { useSlagverkEasterEgg } from 'hooks/easter-eggs';
 
 type AppProviderProps = {
   children: ReactElement;
@@ -25,6 +26,9 @@ const AppProvider = ({
   // Allows user to toggle between light and dark mode by pressing `Control + y`
   useKeyDown('ctrl+y', () => toggleColorScheme());
   useLanguage(initialLanguage);
+
+  useSlagverkEasterEgg();
+
   return (
     <>
       <SessionProvider session={session}>{children}</SessionProvider>

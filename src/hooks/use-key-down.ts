@@ -1,22 +1,10 @@
 import { useEffect } from 'react';
-
-const getModifiers = (event: KeyboardEvent) => {
-  const { altKey, ctrlKey, shiftKey } = event;
-  const modifiers = [];
-  if (altKey && event.key !== 'Alt') modifiers.push('alt');
-  if (ctrlKey && event.key !== 'Control') modifiers.push('ctrl');
-  if (shiftKey && event.key !== 'Shift') modifiers.push('shift');
-  return modifiers;
-};
+import { getKeyCode } from 'utils/key';
 
 const useKeyDown = (key: string, callback: () => void) => {
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const modifiers = getModifiers(event);
-      const keyCode =
-        modifiers.length > 0
-          ? `${modifiers.join('+')}+${event.key}`
-          : event.key;
+      const keyCode = getKeyCode(event);
       if (keyCode.toLowerCase() === key.toLowerCase()) {
         callback();
       }

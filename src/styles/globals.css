@@ -105,3 +105,11 @@ h6 {
 html.lang-en .lang-sv, html.lang-sv .lang-en {
   display: none;
 }
+
+.slagverk {
+  background-image: url('/imgs/drum-emoji.png');
+}
+
+.slagverk *:not(header):not(nav) {
+  background-color: transparent;
+}
