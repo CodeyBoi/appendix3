@@ -12,6 +12,7 @@ import {
   IconSpeakerphone,
   IconSwords,
   IconUser,
+  IconCalendarEvent,
 } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
@@ -63,6 +64,11 @@ const userTab: NavbarLinkGroup = {
       icon: <IconSpeakerphone />,
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
+    {
+      label: 'Tarmenbokningar',
+      href: '/bookings',
+      icon: <IconCalendarEvent />,
+    },
     { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
     {
       label: lang('Om Bleckhornen', 'About Bleckhornen'),
@@ -92,6 +98,11 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/rehearsal',
       icon: <IconPencil />,
       permission: 'manageRehearsals',
+    },
+    {
+      label: 'Tarmenbokningar',
+      href: '/admin/bookings',
+      icon: <IconCalendarEvent />,
     },
     {
       label: lang('Behörigheter', 'Permissions'),

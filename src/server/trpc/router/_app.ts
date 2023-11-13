@@ -15,6 +15,7 @@ import { killerRouter } from './killer';
 import { permissionRouter } from './permission';
 import { streckRouter } from './streck';
 import { gamesRouter } from './games';
+import { bookingRouter } from './booking';
 
 export const appRouter = router({
   auth: authRouter,
@@ -32,6 +33,7 @@ export const appRouter = router({
   permission: permissionRouter,
   streck: streckRouter,
   games: gamesRouter,
+  booking: bookingRouter,
 });
 
 // export type definition of API

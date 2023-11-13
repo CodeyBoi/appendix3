@@ -103,6 +103,7 @@ model Corps {
   botcSessions       BotcSession[]
   botcProfiles       BotcPlayer[]
   scoundrelScores    ScoundrelScore[]
+  bookings           Booking[]
 }
 
 model Role {
@@ -422,4 +423,18 @@ model ScoundrelScore {
   score      Int
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id               String   @id @default(cuid())
+  title            String
+  description      String   @default("") @db.Text
+  start            DateTime
+  end              DateTime
+  approved         Boolean  @default(false)
+  createdByCorpsId String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  createdBy Corps @relation(fields: [createdByCorpsId], references: [id], onDelete: Cascade)
 }
