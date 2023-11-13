@@ -59,7 +59,6 @@ const BookingsPage = ({
 }: {
   searchParams: { year: string; month: string };
 }) => {
-  console.log({ searchParams });
   const date = new Date();
   const year = searchParams.year
     ? parseInt(searchParams.year)

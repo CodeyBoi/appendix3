@@ -15,7 +15,7 @@ const CalendarDay = ({ date, items }: CalendarDayProps) => {
     )
     .sort((a, b) => a.start.getTime() - b.start.getTime());
   return (
-    <div className='flex h-32 flex-col overflow-y-hidden pl-1'>
+    <div className='flex h-32 flex-col overflow-y-auto pl-1'>
       <div className='text-red-600'>{date.getDate()}</div>
       {sorted.map((item) => {
         const { title, start, end } = item;

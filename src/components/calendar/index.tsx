@@ -2,6 +2,8 @@ import ParamsSelect from 'components/input/params-select';
 import React from 'react';
 import { genCalender } from 'utils/date';
 import CalendarDay from './day';
+import Button from 'components/input/button';
+import { IconPlus } from '@tabler/icons-react';
 
 export type CalendarItem = {
   title: string;
@@ -47,19 +49,25 @@ const Calendar = ({ items, year, month }: CalendarProps) => {
   );
   return (
     <div className='flex max-w-3xl flex-col gap-2 rounded border p-2 shadow-sm dark:border-neutral-800'>
-      <div className='flex justify-end gap-2 p-2'>
-        <ParamsSelect
-          label='Månad'
-          paramName='month'
-          options={months}
-          defaultValue={month.toString()}
-        />
-        <ParamsSelect
-          label='År'
-          paramName='year'
-          options={years}
-          defaultValue={year.toString()}
-        />
+      <div className='flex items-center justify-between p-2'>
+        <Button href='/bookings/new'>
+          <IconPlus />
+          Ny bokning
+        </Button>
+        <div className='flex gap-2'>
+          <ParamsSelect
+            label='Månad'
+            paramName='month'
+            options={months}
+            defaultValue={month.toString()}
+          />
+          <ParamsSelect
+            label='År'
+            paramName='year'
+            options={years}
+            defaultValue={year.toString()}
+          />
+        </div>
       </div>
       <div className='grid grid-cols-7 divide-x divide-y divide-solid'>
         <div className='text-center'>Mån</div>
