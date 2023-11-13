@@ -89,6 +89,7 @@ model Corps {
   citedQuotes     Quote[]           @relation("WrittenQuotes")
   songs           Song[]
   sectionLeaderOf Section[]
+  bookings        Booking[]
 }
 
 model CorpsInstrument {
@@ -264,4 +265,18 @@ model Section {
 
   instruments Instrument[]
   leader      Corps?       @relation(fields: [corpsId], references: [id])
+}
+
+model Booking {
+  id               String   @id @default(cuid())
+  title            String
+  description      String   @default("") @db.Text
+  start            DateTime
+  end              DateTime
+  approved         Boolean  @default(false)
+  createdByCorpsId String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  createdBy Corps @relation(fields: [createdByCorpsId], references: [id], onDelete: Cascade)
 }

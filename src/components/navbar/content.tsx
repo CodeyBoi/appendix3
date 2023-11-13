@@ -1,4 +1,5 @@
 import {
+  IconCalendarEvent,
   IconClipboard,
   IconHome,
   IconInfoSquare,
@@ -43,6 +44,11 @@ const userTab: NavbarLinkGroup = {
     { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
     { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
+    {
+      label: 'Tarmenbokningar',
+      href: '/bookings',
+      icon: <IconCalendarEvent />,
+    },
   ],
 };
 const adminTab: NavbarLinkGroup = {
