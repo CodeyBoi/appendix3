@@ -1,9 +1,12 @@
-import { TextInput, ActionIcon } from '@mantine/core';
+'use client';
+
 import { useForm } from '@mantine/form';
-import { IconSend } from '@tabler/icons';
-import { useRouter } from 'next/router';
+import { IconSend } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
-import { trpc } from '../../utils/trpc';
+import ActionIcon from 'components/input/action-icon';
+import TextInput from 'components/input/text-input';
+import { api } from 'trpc/react';
 
 const defaultValues = {
   text: '',
@@ -15,7 +18,6 @@ type BingoEntryFormProps = {
 
 const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
   const router = useRouter();
-  // const utils = trpc.useContext();
 
   const newEntry = !entry;
 
@@ -30,7 +32,7 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
     },
   });
 
-  const mutation = trpc.bingo.upsertEntry.useMutation();
+  const mutation = api.bingo.upsertEntry.useMutation();
 
   const handleSubmit = async (values: FormValues) => {
     if (newEntry) {
@@ -38,29 +40,21 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
       form.reset();
     } else {
       await mutation.mutateAsync({ ...values, id: entry.id });
-      router.push('/bingo');
+      router.push('/blingo');
     }
   };
 
-  //const removeMutation = trpc.quote.remove.useMutation({
-  // onSuccess: () => {
-  //  utils.quote.infiniteScroll.invalidate();
-  //},
-  //});
-
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <TextInput
-        rightSection={
-          <ActionIcon type='submit' variant='subtle' color='dark'>
-            <IconSend />
-          </ActionIcon>
-        }
-        label='Skapa ditt kort här'
-        placeholder='koolt shtuff incoming'
-        autosize='true'
-        {...form.getInputProps('text')}
-      />
+      <div className='flex gap-2'>
+        <TextInput
+          label='Skapa ditt kort här'
+          {...form.getInputProps('text')}
+        />
+        <ActionIcon type='submit' variant='subtle'>
+          <IconSend />
+        </ActionIcon>
+      </div>
     </form>
   );
 };

@@ -1,28 +1,26 @@
-import { SimpleGrid } from '@mantine/core';
+'use client';
+
 import React from 'react';
 import BingoTile from './tile';
-import { ClientBingoCard } from '../../types';
-import { trpc } from '../../utils/trpc';
+import { ClientBingoCard } from 'types';
+import { api } from 'trpc/react';
 
 type BingoCardProps = {
   card: ClientBingoCard;
 };
 
 const BingoCard = ({ card }: BingoCardProps) => {
-  const utils = trpc.useContext();
-  const [loading, setLoading] = React.useState(false);
+  const utils = api.useUtils();
 
-  const markEntry = trpc.bingo.markEntry.useMutation({
+  const markEntry = api.bingo.markEntry.useMutation({
     onSuccess: () => {
       utils.bingo.getCard.invalidate();
-      setLoading(false);
     },
   });
 
-  const isWin = trpc.bingo.isWin.useMutation({
+  const isWin = api.bingo.isWin.useMutation({
     onSuccess: () => {
       utils.bingo.getCard.invalidate();
-      setLoading(false);
     },
   });
 
@@ -34,7 +32,7 @@ const BingoCard = ({ card }: BingoCardProps) => {
     }));
 
   return (
-    <SimpleGrid cols={5} spacing='xs'>
+    <div className='grid max-w-2xl border-separate grid-cols-5'>
       {entries.map((entry) => (
         <BingoTile
           key={entry.id}
@@ -43,9 +41,6 @@ const BingoCard = ({ card }: BingoCardProps) => {
           onChange={async () => {
             const newMarkedState = !entry.marked;
             entry.marked = newMarkedState;
-
-            setLoading(true);
-
             await isWin.mutateAsync({
               cardId: card.id,
               entryId: entry.id,
@@ -56,13 +51,10 @@ const BingoCard = ({ card }: BingoCardProps) => {
               entryId: entry.id,
               marked: newMarkedState,
             });
-
-
-
           }}
         />
       ))}
-    </SimpleGrid>
+    </div>
   );
 };
 
