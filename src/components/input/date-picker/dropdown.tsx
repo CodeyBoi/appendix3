@@ -4,29 +4,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import ActionIcon from 'components/input/action-icon';
-
-const genCalender = (year: number, month: number) => {
-  const date = new Date(year, month, 1);
-  const daysInMonth = dayjs(date).daysInMonth();
-  // Shift the first day by 6 because monday is the first day of the week (instead of sunday)
-  const firstDay = (date.getDay() + 6) % 7;
-  const weeks = [];
-  let week = [];
-  for (let i = 0; i < firstDay; i++) {
-    week.push(null);
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    week.push(i);
-    if (week.length === 7) {
-      weeks.push(week);
-      week = [];
-    }
-  }
-  if (week.length) {
-    weeks.push(week);
-  }
-  return weeks;
-};
+import { genCalender } from 'utils/date';
 
 type DatePickerDropdownProps = {
   initialMonth?: number;
