@@ -41,16 +41,17 @@ export const bookingRouter = router({
       z.object({
         id: z.string().optional(),
         title: z.string(),
-        description: z.string(),
+        description: z.string().optional(),
         start: z.date(),
         end: z.date(),
       }),
     )
-    .query(({ ctx, input }) => {
-      const { id, ...inputData } = input;
+    .mutation(({ ctx, input }) => {
+      const { id = '', ...inputData } = input;
       const isAdmin = ctx.session.user.corps.role?.name === 'admin';
       const data = {
         ...inputData,
+        description: inputData.description || '',
         createdBy: {
           connect: {
             id: ctx.session.user.corps.id,
@@ -68,7 +69,7 @@ export const bookingRouter = router({
 
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       const { id } = input;
       const res = ctx.prisma.booking.delete({
         where: { id },
@@ -78,7 +79,7 @@ export const bookingRouter = router({
 
   approve: adminProcedure
     .input(z.object({ id: z.string(), approved: z.boolean().optional() }))
-    .query(({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       const { id, approved = true } = input;
       const res = ctx.prisma.booking.update({
         where: { id },
