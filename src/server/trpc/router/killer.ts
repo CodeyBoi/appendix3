@@ -97,7 +97,6 @@ export const killerRouter = router({
         include: {
           participants: {
             include: {
-              corps: true,
               target: true,
             },
           },
