@@ -1,7 +1,20 @@
 import { router, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 
-const WORDS = ['citron', 'dotter', 'fisk', 'gurka'];
+const WORDS = [
+  { sv: 'citron', en: 'lemon' },
+  { sv: 'dotter', en: 'daughter' },
+  { sv: 'fisk', en: 'fish' },
+  { sv: 'gurka', en: 'cucumber' },
+  { sv: 'apa', en: 'monkey' },
+  { sv: 'gorilla', en: 'gorilla' },
+  { sv: 'rödlök', en: 'red onion' },
+  { sv: 'paprika', en: 'bell pepper' },
+  { sv: 'potatis', en: 'potato' },
+  { sv: 'tomat', en: 'tomato' },
+  { sv: 'katt', en: 'cat' },
+  { sv: 'hund', en: 'dog' },
+];
 
 export const killerRouter = router({
   get: protectedProcedure
@@ -83,7 +96,8 @@ export const killerRouter = router({
               id: participant.id ?? '',
             },
           },
-          word: gameWords[index] as string,
+          word: gameWords[index]?.sv as string,
+          wordEnglish: gameWords[index]?.en as string,
         }));
 
       const killerGame = await ctx.prisma.killerGame.create({
@@ -187,6 +201,7 @@ export const killerRouter = router({
                 select: {
                   id: true,
                   word: true,
+                  wordEnglish: true,
                 },
               },
             },
@@ -198,12 +213,16 @@ export const killerRouter = router({
         throw new Error('Corps is not in this game');
       }
 
-      const correctWord = killer?.target?.target?.word;
-      if (!correctWord) {
+      const svWord = killer?.target?.target?.word;
+      const enWord = killer?.target?.target?.wordEnglish;
+      if (!svWord || !enWord) {
         throw new Error('No word for your target found');
       }
 
-      if (correctWord !== word.trim()) {
+      if (
+        svWord !== word.trim().toLowerCase() &&
+        enWord !== word.trim().toLowerCase()
+      ) {
         return {
           success: false,
           message: 'Fel ord',

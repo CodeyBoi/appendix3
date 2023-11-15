@@ -271,6 +271,7 @@ model KillerCorps {
   id          Int       @id @default(autoincrement())
   corpsId     String
   word        String
+  wordEnglish String
   gameId      String
   targetId    Int?
   timeOfDeath DateTime?
