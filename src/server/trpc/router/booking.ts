@@ -19,10 +19,11 @@ export const bookingRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
+        approved: z.boolean().optional(),
       }),
     )
     .query(({ ctx, input }) => {
-      const { start, end } = input;
+      const { start, end, approved } = input;
       const res = ctx.prisma.booking.findMany({
         where: {
           start: {
@@ -31,6 +32,7 @@ export const bookingRouter = router({
           end: {
             lte: end,
           },
+          approved,
         },
       });
       return res;

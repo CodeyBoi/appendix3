@@ -75,6 +75,11 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/section',
       icon: <IconMicrophone2 />,
     },
+    {
+      label: 'Tarmenbokningar',
+      href: '/admin/bookings',
+      icon: <IconCalendarEvent />,
+    },
   ],
 };
 

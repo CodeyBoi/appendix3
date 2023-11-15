@@ -15,14 +15,13 @@ const CalendarDay = ({ date, items }: CalendarDayProps) => {
     )
     .sort((a, b) => a.start.getTime() - b.start.getTime());
   return (
-    <div className='flex h-32 flex-col overflow-y-auto pl-1'>
-      <div className='text-red-600'>{date.getDate()}</div>
+    <div className='flex flex-col overflow-y-auto px-1'>
       {sorted.map((item) => {
         const { title, start, end } = item;
         return (
           <div
             key={title + start.toISOString()}
-            className='bg-white leading-tight'
+            className='rounded bg-red-200 px-1 leading-tight'
           >
             <span className='text-xs'>
               {title}

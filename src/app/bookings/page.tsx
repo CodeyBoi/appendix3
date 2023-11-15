@@ -1,85 +1,50 @@
 import Calendar from 'components/calendar';
+import dayjs from 'dayjs';
 import React from 'react';
 import { api } from 'trpc/server';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+dayjs.extend(weekOfYear);
 
-// const debugItems = [
-//   {
-//     title: 'Bokning 1',
-//     start: new Date(2023, 8, 1, 12),
-//     end: new Date(2023, 8, 1, 13),
-//   },
-//   {
-//     title: 'Bokning 2',
-//     start: new Date(2023, 8, 1, 14),
-//     end: new Date(2023, 8, 1, 15),
-//   },
-//   {
-//     title: 'Bokning 3',
-//     start: new Date(2023, 8, 1, 16),
-//     end: new Date(2023, 8, 1, 17),
-//   },
-//   {
-//     title: 'Bokning 4',
-//     start: new Date(2023, 8, 1, 18),
-//     end: new Date(2023, 8, 1, 19),
-//   },
-//   {
-//     title: 'Bokning 5',
-//     start: new Date(2023, 8, 1, 20),
-//     end: new Date(2023, 8, 1, 21),
-//   },
-//   {
-//     title: 'Bokning 6',
-//     start: new Date(2023, 8, 1, 22),
-//     end: new Date(2023, 8, 1, 23),
-//   },
-//   {
-//     title: 'Bokning 7',
-//     start: new Date(2023, 8, 1, 23),
-//     end: new Date(2023, 8, 2, 0),
-//   },
-//   {
-//     title: 'Bokning 8',
-//     start: new Date(2023, 8, 2, 1),
-//     end: new Date(2023, 8, 2, 2),
-//   },
-//   {
-//     title: 'Bokning 9',
-//     start: new Date(2023, 8, 2, 3),
-//     end: new Date(2023, 8, 2, 4),
-//   },
-//   {
-//     title: 'Bokning 10',
-//     start: new Date(2023, 8, 2, 5),
-//     end: new Date(2023, 8, 2, 6),
-//   },
-// ];
+const getStartOfWeek = (date: Date) => {
+  const day = dayjs(date);
+  return day.subtract((day.day() + 6) % 7, 'day').toDate();
+};
 
 const BookingsPage = async ({
   searchParams,
 }: {
-  searchParams: { year: string; month: string };
+  searchParams: { year: string; week: string };
 }) => {
   const date = new Date();
   const year = searchParams.year
     ? parseInt(searchParams.year)
     : date.getFullYear();
-  const month = searchParams.month
-    ? parseInt(searchParams.month)
-    : date.getMonth();
+  const week = searchParams.week
+    ? parseInt(searchParams.week)
+    : dayjs(date).week();
 
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 1);
+  const currentWeek = dayjs(
+    getStartOfWeek(
+      dayjs(new Date(year, 0, 1))
+        .week(week)
+        .toDate(),
+    ),
+  );
+  const weekStart = currentWeek.toDate();
+  const weekEnd = currentWeek.add(1, 'week').toDate();
+
+  console.log({ weekStart, weekEnd });
 
   const items = await api.booking.getMany.query({
-    start: monthStart,
-    end: monthEnd,
+    start: weekStart,
+    end: weekEnd,
+    approved: true,
   });
 
   return (
     <>
       <h2>Tarmenbokningar</h2>
-      <Calendar year={year} month={month} items={items} />
+      <Calendar start={weekStart} items={items} />
     </>
   );
 };

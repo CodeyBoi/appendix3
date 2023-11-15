@@ -27,7 +27,7 @@ const ActionIcon = ({
     <button
       type='button'
       className={cn(
-        'flex items-center justify-center rounded p-1',
+        'flex aspect-square items-center justify-center rounded p-1',
         variants[variant],
         className,
       )}

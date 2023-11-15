@@ -1,9 +1,10 @@
-import ParamsSelect from 'components/input/params-select';
 import React from 'react';
-import { genCalender } from 'utils/date';
-import CalendarDay from './day';
-import Button from 'components/input/button';
-import { IconPlus } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import CalendarControl from './control';
+import { api } from 'trpc/server';
+import { cn } from 'utils/class-names';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+dayjs.extend(weekOfYear);
 
 export type CalendarItem = {
   title: string;
@@ -13,81 +14,73 @@ export type CalendarItem = {
 
 type CalendarProps = {
   items: CalendarItem[];
-  year: number;
-  month: number;
+  start: Date;
 };
 
-const startYear = 2023;
-const endYear = new Date().getFullYear() + 1;
-const years = Array.from({ length: endYear - startYear }, (_, i) => ({
-  label: (startYear + i).toString(),
-  value: (startYear + i).toString(),
+const hours = Array.from({ length: 24 }, (_, i) => ({
+  label: `${i}:00`,
+  value: i,
 }));
 
-const months = [
-  { label: 'Januari', value: '0' },
-  { label: 'Februari', value: '1' },
-  { label: 'Mars', value: '2' },
-  { label: 'April', value: '3' },
-  { label: 'Maj', value: '4' },
-  { label: 'Juni', value: '5' },
-  { label: 'Juli', value: '6' },
-  { label: 'Augusti', value: '7' },
-  { label: 'September', value: '8' },
-  { label: 'Oktober', value: '9' },
-  { label: 'November', value: '10' },
-  { label: 'December', value: '11' },
-];
+const Calendar = async ({ items, start }: CalendarProps) => {
+  const isAdmin = (await api.corps.getSelf.query())?.role?.name === 'admin';
 
-const Calendar = ({ items, year, month }: CalendarProps) => {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const monthItems = items.filter(
+  const firstDay = dayjs(start);
+  const lastDay = firstDay.add(1, 'week');
+
+  const weekItems = items.filter(
     (item) =>
-      item.start.getTime() <= lastDay.getTime() + 86400000 &&
-      item.end.getTime() >= firstDay.getTime(),
+      item.start.getTime() <= lastDay.toDate().getTime() &&
+      item.start.getTime() >= firstDay.toDate().getTime(),
   );
   return (
     <div className='flex max-w-3xl flex-col gap-2 rounded border p-2 shadow-sm dark:border-neutral-800'>
-      <div className='flex items-center justify-between p-2'>
-        <Button href='/bookings/new'>
-          <IconPlus />
-          Ny bokning
-        </Button>
-        <div className='flex gap-2'>
-          <ParamsSelect
-            label='Månad'
-            paramName='month'
-            options={months}
-            defaultValue={month.toString()}
-          />
-          <ParamsSelect
-            label='År'
-            paramName='year'
-            options={years}
-            defaultValue={year.toString()}
-          />
-        </div>
-      </div>
-      <div className='grid grid-cols-7 divide-x divide-y divide-solid'>
+      <CalendarControl isAdmin={isAdmin} />
+      <div className='grid grid-cols-8 divide-x divide-y divide-solid'>
+        <div className='pr-1 text-right'>{firstDay.format('MMM')}</div>
         <div className='text-center'>Mån</div>
         <div className='text-center'>Tis</div>
         <div className='text-center'>Ons</div>
         <div className='text-center'>Tor</div>
         <div className='text-center'>Fre</div>
-        <div className='text-center'>Lör</div>
-        <div className='text-center'>Sön</div>
-        {genCalender(year, month).flatMap((week, i) =>
-          week.flatMap((day, j) => {
-            if (day === null) {
-              return <div key={`${i}-${j}`} />;
-            }
-            const date = new Date(year, month, day);
-            return (
-              <CalendarDay key={`${i}-${j}`} date={date} items={monthItems} />
-            );
-          }),
-        )}
+        <div className='text-center text-red-600'>Lör</div>
+        <div className='text-center text-red-600'>Sön</div>
+        <div className='pr-1 text-right'>{`v. ${firstDay.week()}`}</div>
+        {Array.from({ length: 7 }, (_, i) => {
+          const date = firstDay.add(i, 'day');
+          return (
+            <div
+              key={date.toISOString()}
+              className={cn('text-center', i >= 5 && 'text-red-600')}
+            >
+              {date.format('D')}
+            </div>
+          );
+        })}
+        {hours.map((hour) => (
+          <>
+            <div className='p-1 text-right text-xs font-light text-gray-500'>
+              {hour.label}
+            </div>
+            {Array.from({ length: 7 }, (_, i) => {
+              const currentHour = firstDay
+                .add(i, 'day')
+                .add(hour.value, 'hour');
+              const item = weekItems.find(
+                (item) =>
+                  item.start.getHours() >= hour.value &&
+                  item.end.getHours() <= hour.value + 1,
+              );
+              const hasEvent = item !== undefined;
+              return (
+                <div
+                  key={currentHour.toISOString()}
+                  className={cn(hasEvent && 'border-red-200 bg-red-200')}
+                />
+              );
+            })}
+          </>
+        ))}
       </div>
     </div>
   );
