@@ -276,7 +276,7 @@ model KillerCorps {
   timeOfDeath DateTime?
   killedById  Int?
 
-  game       KillerGame    @relation(fields: [gameId], references: [id])
+  game       KillerGame    @relation(fields: [gameId], references: [id], onDelete: Cascade)
   corps      Corps         @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   killedBy   KillerCorps?  @relation("Kills", fields: [killedById], references: [id])
   kills      KillerCorps[] @relation("Kills")
@@ -288,7 +288,7 @@ model KillerCorps {
 
 model KillerGame {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @unique
   start     DateTime @default(now())
   end       DateTime
   createdAt DateTime @default(now())
