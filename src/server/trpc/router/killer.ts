@@ -48,8 +48,12 @@ export const killerRouter = router({
       const shuffledParticipants = participants
         .sort(() => Math.random() - 0.5)
         .map((participant, index) => ({
-          corpsId: participant.id,
-          word: gameWords[index],
+          corps: {
+            connect: {
+              id: participant.id ?? '',
+            },
+          },
+          word: gameWords[index] as string,
         }));
 
       const killerGame = await ctx.prisma.killerGame.create({
@@ -76,5 +80,77 @@ export const killerRouter = router({
       });
 
       return { ...killerGame, targets };
+    }),
+
+  kill: protectedProcedure
+    .input(
+      z.object({
+        gameId: z.string(),
+        word: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { gameId, word } = input;
+      const corpsId = ctx.session.user.corps.id;
+      const killerId = (
+        await ctx.prisma.killerCorps.findFirst({
+          where: {
+            gameId,
+            corpsId,
+          },
+          select: {
+            id: true,
+          },
+        })
+      )?.id;
+
+      // From the corps which the user is trying to kill, find THEIR current target and return their word
+      //
+      // [user] -> [target] -> [their target] <- we want this corps' word
+      const correctWord = (
+        await ctx.prisma.killerCorps.findFirst({
+          select: {
+            word: true,
+          },
+          where: {
+            myKiller: {
+              killerCorps: {
+                timeOfDeath: null,
+                myKiller: {
+                  killerCorps: {
+                    id: killerId,
+                  },
+                },
+              },
+            },
+          },
+        })
+      )?.word;
+
+      if (correctWord !== word.trim()) {
+        return {
+          success: false,
+          message: 'Fel ord',
+        };
+      }
+
+      // Find the corps which the user is trying to kill, and set their time of death
+      await ctx.prisma.killerCorps.updateMany({
+        where: {
+          myKiller: {
+            killerCorps: {
+              id: killerId,
+            },
+          },
+          timeOfDeath: null,
+        },
+        data: {
+          timeOfDeath: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+      };
     }),
 });

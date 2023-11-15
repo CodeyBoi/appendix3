@@ -268,10 +268,11 @@ model Section {
 }
 
 model KillerCorps {
-  id      Int     @id @default(autoincrement())
-  corpsId String
-  word    String
-  gameId  String?
+  id          Int       @id @default(autoincrement())
+  corpsId     String
+  word        String
+  gameId      String?
+  timeOfDeath DateTime?
 
   corps     Corps          @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   myKiller  KillerTarget?  @relation("ToBeAKiller")
