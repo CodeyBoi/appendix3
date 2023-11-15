@@ -12,8 +12,7 @@ export const killerRouter = router({
           participants: {
             include: {
               corps: true,
-              myKiller: true,
-              myTargets: true,
+              target: true,
             },
           },
         },
@@ -69,17 +68,43 @@ export const killerRouter = router({
           participants: true,
         },
       });
-      const targets = await ctx.prisma.killerTarget.createMany({
-        data: killerGame.participants.map((participant, index) => ({
-          killerCorpsId: participant.id,
-          targetCorpsId:
-            killerGame.participants[
-              (index + 1) % killerGame.participants.length
-            ]?.id || 0,
-        })),
+
+      // Connect the participants to their targets
+      await ctx.prisma.$transaction(async () =>
+        killerGame.participants.map((participant, index) =>
+          ctx.prisma.killerCorps.update({
+            where: {
+              id: participant.id,
+            },
+            data: {
+              target: {
+                connect: {
+                  id:
+                    killerGame.participants[
+                      (index + 1) % killerGame.participants.length
+                    ]?.id || 0,
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      const res = await ctx.prisma.killerGame.findUnique({
+        where: {
+          id: killerGame.id,
+        },
+        include: {
+          participants: {
+            include: {
+              corps: true,
+              target: true,
+            },
+          },
+        },
       });
 
-      return { ...killerGame, targets };
+      return res;
     }),
 
   kill: protectedProcedure
@@ -92,40 +117,34 @@ export const killerRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { gameId, word } = input;
       const corpsId = ctx.session.user.corps.id;
-      const killerId = (
-        await ctx.prisma.killerCorps.findFirst({
-          where: {
-            gameId,
-            corpsId,
-          },
-          select: {
-            id: true,
-          },
-        })
-      )?.id;
 
       // From the corps which the user is trying to kill, find THEIR current target and return their word
       //
       // [user] -> [target] -> [their target] <- we want this corps' word
-      const correctWord = (
-        await ctx.prisma.killerCorps.findFirst({
-          select: {
-            word: true,
-          },
-          where: {
-            myKiller: {
-              killerCorps: {
-                timeOfDeath: null,
-                myKiller: {
-                  killerCorps: {
-                    id: killerId,
-                  },
+      const killer = await ctx.prisma.killerCorps.findFirst({
+        where: {
+          corpsId,
+          gameId,
+        },
+        select: {
+          id: true,
+          target: {
+            select: {
+              id: true,
+              target: {
+                select: {
+                  word: true,
                 },
               },
             },
           },
-        })
-      )?.word;
+        },
+      });
+
+      const correctWord = killer?.target?.target?.word;
+      if (!correctWord) {
+        throw new Error('No word for your target found');
+      }
 
       if (correctWord !== word.trim()) {
         return {
@@ -137,15 +156,18 @@ export const killerRouter = router({
       // Find the corps which the user is trying to kill, and set their time of death
       await ctx.prisma.killerCorps.updateMany({
         where: {
-          myKiller: {
-            killerCorps: {
-              id: killerId,
+          targetedBy: {
+            some: {
+              id: killer.id,
             },
           },
           timeOfDeath: null,
+          killedById: null,
         },
         data: {
+          targetId: null,
           timeOfDeath: new Date(),
+          killedById: killer.id,
         },
       });
 

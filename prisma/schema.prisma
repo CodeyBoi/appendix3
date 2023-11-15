@@ -271,22 +271,19 @@ model KillerCorps {
   id          Int       @id @default(autoincrement())
   corpsId     String
   word        String
-  gameId      String?
+  gameId      String
+  targetId    Int?
   timeOfDeath DateTime?
+  killedById  Int?
 
-  corps     Corps          @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-  myKiller  KillerTarget?  @relation("ToBeAKiller")
-  myTargets KillerTarget[] @relation("ToBeKilled")
-  game      KillerGame?    @relation(fields: [gameId], references: [id])
-}
+  game       KillerGame    @relation(fields: [gameId], references: [id])
+  corps      Corps         @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  killedBy   KillerCorps?  @relation("Kills", fields: [killedById], references: [id])
+  kills      KillerCorps[] @relation("Kills")
+  target     KillerCorps?  @relation("Target", fields: [targetId], references: [id])
+  targetedBy KillerCorps[] @relation("Target")
 
-model KillerTarget {
-  id            Int @id @default(autoincrement())
-  killerCorpsId Int @unique
-  targetCorpsId Int
-
-  killerCorps KillerCorps @relation("ToBeAKiller", fields: [killerCorpsId], references: [id])
-  targetCorps KillerCorps @relation("ToBeKilled", fields: [targetCorpsId], references: [id], onDelete: Cascade)
+  @@unique([corpsId, gameId])
 }
 
 model KillerGame {
