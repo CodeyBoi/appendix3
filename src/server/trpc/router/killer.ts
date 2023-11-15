@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from '../trpc';
+import { router, protectedProcedure, adminProcedure } from '../trpc';
 import { z } from 'zod';
 
 const WORDS = [
@@ -62,7 +62,60 @@ export const killerRouter = router({
       });
     }),
 
-  create: protectedProcedure
+  getCurrentInfo: protectedProcedure.query(async ({ ctx }) => {
+    const date = new Date();
+    const game = await ctx.prisma.killerGame.findFirst({
+      where: {
+        start: {
+          lte: date,
+        },
+        end: {
+          gte: date,
+        },
+      },
+    });
+
+    if (!game) {
+      return null;
+    }
+
+    const killer = await ctx.prisma.killerCorps.findFirst({
+      where: {
+        corpsId: ctx.session.user.corps.id,
+        gameId: game.id,
+      },
+      include: {
+        game: true,
+        corps: true,
+        kills: {
+          include: {
+            corps: true,
+          },
+        },
+        target: {
+          include: {
+            corps: true,
+          },
+        },
+        killedBy: {
+          include: {
+            corps: true,
+          },
+        },
+      },
+    });
+
+    if (!killer) {
+      throw new Error('Corps is not in this game');
+    }
+
+    return {
+      killer,
+      game,
+    };
+  }),
+
+  create: adminProcedure
     .input(
       z.object({
         name: z.string(),
