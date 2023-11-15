@@ -33,6 +33,9 @@ export const killerRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const participants = await ctx.prisma.corps.findMany({
+        select: {
+          id: true,
+        },
         where: {
           id: {
             in: input.participants,
@@ -40,6 +43,7 @@ export const killerRouter = router({
         },
       });
 
+      // Collect a random subset of words in a random order
       const gameWords = WORDS.sort(() => Math.random() - 0.5).slice(
         0,
         participants.length,
@@ -90,6 +94,7 @@ export const killerRouter = router({
         ),
       );
 
+      // Return the game with the participants and their targets
       const res = await ctx.prisma.killerGame.findUnique({
         where: {
           id: killerGame.id,
@@ -132,6 +137,7 @@ export const killerRouter = router({
               id: true,
               target: {
                 select: {
+                  id: true,
                   word: true,
                 },
               },
@@ -139,6 +145,10 @@ export const killerRouter = router({
           },
         },
       });
+
+      if (!killer) {
+        throw new Error('Corps is not in this game');
+      }
 
       const correctWord = killer?.target?.target?.word;
       if (!correctWord) {
@@ -153,20 +163,25 @@ export const killerRouter = router({
       }
 
       // Find the corps which the user is trying to kill, and set their time of death
-      await ctx.prisma.killerCorps.updateMany({
+      await ctx.prisma.killerCorps.update({
         where: {
-          targetedBy: {
-            some: {
-              id: killer.id,
-            },
-          },
-          timeOfDeath: null,
-          killedById: null,
+          id: killer.target?.id,
         },
         data: {
           targetId: null,
           timeOfDeath: new Date(),
           killedById: killer.id,
+        },
+      });
+
+      // Update the user's target to be the target of the corps they just killed
+      const targetsTarget = killer.target?.target?.id;
+      await ctx.prisma.killerCorps.update({
+        where: {
+          id: killer.id,
+        },
+        data: {
+          targetId: targetsTarget,
         },
       });
 
