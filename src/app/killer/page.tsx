@@ -127,10 +127,10 @@ const KillerPage = async () => {
                     ? '#' + participant.corps.number.toString()
                     : 'p.e.'
                 } ${participant.corps.displayName}`}</td>
-                <td className='pr-1 text-right'>
+                <td className='pr-1 text-right italic'>
                   {getDeathEuphemism(participant.corps)}
                 </td>
-                <td>
+                <td className='italic'>
                   {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
                     weekday: 'long',
                     hour: '2-digit',
