@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { trpc } from 'utils/trpc';
 import SelectSearch, { SelectSearchProps } from './input/search-select';
-import { detailedName } from 'utils/name-format';
+import { detailedName } from 'utils/corps';
 
 const MIN_SEARCH_LENGTH = 2;
 
