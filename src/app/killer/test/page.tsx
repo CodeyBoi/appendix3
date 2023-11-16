@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 
 const corpsIds = [
@@ -15,18 +16,18 @@ const corpsIds = [
 ];
 
 const KillerTestPage = async () => {
-  // const game = await api.killer.create.mutate({
-  //   name: 'Test Game 3',
-  //   start: new Date(),
-  //   end: dayjs().add(1, 'week').toDate(),
-  //   participants: corpsIds,
-  // });
-
-  await api.killer.kill.mutate({
-    word: 'potato',
+  const game = await api.killer.create.mutate({
+    name: 'Test Game 1',
+    start: new Date(),
+    end: dayjs().add(1, 'week').toDate(),
+    participants: corpsIds,
   });
 
-  const game = await api.killer.get.query({});
+  // await api.killer.kill.mutate({
+  //   word: 'potato',
+  // });
+
+  // const game = await api.killer.get.query({});
 
   return (
     <div className='flex flex-col'>
