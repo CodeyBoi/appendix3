@@ -71,6 +71,11 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/section',
       icon: <IconMicrophone2 />,
     },
+    {
+      label: 'Killer',
+      href: '/admin/killer',
+      icon: <IconSwords />,
+    },
   ],
 };
 

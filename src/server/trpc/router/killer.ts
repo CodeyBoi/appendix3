@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { router, protectedProcedure, adminProcedure } from '../trpc';
 import { z } from 'zod';
 
@@ -38,10 +39,10 @@ export const killerRouter = router({
               },
             },
             start: {
-              lte: date,
+              lte: dayjs(date).add(1, 'day').toDate(),
             },
             end: {
-              gte: date,
+              gte: dayjs(date).subtract(1, 'week').toDate(),
             },
           },
         });
@@ -74,10 +75,10 @@ export const killerRouter = router({
       },
       where: {
         start: {
-          lte: date,
+          lte: dayjs(date).add(1, 'day').toDate(),
         },
         end: {
-          gte: date,
+          gte: dayjs(date).subtract(1, 'week').toDate(),
         },
       },
     });

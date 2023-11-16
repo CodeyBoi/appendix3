@@ -85,6 +85,9 @@ const KillerPage = async () => {
   const isParticipant = player !== null;
   const isAlive = isParticipant && player.timeOfDeath === null;
 
+  const hasStarted = game.start.getTime() < Date.now();
+  const hasEnded = game.end.getTime() < Date.now();
+
   const aliveParticipants = game.participants
     .filter((p) => p.timeOfDeath === null)
     .sort((a, b) => sortCorps(a.corps, b.corps));
@@ -103,7 +106,7 @@ const KillerPage = async () => {
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col'>
-            <h3>Corps</h3>
+            <h3>{hasStarted ? 'Corps' : 'Anmälda corps'}</h3>
             <table className='dark:border-neutral-700'>
               <tbody className='text-sm dark:border-neutral-700'>
                 {aliveParticipants.map((p) => (
@@ -116,31 +119,40 @@ const KillerPage = async () => {
               </tbody>
             </table>
           </div>
-          <div className='flex flex-col'>
-            <h3>Corpses</h3>
-            <table>
-              <tbody className='text-sm dark:border-neutral-700'>
-                {deadParticipants.map((participant) => (
-                  <tr key={participant.id}>
-                    <td className='whitespace-nowrap pr-2 line-through'>
-                      <CorpsDisplay corps={participant.corps} />
-                    </td>
-                    <td className='italic text-red-600'>
-                      {getDeathEuphemism(participant.corps)}{' '}
-                      {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
-                        weekday: 'long',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {hasStarted && (
+            <div className='flex flex-col'>
+              <h3>Corpses</h3>
+              <table>
+                <tbody className='text-sm dark:border-neutral-700'>
+                  {deadParticipants.length === 0 && (
+                    <tr>
+                      <i>Här kommer framtida vilsna själar listas...</i>
+                    </tr>
+                  )}
+                  {deadParticipants.map((participant) => (
+                    <tr key={participant.id}>
+                      <td className='whitespace-nowrap pr-2 line-through'>
+                        <CorpsDisplay corps={participant.corps} />
+                      </td>
+                      <td className='italic text-red-600'>
+                        {getDeathEuphemism(participant.corps)}{' '}
+                        {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
+                          weekday: 'long',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
         <div className='flex flex-col gap-2'>
           {isParticipant &&
+            hasStarted &&
+            !hasEnded &&
             (isAlive && player.target ? (
               <>
                 <h3>Du lever än!</h3>
@@ -167,7 +179,7 @@ const KillerPage = async () => {
                   weekday: 'long',
                   hour: '2-digit',
                   minute: '2-digit',
-                })}`}</div>
+                })}.`}</div>
               </>
             ))}
         </div>
