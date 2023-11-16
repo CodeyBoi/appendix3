@@ -65,6 +65,13 @@ export const killerRouter = router({
   getCurrentInfo: protectedProcedure.query(async ({ ctx }) => {
     const date = new Date();
     const game = await ctx.prisma.killerGame.findFirst({
+      include: {
+        participants: {
+          include: {
+            corps: true,
+          },
+        },
+      },
       where: {
         start: {
           lte: date,
@@ -79,7 +86,7 @@ export const killerRouter = router({
       return null;
     }
 
-    const killer = await ctx.prisma.killerCorps.findFirst({
+    const player = await ctx.prisma.killerCorps.findFirst({
       where: {
         corpsId: ctx.session.user.corps.id,
         gameId: game.id,
@@ -105,12 +112,8 @@ export const killerRouter = router({
       },
     });
 
-    if (!killer) {
-      throw new Error('Corps is not in this game');
-    }
-
     return {
-      killer,
+      player,
       game,
     };
   }),
