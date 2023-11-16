@@ -63,9 +63,9 @@ const CorpsInfobox = ({ id }: CorpsInfoboxProps) => {
       <div className='whitespace-nowrap text-lg font-bold'>
         {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
         {nickName && (
-          <span className='bg-transparent text-xs font-light text-neutral-500'>
+          <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>
             {'a.k.a. ' + nickName}
-          </span>
+          </div>
         )}
       </div>
 

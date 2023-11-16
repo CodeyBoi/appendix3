@@ -1,7 +1,9 @@
+import CorpsDisplay from 'components/corps/display';
 import { Metadata } from 'next';
 import { api } from 'trpc/server';
-import { sortCorps } from 'utils/corps';
+import { detailedName, sortCorps } from 'utils/corps';
 import { hashString } from 'utils/hash';
+import KillerWordForm from './word-form';
 
 export const metadata: Metadata = {
   title: 'Killer',
@@ -26,7 +28,7 @@ const DEATH_EUPHEMISMS = [
   'började dansa med sirener',
   'dog',
   '404 not found since',
-  'blev borttagen',
+  'togs bort',
   'blev rekt',
   'blev pwned',
   'blev raderad',
@@ -81,6 +83,7 @@ const KillerPage = async () => {
 
   const { game, player } = killerGame;
   const isParticipant = player !== null;
+  const isAlive = isParticipant && player.timeOfDeath === null;
 
   const aliveParticipants = game.participants
     .filter((p) => p.timeOfDeath === null)
@@ -95,57 +98,79 @@ const KillerPage = async () => {
     );
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex max-w-5xl flex-col'>
       <h1>Killer</h1>
-      <h3>Corps</h3>
-      <div className='text-lg'>
-        <table className='dark:border-neutral-700'>
-          <tbody className='text-sm dark:border-neutral-700'>
-            {aliveParticipants.map((p) => (
-              <tr key={p.corps.id}>
-                <td className='pr-2 text-right'>
-                  {p.corps.number ? '#' + p.corps.number.toString() : 'p.e.'}
-                </td>
-                <td>{p.corps.fullName}</td>
-              </tr>
+      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-col'>
+            <h3>Corps</h3>
+            <table className='dark:border-neutral-700'>
+              <tbody className='text-sm dark:border-neutral-700'>
+                {aliveParticipants.map((p) => (
+                  <tr key={p.corps.id}>
+                    <td>
+                      <CorpsDisplay corps={p.corps} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className='flex flex-col'>
+            <h3>Corpses</h3>
+            <table>
+              <tbody className='text-sm dark:border-neutral-700'>
+                {deadParticipants.map((participant) => (
+                  <tr key={participant.id}>
+                    <td className='whitespace-nowrap pr-2 line-through'>
+                      <CorpsDisplay corps={participant.corps} />
+                    </td>
+                    <td className='italic text-red-600'>
+                      {getDeathEuphemism(participant.corps)}{' '}
+                      {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
+                        weekday: 'long',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className='flex flex-col gap-2'>
+          {isParticipant &&
+            (isAlive && player.target ? (
+              <>
+                <h3>Du lever än!</h3>
+                <div className='max-w-max rounded border border-gray-500 p-3 text-lg shadow'>
+                  <div className='flex gap-2'>
+                    Mål:
+                    <CorpsDisplay corps={player.target.corps} />
+                  </div>
+                  <div className='flex gap-2'>
+                    Ord:
+                    <div>
+                      {player.target.word}/{player.target.wordEnglish}
+                    </div>
+                  </div>
+                </div>
+                <KillerWordForm />
+              </>
+            ) : (
+              <>
+                <h3 className='text-red-600'>DU ÄR DÖD</h3>
+                <div>{`Din livsglöd släcktes av ${detailedName(
+                  player.killedBy?.corps,
+                )} ${player.timeOfDeath?.toLocaleDateString('sv-SE', {
+                  weekday: 'long',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}`}</div>
+              </>
             ))}
-          </tbody>
-        </table>
-        <h3>Corpses</h3>
-        <table>
-          {/* <thead>
-            <tr>
-              <th className='text-left'>Namn</th>
-              <th className='text-left'>Dog</th>
-            </tr>
-          </thead> */}
-          <tbody className='text-sm dark:border-neutral-700'>
-            {deadParticipants.map((participant) => (
-              <tr key={participant.id}>
-                <td className='pr-4 line-through'>{`${
-                  participant.corps.number
-                    ? '#' + participant.corps.number.toString()
-                    : 'p.e.'
-                } ${participant.corps.displayName}`}</td>
-                <td className='pr-1 text-right italic'>
-                  {getDeathEuphemism(participant.corps)}
-                </td>
-                <td className='italic'>
-                  {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
-                    weekday: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </td>
-              </tr>
-            ))}
-            {/* {killerGame?.participants.map((p) => (
-              <tr key={p.corps.id}>
-                <td>{p.corps.fullName}</td>
-              </tr>
-            ))} */}
-          </tbody>
-        </table>
+        </div>
       </div>
     </div>
   );

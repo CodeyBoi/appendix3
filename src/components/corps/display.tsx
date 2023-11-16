@@ -22,13 +22,9 @@ const CorpsDisplay = ({ corps }: CorpsDisplayProps) => {
     <Popover
       position='top-right'
       target={
-        <div className='flex text-sm'>
-          <div className={'w-8' + (!number ? ' text-right' : '')}>{`${
-            number ? `#${number}` : 'p.e.'
-          }`}</div>
-          <div className='w-1.5' />
-          <div className='hover:underline'>{displayName}</div>
-        </div>
+        <div className='hover:underline'>{`${
+          number ? `#${number}` : 'p.e.'
+        } ${displayName}`}</div>
       }
       popover={<CorpsInfobox id={id} />}
     />
