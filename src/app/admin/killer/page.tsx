@@ -4,6 +4,11 @@ import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 
 const AdminKillerPage = async () => {
+  const corps = await api.corps.getSelf.query();
+  if (corps?.id !== 'cld099pna01uxzhvdgs1u95oc') {
+    return <div>Detta får bara Snygg-Hannes se :) (get bent)</div>;
+  }
+
   const game = await api.killer.get.query({});
   if (!game) {
     return <div>Ingen pågående killer</div>;
