@@ -199,7 +199,7 @@ const KillerPage = async () => {
               <>
                 <h3>Du lever än!</h3>
                 <div className='flex gap-2'>
-                  <div className='max-w-max rounded border border-gray-500 p-3 text-lg shadow'>
+                  <div className='max-w-max rounded border border-gray-500 p-3 text-lg font-bold italic text-red-600 shadow'>
                     <div className='flex gap-2'>
                       Mål:
                       <CorpsDisplay corps={player.target.corps} />
