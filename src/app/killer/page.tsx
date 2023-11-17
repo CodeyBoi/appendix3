@@ -6,6 +6,8 @@ import { hashString } from 'utils/hash';
 import KillerWordForm from './word-form';
 import KillerAddPlayer from 'app/admin/killer/add-player';
 import Countdown from 'components/countdown';
+import { IconInfoCircle } from '@tabler/icons-react';
+import Button from 'components/input/button';
 
 export const metadata: Metadata = {
   title: 'Killer',
@@ -78,7 +80,7 @@ const getDeathEuphemism = (corps: {
 
 const KillerPage = async () => {
   const corps = await api.corps.getSelf.query();
-  const killerGame = await api.killer.getCurrentInfo.query();
+  const killerGame = await api.killer.getCurrentInfo.mutate();
 
   if (!killerGame) {
     return <div>Ingen pågående killer</div>;
@@ -105,18 +107,33 @@ const KillerPage = async () => {
 
   return (
     <div className='flex max-w-5xl flex-col'>
-      {hasStarted && <h1>Killer</h1>}
+      {hasStarted && (
+        <div className='flex flex-row flex-nowrap items-center'>
+          <h1 className='grow'>Killer</h1>
+          <Button href='/killer/rules'>
+            <IconInfoCircle />
+            Regler
+          </Button>
+        </div>
+      )}
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col'>
             {!hasStarted && corps && (
               <div className='flex flex-col items-center'>
-                <div className='flex flex-col gap-2 text-center text-2xl font-bold italic text-red-600'>
+                <Button href='/killer/rules'>
+                  <IconInfoCircle />
+                  Vad i hela friden är detta?
+                </Button>
+                <div className='h-4' />
+                <div className='flex flex-col items-center gap-2 text-center text-2xl font-bold italic text-red-600'>
                   Killergame börjar om
                   <Countdown end={game.start} className='text-4xl' />
-                  {isParticipant
-                    ? 'Du är anmäld! Lycka till! 🔪🔪🔪'
-                    : '⬇️ Anmäl dig redan idag! ⬇️'}
+                  <span className='text-lg'>
+                    {isParticipant
+                      ? 'Du är anmäld! Lycka till! 🔪🔪🔪'
+                      : '⬇️ Anmäl dig redan idag! ⬇️'}
+                  </span>
                 </div>
                 {!isParticipant && (
                   <>
@@ -149,7 +166,9 @@ const KillerPage = async () => {
                 <tbody className='text-sm dark:border-neutral-700'>
                   {deadParticipants.length === 0 && (
                     <tr>
-                      <i>Här kommer framtida vilsna själar listas...</i>
+                      <td className='italic'>
+                        Här kommer framtida vilsna själar listas...
+                      </td>
                     </tr>
                   )}
                   {deadParticipants.map((participant) => (
@@ -179,15 +198,17 @@ const KillerPage = async () => {
             (isAlive && player.target ? (
               <>
                 <h3>Du lever än!</h3>
-                <div className='max-w-max rounded border border-gray-500 p-3 text-lg shadow'>
-                  <div className='flex gap-2'>
-                    Mål:
-                    <CorpsDisplay corps={player.target.corps} />
-                  </div>
-                  <div className='flex gap-2'>
-                    Ord:
-                    <div>
-                      {player.target.word}/{player.target.wordEnglish}
+                <div className='flex gap-2'>
+                  <div className='max-w-max rounded border border-gray-500 p-3 text-lg shadow'>
+                    <div className='flex gap-2'>
+                      Mål:
+                      <CorpsDisplay corps={player.target.corps} />
+                    </div>
+                    <div className='flex gap-2'>
+                      Ord:
+                      <div>
+                        {player.target.word}/{player.target.wordEnglish}
+                      </div>
                     </div>
                   </div>
                 </div>

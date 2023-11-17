@@ -3,7 +3,6 @@
 import { useForm } from '@mantine/form';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
-import MultiSelect from 'components/multi-select';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
@@ -11,29 +10,15 @@ type FormValues = {
   name: string;
   start: Date;
   end: Date;
-  participants: string[];
 };
 const initialValues = {
   name: '',
   start: new Date(),
   end: new Date(),
-  participants: [] as string[],
 };
 
 const AdminKillerForm = () => {
   const router = useRouter();
-
-  const { data: corpsii } = api.corps.getMany.useQuery({});
-  const corpsiiOptions = corpsii?.map((c) => ({
-    label:
-      (c.number ? '#' + c.number : 'p.e.') +
-      ' ' +
-      c.firstName +
-      ' ' +
-      (c.nickName ? '"' + c.nickName + '" ' : '') +
-      c.lastName,
-    value: c.id,
-  }));
 
   const form = useForm<FormValues>({
     initialValues,
@@ -53,7 +38,6 @@ const AdminKillerForm = () => {
 
   const mutation = api.killer.create.useMutation({
     onSuccess: () => {
-      form.reset();
       router.push('/killer');
     },
   });
@@ -78,12 +62,6 @@ const AdminKillerForm = () => {
         type='datetime-local'
         withAsterisk
         {...form.getInputProps('end')}
-      />
-      <MultiSelect
-        label='Deltagare'
-        className='outline-none focus-visible:outline-none'
-        options={corpsiiOptions ?? []}
-        {...form.getInputProps('participants')}
       />
       <Button type='submit'>Skapa</Button>
     </form>

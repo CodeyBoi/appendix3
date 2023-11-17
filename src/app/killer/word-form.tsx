@@ -25,8 +25,7 @@ const KillerWordForm = () => {
 
   return (
     <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
-      Har du dödat någon? Fyll i ordet (svenska eller engelska) som stod på
-      deras lapp här:
+      Har du dödat någon? Fyll i ordet som stod på deras lapp här:
       <div className='flex w-full gap-2'>
         <input
           placeholder='Kodord'

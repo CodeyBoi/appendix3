@@ -33,6 +33,7 @@ type PopoverProps = {
   position?: Position;
   bgColor?: BgColor;
   withArrow?: boolean;
+  center?: boolean;
 };
 
 const Popover = ({
@@ -40,6 +41,7 @@ const Popover = ({
   popover: dropdown,
   position = 'bottom-right',
   bgColor = 'default',
+  center = false,
 }: PopoverProps) => {
   const [open, setOpen] = useState(false);
   return (
@@ -50,9 +52,11 @@ const Popover = ({
         </div>
         <div
           className={cn(
-            'absolute z-20 rounded p-1 shadow transition-opacity',
+            'z-20 overflow-y-auto rounded p-1 shadow transition-opacity',
+            center
+              ? 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'
+              : 'absolute ' + positionClasses[position],
             open ? 'opacity-100' : 'pointer-events-none opacity-0',
-            positionClasses[position],
             bgColorClasses[bgColor],
           )}
         >
