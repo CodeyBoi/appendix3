@@ -127,7 +127,9 @@ const KillerPage = async () => {
                 <div className='h-4' />
               </div>
             )}
-            <h3>{hasStarted ? 'Corps' : 'Anmälda corps'}</h3>
+            {game.participants.length !== 0 && (
+              <h3>{hasStarted ? 'Corps' : 'Anmälda corps'}</h3>
+            )}
             <table className='dark:border-neutral-700'>
               <tbody className='text-sm dark:border-neutral-700'>
                 {aliveParticipants.map((p) => (

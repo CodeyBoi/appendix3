@@ -159,6 +159,13 @@ export const killerRouter = router({
         return null;
       }
 
+      if (
+        game.participants.length === 0 ||
+        game.participants.every((p) => p.target === null)
+      ) {
+        return game;
+      }
+
       // First add all participants in an order so that every participant has the next participant as their target
       type Participant = (typeof game.participants)[number];
       const sortedParticipants: Participant[] = [];
@@ -387,11 +394,12 @@ export const killerRouter = router({
     }),
 
   start: adminProcedure.mutation(async ({ ctx }) => {
-    const date = new Date();
     const game = await ctx.prisma.killerGame.findFirst({
       where: {
-        start: {
-          gte: date,
+        participants: {
+          every: {
+            target: null,
+          },
         },
       },
       include: {
