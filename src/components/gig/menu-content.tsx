@@ -8,7 +8,6 @@ import {
 import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';
-import Link from 'next/link';
 
 type GigMenuContentProps = {
   gig: Gig & { type: { name: string } };
@@ -61,18 +60,18 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
 
   return (
     <>
-      <Link href={`/gig/${gig.id}`}>
-        <Button
-          className='flex w-full justify-start hover:bg-red-600/10'
-          color='transparent'
-        >
-          <IconUsers />
-          Se anmälningar
-        </Button>
-      </Link>
+      <Button
+        href={`/gig/${gig.id}`}
+        fullWidth
+        className='flex justify-start hover:bg-red-600/10'
+        color='transparent'
+      >
+        <IconUsers />
+        Se anmälningar
+      </Button>
       <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
         <Button
-          className='flex w-full justify-start hover:bg-red-600/10'
+          className='flex justify-start hover:bg-red-600/10'
           color='transparent'
           disabled={calenderLink === ''}
         >
@@ -86,24 +85,24 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
             <Divider />
           </div>
           <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
-          <Link href={`/admin/gig/${gig.id}`}>
-            <Button
-              className='flex w-full justify-start hover:bg-red-600/10'
-              color='transparent'
-            >
-              <IconEdit />
-              Redigera
-            </Button>
-          </Link>
-          <Link href={`/admin/gig/${gig.id}/info`}>
-            <Button
-              className='flex w-full justify-start hover:bg-red-600/10'
-              color='transparent'
-            >
-              <IconApple />
-              Matpreferenser
-            </Button>
-          </Link>
+          <Button
+            fullWidth
+            href={`/admin/gig/${gig.id}`}
+            className='flex justify-start hover:bg-red-600/10'
+            color='transparent'
+          >
+            <IconEdit />
+            Redigera
+          </Button>
+          <Button
+            fullWidth
+            href={`/admin/gig/${gig.id}/info`}
+            className='flex justify-start hover:bg-red-600/10'
+            color='transparent'
+          >
+            <IconApple />
+            Matpreferenser
+          </Button>
         </>
       )}
     </>
