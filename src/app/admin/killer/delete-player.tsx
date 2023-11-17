@@ -1,7 +1,7 @@
 'use client';
 
 import { IconTrash } from '@tabler/icons-react';
-import Button from 'components/input/button';
+import ActionIcon from 'components/input/action-icon';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
@@ -18,16 +18,17 @@ const KillerDeletePlayer = ({ killerId }: DeletePlayerProps) => {
   });
 
   return (
-    <Button
+    <ActionIcon
       onClick={async () => {
-        await mutation.mutateAsync({
-          killerId,
-        });
+        if (confirm('Är du säker på att du vill ta bort spelaren?')) {
+          await mutation.mutateAsync({
+            killerId,
+          });
+        }
       }}
     >
       <IconTrash />
-      Avanmäl mig!
-    </Button>
+    </ActionIcon>
   );
 };
 
