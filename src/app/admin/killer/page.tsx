@@ -1,4 +1,4 @@
-import { IconPlus } from '@tabler/icons-react';
+import { IconDownload, IconPlus } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import dayjs from 'dayjs';
 import { api } from 'trpc/server';
@@ -15,14 +15,37 @@ const AdminKillerPage = async () => {
   const game = await api.killer.get.query({});
 
   const date = new Date();
-  const hasStarted = game && date < game.start;
+  const hasStarted = game && date > game.start;
+
+  const participantsCsvLink =
+    'data:text/csv;charset=utf-8,Mål,Ord\n' +
+    encodeURIComponent(
+      game?.participants
+        .map(
+          (p) =>
+            `${p.corps.number ? '#' + p.corps.number.toString() : 'p.e.'} ${
+              p.corps.fullName
+            },${p.word}/${p.wordEnglish}`,
+        )
+        .join('\n') ?? '',
+    );
 
   return (
     <div className='flex flex-col gap-2'>
-      <Button href='/admin/killer/new'>
-        <IconPlus />
-        Skapa nytt spel
-      </Button>
+      <div className='flex flex-row gap-2'>
+        <Button href='/admin/killer/new'>
+          <IconPlus />
+          Skapa nytt spel
+        </Button>
+        {game && (
+          <a href={participantsCsvLink} download={`Killer ${game.name}.csv`}>
+            <Button>
+              <IconDownload />
+              Ladda ner som CSV
+            </Button>
+          </a>
+        )}
+      </div>
       {game ? (
         <>
           <KillerAddPlayer participants={game.participants} />
@@ -53,7 +76,7 @@ const AdminKillerPage = async () => {
                         : ''}
                     </td>
                     <td className='px-1'>{p.killedById}</td>
-                    {hasStarted && (
+                    {!hasStarted && (
                       <td className='px-1'>
                         <KillerDeletePlayer killerId={p.id} />
                       </td>
