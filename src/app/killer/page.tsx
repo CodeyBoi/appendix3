@@ -5,7 +5,7 @@ import { detailedName, sortCorps } from 'utils/corps';
 import { hashString } from 'utils/hash';
 import KillerWordForm from './word-form';
 import KillerAddPlayer from 'app/admin/killer/add-player';
-import KillerDeletePlayer from 'app/admin/killer/delete-player';
+import Countdown from 'components/countdown';
 
 export const metadata: Metadata = {
   title: 'Killer',
@@ -105,17 +105,28 @@ const KillerPage = async () => {
 
   return (
     <div className='flex max-w-5xl flex-col'>
-      <h1>Killer</h1>
+      {hasStarted && <h1>Killer</h1>}
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col'>
-            {!hasStarted &&
-              corps &&
-              (isParticipant ? (
-                <KillerDeletePlayer killerId={player.id} />
-              ) : (
-                <KillerAddPlayer corpsId={corps.id} />
-              ))}
+            {!hasStarted && corps && (
+              <div className='flex flex-col items-center'>
+                <div className='flex flex-col gap-2 text-center text-2xl font-bold italic text-red-600'>
+                  Killergame börjar om
+                  <Countdown end={game.start} className='text-4xl' />
+                  {isParticipant
+                    ? 'Du är anmäld! Lycka till! 🔪🔪🔪'
+                    : '⬇️ Anmäl dig redan idag! ⬇️'}
+                </div>
+                {!isParticipant && (
+                  <>
+                    <div className='h-4' />
+                    <KillerAddPlayer corpsId={corps.id} />
+                  </>
+                )}
+                <div className='h-4' />
+              </div>
+            )}
             <h3>{hasStarted ? 'Corps' : 'Anmälda corps'}</h3>
             <table className='dark:border-neutral-700'>
               <tbody className='text-sm dark:border-neutral-700'>

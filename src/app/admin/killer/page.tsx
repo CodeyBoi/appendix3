@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import KillerDeletePlayer from './delete-player';
 import KillerAddPlayer from './add-player';
+import KillerControl from './control';
 
 const AdminKillerPage = async () => {
   const corps = await api.corps.getSelf.query();
@@ -12,6 +13,9 @@ const AdminKillerPage = async () => {
   }
 
   const game = await api.killer.get.query({});
+
+  const date = new Date();
+  const hasStarted = game && date < game.start;
 
   return (
     <div className='flex flex-col gap-2'>
@@ -49,14 +53,17 @@ const AdminKillerPage = async () => {
                         : ''}
                     </td>
                     <td className='px-1'>{p.killedById}</td>
-                    <td className='px-1'>
-                      <KillerDeletePlayer killerId={p.id} />
-                    </td>
+                    {hasStarted && (
+                      <td className='px-1'>
+                        <KillerDeletePlayer killerId={p.id} />
+                      </td>
+                    )}
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <KillerControl id={game.id} />
         </>
       ) : (
         <div>Ingen pågående killer</div>

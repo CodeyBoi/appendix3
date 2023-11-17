@@ -128,32 +128,22 @@ export const WORDS: Word[] = [
 ].sort((a, b) => a.sv.localeCompare(b.sv, 'sv-SE'));
 
 export const killerRouter = router({
-  get: protectedProcedure
+  get: adminProcedure
     .input(z.object({ id: z.string().optional() }))
     .query(async ({ ctx, input }) => {
-      if (!input.id) {
-        const date = new Date();
-        return ctx.prisma.killerGame.findFirst({
-          include: {
-            participants: {
-              include: {
-                corps: true,
-                target: true,
-              },
-            },
-          },
-          where: {
+      const date = new Date();
+      const whereClause = input.id
+        ? { id: input.id }
+        : {
             start: {
               lte: dayjs(date).add(1, 'month').toDate(),
             },
             end: {
               gte: dayjs(date).subtract(1, 'week').toDate(),
             },
-          },
-        });
-      }
+          };
 
-      return ctx.prisma.killerGame.findUnique({
+      const game = await ctx.prisma.killerGame.findFirst({
         include: {
           participants: {
             include: {
@@ -162,10 +152,51 @@ export const killerRouter = router({
             },
           },
         },
-        where: {
-          id: input.id,
-        },
+        where: whereClause,
       });
+
+      if (!game) {
+        return null;
+      }
+
+      // First add all participants in an order so that every participant has the next participant as their target
+      type Participant = (typeof game.participants)[number];
+      const sortedParticipants: Participant[] = [];
+
+      // Find the first alive participant
+      let current = game.participants.find((p) => !p.timeOfDeath);
+
+      if (!current) {
+        throw new Error('No alive participants found (this should not happen)');
+      }
+
+      for (const _ of game.participants) {
+        sortedParticipants.push(current);
+        const newParticipant = game.participants.find(
+          (p) => current?.target?.id === p.id,
+        );
+        if (!newParticipant) {
+          throw new Error('Could not find next participant');
+        }
+        if (sortedParticipants.includes(newParticipant)) {
+          break;
+        }
+        current = newParticipant;
+      }
+
+      // Now add all dead participants to the end of the list, sorted by time of death
+      for (const p of game.participants
+        .filter((p) => p.timeOfDeath)
+        // timeOfDeath cannot be null as we filter out those participants above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .sort((a, b) => a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime())) {
+        sortedParticipants.push(p);
+      }
+
+      return {
+        ...game,
+        participants: sortedParticipants,
+      };
     }),
 
   getCurrentInfo: protectedProcedure.query(async ({ ctx }) => {
@@ -279,6 +310,20 @@ export const killerRouter = router({
       return res;
     }),
 
+  remove: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.killerGame.delete({
+        where: {
+          id: input.id,
+        },
+      });
+
+      return {
+        success: true,
+      };
+    }),
+
   addParticipant: protectedProcedure
     .input(z.object({ corpsId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
@@ -341,7 +386,7 @@ export const killerRouter = router({
       };
     }),
 
-  assignTargets: adminProcedure.mutation(async ({ ctx }) => {
+  start: adminProcedure.mutation(async ({ ctx }) => {
     const date = new Date();
     const game = await ctx.prisma.killerGame.findFirst({
       where: {
@@ -358,9 +403,15 @@ export const killerRouter = router({
       throw new Error('No game available');
     }
 
-    // Connect the participants to their targets
-    await ctx.prisma.$transaction(async () =>
-      game.participants.map(async (participant, index) =>
+    // Shuffle the participants
+    const shuffledParticipants = game.participants.sort(
+      () => Math.random() - 0.5,
+    );
+
+    // Update the participants in the database to match the shuffled order
+    // and connect them to their targets
+    await ctx.prisma.$transaction(
+      shuffledParticipants.map((participant, index) =>
         ctx.prisma.killerPlayer.update({
           where: {
             id: participant.id,
@@ -369,14 +420,25 @@ export const killerRouter = router({
             target: {
               connect: {
                 id:
-                  game.participants[(index + 1) % game.participants.length]
-                    ?.id || 0,
+                  shuffledParticipants[
+                    (index + 1) % shuffledParticipants.length
+                  ]?.id || 0,
               },
             },
           },
         }),
       ),
     );
+
+    // Start the game!
+    await ctx.prisma.killerGame.update({
+      where: {
+        id: game.id,
+      },
+      data: {
+        start: new Date(),
+      },
+    });
 
     return {
       success: true,
