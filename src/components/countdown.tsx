@@ -8,6 +8,25 @@ type CountdownProps = {
   className?: string;
 };
 
+const genTimeMsg = (secs: number) => {
+  let msg = '';
+  const days = Math.floor(secs / (1000 * 60 * 60 * 24));
+  if (days > 0) {
+    msg += `${days} dag${days === 1 ? '' : 'ar'} `;
+  }
+  const hours = Math.floor((secs / (1000 * 60 * 60)) % 24);
+  if (hours > 0) {
+    msg += `${hours} timm${hours === 1 ? 'e' : 'ar'} `;
+  }
+  const minutes = Math.floor((secs / (1000 * 60)) % 60);
+  if (minutes > 0) {
+    msg += `${minutes} minut${minutes === 1 ? '' : 'er'} och `;
+  }
+  const seconds = Math.floor((secs / 1000) % 60);
+  msg += `${seconds} sekund${seconds === 1 ? '' : 'er'}`;
+  return msg;
+};
+
 const Countdown = ({ end, className }: CountdownProps) => {
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(
@@ -29,16 +48,7 @@ const Countdown = ({ end, className }: CountdownProps) => {
     }
   }, [timeLeft, router, refreshed]);
 
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
-  const seconds = Math.floor((timeLeft / 1000) % 60);
-
-  return (
-    <div className={className}>
-      {days} dagar {hours} timmar {minutes} minuter och {seconds} sekunder!
-    </div>
-  );
+  return <span className={className}>{genTimeMsg(timeLeft)}</span>;
 };
 
 export default Countdown;
