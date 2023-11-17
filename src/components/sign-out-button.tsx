@@ -16,8 +16,9 @@ const SignOutButton = () => {
   return (
     <Button
       color='navbutton'
-      className='flex w-full justify-start transition-colors hover:bg-red-600'
+      className='flex justify-start transition-colors hover:bg-red-600'
       onClick={handleSignOut}
+      fullWidth
     >
       <IconLogout />
       Logga ut

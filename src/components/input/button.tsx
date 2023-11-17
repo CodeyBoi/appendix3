@@ -6,6 +6,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: Color;
   href?: string;
   compact?: boolean;
+  fullWidth?: boolean;
 };
 
 type Color = 'red' | 'transparent' | 'navbutton';
@@ -23,6 +24,7 @@ const Button = ({
   href,
   compact = false,
   className,
+  fullWidth = false,
   ...props
 }: ButtonProps) => {
   const buttonElement = (
@@ -34,6 +36,7 @@ const Button = ({
         colorClasses[color],
         compact ? 'px-1 py-0.5' : 'px-3 py-2.5',
         disabled && 'pointer-events-none opacity-50',
+        fullWidth ? 'w-full' : 'max-w-max',
         className,
       )}
     >
@@ -43,7 +46,13 @@ const Button = ({
     </button>
   );
 
-  return href ? <Link href={href}>{buttonElement}</Link> : buttonElement;
+  return href ? (
+    <Link className={fullWidth ? 'w-full' : 'max-w-max'} href={href}>
+      {buttonElement}
+    </Link>
+  ) : (
+    buttonElement
+  );
 };
 
 export default Button;

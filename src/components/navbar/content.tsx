@@ -83,7 +83,8 @@ const toElement = (link: NavbarLink) => (
   <Link href={link.href} key={link.label}>
     <Button
       color='navbutton'
-      className='flex w-full justify-start hover:bg-red-600'
+      className='flex justify-start hover:bg-red-600'
+      fullWidth
     >
       {link.icon}
       {link.label}
@@ -109,9 +110,10 @@ const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
       <NavbarControl userTab={userTabElement} adminTab={adminTabElement} />
       <div className='flex flex-col'>
         <Button
+          className='flex justify-start hover:bg-red-600'
           href='/about'
           color='navbutton'
-          className='flex w-full justify-start hover:bg-red-600'
+          fullWidth
         >
           <IconInfoSquare />
           Om sidan

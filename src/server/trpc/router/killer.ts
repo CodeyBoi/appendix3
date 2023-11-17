@@ -143,13 +143,8 @@ export const killerRouter = router({
             },
           },
           where: {
-            participants: {
-              some: {
-                corpsId: ctx.session.user.corps.id,
-              },
-            },
             start: {
-              lte: dayjs(date).add(1, 'day').toDate(),
+              lte: dayjs(date).add(1, 'month').toDate(),
             },
             end: {
               gte: dayjs(date).subtract(1, 'week').toDate(),
@@ -185,7 +180,7 @@ export const killerRouter = router({
       },
       where: {
         start: {
-          lte: dayjs(date).add(1, 'day').toDate(),
+          lte: dayjs(date).add(1, 'month').toDate(),
         },
         end: {
           gte: dayjs(date).subtract(1, 'week').toDate(),
@@ -197,7 +192,7 @@ export const killerRouter = router({
       return null;
     }
 
-    const player = await ctx.prisma.killerCorps.findFirst({
+    const player = await ctx.prisma.killerPlayer.findFirst({
       where: {
         corpsId: ctx.session.user.corps.id,
         gameId: game.id,
@@ -267,7 +262,7 @@ export const killerRouter = router({
           wordEnglish: gameWords[index]?.en as string,
         }));
 
-      const killerGame = await ctx.prisma.killerGame.create({
+      const res = await ctx.prisma.killerGame.create({
         data: {
           name: input.name,
           start: input.start,
@@ -281,44 +276,112 @@ export const killerRouter = router({
         },
       });
 
-      // Connect the participants to their targets
-      await ctx.prisma.$transaction(async () =>
-        killerGame.participants.map(async (participant, index) =>
-          ctx.prisma.killerCorps.update({
-            where: {
-              id: participant.id,
-            },
-            data: {
-              target: {
-                connect: {
-                  id:
-                    killerGame.participants[
-                      (index + 1) % killerGame.participants.length
-                    ]?.id || 0,
-                },
-              },
-            },
-          }),
-        ),
-      );
+      return res;
+    }),
 
-      // Return the game with the participants and their targets
-      const res = await ctx.prisma.killerGame.findUnique({
+  addParticipant: protectedProcedure
+    .input(z.object({ corpsId: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const date = new Date();
+      const game = await ctx.prisma.killerGame.findFirst({
         where: {
-          id: killerGame.id,
+          start: {
+            gte: date,
+          },
         },
         include: {
-          participants: {
-            include: {
-              target: true,
-              corps: true,
-            },
-          },
+          participants: true,
         },
       });
 
-      return res;
+      if (!game) {
+        throw new Error("No game which hasn't begun available");
+      }
+
+      // If no corpsId is supplied, register yourself
+      const corpsId = input.corpsId ?? ctx.session.user.corps.id;
+
+      const usedWords =
+        game.participants.map((participant) => participant.word) ?? [];
+      const gameWords = WORDS.filter((word) => !usedWords.includes(word.sv));
+      const word = gameWords[
+        Math.floor(Math.random() * gameWords.length)
+      ] as Word;
+
+      const participant = await ctx.prisma.killerPlayer.create({
+        data: {
+          game: {
+            connect: {
+              id: game.id,
+            },
+          },
+          corps: {
+            connect: {
+              id: corpsId,
+            },
+          },
+          word: word.sv,
+          wordEnglish: word.en,
+        },
+      });
+      return participant;
     }),
+
+  removeParticipant: protectedProcedure
+    .input(z.object({ killerId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.killerPlayer.delete({
+        where: {
+          id: input.killerId,
+        },
+      });
+
+      return {
+        success: true,
+      };
+    }),
+
+  assignTargets: adminProcedure.mutation(async ({ ctx }) => {
+    const date = new Date();
+    const game = await ctx.prisma.killerGame.findFirst({
+      where: {
+        start: {
+          gte: date,
+        },
+      },
+      include: {
+        participants: true,
+      },
+    });
+
+    if (!game) {
+      throw new Error('No game available');
+    }
+
+    // Connect the participants to their targets
+    await ctx.prisma.$transaction(async () =>
+      game.participants.map(async (participant, index) =>
+        ctx.prisma.killerPlayer.update({
+          where: {
+            id: participant.id,
+          },
+          data: {
+            target: {
+              connect: {
+                id:
+                  game.participants[(index + 1) % game.participants.length]
+                    ?.id || 0,
+              },
+            },
+          },
+        }),
+      ),
+    );
+
+    return {
+      success: true,
+    };
+  }),
 
   kill: protectedProcedure
     .input(
@@ -354,7 +417,7 @@ export const killerRouter = router({
       // From the corps which the user is trying to kill, find THEIR current target and return their word
       //
       // [user] -> [target] -> [their target] <- we want this corps' word
-      const killer = await ctx.prisma.killerCorps.findFirst({
+      const killer = await ctx.prisma.killerPlayer.findFirst({
         where: {
           corpsId,
           gameId: game.id,
@@ -397,7 +460,7 @@ export const killerRouter = router({
       }
 
       // Find the corps which the user is trying to kill, and set their time of death
-      await ctx.prisma.killerCorps.update({
+      await ctx.prisma.killerPlayer.update({
         where: {
           id: killer.target?.id,
         },
@@ -426,7 +489,7 @@ export const killerRouter = router({
       }
 
       // Update the user's target to be the target of the corps they just killed
-      await ctx.prisma.killerCorps.update({
+      await ctx.prisma.killerPlayer.update({
         where: {
           id: killer.id,
         },
