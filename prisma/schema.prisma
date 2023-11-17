@@ -89,6 +89,7 @@ model Corps {
   citedQuotes     Quote[]           @relation("WrittenQuotes")
   songs           Song[]
   sectionLeaderOf Section[]
+  killerProfiles  KillerPlayer[]
 }
 
 model CorpsInstrument {
@@ -264,4 +265,36 @@ model Section {
 
   instruments Instrument[]
   leader      Corps?       @relation(fields: [corpsId], references: [id])
+}
+
+model KillerPlayer {
+  id          Int       @id @default(autoincrement())
+  corpsId     String
+  word        String
+  wordEnglish String
+  gameId      String
+  targetId    Int?
+  timeOfDeath DateTime?
+  killedById  Int?
+
+  game       KillerGame    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  corps      Corps         @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  killedBy   KillerPlayer?  @relation("Kills", fields: [killedById], references: [id])
+  kills      KillerPlayer[] @relation("Kills")
+  target     KillerPlayer?  @relation("Target", fields: [targetId], references: [id])
+  targetedBy KillerPlayer[] @relation("Target")
+
+  @@unique([corpsId, gameId])
+	@@map("KillerCorps")
+}
+
+model KillerGame {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  start     DateTime @default(now())
+  end       DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants KillerPlayer[]
 }

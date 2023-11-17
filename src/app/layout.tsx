@@ -13,6 +13,10 @@ import { bahnschrift, castelar } from 'app/fonts';
 import { prisma } from '../server/db/client';
 import { ColorScheme } from 'hooks/use-color-scheme';
 import { cn } from 'utils/class-names';
+import dayjs from 'dayjs';
+
+// Set global locale for dayjs
+dayjs.locale('sv');
 
 export const metadata: Metadata = {
   title: 'Blindtarmen',

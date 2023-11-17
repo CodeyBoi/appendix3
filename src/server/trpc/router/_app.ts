@@ -12,6 +12,7 @@ import { songRouter } from './song';
 import { quoteRouter } from './quote';
 import { mailRouter } from './mail';
 import { sectionRouter } from './section';
+import { killerRouter } from './killer';
 
 export const appRouter = router({
   auth: authRouter,
@@ -26,6 +27,7 @@ export const appRouter = router({
   quote: quoteRouter,
   mail: mailRouter,
   section: sectionRouter,
+  killer: killerRouter,
 });
 
 // export type definition of API

@@ -6,14 +6,15 @@ import {
   IconMicrophone2,
   IconMusic,
   IconPencil,
-  IconQuote,
   IconSpeakerphone,
+  IconSwords,
   IconUser,
 } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
 import NavbarControl from './control';
+import { api } from 'trpc/server';
 
 type NavbarLink = {
   label: string;
@@ -41,7 +42,6 @@ const userTab: NavbarLinkGroup = {
     },
     { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
     { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
-    { label: 'Citat', href: '/quotes', icon: <IconQuote /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
   ],
 };
@@ -69,6 +69,11 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/section',
       icon: <IconMicrophone2 />,
     },
+    {
+      label: 'Killer',
+      href: '/admin/killer',
+      icon: <IconSwords />,
+    },
   ],
 };
 
@@ -76,7 +81,8 @@ const toElement = (link: NavbarLink) => (
   <Link href={link.href} key={link.label}>
     <Button
       color='navbutton'
-      className='flex w-full justify-start hover:bg-red-600'
+      className='flex justify-start hover:bg-red-600'
+      fullWidth
     >
       {link.icon}
       {link.label}
@@ -84,11 +90,17 @@ const toElement = (link: NavbarLink) => (
   </Link>
 );
 
-const userTabElement = (
-  <div className='flex grow flex-col gap-1'>{userTab.links.map(toElement)}</div>
-);
+const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
+  const killerGame = await api.killer.getCurrentInfo.query();
+  const killerGameExists = killerGame !== null;
+  const userTabElement = (
+    <div className='flex grow flex-col gap-1'>
+      {userTab.links.map(toElement)}
+      {killerGameExists &&
+        toElement({ label: 'Killer', href: '/killer', icon: <IconSwords /> })}
+    </div>
+  );
 
-const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
   const adminTabElement = isAdmin ? (
     <div className='flex grow flex-col gap-1'>
       {adminTab.links.map(toElement)}
@@ -102,9 +114,10 @@ const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
       <NavbarControl userTab={userTabElement} adminTab={adminTabElement} />
       <div className='flex flex-col'>
         <Button
+          className='flex justify-start hover:bg-red-600'
           href='/about'
           color='navbutton'
-          className='flex w-full justify-start hover:bg-red-600'
+          fullWidth
         >
           <IconInfoSquare />
           Om sidan

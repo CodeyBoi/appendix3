@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { trpc } from 'utils/trpc';
 import SelectSearch, { SelectSearchProps } from './input/search-select';
-import { detailedName } from 'utils/name-format';
+import { detailedName } from 'utils/corps';
 
 const MIN_SEARCH_LENGTH = 2;
 
@@ -15,6 +15,7 @@ type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
 const SelectCorps = ({
   defaultValue,
   excludeIds,
+  filter = () => true,
   ...props
 }: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
@@ -92,7 +93,7 @@ const SelectCorps = ({
       searchValue.length < MIN_SEARCH_LENGTH
         ? 'Skriv minst två tecken för att söka...'
         : nothingFound,
-    filter: () => true,
+    filter,
     searchValue,
     onSearchChange,
   };
