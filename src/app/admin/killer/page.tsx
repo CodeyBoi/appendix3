@@ -26,9 +26,9 @@ const AdminKillerPage = async () => {
       {game ? (
         <>
           <KillerAddPlayer participants={game.participants} />
-          <table className='table'>
+          <table className='table text-xs'>
             <thead>
-              <tr className='text-left text-xs'>
+              <tr className='text-left'>
                 <th>PID</th>
                 <th>Namn</th>
                 <th>Ord</th>
