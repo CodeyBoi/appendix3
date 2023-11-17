@@ -14,6 +14,7 @@ import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
 import NavbarControl from './control';
+import { api } from 'trpc/server';
 
 type NavbarLink = {
   label: string;
@@ -42,7 +43,6 @@ const userTab: NavbarLinkGroup = {
     { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
     { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
-    { label: 'Killer', href: '/killer', icon: <IconSwords /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
@@ -90,11 +90,17 @@ const toElement = (link: NavbarLink) => (
   </Link>
 );
 
-const userTabElement = (
-  <div className='flex grow flex-col gap-1'>{userTab.links.map(toElement)}</div>
-);
+const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
+  const killerGame = await api.killer.getCurrentInfo.query();
+  const killerGameExists = killerGame !== null;
+  const userTabElement = (
+    <div className='flex grow flex-col gap-1'>
+      {userTab.links.map(toElement)}
+      {killerGameExists &&
+        toElement({ label: 'Killer', href: '/killer', icon: <IconSwords /> })}
+    </div>
+  );
 
-const NavbarContent = ({ isAdmin }: { isAdmin: boolean }) => {
   const adminTabElement = isAdmin ? (
     <div className='flex grow flex-col gap-1'>
       {adminTab.links.map(toElement)}
