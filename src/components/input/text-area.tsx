@@ -7,7 +7,7 @@ type TextAreaProps = Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   'onChange' | 'defaultValue' | 'value' | 'placeholder'
 > & {
-  label?: string;
+  label?: React.ReactNode;
   onChange?: (value: string) => void;
   withAsterisk?: boolean;
   autoSize?: boolean;

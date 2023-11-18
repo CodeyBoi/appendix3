@@ -10,7 +10,7 @@ export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'onChange' | 'defaultValue' | 'value'
 > & {
-  label?: string;
+  label?: React.ReactNode;
   withAsterisk?: boolean;
   onChange?: (value: string) => void;
   icon?: React.ReactNode;

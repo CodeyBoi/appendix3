@@ -3,6 +3,7 @@
 import { getOperatingYear } from 'utils/date';
 import { trpc } from 'utils/trpc';
 import Loading from 'components/loading';
+import { lang } from 'utils/language';
 
 const CorpsStats = () => {
   const operatingYear = getOperatingYear();
@@ -42,36 +43,42 @@ const CorpsStats = () => {
     balletAttendanceLoading;
   return (
     <div className='flex flex-col space-y-2'>
-      <h3>Närvaro</h3>
-      {loading && <Loading msg='Laddar...' />}
-      {points !== undefined && <h5>{`Du har totalt ${points} spelpoäng!`}</h5>}
+      <h3>{lang('Närvaro', 'Attendance')}</h3>
+      {loading && <Loading msg='Hämtar statistik...' />}
+      {points !== undefined && (
+        <h5>
+          {lang(
+            `Du har totalt ${points} spelpoäng!`,
+            `You have a total of ${points} gig points!`,
+          )}
+        </h5>
+      )}
       {corpsStats &&
         orchestraRehearsalAttendance !== undefined &&
         balletRehearsalAttendance !== undefined && (
           <div className='flex flex-col'>
             <h6>
-              {`Nuvarande verksamhetsår (${operatingYear}-${
-                operatingYear + 1
-              }):`}
+              {lang('Nuvarande verksamhetsår', 'Current operating year')}
+              {` (${operatingYear}-${operatingYear + 1}):`}
             </h6>
             <div>
-              {`Spelpoäng: ${corpsStats.gigsAttended}`}
+              {lang('Spelpoäng: ', 'Gig points: ')}
+              {corpsStats.gigsAttended}
               <br />
-              {`Spelningar: ${Math.ceil(corpsStats.attendence * 100)}%`}
+              {lang('Spelningar: ', 'Gigs: ')}
+              {Math.ceil(corpsStats.attendence * 100) + '%'}
               {orchestraRehearsalAttendance !== 0 && (
                 <>
                   <br />
-                  {`Orkesterrepor: ${Math.ceil(
-                    orchestraRehearsalAttendance * 100,
-                  )}%`}
+                  {lang('Orkesterrepor: ', 'Orchestra rehearsals: ')}
+                  {Math.ceil(orchestraRehearsalAttendance * 100) + '%'}
                 </>
               )}
               {balletRehearsalAttendance !== 0 && (
                 <>
                   <br />
-                  {`Balettrepor: ${Math.ceil(
-                    balletRehearsalAttendance * 100,
-                  )}%`}
+                  {lang('Balettrepor: ', 'Ballet rehearsals: ')}
+                  {Math.ceil(balletRehearsalAttendance * 100) + '%'}
                 </>
               )}
             </div>

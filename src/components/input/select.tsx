@@ -13,7 +13,7 @@ export type SelectProps = Omit<
   'onChange'
 > & {
   options: SelectItem[];
-  label?: string;
+  label?: React.ReactNode;
   onChange?: (value: string) => void;
   withAsterisk?: boolean;
   error?: string;

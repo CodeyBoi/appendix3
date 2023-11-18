@@ -5,7 +5,7 @@ import { cn } from 'utils/class-names';
 
 type Color = 'red' | 'gray';
 type SegmentedControlOption = {
-  label: string;
+  label: React.ReactNode;
   value: string | number;
 };
 type SegmentedControlProps = {
