@@ -3,13 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { api } from 'trpc/react';
+import { lang } from 'utils/language';
 
 const KillerWordForm = () => {
   const router = useRouter();
   const mutation = api.killer.kill.useMutation();
 
   const [word, setWord] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<React.ReactNode | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,13 +20,18 @@ const KillerWordForm = () => {
       setError(null);
       router.refresh();
     } else {
-      setError('Fel kodord, försök igen!');
+      setError(
+        lang('Ogiltigt kodord, försök igen!', 'Invalid code word, try again!'),
+      );
     }
   };
 
   return (
     <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
-      Har du dödat någon? Fyll i ordet som stod på deras lapp här:
+      {lang(
+        'Har du dödat någon? Fyll i ordet som stod på deras lapp här:',
+        'Have you killed someone? Fill in the word that was on their note here:',
+      )}
       <div className='flex w-full gap-2'>
         <input
           placeholder='Kodord'
@@ -39,7 +45,7 @@ const KillerWordForm = () => {
           type='submit'
           className='rounded bg-red-600 p-2 text-white hover:bg-red-700'
         >
-          Skicka
+          {lang('Skicka', 'Send')}
         </button>
       </div>
       {error && <div className='text-red-600'>{error}</div>}

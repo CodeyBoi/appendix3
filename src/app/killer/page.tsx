@@ -8,6 +8,7 @@ import KillerAddPlayer from 'app/admin/killer/add-player';
 import Countdown from 'components/countdown';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Button from 'components/input/button';
+import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
   title: 'Killer',
@@ -84,9 +85,10 @@ const KillerPage = async () => {
     api.killer.getCurrentGameInfo.mutate(),
     api.killer.getOwnPlayerInfo.query(),
   ]);
+  const language = corps?.language ?? 'sv';
 
   if (!game) {
-    return <div>Ingen pågående killer</div>;
+    return <h2>{lang('Ingen pågående killer :(', 'No ongoing killer :(')}</h2>;
   }
 
   const isParticipant = player !== null;
@@ -114,7 +116,7 @@ const KillerPage = async () => {
           <h1 className='grow'>Killer</h1>
           <Button href='/killer/rules'>
             <IconInfoCircle />
-            Regler
+            {lang('Regler', 'Rules')}
           </Button>
         </div>
       )}
@@ -125,19 +127,28 @@ const KillerPage = async () => {
               <div className='flex flex-col items-center'>
                 <Button href='/killer/rules'>
                   <IconInfoCircle />
-                  Vad i hela friden är detta?
+                  {lang(
+                    'Vad i hela friden är detta?',
+                    'What the heck is this?',
+                  )}
                 </Button>
                 <div className='h-4' />
                 <div className='flex flex-col items-center gap-2 text-center text-2xl font-bold italic text-red-600'>
-                  Killergame börjar om
+                  {lang('Killergame börjar om', 'Killergame is starting in')}
                   <Countdown end={game.start} className='text-4xl' />
                   <span className='text-lg'>
                     {isParticipant ? (
-                      'Du är anmäld! Lycka till! 🔪🔪🔪'
+                      lang(
+                        'Du är anmäld! Lycka till! 🔪🔪🔪',
+                        'You are signed up! Good luck! 🔪🔪🔪',
+                      )
                     ) : (
                       <div className='animate-bounce'>
                         <div className='h-2' />
-                        ⬇️ Anmäl dig redan idag! ⬇️
+                        {lang(
+                          '⬇️ Anmäl dig redan idag! ⬇️',
+                          '⬇️ Sign up today! ⬇️',
+                        )}
                         <div className='h-2' />
                       </div>
                     )}
@@ -152,7 +163,11 @@ const KillerPage = async () => {
               </div>
             )}
             {game.participants.length !== 0 && (
-              <h3>{hasStarted ? 'Corps' : 'Anmälda corps'}</h3>
+              <h3>
+                {hasStarted
+                  ? 'Corps'
+                  : lang('Anmälda corps', 'Registered corps')}
+              </h3>
             )}
             <table className='dark:border-neutral-700'>
               <tbody className='text-sm dark:border-neutral-700'>
@@ -174,7 +189,10 @@ const KillerPage = async () => {
                   {deadParticipants.length === 0 && (
                     <tr>
                       <td className='italic'>
-                        Här kommer framtida vilsna själar listas...
+                        {lang(
+                          'Här kommer framtida vilsna själar listas...',
+                          'Here, future lost souls will be listed...',
+                        )}
                       </td>
                     </tr>
                   )}
@@ -185,7 +203,7 @@ const KillerPage = async () => {
                       </td>
                       <td className='italic text-red-600'>
                         {getDeathEuphemism(participant.corps)}{' '}
-                        {participant.timeOfDeath?.toLocaleDateString('sv-SE', {
+                        {participant.timeOfDeath?.toLocaleDateString(language, {
                           weekday: 'long',
                           hour: '2-digit',
                           minute: '2-digit',
@@ -204,15 +222,15 @@ const KillerPage = async () => {
             !hasEnded &&
             (isAlive && player.target ? (
               <>
-                <h3>Du lever än!</h3>
+                <h3>{lang('Du lever än!', 'You are still alive!')}</h3>
                 <div className='flex gap-2'>
                   <div className='max-w-max rounded border border-gray-500 p-3 text-lg font-bold italic text-red-600 shadow'>
                     <div className='flex gap-2'>
-                      Mål:
+                      {lang('Offer:', 'Target:')}
                       <CorpsDisplay corps={player.target.corps} />
                     </div>
                     <div className='flex gap-2'>
-                      Ord:
+                      {lang('Ord:', 'Word:')}
                       <div>
                         {player.target.word}/{player.target.wordEnglish}
                       </div>
@@ -223,14 +241,22 @@ const KillerPage = async () => {
               </>
             ) : (
               <>
-                <h3 className='text-red-600'>DU ÄR DÖD</h3>
-                <div>{`Din livsglöd släcktes av ${detailedName(
-                  player.killedBy?.corps,
-                )} ${player.timeOfDeath?.toLocaleDateString('sv-SE', {
-                  weekday: 'long',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}.`}</div>
+                <h3 className='uppercase text-red-600'>
+                  {lang('Du är död', 'You are dead')}
+                </h3>
+                <div>
+                  {lang(
+                    'Din livsglöd släcktes av ',
+                    'You were snuffed out by ',
+                  )}
+                  {`${detailedName(
+                    player.killedBy?.corps,
+                  )} ${player.timeOfDeath?.toLocaleDateString(language, {
+                    weekday: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}.`}
+                </div>
               </>
             ))}
         </div>
