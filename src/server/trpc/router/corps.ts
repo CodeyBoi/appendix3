@@ -181,6 +181,7 @@ export const corpsRouter = router({
         mainInstrument: z.string(),
         otherInstruments: z.array(z.string()),
         role: z.string(),
+        language: z.enum(['sv', 'en']),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -218,6 +219,7 @@ export const corpsRouter = router({
             name: input.role,
           },
         },
+        language: input.language,
       };
 
       if (input.id) {
