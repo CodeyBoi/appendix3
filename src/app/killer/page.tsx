@@ -79,14 +79,16 @@ const getDeathEuphemism = (corps: {
 };
 
 const KillerPage = async () => {
-  const corps = await api.corps.getSelf.query();
-  const killerGame = await api.killer.getCurrentInfo.mutate();
+  const [corps, game, player] = await Promise.all([
+    api.corps.getSelf.query(),
+    api.killer.getCurrentGameInfo.mutate(),
+    api.killer.getOwnPlayerInfo.query(),
+  ]);
 
-  if (!killerGame) {
+  if (!game) {
     return <div>Ingen pågående killer</div>;
   }
 
-  const { game, player } = killerGame;
   const isParticipant = player !== null;
   const isAlive = isParticipant && player.timeOfDeath === null;
 
