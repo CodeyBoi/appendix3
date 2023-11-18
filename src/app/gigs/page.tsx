@@ -9,6 +9,7 @@ import Tabs from 'components/input/tabs';
 import GigList from './list';
 import ParamsSelect from 'components/input/params-select';
 import { SelectItem } from 'components/input/select';
+import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
   title: 'Spelningar',
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 const startYear = 2010;
 
 const tabs = [
-  { value: 'my', label: 'Mina spelningar' },
-  { value: 'all', label: 'Alla spelningar' },
+  { value: 'my', label: lang('Mina spelningar', 'My gigs') },
+  { value: 'all', label: lang('Alla spelningar', 'All gigs') },
 ];
 
 const GigsPage = async ({
@@ -55,10 +56,10 @@ const GigsPage = async ({
   return (
     <div className='flex max-w-fit flex-col'>
       <div className='flex flex-col gap-2'>
-        <h2>Spelningar</h2>
+        <h2>{lang('Spelningar', 'Gigs')}</h2>
         <div className='flex items-end gap-4'>
           <ParamsSelect
-            label='År'
+            label={lang('År', 'Year')}
             options={years}
             paramName='year'
             defaultValue={year}
@@ -66,7 +67,7 @@ const GigsPage = async ({
           {isAdmin && (
             <Button href='/admin/gig/new'>
               <IconPlus />
-              Skapa spelning
+              {lang('Skapa spelning', 'Create gig')}
             </Button>
           )}
         </div>
@@ -74,7 +75,9 @@ const GigsPage = async ({
       </div>
       <Suspense
         key={`${year}_${tab}`}
-        fallback={<Loading msg={`Hämtar spelningar...`} />}
+        fallback={
+          <Loading msg={lang('Hämtar spelningar...', 'Fetching gigs...')} />
+        }
       >
         <GigList year={+year} tab={tab} />
       </Suspense>
