@@ -4,6 +4,7 @@ import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Button from './input/button';
 import { IconLogout } from '@tabler/icons-react';
+import { lang } from 'utils/language';
 
 const SignOutButton = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const SignOutButton = () => {
       fullWidth
     >
       <IconLogout />
-      Logga ut
+      {lang('Logga ut', 'Sign out')}
     </Button>
   );
 };

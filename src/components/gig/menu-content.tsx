@@ -8,6 +8,7 @@ import {
 import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';
+import { lang } from 'utils/language';
 
 type GigMenuContentProps = {
   gig: Gig & { type: { name: string } };
@@ -67,7 +68,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
         color='transparent'
       >
         <IconUsers />
-        Se anmälningar
+        {lang('Se anmälningar', 'View signups')}
       </Button>
       <a href={calenderLink} target='_blank' rel='noopener noreferrer'>
         <Button
@@ -76,7 +77,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
           disabled={calenderLink === ''}
         >
           <IconCalendarPlus />
-          Lägg till i kalender
+          {lang('Lägg till i kalender', 'Add to calendar')}
         </Button>
       </a>
       {isAdmin && (
@@ -92,7 +93,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
             color='transparent'
           >
             <IconEdit />
-            Redigera
+            {lang('Redigera', 'Edit')}
           </Button>
           <Button
             fullWidth
@@ -101,7 +102,7 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
             color='transparent'
           >
             <IconApple />
-            Matpreferenser
+            {lang('Matpreferenser', 'Food preferences')}
           </Button>
         </>
       )}

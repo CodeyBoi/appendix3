@@ -5,6 +5,7 @@ import Button from 'components/input/button';
 import SelectCorps from 'components/select-corps';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
+import { lang } from 'utils/language';
 
 type KillerAddPlayerProps = {
   corpsId?: string;
@@ -35,7 +36,7 @@ const KillerAddPlayer = ({
       }}
     >
       <IconPencil />
-      Anmäl mig!
+      {lang('Anmäl mig!', 'Sign me up!')}
     </Button>
   ) : (
     <SelectCorps

@@ -8,6 +8,7 @@ import Select from 'components/input/select';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import MultiSelect from './multi-select';
+import { Language } from 'hooks/use-language';
 
 const initialValues = {
   firstName: '',
@@ -19,6 +20,7 @@ const initialValues = {
   mainInstrument: '',
   otherInstruments: [] as string[],
   role: 'user',
+  language: 'sv',
 };
 type FormValues = typeof initialValues;
 
@@ -76,6 +78,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         mainInstrument,
         otherInstruments,
         role: corps.role?.name ?? 'user',
+        language: corps.language ?? 'sv',
       });
       setLoading(false);
     } else if (creatingCorps) {
@@ -107,6 +110,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
       number,
       bNumber,
       id: creatingCorps ? undefined : corpsId,
+      language: values.language as Language,
     });
   };
 
@@ -153,15 +157,26 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
               {...form.getInputProps('email')}
             />
           </span>
-          <Select
-            label='Behörighetsroll'
-            placeholder='Välj behörighet...'
-            options={
-              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
-            }
-            withAsterisk
-            {...form.getInputProps('role')}
-          />
+          <div className='grid grid-cols-2 gap-2'>
+            <Select
+              label='Behörighetsroll'
+              placeholder='Välj behörighet...'
+              options={
+                roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
+              }
+              withAsterisk
+              {...form.getInputProps('role')}
+            />
+            <Select
+              label='Språk'
+              options={[
+                { value: 'sv', label: 'Svenska' },
+                { value: 'en', label: 'English' },
+              ]}
+              withAsterisk
+              {...form.getInputProps('language')}
+            />
+          </div>
         </div>
       </FormLoadingOverlay>
       <div className='flex justify-end p-2'>

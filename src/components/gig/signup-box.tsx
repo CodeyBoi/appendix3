@@ -6,6 +6,7 @@ import SegmentedControl from 'components/input/segmented-control';
 import Checkbox from 'components/input/checkbox';
 import Select from 'components/input/select';
 import FormLoadingOverlay from 'components/form-loading-overlay';
+import { lang } from 'utils/language';
 
 type Signup = {
   status: { value: string };
@@ -89,9 +90,9 @@ const GigSignupBox = ({
             });
           }}
           options={[
-            { label: 'Ja', value: 'Ja' },
-            { label: 'Nej', value: 'Nej' },
-            { label: 'Kanske', value: 'Kanske' },
+            { label: lang('Ja', 'Yes'), value: 'Ja' },
+            { label: lang('Nej', 'No'), value: 'Nej' },
+            { label: lang('Kanske', 'Maybe'), value: 'Kanske' },
           ]}
         />
         {checkbox1 && (

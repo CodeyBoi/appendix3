@@ -10,6 +10,7 @@ import TextArea from 'components/input/text-area';
 import useColorScheme from 'hooks/use-color-scheme';
 import Switch from 'components/input/switch';
 import Select from 'components/input/select';
+import { lang } from 'utils/language';
 
 const initialValues = {
   nickName: '',
@@ -88,9 +89,13 @@ const AccountPreferences = () => {
       <FormLoadingOverlay visible={submitting || corpsLoading}>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-col space-y-2'>
-            <h3>Allmänt</h3>
+            <h3>{lang('Allmänt', 'General')}</h3>
             <Switch
-              label={colorScheme === 'dark' ? 'AK-tema' : 'Mörkt tema'}
+              label={
+                colorScheme === 'dark'
+                  ? lang('AK-tema', 'AK mode')
+                  : lang('Mörkt tema', 'Dark mode')
+              }
               checked={colorScheme === 'dark'}
               onChange={() => {
                 /* April fools */
@@ -114,26 +119,26 @@ const AccountPreferences = () => {
             />
           </div>
           <div className='flex w-min flex-col space-y-2'>
-            <h3>Corpsiga uppgifter</h3>
+            <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>
             <TextInput
-              label='Visningsnamn'
+              label={lang('Visningsnamn', 'Display name')}
               {...form.getInputProps('nickName')}
             />
             <TextInput
-              label='E-post'
+              label={lang('E-post', 'Email')}
               withAsterisk
               {...form.getInputProps('email')}
             />
             {instrumentOptions && instrumentOptions.length > 1 && (
               <Select
-                label='Huvudinstrument'
+                label={lang('Huvudinstrument', 'Main instrument')}
                 options={instrumentOptions ?? []}
                 {...form.getInputProps('mainInstrument')}
               />
             )}
           </div>
           <div className='flex flex-col space-y-2 pl-2'>
-            <h3>Matpreferenser</h3>
+            <h3>{lang('Matpreferenser', 'Food preferences')}</h3>
             <Switch
               label='Vegetarian'
               {...form.getInputProps('vegetarian', { type: 'checkbox' })}
@@ -143,19 +148,22 @@ const AccountPreferences = () => {
               {...form.getInputProps('vegan', { type: 'checkbox' })}
             />
             <Switch
-              label='Glutenfritt'
+              label={lang('Glutenintolerant', 'Gluten intolerant')}
               {...form.getInputProps('glutenFree', {
                 type: 'checkbox',
               })}
             />
             <Switch
-              label='Laktosfritt'
+              label={lang('Laktosintolerant', 'Lactose intolerant')}
               {...form.getInputProps('lactoseFree', {
                 type: 'checkbox',
               })}
             />
             <TextArea
-              label='Övriga matpreferenser...'
+              label={lang(
+                'Övriga matpreferenser...',
+                'Other food preferences...',
+              )}
               {...form.getInputProps('otherFoodPrefs')}
             />
           </div>
@@ -166,7 +174,7 @@ const AccountPreferences = () => {
           disabled={!form.isTouched() || !form.isValid() || submitting}
           type='submit'
         >
-          Spara
+          {lang('Spara', 'Save')}
         </Button>
       </div>
     </form>

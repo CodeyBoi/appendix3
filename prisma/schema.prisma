@@ -75,6 +75,7 @@ model Corps {
   userId      String   @unique
   roleId      Int?
   colorScheme String   @default("light")
+  language    String   @default("sv")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -277,15 +278,15 @@ model KillerPlayer {
   timeOfDeath DateTime?
   killedById  Int?
 
-  game       KillerGame    @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  corps      Corps         @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  game       KillerGame     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  corps      Corps          @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   killedBy   KillerPlayer?  @relation("Kills", fields: [killedById], references: [id])
   kills      KillerPlayer[] @relation("Kills")
   target     KillerPlayer?  @relation("Target", fields: [targetId], references: [id])
   targetedBy KillerPlayer[] @relation("Target")
 
   @@unique([corpsId, gameId])
-	@@map("KillerCorps")
+  @@map("KillerCorps")
 }
 
 model KillerGame {

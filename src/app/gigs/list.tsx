@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 type GigListProps = {
   year: number;
@@ -23,10 +24,18 @@ const fetchGigs = async (year: number, tab: string) => {
 };
 
 const GigList = async ({ year, tab }: GigListProps) => {
-  const gigs = await fetchGigs(year, tab);
+  const [gigs, corps] = await Promise.all([
+    fetchGigs(year, tab),
+    api.corps.getSelf.query(),
+  ]);
+  const language = corps?.language ?? 'sv';
 
   if (gigs.length === 0) {
-    return <h3 className='p-4'>Här fanns inget att se... :/</h3>;
+    return (
+      <h3 className='p-4'>
+        {lang('Här fanns inget att se... :/', 'Nothing to see here... :/')}
+      </h3>
+    );
   }
 
   let lastGigMonth: number;
@@ -43,7 +52,7 @@ const GigList = async ({ year, tab }: GigListProps) => {
           <Fragment key={gig.id}>
             {shouldAddMonth && (
               <h3 className='pt-2'>
-                {gig.date.toLocaleString('sv-SE', { month: 'long' })}
+                {gig.date.toLocaleString(language, { month: 'long' })}
               </h3>
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>

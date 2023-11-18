@@ -14,6 +14,7 @@ import { prisma } from '../server/db/client';
 import { ColorScheme } from 'hooks/use-color-scheme';
 import { cn } from 'utils/class-names';
 import dayjs from 'dayjs';
+import { Language } from 'hooks/use-language';
 
 // Set global locale for dayjs
 dayjs.locale('sv');
@@ -33,13 +34,13 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     redirect('/login');
   }
 
-  // Find the color scheme for this session and pass it to the provider
-  const colorScheme = (
-    await prisma.corps.findUnique({
-      where: { id: session.user?.corps?.id },
-      select: { colorScheme: true },
-    })
-  )?.colorScheme as ColorScheme;
+  // Find the color scheme and language for this session and pass it to the provider
+  const corps = await prisma.corps.findUnique({
+    where: { id: session.user?.corps?.id },
+    select: { colorScheme: true, language: true },
+  });
+  const colorScheme = corps?.colorScheme as ColorScheme;
+  const language = corps?.language as Language;
 
   return (
     <html
@@ -48,6 +49,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         bahnschrift.variable,
         castelar.variable,
         colorScheme === 'dark' && 'dark',
+        'lang-' + language,
       )}
     >
       <head>

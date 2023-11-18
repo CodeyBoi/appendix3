@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import GigCard from 'components/gig/card';
 import GigSkeleton from 'components/gig/skeleton';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 const WIDTHS = [
   [200, 120, 95, 0.6],
@@ -15,7 +16,11 @@ const makeGigList = async () => {
   const currentDate = new Date(
     new Date().toISOString().split('T')[0] ?? '2021-01-01',
   );
-  const gigs = await api.gig.getMany.query({ startDate: currentDate });
+  const [gigs, corps] = await Promise.all([
+    api.gig.getMany.query({ startDate: currentDate }),
+    api.corps.getSelf.query(),
+  ]);
+  const language = corps?.language ?? 'sv';
 
   let lastMonth = -1;
   const gigsByMonth = gigs.reduce(
@@ -36,7 +41,7 @@ const makeGigList = async () => {
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
-    const month = gigDate?.toLocaleDateString('sv-SE', { month: 'long' });
+    const month = gigDate?.toLocaleDateString(language, { month: 'long' });
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
@@ -68,13 +73,15 @@ const HomePage = async () => {
     <div className='flex max-w-4xl flex-col gap-4'>
       {hasntSignedUpForExistingKillerGame && (
         <div className='-mr-2 flex justify-end motion-safe:animate-bounce dark:text-darkText lg:hidden'>
-          Anmäl dig till Killergame! ⬆️
+          {lang('Anmäl dig till Killergame! ⬆️', 'Sign up for Killergame! ⬆️')}
         </div>
       )}
       <Suspense
         fallback={
           <>
-            <h2 className='text-2xl md:text-4xl'>Kommande spelningar</h2>
+            <h2 className='text-2xl md:text-4xl'>
+              {lang('Kommande spelningar', 'Upcoming gigs')}
+            </h2>
             <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
             <GigSkeleton widths={WIDTHS[0]} />
             <GigSkeleton widths={WIDTHS[1]} />
@@ -83,7 +90,9 @@ const HomePage = async () => {
           </>
         }
       >
-        <h2 className='text-2xl md:text-4xl'>Kommande spelningar</h2>
+        <h2 className='text-2xl md:text-4xl'>
+          {lang('Kommande spelningar', 'Upcoming gigs')}
+        </h2>
         {await makeGigList()}
       </Suspense>
     </div>

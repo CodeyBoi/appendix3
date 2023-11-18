@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes, useEffect, useState } from 'react';
+import React, { InputHTMLAttributes, useEffect, useState } from 'react';
 import { cn } from '../../utils/class-names';
 
 type SwitchProps = Omit<
@@ -10,7 +10,7 @@ type SwitchProps = Omit<
   onChange?: ((value: boolean) => void) | (() => void);
   defaultChecked?: boolean;
   className?: string;
-  label?: string;
+  label?: React.ReactNode;
   checked?: boolean;
   value?: boolean;
 };

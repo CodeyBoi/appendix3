@@ -15,14 +15,15 @@ import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
 import NavbarControl from './control';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 type NavbarLink = {
-  label: string;
+  label: React.ReactNode;
   href: string;
   icon: React.ReactNode;
 };
 type NavbarLinkGroup = {
-  title: string;
+  title: React.ReactNode;
   value: TabValue;
   links: NavbarLink[];
 };
@@ -30,19 +31,27 @@ type NavbarLinkGroup = {
 export type TabValue = 'user' | 'admin';
 
 const userTab: NavbarLinkGroup = {
-  title: 'Användare',
+  title: lang('Användare', 'User'),
   value: 'user',
   links: [
-    { label: 'Huvudsida', href: '/', icon: <IconHome /> },
-    { label: 'Mina sidor', href: '/account', icon: <IconUser /> },
+    { label: lang('Huvudsida', 'Homepage'), href: '/', icon: <IconHome /> },
     {
-      label: 'Statistik',
+      label: lang('Mina sidor', 'My pages'),
+      href: '/account',
+      icon: <IconUser />,
+    },
+    {
+      label: lang('Statistik', 'Statistics'),
       href: `/stats`,
       icon: <IconClipboard />,
     },
-    { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
-    { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
-    { label: 'Länkar', href: '/links', icon: <IconLink /> },
+    {
+      label: lang('Spelningar', 'Gigs'),
+      href: '/gigs',
+      icon: <IconSpeakerphone />,
+    },
+    { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
+    { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
@@ -55,17 +64,17 @@ const adminTab: NavbarLinkGroup = {
       icon: <IconUser />,
     },
     {
-      label: 'Spelningar',
+      label: lang('Spelningar', 'Gigs'),
       href: '/admin/gigs',
       icon: <IconSpeakerphone />,
     },
     {
-      label: 'Repor',
+      label: lang('Repor', 'Rehearsals'),
       href: '/admin/rehearsal',
       icon: <IconPencil />,
     },
     {
-      label: 'Sektioner',
+      label: lang('Sektioner', 'Sections'),
       href: '/admin/section',
       icon: <IconMicrophone2 />,
     },
@@ -78,7 +87,7 @@ const adminTab: NavbarLinkGroup = {
 };
 
 const toElement = (link: NavbarLink) => (
-  <Link href={link.href} key={link.label}>
+  <Link href={link.href} key={link.href}>
     <Button
       color='navbutton'
       className='flex justify-start hover:bg-red-600'
@@ -112,7 +121,7 @@ const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
       {killerGameExists && toElement(killerLabel)}
       {hasntSignedUpForExistingKillerGame && (
         <div className='flex justify-center p-2 text-white motion-safe:animate-bounce lg:hidden'>
-          ⬆️ Följ pilarna! ⬆️
+          {lang('⬆️ Följ pilarna! ⬆️', '⬆️ Follow the arrows! ⬆️')}
         </div>
       )}
     </div>
@@ -132,7 +141,7 @@ const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
           fullWidth
         >
           <IconInfoSquare />
-          Om sidan
+          {lang('Om sidan', 'About')}
         </Button>
         <SignOutButton />
       </div>

@@ -9,6 +9,7 @@ import { IconDotsVertical } from '@tabler/icons-react';
 import GigMenuContent from './menu-content';
 import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
+import { lang } from 'utils/language';
 
 type GigId = string;
 type Gig = PrismaGig & {
@@ -84,9 +85,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 <br />
                 {!!gig.location && `${gig.location}`}
                 {!!gig.location && <br />}
-                {!!gig.meetup && `Samling: ${gig.meetup}`}
+                {!!gig.meetup &&
+                  lang('Samling: ' + gig.meetup, 'Gathering: ' + gig.meetup)}
                 {!!gig.meetup && <br />}
-                {!!gig.start && `Spelstart: ${gig.start}`}
+                {!!gig.start &&
+                  lang('Spelstart: ' + gig.start, 'Gig start: ' + gig.start)}
               </div>
             </div>
           </Link>

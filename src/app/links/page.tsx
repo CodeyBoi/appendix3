@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
   title: 'Länkar',
@@ -12,17 +13,20 @@ const Links = () => {
   };
   return (
     <div>
-      <h1>Länkar</h1>
+      <h1>{lang('Länkar', 'Links')}</h1>
       <div className='text-lg'>
         <ul className='list-disc pl-4'>
           <li>
             <a style={style} href='https://www.bleckhornen.org/'>
-              Bleckhornens publika hemsida
+              {lang(
+                'Bleckhornens publika hemsida',
+                "Bleckhornen's public website",
+              )}
             </a>
           </li>
           <li>
             <a style={style} href='https://www.wiki.bleckhornen.org/'>
-              Bleckhornswikin
+              {lang('Bleckhornswikin', 'The Bleckhorn Wiki')}
             </a>
           </li>
           <li>
@@ -35,7 +39,10 @@ const Links = () => {
           </li>
           <li>
             <a style={style} href='https://discord.gg/2wZafpfqR3'>
-              Bleckhornens discordserver
+              {lang(
+                'Bleckhornens discordserver',
+                'The Bleckhorn Discord Server',
+              )}
             </a>
           </li>
           <li>
@@ -43,12 +50,15 @@ const Links = () => {
               style={style}
               href='http://old.bleckhornen.org/appendix/minnesfond/'
             >
-              Fonden
+              {lang('Minnesfonden', 'The Memorial Fund')}
             </a>
           </li>
           <li>
             <a style={style} href='https://www.youtube.com/watch?v=a3Z7zEc7AXQ'>
-              Nakenbilder av Arvid Tarmén
+              {lang(
+                'Nakenbilder av Arvid Tarmén',
+                'Nude pictures of Arvid Tarmén',
+              )}
             </a>
           </li>
         </ul>

@@ -181,6 +181,7 @@ export const corpsRouter = router({
         mainInstrument: z.string(),
         otherInstruments: z.array(z.string()),
         role: z.string(),
+        language: z.enum(['sv', 'en']),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -218,6 +219,7 @@ export const corpsRouter = router({
             name: input.role,
           },
         },
+        language: input.language,
       };
 
       if (input.id) {
@@ -459,5 +461,20 @@ export const corpsRouter = router({
         },
         {} as Record<string, CorpsFoodPrefs>,
       );
+    }),
+
+  setLanguage: protectedProcedure
+    .input(z.enum(['sv', 'en']))
+    .mutation(async ({ ctx, input }) => {
+      const corpsId = ctx.session.user.corps.id;
+      await ctx.prisma.corps.update({
+        where: {
+          id: corpsId,
+        },
+        data: {
+          language: input,
+        },
+      });
+      return { success: true };
     }),
 });
