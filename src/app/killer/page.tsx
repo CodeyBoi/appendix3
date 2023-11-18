@@ -132,14 +132,19 @@ const KillerPage = async () => {
                   Killergame börjar om
                   <Countdown end={game.start} className='text-4xl' />
                   <span className='text-lg'>
-                    {isParticipant
-                      ? 'Du är anmäld! Lycka till! 🔪🔪🔪'
-                      : '⬇️ Anmäl dig redan idag! ⬇️'}
+                    {isParticipant ? (
+                      'Du är anmäld! Lycka till! 🔪🔪🔪'
+                    ) : (
+                      <div className='animate-bounce'>
+                        <div className='h-2' />
+                        ⬇️ Anmäl dig redan idag! ⬇️
+                        <div className='h-2' />
+                      </div>
+                    )}
                   </span>
                 </div>
                 {!isParticipant && (
                   <>
-                    <div className='h-4' />
                     <KillerAddPlayer corpsId={corps.id} />
                   </>
                 )}

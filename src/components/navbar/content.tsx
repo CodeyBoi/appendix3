@@ -14,6 +14,7 @@ import Button from 'components/input/button';
 import SignOutButton from 'components/sign-out-button';
 import Link from 'next/link';
 import NavbarControl from './control';
+import { api } from 'trpc/server';
 
 type NavbarLink = {
   label: string;
@@ -42,7 +43,6 @@ const userTab: NavbarLinkGroup = {
     { label: 'Spelningar', href: '/gigs', icon: <IconSpeakerphone /> },
     { label: 'Sånger', href: '/songs', icon: <IconMusic /> },
     { label: 'Länkar', href: '/links', icon: <IconLink /> },
-    { label: 'Killer', href: '/killer', icon: <IconSwords /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
@@ -90,9 +90,7 @@ const toElement = (link: NavbarLink) => (
   </Link>
 );
 
-const userTabElement = (
-  <div className='flex grow flex-col gap-1'>{userTab.links.map(toElement)}</div>
-);
+const killerLabel = { label: 'Killer', href: '/killer', icon: <IconSwords /> };
 
 const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
   const adminTabElement = isAdmin ? (
@@ -100,6 +98,26 @@ const NavbarContent = async ({ isAdmin }: { isAdmin: boolean }) => {
       {adminTab.links.map(toElement)}
     </div>
   ) : undefined;
+
+  const [killerGameExists, killerPlayer] = await Promise.all([
+    api.killer.gameExists.query(),
+    api.killer.getOwnPlayerInfo.query(),
+  ]);
+
+  const hasntSignedUpForExistingKillerGame = killerGameExists && !killerPlayer;
+
+  const userTabElement = (
+    <div className='flex grow flex-col gap-1'>
+      {userTab.links.map(toElement)}
+      {killerGameExists && toElement(killerLabel)}
+      {hasntSignedUpForExistingKillerGame && (
+        <div className='flex justify-center p-2 text-white motion-safe:animate-bounce lg:hidden'>
+          ⬆️ Följ pilarna! ⬆️
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div
       style={{ height: 'calc(100vh - 56px)' }}

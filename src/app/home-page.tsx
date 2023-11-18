@@ -67,8 +67,8 @@ const HomePage = async () => {
   return (
     <div className='flex max-w-4xl flex-col gap-4'>
       {hasntSignedUpForExistingKillerGame && (
-        <div className='-mr-1.5 flex justify-end motion-safe:animate-bounce lg:hidden'>
-          Anmäl dig till Killergame här! ⬆️
+        <div className='-mr-2 flex justify-end motion-safe:animate-bounce dark:text-darkText lg:hidden'>
+          Anmäl dig till Killergame! ⬆️
         </div>
       )}
       <Suspense
