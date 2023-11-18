@@ -20,7 +20,10 @@ const genTimeMsg = (secs: number) => {
   }
   const minutes = Math.floor((secs / (1000 * 60)) % 60);
   if (minutes > 0) {
-    msg += `${minutes} minut${minutes === 1 ? '' : 'er'} och `;
+    msg += `${minutes} minut${minutes === 1 ? '' : 'er'} `;
+  }
+  if (msg.length > 0) {
+    msg += 'och ';
   }
   const seconds = Math.floor((secs / 1000) % 60);
   msg += `${seconds} sekund${seconds === 1 ? '' : 'er'}`;
