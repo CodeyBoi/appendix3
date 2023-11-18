@@ -460,4 +460,19 @@ export const corpsRouter = router({
         {} as Record<string, CorpsFoodPrefs>,
       );
     }),
+
+  setLanguage: protectedProcedure
+    .input(z.enum(['sv', 'en']))
+    .mutation(async ({ ctx, input }) => {
+      const corpsId = ctx.session.user.corps.id;
+      await ctx.prisma.corps.update({
+        where: {
+          id: corpsId,
+        },
+        data: {
+          language: input,
+        },
+      });
+      return { success: true };
+    }),
 });
