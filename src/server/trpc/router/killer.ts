@@ -206,7 +206,62 @@ export const killerRouter = router({
       };
     }),
 
-  getCurrentInfo: protectedProcedure.mutation(async ({ ctx }) => {
+  gameExists: protectedProcedure.query(async ({ ctx }) => {
+    const date = new Date();
+    const game = await ctx.prisma.killerGame.findFirst({
+      where: {
+        start: {
+          lte: dayjs(date).add(2, 'week').toDate(),
+        },
+        end: {
+          gte: dayjs(date).subtract(1, 'week').toDate(),
+        },
+      },
+    });
+    return !!game;
+  }),
+
+  getOwnPlayerInfo: protectedProcedure.query(async ({ ctx }) => {
+    const date = new Date();
+    const corpsId = ctx.session.user.corps.id;
+    const player = await ctx.prisma.killerPlayer.findFirst({
+      include: {
+        corps: true,
+        game: true,
+        kills: {
+          include: {
+            corps: true,
+          },
+        },
+        target: {
+          include: {
+            corps: true,
+          },
+        },
+        killedBy: {
+          include: {
+            corps: true,
+          },
+        },
+      },
+      where: {
+        corps: {
+          id: corpsId,
+        },
+        game: {
+          start: {
+            lte: dayjs(date).add(2, 'week').toDate(),
+          },
+          end: {
+            gte: dayjs(date).subtract(1, 'week').toDate(),
+          },
+        },
+      },
+    });
+    return player;
+  }),
+
+  getCurrentGameInfo: protectedProcedure.mutation(async ({ ctx }) => {
     const date = new Date();
     const game = await ctx.prisma.killerGame.findFirst({
       include: {
@@ -261,36 +316,7 @@ export const killerRouter = router({
       );
     }
 
-    const player = await ctx.prisma.killerPlayer.findFirst({
-      where: {
-        corpsId: ctx.session.user.corps.id,
-        gameId: game.id,
-      },
-      include: {
-        game: true,
-        corps: true,
-        kills: {
-          include: {
-            corps: true,
-          },
-        },
-        target: {
-          include: {
-            corps: true,
-          },
-        },
-        killedBy: {
-          include: {
-            corps: true,
-          },
-        },
-      },
-    });
-
-    return {
-      player,
-      game,
-    };
+    return game;
   }),
 
   create: adminProcedure

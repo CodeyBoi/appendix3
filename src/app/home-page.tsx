@@ -56,8 +56,21 @@ const HomePage = async () => {
     new Date().toISOString().split('T')[0] ?? '2021-01-01',
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
+
+  const [killerGameExists, killerPlayer] = await Promise.all([
+    api.killer.gameExists.query(),
+    api.killer.getOwnPlayerInfo.query(),
+  ]);
+
+  const hasntSignedUpForExistingKillerGame = killerGameExists && !killerPlayer;
+
   return (
     <div className='flex max-w-4xl flex-col gap-4'>
+      {hasntSignedUpForExistingKillerGame && (
+        <div className='-mr-1.5 flex justify-end motion-safe:animate-bounce lg:hidden'>
+          Anmäl dig till Killergame här! ⬆️
+        </div>
+      )}
       <Suspense
         fallback={
           <>
