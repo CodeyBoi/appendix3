@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface LoadingProps {
-  msg?: string;
+  msg?: React.ReactNode;
 }
 
 const Loading = ({ msg }: LoadingProps) => {

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import { Metadata } from 'next';
 import Loading from 'components/loading';
+import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
   title: 'Statistik',
@@ -30,7 +31,9 @@ const Statistics = ({
   return (
     <Suspense
       key={`${start}_${end}`}
-      fallback={<Loading msg={`Hämtar statistik...`} />}
+      fallback={
+        <Loading msg={lang('Hämtar statistik...', 'Fetching statistics...')} />
+      }
     >
       <StatisticsTable start={start} end={end} />
     </Suspense>

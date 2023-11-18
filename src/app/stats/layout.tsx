@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import StatsYearSelect from './year-select';
 import { getOperatingYear } from 'utils/date';
+import { lang } from 'utils/language';
 
 const startOperatingYear = 2010;
 const operatingYears = Array.from(
@@ -17,9 +18,12 @@ const StatsLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className='flex max-w-max flex-col gap-2'>
-      <h2>Statistik</h2>
+      <h2>{lang('Statistik', 'Statistics')}</h2>
       <div className='w-36'>
-        <StatsYearSelect options={yearData} label='Verksamhetsår' />
+        <StatsYearSelect
+          options={yearData}
+          label={lang('Verksamhetsår', 'Operating year')}
+        />
       </div>
       {children}
     </div>
