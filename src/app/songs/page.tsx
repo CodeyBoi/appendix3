@@ -5,6 +5,7 @@ import Loading from 'components/loading';
 import ParamsTextInput from 'components/input/params-text-input';
 import { IconSearch, IconMusicPlus } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
+import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
   title: 'Sångboken',
@@ -17,7 +18,7 @@ const SongsLayout = () => {
         <div className='flex items-center justify-between gap-4'>
           <div className='grow bg-white dark:bg-darkBg'>
             <ParamsTextInput
-              label='Sök...'
+              label={lang('Sök...', 'Search...')}
               icon={<IconSearch />}
               paramName='search'
             />
@@ -28,7 +29,11 @@ const SongsLayout = () => {
         </div>
       </div>
       <div className='mt-8'>
-        <Suspense fallback={<Loading msg='Hämtar sånger...' />}>
+        <Suspense
+          fallback={
+            <Loading msg={lang('Hämtar sånger...', 'Fetching songs...')} />
+          }
+        >
           <SongFetch />
         </Suspense>
       </div>

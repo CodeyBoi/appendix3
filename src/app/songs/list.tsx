@@ -3,6 +3,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { lang } from 'utils/language';
 
 type Song = {
   id: string;
@@ -66,7 +67,8 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
                     (author && matches.includes('author') ? '' : ' hidden')
                   }
                 >
-                  {'Författare: ' + author}
+                  {lang('Skriven av: ', 'Written by: ')}
+                  {author}
                 </div>
                 <div
                   className={
@@ -74,7 +76,8 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
                     (melody && matches.includes('melody') ? '' : ' hidden')
                   }
                 >
-                  {'Melodi: ' + melody}
+                  {lang('Melodi: ', 'Melody: ')}
+                  {melody}
                 </div>
               </div>
             </Link>

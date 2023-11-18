@@ -1,8 +1,9 @@
-import { Song } from '@prisma/client';
+import type { Song } from '@prisma/client';
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Link from 'next/link';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 interface SongProps {
   song: Song | string;
@@ -22,7 +23,11 @@ const Song = async ({ song: songProp }: SongProps) => {
   const song = await getSong(songProp);
 
   if (!song) {
-    return <div>Denna sång finns tyvärr inte.</div>;
+    return (
+      <div>
+        {lang('Denna sång finns tyvärr inte.', 'This song does not exist.')}
+      </div>
+    );
   }
 
   return (
@@ -37,8 +42,18 @@ const Song = async ({ song: songProp }: SongProps) => {
           </Link>
         )}
       </div>
-      {song.melody && <i>{`Melodi: ${song.melody}`}</i>}
-      {song.author && <i>{`Skriven av: ${song.author}`}</i>}
+      {song.melody && (
+        <i>
+          {lang('Melodi: ', 'Melody: ')}
+          {song.melody}
+        </i>
+      )}
+      {song.author && (
+        <i>
+          {lang('Skriven av: ', 'Written by: ')}
+          {song.author}
+        </i>
+      )}
       <div className='h-4' />
       <div className='whitespace-pre-wrap'>{`${song.lyrics}`}</div>
     </div>
