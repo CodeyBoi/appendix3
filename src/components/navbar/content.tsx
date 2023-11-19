@@ -52,8 +52,8 @@ const userTab: NavbarLinkGroup = {
       icon: <IconSpeakerphone />,
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
-    { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
     { label: 'Blingo', href: '/blingo', icon: <IconChartGridDots /> },
+    { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
