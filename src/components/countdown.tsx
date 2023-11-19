@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { lang } from 'utils/language';
 
 type CountdownProps = {
   end: Date;
@@ -30,6 +31,28 @@ const genTimeMsg = (secs: number) => {
   return msg;
 };
 
+const genTimeMsgEn = (secs: number) => {
+  let msg = '';
+  const days = Math.floor(secs / (1000 * 60 * 60 * 24));
+  if (days > 0) {
+    msg += `${days} day${days === 1 ? '' : 's'} `;
+  }
+  const hours = Math.floor((secs / (1000 * 60 * 60)) % 24);
+  if (hours > 0) {
+    msg += `${hours} hour${hours === 1 ? '' : 's'} `;
+  }
+  const minutes = Math.floor((secs / (1000 * 60)) % 60);
+  if (minutes > 0) {
+    msg += `${minutes} minute${minutes === 1 ? '' : 's'} `;
+  }
+  if (msg.length > 0) {
+    msg += 'and ';
+  }
+  const seconds = Math.floor((secs / 1000) % 60);
+  msg += `${seconds} second${seconds === 1 ? '' : 's'}`;
+  return msg;
+};
+
 const Countdown = ({ end, className }: CountdownProps) => {
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(
@@ -51,7 +74,11 @@ const Countdown = ({ end, className }: CountdownProps) => {
     }
   }, [timeLeft, router, refreshed]);
 
-  return <span className={className}>{genTimeMsg(timeLeft)}</span>;
+  return (
+    <span className={className}>
+      {lang(genTimeMsg(timeLeft), genTimeMsgEn(timeLeft))}
+    </span>
+  );
 };
 
 export default Countdown;
