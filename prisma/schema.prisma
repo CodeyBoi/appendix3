@@ -305,7 +305,7 @@ model KillerGame {
 }
 
 model BingoEntry {
-  id               String           @id @default(cuid())
+  id               Int              @id @default(autoincrement())
   text             String
   createdByCorpsId String
   createdAt        DateTime         @default(now())
@@ -328,7 +328,7 @@ model BingoCard {
 
 model BingoCardEntry {
   cardId  String
-  entryId String
+  entryId Int
   index   Int
   marked  Boolean @default(false)
 
