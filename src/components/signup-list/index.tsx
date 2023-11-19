@@ -9,6 +9,7 @@ import SelectCorps from 'components/select-corps';
 import Entry from './entry';
 import Switch from 'components/input/switch';
 import { api } from 'trpc/react';
+import useLanguage, { Language } from 'hooks/use-language';
 
 interface SignupListProps {
   gigId: string;
@@ -36,34 +37,39 @@ const FULL_SETTING: [string, number][] = [
   ['Annat', 0],
 ];
 
-const toPlural = (instrument: string) => {
+const toPlural = (instrument: string, language: Language = 'sv') => {
   instrument = instrument.trim().toLowerCase();
   if (instrument === 'piccola') {
-    return 'piccolor';
+    return language === 'sv' ? 'piccolor' : 'piccolos';
   } else if (instrument === 'oboe') {
-    return 'oboer';
+    return language === 'sv' ? 'oboer' : 'oboes';
   } else if (instrument === 'sopransax') {
-    return 'sopransaxar';
+    return language === 'sv' ? 'sopransaxar' : 'soprano saxes';
   } else if (instrument === 'altsax') {
-    return 'altsaxar';
+    return language === 'sv' ? 'altsaxar' : 'alto saxes';
   } else if (instrument === 'tenorsax') {
-    return 'tenorsaxar';
+    return language === 'sv' ? 'tenorsaxar' : 'tenor saxes';
   } else if (instrument === 'barytonsax') {
-    return 'barytonsaxar';
+    return language === 'sv' ? 'barytonsaxar' : 'baritone saxes';
   } else if (instrument === 'horn') {
-    return 'horn';
+    return language === 'sv' ? 'horn' : 'horns';
   } else if (instrument === 'eufonium') {
-    return 'eufonier';
+    return language === 'sv' ? 'eufonier' : 'euphoniums';
   } else if (instrument === 'tuba') {
-    return 'tubor';
+    return language === 'sv' ? 'tubor' : 'tubas';
   } else if (instrument === 'slagverk') {
-    return 'slagverkare';
+    return language === 'sv' ? 'slagverkare' : 'percussionists';
+  } else if (instrument === 'balett') {
+    return language === 'sv' ? 'baletter' : 'ballets';
+  } else if (instrument === 'dirigent') {
+    return language === 'sv' ? 'dirigenter' : 'conductors';
   }
   return instrument + 'er';
 };
 
 const SignupList = ({ gigId }: SignupListProps) => {
   const utils = api.useUtils();
+  const { language } = useLanguage();
 
   const { data: gig } = api.gig.getWithId.useQuery({ gigId });
 
@@ -215,7 +221,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
                   <tr>
                     <td colSpan={2}>
                       <h6 className='mt-2 first-letter:capitalize'>
-                        {toPlural(signup.instrument.name)}
+                        {toPlural(signup.instrument.name, language)}
                       </h6>
                     </td>
                   </tr>
@@ -279,10 +285,12 @@ const SignupList = ({ gigId }: SignupListProps) => {
       return ['Spelningen har full sättning!'];
     }
     const genMessage = ([instrument, count]: [string, number]) =>
-      `${count} ${count > 1 ? toPlural(instrument) : instrument.toLowerCase()}`;
+      `${count} ${
+        count > 1 ? toPlural(instrument, language) : instrument.toLowerCase()
+      }`;
     const message = missingInstrumentsCount.map(genMessage);
     return ['Följande instrument saknas för full sättning:', ...message];
-  }, [missingInstrumentsCount]);
+  }, [missingInstrumentsCount, language]);
 
   return (
     <div className='space-y-2'>

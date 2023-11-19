@@ -3,6 +3,7 @@ import GigCard from 'components/gig/card';
 import SignupList from 'components/signup-list';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 export const generateMetadata = async ({
   params,
@@ -24,9 +25,13 @@ const GigPage = async ({ params }: { params: { id: string } }) => {
   const gigId = params.id;
   return (
     <div className='flex max-w-4xl flex-col space-y-4'>
-      <h2>Anmälningar</h2>
+      <h2>{lang('Anmälningar', 'Signups')}</h2>
       <GigCard gig={gigId} />
-      <Suspense fallback={<Loading msg='Laddar anmälningar...' />}>
+      <Suspense
+        fallback={
+          <Loading msg={lang('Laddar anmälningar...', 'Fetching signups...')} />
+        }
+      >
         <SignupList gigId={gigId} />
       </Suspense>
     </div>

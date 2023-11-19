@@ -4,7 +4,7 @@ import { api } from 'trpc/react';
 
 const applyLanguage = (language: Language) => {
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem('language', language);
+    localStorage.setItem('language', language);
     const html = document.documentElement;
     if (language === 'sv') {
       html.lang = 'sv';
@@ -19,11 +19,11 @@ const applyLanguage = (language: Language) => {
 };
 
 const useLanguage = (initialLanguage?: Language) => {
-  const initLanguage = (sessionStorage?.getItem('language') ??
-    initialLanguage ??
-    'sv') as Language;
-  const [language, setLanguage] = useState<Language>(initLanguage);
-
+  const [language, setLanguage] = useState<Language>(initialLanguage || 'sv');
+  if (initialLanguage) {
+    console.log({ initialLanguage, language });
+    applyLanguage(initialLanguage);
+  }
   const mutation = api.corps.setLanguage.useMutation();
   const toggleLanguage = (value?: Language) => {
     const newLanguage = value || (language === 'sv' ? 'en' : 'sv');
