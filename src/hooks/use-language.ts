@@ -1,5 +1,5 @@
 export type Language = 'sv' | 'en';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from 'trpc/react';
 
 const applyLanguage = (language: Language) => {
@@ -21,16 +21,25 @@ const applyLanguage = (language: Language) => {
 const useLanguage = (initialLanguage?: Language) => {
   const [language, setLanguage] = useState<Language>(initialLanguage || 'sv');
   if (initialLanguage) {
-    console.log({ initialLanguage, language });
     applyLanguage(initialLanguage);
   }
   const mutation = api.corps.setLanguage.useMutation();
   const toggleLanguage = (value?: Language) => {
     const newLanguage = value || (language === 'sv' ? 'en' : 'sv');
     setLanguage(newLanguage);
-    mutation.mutate(newLanguage);
-    applyLanguage(newLanguage);
+    applyLanguage(language);
+    mutation.mutate(language);
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedLanguage = localStorage.getItem('language') as Language;
+      if (storedLanguage) {
+        setLanguage(storedLanguage);
+        applyLanguage(storedLanguage);
+      }
+    }
+  }, []);
 
   return {
     language,

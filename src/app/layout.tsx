@@ -79,7 +79,11 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       </head>
       <body className='overflow-y-auto bg-white text-black dark:bg-darkBg dark:text-darkText'>
         <TRPCReactProvider headers={headers()}>
-          <AppProvider defaultColorScheme={colorScheme} session={session}>
+          <AppProvider
+            defaultColorScheme={colorScheme}
+            session={session}
+            initialLanguage={language}
+          >
             <AppShell>{children}</AppShell>
           </AppProvider>
         </TRPCReactProvider>

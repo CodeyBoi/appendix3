@@ -15,7 +15,7 @@ export type SelectSearchProps = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   'onChange' | 'defaultValue' | 'value'
 > & {
-  label?: string;
+  label?: React.ReactNode;
   value?: string;
   defaultValue?: string;
   onChange?: ((value: string) => void) | (() => void);

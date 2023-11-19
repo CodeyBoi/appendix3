@@ -463,6 +463,19 @@ export const corpsRouter = router({
       );
     }),
 
+  getLanguage: protectedProcedure.query(async ({ ctx }) => {
+    const corpsId = ctx.session.user.corps.id;
+    const corps = await ctx.prisma.corps.findUnique({
+      where: {
+        id: corpsId,
+      },
+      select: {
+        language: true,
+      },
+    });
+    return corps?.language ?? 'sv';
+  }),
+
   setLanguage: protectedProcedure
     .input(z.enum(['sv', 'en']))
     .mutation(async ({ ctx, input }) => {
