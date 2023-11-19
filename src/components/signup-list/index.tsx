@@ -1,14 +1,16 @@
 'use client';
 
 import { useForm } from '@mantine/form';
-import { IconUser } from '@tabler/icons-react';
+import { IconPlus, IconUser } from '@tabler/icons-react';
 import React, { useMemo, useState } from 'react';
-import Button from 'components/input/button';
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
 import Entry from './entry';
 import Switch from 'components/input/switch';
 import { api } from 'trpc/react';
+import useLanguage, { Language } from 'hooks/use-language';
+import { lang } from 'utils/language';
+import ActionIcon from 'components/input/action-icon';
 
 interface SignupListProps {
   gigId: string;
@@ -36,34 +38,90 @@ const FULL_SETTING: [string, number][] = [
   ['Annat', 0],
 ];
 
-const toPlural = (instrument: string) => {
+const pluralInstruments: Record<string, { sv: string; en: string }> = {
+  piccola: {
+    sv: 'piccolor',
+    en: 'piccolos',
+  },
+  oboe: {
+    sv: 'oboer',
+    en: 'oboes',
+  },
+  flöjt: {
+    sv: 'flöjter',
+    en: 'flutes',
+  },
+  klarinett: {
+    sv: 'klarinetter',
+    en: 'clarinets',
+  },
+  fagott: {
+    sv: 'fagotter',
+    en: 'bassoons',
+  },
+  basklarinett: {
+    sv: 'basklarinetter',
+    en: 'bass clarinets',
+  },
+  sopransax: {
+    sv: 'sopransaxar',
+    en: 'soprano saxes',
+  },
+  altsax: {
+    sv: 'altsaxar',
+    en: 'alto saxes',
+  },
+  tenorsax: {
+    sv: 'tenorsaxar',
+    en: 'tenor saxes',
+  },
+  barytonsax: {
+    sv: 'barytonsaxar',
+    en: 'baritone saxes',
+  },
+  horn: {
+    sv: 'horn',
+    en: 'horns',
+  },
+  trumpet: {
+    sv: 'trumpeter',
+    en: 'trumpets',
+  },
+  trombon: {
+    sv: 'tromboner',
+    en: 'trombones',
+  },
+  eufonium: {
+    sv: 'eufonier',
+    en: 'euphoniums',
+  },
+  tuba: {
+    sv: 'tubor',
+    en: 'tubas',
+  },
+  slagverk: {
+    sv: 'slagverkare',
+    en: 'percussionists',
+  },
+  balett: {
+    sv: 'baletter',
+    en: 'ballets',
+  },
+  dirigent: {
+    sv: 'dirigenter',
+    en: 'conductors',
+  },
+};
+
+const toPlural = (instrument: string, language: Language = 'sv') => {
   instrument = instrument.trim().toLowerCase();
-  if (instrument === 'piccola') {
-    return 'piccolor';
-  } else if (instrument === 'oboe') {
-    return 'oboer';
-  } else if (instrument === 'sopransax') {
-    return 'sopransaxar';
-  } else if (instrument === 'altsax') {
-    return 'altsaxar';
-  } else if (instrument === 'tenorsax') {
-    return 'tenorsaxar';
-  } else if (instrument === 'barytonsax') {
-    return 'barytonsaxar';
-  } else if (instrument === 'horn') {
-    return 'horn';
-  } else if (instrument === 'eufonium') {
-    return 'eufonier';
-  } else if (instrument === 'tuba') {
-    return 'tubor';
-  } else if (instrument === 'slagverk') {
-    return 'slagverkare';
-  }
-  return instrument + 'er';
+  const plural = pluralInstruments[instrument]?.[language];
+  return plural ?? instrument;
 };
 
 const SignupList = ({ gigId }: SignupListProps) => {
   const utils = api.useUtils();
+  const { language } = useLanguage();
 
   const { data: gig } = api.gig.getWithId.useQuery({ gigId });
 
@@ -215,7 +273,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
                   <tr>
                     <td colSpan={2}>
                       <h6 className='mt-2 first-letter:capitalize'>
-                        {toPlural(signup.instrument.name)}
+                        {toPlural(signup.instrument.name, language)}
                       </h6>
                     </td>
                   </tr>
@@ -276,20 +334,28 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const missingInstrumentsMessages = useMemo(() => {
     if (missingInstrumentsCount.length === 0) {
-      return ['Spelningen har full sättning!'];
+      return [lang('Spelningen har full sättning!', 'Full setting!')];
     }
     const genMessage = ([instrument, count]: [string, number]) =>
-      `${count} ${count > 1 ? toPlural(instrument) : instrument.toLowerCase()}`;
+      `${count} ${
+        count > 1 ? toPlural(instrument, language) : instrument.toLowerCase()
+      }`;
     const message = missingInstrumentsCount.map(genMessage);
-    return ['Följande instrument saknas för full sättning:', ...message];
-  }, [missingInstrumentsCount]);
+    return [
+      lang(
+        'Följande instrument saknas för full sättning:',
+        'Missing instruments for full setting:',
+      ),
+      ...message,
+    ];
+  }, [missingInstrumentsCount, language]);
 
   return (
     <div className='space-y-2'>
       {isAdmin && (
         <>
           <Switch
-            label='Redigera anmälningar'
+            label={lang('Redigera anmälningar', 'Edit signups')}
             checked={editMode}
             onChange={(val) => {
               setEditMode(val);
@@ -313,30 +379,39 @@ const SignupList = ({ gigId }: SignupListProps) => {
         >
           <div className='flex flex-nowrap gap-4'>
             <SelectCorps
-              label='Välj corps...'
+              label={lang('Välj corps...', 'Select corps...')}
               icon={<IconUser />}
               excludeIds={signups?.map((s) => s.corpsId) ?? []}
               {...form.getInputProps('corpsId')}
             />
-            <Button type='submit'>Lägg till anmälning</Button>
+            <ActionIcon type='submit'>
+              <IconPlus />
+            </ActionIcon>
           </div>
         </form>
       )}
-      {signupsLoading && <Loading msg='Laddar anmälningar...' />}
+      {signupsLoading && (
+        <Loading msg={lang('Laddar anmälningar...', 'Fetching signups...')} />
+      )}
       {!signupsLoading && (
         <div>
           {yesList.length === 0 ? (
             <h3>
-              <i>Ingen är anmäld än. Kanske kan du bli den första?</i>
+              <i>
+                {lang(
+                  'Ingen är anmäld än. Kanske kan du bli den första?',
+                  'No one is signed up yet. Maybe you can be the first one?',
+                )}
+              </i>
             </h3>
           ) : (
             <>
               <h3>
                 {gigHasHappened
                   ? showAdminTools
-                    ? 'Dessa var anmälda:'
-                    : 'Dessa var med:'
-                  : 'Dessa är anmälda:'}
+                    ? lang('Dessa var anmälda:', 'These were signed up:')
+                    : lang('Dessa var med:', 'These were there:')
+                  : lang('Dessa är anmälda:', 'These are signed up:')}
               </h3>
               {yesTable}
             </>
@@ -345,7 +420,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
             <div>
               <div className='h-4' />
               {missingInstrumentsMessages.map((msg) => (
-                <React.Fragment key={msg}>
+                <React.Fragment key={msg.toString()}>
                   {msg}
                   <br />
                 </React.Fragment>
@@ -356,13 +431,15 @@ const SignupList = ({ gigId }: SignupListProps) => {
       )}
       {maybeList && maybeList.length > 0 && (
         <div>
-          {!gigHasHappened && <h3>Dessa kanske kommer:</h3>}
+          {!gigHasHappened && (
+            <h3>{lang('Dessa kanske kommer:', 'These might come:')}</h3>
+          )}
           {maybeTable}
         </div>
       )}
       {isAdmin && noList && noList.length > 0 && (
         <div>
-          <h3>Dessa kommer inte:</h3>
+          <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>
           {noTable}
         </div>
       )}
