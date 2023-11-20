@@ -2,6 +2,7 @@ import Logo from 'components/logo';
 import NavbarBody from 'components/navbar';
 import NavbarButton from './navbar-button';
 import { ReactNode } from 'react';
+import LanguageSwitcher from './language-switcher';
 
 const AppShell = ({ children }: { children: ReactNode }) => {
   return (
@@ -13,11 +14,14 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         <div className='p-3'>
           <Logo />
         </div>
-        {/* Navbar burger */}
-        <div className='lg:hidden'>
-          <NavbarButton>
-            <NavbarBody />
-          </NavbarButton>
+        <div className='flex gap-2 px-4'>
+          <LanguageSwitcher />
+          {/* Navbar burger */}
+          <div className='lg:hidden'>
+            <NavbarButton>
+              <NavbarBody />
+            </NavbarButton>
+          </div>
         </div>
       </header>
       <div className='fixed top-14 w-72 flex-none max-lg:hidden'>

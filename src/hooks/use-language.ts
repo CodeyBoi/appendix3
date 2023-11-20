@@ -27,8 +27,8 @@ const useLanguage = (initialLanguage?: Language) => {
   const toggleLanguage = (value?: Language) => {
     const newLanguage = value || (language === 'sv' ? 'en' : 'sv');
     setLanguage(newLanguage);
-    applyLanguage(language);
-    mutation.mutate(language);
+    applyLanguage(newLanguage);
+    mutation.mutate(newLanguage);
   };
 
   useEffect(() => {
