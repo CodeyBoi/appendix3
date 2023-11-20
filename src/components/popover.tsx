@@ -34,6 +34,8 @@ type PopoverProps = {
   bgColor?: BgColor;
   withArrow?: boolean;
   center?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 const Popover = ({
@@ -42,8 +44,20 @@ const Popover = ({
   position = 'bottom-right',
   bgColor = 'default',
   center = false,
+  onFocus,
+  onBlur,
 }: PopoverProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpenValue] = useState(false);
+
+  const setOpen = (value: boolean) => {
+    if (onFocus && value && !open) {
+      onFocus();
+    } else if (onBlur && !value && open) {
+      onBlur();
+    }
+    setOpenValue(value);
+  };
+
   return (
     <div>
       <div className='relative'>
