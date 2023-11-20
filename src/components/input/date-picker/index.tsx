@@ -1,8 +1,5 @@
-'use client';
-
 import Popover from 'components/popover';
 import DatePickerDropdown from './dropdown';
-import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
 import ActionIcon from '../action-icon';
@@ -22,21 +19,6 @@ const DatePicker = ({
   withAsterisk = false,
   placeholder,
 }: DatePickerProps) => {
-  const [date, setDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    if (value) {
-      setDate(value);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (date) {
-      onChange?.(date);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date]);
-
   const getDateString = (date: Date | null) => {
     if (!date) {
       return '';
@@ -44,12 +26,24 @@ const DatePicker = ({
     return dayjs(date).format('YYYY-MM-DD');
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.valueAsDate;
+    if (date) {
+      onChange?.(date);
+    }
+  };
+
+  const setDate = (date: Date) => {
+    onChange?.(date);
+  };
+
   return (
     <div className='relative mt-2 flex h-10 rounded border shadow-sm dark:border-neutral-800'>
       <input
         className='absolute h-full w-full grow bg-transparent px-3 pb-1 pt-3 text-left'
         type='text'
-        value={getDateString(date)}
+        value={value ? getDateString(value) : undefined}
+        onChange={handleChange}
         placeholder={placeholder}
         readOnly
       />
