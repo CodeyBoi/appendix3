@@ -14,7 +14,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         <div className='p-3'>
           <Logo />
         </div>
-        <div className='flex gap-2 px-4'>
+        <div className='flex items-center gap-4 px-4'>
           <LanguageSwitcher />
           {/* Navbar burger */}
           <div className='lg:hidden'>
