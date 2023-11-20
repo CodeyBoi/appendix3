@@ -128,24 +128,26 @@ model Instrument {
 }
 
 model Gig {
-  id               String    @id @default(cuid())
-  title            String
-  date             DateTime  @db.Date
-  meetup           String    @default("")
-  start            String    @default("")
-  end              String    @default("")
-  location         String    @default("")
-  signupStart      DateTime?
-  signupEnd        DateTime?
-  description      String    @default("") @db.Text
-  typeId           Int
-  points           Int
-  countsPositively Boolean   @default(false)
-  isPublic         Boolean   @default(false)
-  checkbox1        String    @default("")
-  checkbox2        String    @default("")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  title              String
+  date               DateTime  @db.Date
+  meetup             String    @default("")
+  start              String    @default("")
+  end                String    @default("")
+  location           String    @default("")
+  signupStart        DateTime?
+  signupEnd          DateTime?
+  description        String    @default("") @db.Text
+  englishDescription String    @default("") @db.Text
+  publicDescription  String    @default("") @db.Text
+  typeId             Int
+  points             Int
+  countsPositively   Boolean   @default(false)
+  isPublic           Boolean   @default(false)
+  checkbox1          String    @default("")
+  checkbox2          String    @default("")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   type      GigType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
   signups   GigSignup[]
