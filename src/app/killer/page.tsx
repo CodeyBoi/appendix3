@@ -80,10 +80,11 @@ const getDeathEuphemism = (corps: {
 };
 
 const KillerPage = async () => {
-  const [corps, game, player] = await Promise.all([
+  const [corps, game, player, christmasConcert] = await Promise.all([
     api.corps.getSelf.query(),
     api.killer.getCurrentGameInfo.mutate(),
     api.killer.getOwnPlayerInfo.query(),
+    api.gig.getChristmasConcert.query({}),
   ]);
   const language = corps?.language ?? 'sv';
 
@@ -162,24 +163,57 @@ const KillerPage = async () => {
                 <div className='h-4' />
               </div>
             )}
-            {game.participants.length !== 0 && (
-              <h3>
-                {hasStarted
-                  ? 'Corps'
-                  : lang('Anmälda corps', 'Registered corps')}
-              </h3>
-            )}
-            <table className='dark:border-neutral-700'>
-              <tbody className='text-sm dark:border-neutral-700'>
-                {aliveParticipants.map((p) => (
-                  <tr key={p.corps.id}>
-                    <td>
-                      <CorpsDisplay corps={p.corps} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
+              <div className='flex flex-col'>
+                {game.participants.length > 0 && (
+                  <h3>
+                    {hasStarted
+                      ? 'Corps'
+                      : lang('Anmälda corps', 'Registered corps')}
+                  </h3>
+                )}
+                <table className='dark:border-neutral-700'>
+                  <tbody className='text-sm dark:border-neutral-700'>
+                    {aliveParticipants.map((p) => (
+                      <tr key={p.corps.id}>
+                        <td>
+                          <CorpsDisplay corps={p.corps} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {!hasStarted &&
+                christmasConcert &&
+                christmasConcert.signups.length > 0 && (
+                  <div className='flex flex-col'>
+                    <h5>
+                      {lang(
+                        'Stackars satar som kommer att ha en mycket tråkigare repvecka...',
+                        'Poor souls who will have a very mundane rehearsal week...',
+                      )}
+                    </h5>
+                    <table className='dark:border-neutral-700'>
+                      <tbody className='text-sm dark:border-neutral-700 lg:text-right'>
+                        {christmasConcert.signups.flatMap((signup) =>
+                          game.participants.some(
+                            (p) => p.corps.id === signup.corps.id,
+                          )
+                            ? []
+                            : [
+                                <tr key={signup.corps.id}>
+                                  <td>
+                                    <CorpsDisplay corps={signup.corps} />
+                                  </td>
+                                </tr>,
+                              ],
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+            </div>
           </div>
           {hasStarted && (
             <div className='flex flex-col'>
