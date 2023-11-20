@@ -482,4 +482,66 @@ export const gigRouter = router({
         },
       });
     }),
+
+  getChristmasConcert: protectedProcedure
+    .input(
+      z.object({
+        year: z.number().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const year = input.year ?? new Date().getFullYear();
+      const gig = await ctx.prisma.gig.findFirst({
+        include: {
+          signups: {
+            include: {
+              corps: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  nickName: true,
+                  number: true,
+                },
+              },
+            },
+            where: {
+              status: {
+                value: 'Ja',
+              },
+            },
+            orderBy: [
+              {
+                corps: {
+                  number: {
+                    sort: 'asc',
+                    nulls: 'last',
+                  },
+                },
+              },
+              {
+                corps: {
+                  lastName: 'asc',
+                },
+              },
+              {
+                corps: {
+                  firstName: 'asc',
+                },
+              },
+            ],
+          },
+        },
+        where: {
+          type: {
+            name: 'Julkoncert!',
+          },
+          date: {
+            gte: new Date(year, 11, 1),
+            lte: new Date(year + 1, 0, 1),
+          },
+        },
+      });
+      return gig;
+    }),
 });
