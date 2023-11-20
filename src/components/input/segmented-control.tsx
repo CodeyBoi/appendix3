@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 type Color = 'red' | 'gray';
@@ -10,6 +10,7 @@ type SegmentedControlOption = {
 };
 type SegmentedControlProps = {
   color?: Color;
+  value?: string | number;
   defaultValue?: string | number;
   onChange?: (value: string | number) => void;
   options: SegmentedControlOption[];
@@ -33,6 +34,14 @@ const SegmentedControl = (props: SegmentedControlProps) => {
   const [value, setValue] = useState(props.defaultValue ?? '');
   const color = props.color ?? 'gray';
   const classes = colorVariants[color];
+
+  useEffect(() => {
+    if (props.value === undefined) {
+      return;
+    }
+    setValue(props.value);
+  }, [props.value]);
+
   return (
     <div
       className={cn(

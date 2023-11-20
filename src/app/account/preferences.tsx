@@ -11,6 +11,8 @@ import useColorScheme from 'hooks/use-color-scheme';
 import Switch from 'components/input/switch';
 import Select from 'components/input/select';
 import { lang } from 'utils/language';
+import useLanguage, { Language } from 'hooks/use-language';
+import SegmentedControl from 'components/input/segmented-control';
 
 const initialValues = {
   nickName: '',
@@ -31,6 +33,7 @@ const AccountPreferences = () => {
   const [submitting, setSubmitting] = React.useState(false);
 
   const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { language, setLanguage } = useLanguage();
 
   const form = useForm<FormValues>({
     initialValues,
@@ -72,7 +75,9 @@ const AccountPreferences = () => {
   };
 
   const darkThemeMessage =
-    'VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?';
+    language === 'sv'
+      ? 'VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?'
+      : 'WARNING!\n\nEven though this theme is more comfortable for the eyes, there is a risk that it will remind you of a certain other student orchestra.\n\nAre you sure you want to switch?';
 
   /* April fools */
   const date = new Date();
@@ -117,6 +122,19 @@ const AccountPreferences = () => {
                 }
               }}
             />
+            {language && (
+              <>
+                <h5>{lang('Språk', 'Language')}</h5>
+                <SegmentedControl
+                  options={[
+                    { label: 'Svenska', value: 'sv' },
+                    { label: 'English', value: 'en' },
+                  ]}
+                  value={language}
+                  onChange={(value) => setLanguage(value as Language)}
+                />
+              </>
+            )}
           </div>
           <div className='flex w-min flex-col space-y-2'>
             <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>

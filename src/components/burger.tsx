@@ -12,7 +12,7 @@ const Burger = ({
   };
 
   return (
-    <button className='flex flex-col gap-0.5 p-3' onClick={handleClick}>
+    <button className='flex flex-col gap-0.5' onClick={handleClick}>
       <div
         className={cn(
           'h-1 w-6 transition-all',
