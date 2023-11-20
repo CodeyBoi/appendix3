@@ -19,30 +19,38 @@ const applyLanguage = (language: Language) => {
 };
 
 const useLanguage = (initialLanguage?: Language) => {
-  const [language, setLanguage] = useState<Language>(initialLanguage || 'sv');
+  const [languageValue, setLanguageValue] = useState<Language>(
+    initialLanguage || 'sv',
+  );
   if (initialLanguage) {
     applyLanguage(initialLanguage);
   }
   const mutation = api.corps.setLanguage.useMutation();
-  const toggleLanguage = (value?: Language) => {
-    const newLanguage = value || (language === 'sv' ? 'en' : 'sv');
-    setLanguage(newLanguage);
+
+  const setLanguage = (newLanguage: Language) => {
+    setLanguageValue(newLanguage);
     applyLanguage(newLanguage);
     mutation.mutate(newLanguage);
+  };
+
+  const toggleLanguage = () => {
+    const newLanguage = languageValue === 'sv' ? 'en' : 'sv';
+    setLanguage(newLanguage);
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedLanguage = localStorage.getItem('language') as Language;
       if (storedLanguage) {
-        setLanguage(storedLanguage);
+        setLanguageValue(storedLanguage);
         applyLanguage(storedLanguage);
       }
     }
   }, []);
 
   return {
-    language,
+    language: languageValue,
+    setLanguage,
     toggleLanguage,
   };
 };
