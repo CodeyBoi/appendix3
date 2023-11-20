@@ -1,4 +1,5 @@
 import {
+  IconChartGridDots,
   IconClipboard,
   IconHome,
   IconInfoSquare,
@@ -51,6 +52,7 @@ const userTab: NavbarLinkGroup = {
       icon: <IconSpeakerphone />,
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
+    { label: 'Blingo', href: '/blingo', icon: <IconChartGridDots /> },
     { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
   ],
 };
