@@ -111,6 +111,8 @@ export const gigRouter = router({
         signupStart: z.date().nullable(),
         signupEnd: z.date().nullable(),
         description: z.string().optional(),
+        englishDescription: z.string().optional(),
+        publicDescription: z.string().optional(),
         countsPositively: z.boolean().optional(),
         isPublic: z.boolean().optional(),
         checkbox1: z.string().optional(),

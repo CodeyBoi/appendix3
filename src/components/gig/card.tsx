@@ -85,11 +85,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 <br />
                 {!!gig.location && `${gig.location}`}
                 {!!gig.location && <br />}
-                {!!gig.meetup &&
-                  lang('Samling: ' + gig.meetup, 'Gathering: ' + gig.meetup)}
+                {!!gig.meetup && lang('Samling: ', 'Gathering: ')}
+                {gig.meetup}
                 {!!gig.meetup && <br />}
-                {!!gig.start &&
-                  lang('Spelstart: ' + gig.start, 'Gig start: ' + gig.start)}
+                {!!gig.start && lang('Spelstart: ', 'Gig start: ')}
+                {gig.start}
               </div>
             </div>
           </Link>
@@ -104,7 +104,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             )}
           </div>
         </div>
-        <div>{gig.description}</div>
+        <div>
+          {gig.englishDescription
+            ? lang(gig.description, gig.englishDescription)
+            : gig.description}
+        </div>
       </div>
     </div>
   );

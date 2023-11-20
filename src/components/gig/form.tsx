@@ -26,6 +26,8 @@ const initialValues = {
   title: '',
   type: 'Pärmspelning!',
   description: '',
+  englishDescription: '',
+  publicDescription: '',
   location: '',
   date: null as unknown as Date,
   meetup: '',
@@ -84,6 +86,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.push(`/gig/${id}`);
+      router.refresh();
     },
   });
 
@@ -93,6 +96,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.push('/');
+      router.refresh();
     },
   });
 
@@ -173,6 +177,18 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             <TextArea
               label='Beskrivning'
               {...form.getInputProps('description')}
+            />
+          </div>
+          <div className='col-span-1 md:col-span-2'>
+            <TextArea
+              label='Engelsk beskrivning'
+              {...form.getInputProps('englishDescription')}
+            />
+          </div>
+          <div className='col-span-1 md:col-span-2'>
+            <TextArea
+              label='Allmän beskrivning'
+              {...form.getInputProps('publicDescription')}
             />
           </div>
           <DatePicker
