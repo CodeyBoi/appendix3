@@ -104,13 +104,12 @@ model CorpsInstrument {
 }
 
 model CorpsFoodPrefs {
-  corpsId       String
-  vegetarian    Boolean @default(false)
-  vegan         Boolean @default(false)
-  glutenFree    Boolean @default(false)
-  lactoseFree   Boolean @default(false)
-  drinksAlcohol Boolean @default(false)
-  other         String  @default("") @db.Text
+  corpsId     String
+  vegetarian  Boolean @default(false)
+  vegan       Boolean @default(false)
+  glutenFree  Boolean @default(false)
+  lactoseFree Boolean @default(false)
+  other       String  @default("") @db.Text
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 

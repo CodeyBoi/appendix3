@@ -30,7 +30,6 @@ const DEFAULT_FOOD_PREFS: CorpsFoodPrefs = {
   vegan: false,
   glutenFree: false,
   lactoseFree: false,
-  drinksAlcohol: false,
   other: '',
 };
 
@@ -57,14 +56,13 @@ const FoodPrefs = ({
         prefs.vegan ? 'X' : '',
         prefs.glutenFree ? 'X' : '',
         prefs.lactoseFree ? 'X' : '',
-        prefs.drinksAlcohol ? 'X' : '',
         prefs.other,
       ],
     };
   });
 
   const csvDownloadLink = dataRows
-    ? `data:text/csv;charset=utf-8,Namn,Vegetarian,Vegan,Gluten,Laktos,Alkohol,Övrigt\n${encodeURIComponent(
+    ? `data:text/csv;charset=utf-8,Namn,Vegetarian,Vegan,Gluten,Laktos,Övrigt\n${encodeURIComponent(
         dataRows
           ?.map((row) =>
             row.data
@@ -93,8 +91,7 @@ const FoodPrefs = ({
         <td className='text-center'>{row.data[4]}</td>
         <td className='text-center'>{row.data[5]}</td>
         <td className='text-center'>{row.data[6]}</td>
-        <td className='text-center'>{row.data[7]}</td>
-        <td className='pl-2'>{row.data[8]}</td>
+        <td className='pl-2'>{row.data[7]}</td>
       </tr>
     );
   });
@@ -112,7 +109,6 @@ const FoodPrefs = ({
               <th className='px-1'>Veg*</th>
               <th className='px-1'>Glut</th>
               <th className='px-1'>Lak</th>
-              <th className='px-1'>Alk (gammal)</th>
               <th className='px-1 text-left'>Övrigt</th>
             </tr>
           </thead>
