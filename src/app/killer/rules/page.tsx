@@ -4,7 +4,7 @@ const KillerRules = () => {
   return (
     <>
       <h3>{lang('Regler till Killergame', 'Rules for Killergame')}</h3>
-      <div className='lang-sv flex max-w-4xl flex-col text-left'>
+      <div className='lang-sv flex max-w-4xl flex-col gap-2 text-left'>
         <p>
           Varje spelare får i början av repveckan en lapp med en annan spelares
           namn och ett ord. Din uppgift är att &quot;döda&quot; corpset på din
@@ -50,9 +50,10 @@ const KillerRules = () => {
           </li>
         </ul>
         <br />
+        <br />
         <b className='text-center text-lg italic'>MÅ BÄSTA CORPS VINNA!</b>
       </div>
-      <div className='lang-en flex max-w-4xl flex-col text-left'>
+      <div className='lang-en flex max-w-4xl flex-col gap-2 text-left'>
         <p>
           At the beginning of the rehearsal week, each player receives a piece
           of paper with another player&apos;s name and a word. Your task is to
@@ -92,6 +93,11 @@ const KillerRules = () => {
             or give it away when you&apos;ve killed someone (or been killed).
           </li>
         </ul>
+        <br />
+        <br />
+        <b className='text-center text-lg italic'>
+          MAY THE GREATEST CORPS WIN!
+        </b>
       </div>
     </>
   );
