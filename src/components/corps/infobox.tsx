@@ -2,9 +2,11 @@
 
 import Loading from 'components/loading';
 import { api } from 'trpc/react';
+import { lang } from 'utils/language';
 
 type CorpsInfoboxProps = {
   id: string;
+  open: boolean;
 };
 
 const genOtherInstrumentsString = (instruments: string[]) => {
@@ -21,8 +23,8 @@ const genOtherInstrumentsString = (instruments: string[]) => {
 // A list of "instruments" which should have the prefix "är"
 const beingPrefixes = ['dirigent', 'balett'];
 
-const CorpsInfobox = ({ id }: CorpsInfoboxProps) => {
-  const { data: corps } = api.corps.get.useQuery({ id });
+const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
+  const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
   if (!corps) {
     return <Loading msg='Hämtar corps...' />;
   }
@@ -59,7 +61,7 @@ const CorpsInfobox = ({ id }: CorpsInfoboxProps) => {
       : '') +
     '.';
   return (
-    <div className='flex w-min flex-col p-2 text-sm'>
+    <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='whitespace-nowrap text-lg font-bold'>
         {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
         {nickName && (
@@ -69,7 +71,10 @@ const CorpsInfobox = ({ id }: CorpsInfoboxProps) => {
         )}
       </div>
 
-      <div className='italic'>{'Spelpoäng: ' + points}</div>
+      <div className='italic'>
+        {lang('Spelpoäng: ', 'Gig points: ')}
+        {points}
+      </div>
       <div className='h-1.5' />
       <div>{instrumentsMsg}</div>
     </div>
