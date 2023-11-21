@@ -36,8 +36,6 @@ const TimePickerDropdown = (props: TimePickerDropdownProps) => {
             </div>
           );
         })}
-        {/* Add padding to the bottom so the last item can scroll to the top */}
-        <div className='block h-48' />
       </div>
       <div className='flex max-h-52 flex-col overflow-y-auto no-scrollbar'>
         {Array.from({ length: 12 }).map((_, i) => {
@@ -63,8 +61,6 @@ const TimePickerDropdown = (props: TimePickerDropdownProps) => {
             </div>
           );
         })}
-        {/* Add padding to the bottom so the last item can scroll to the top */}
-        <div className='h-48 w-px' />
       </div>
     </div>
   );

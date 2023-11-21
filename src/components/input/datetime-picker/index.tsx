@@ -1,3 +1,5 @@
+'use client';
+
 import { IconCalendar, IconX } from '@tabler/icons-react';
 import Popover from 'components/popover';
 import dayjs from 'dayjs';
