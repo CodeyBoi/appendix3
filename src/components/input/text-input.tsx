@@ -101,6 +101,7 @@ const TextInput = ({
             className={cn(
               'flex origin-left cursor-text gap-1 px-1 text-sm text-neutral-500 transition-transform duration-100',
               (focused || value !== '') && '-translate-y-5',
+              (focused || value !== '') && icon && '-translate-x-7',
               variant === 'login' ? 'text-white' : 'bg-white dark:bg-darkBg',
             )}
           >
