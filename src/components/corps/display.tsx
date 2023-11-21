@@ -27,13 +27,15 @@ const CorpsDisplay = ({ corps }: CorpsDisplayProps) => {
       position='top-right'
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
+      targetClassName='max-w-max'
       target={
         <div className='hover:underline'>{`${
           number ? `#${number}` : 'p.e.'
         } ${displayName}`}</div>
       }
-      popover={<CorpsInfobox id={id} open={open} />}
-    />
+    >
+      <CorpsInfobox id={id} open={open} />
+    </Popover>
   );
 };
 

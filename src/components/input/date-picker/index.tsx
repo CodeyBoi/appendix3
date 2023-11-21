@@ -63,8 +63,9 @@ const DatePicker = ({
               <IconCalendar />
             </ActionIcon>
           }
-          popover={<DatePickerDropdown onDateChange={setDate} />}
-        />
+        >
+          <DatePickerDropdown onDateChange={setDate} />
+        </Popover>
       </div>
     </div>
   );

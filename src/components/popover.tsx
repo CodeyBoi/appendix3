@@ -29,7 +29,8 @@ const bgColorClasses: Record<BgColor, string> = {
 
 type PopoverProps = {
   target: React.ReactNode;
-  popover: React.ReactNode;
+  targetClassName?: string;
+  children: React.ReactNode;
   position?: Position;
   bgColor?: BgColor;
   withArrow?: boolean;
@@ -40,7 +41,8 @@ type PopoverProps = {
 
 const Popover = ({
   target,
-  popover: dropdown,
+  targetClassName,
+  children: dropdown,
   position = 'bottom-right',
   bgColor = 'default',
   center = false,
@@ -59,28 +61,35 @@ const Popover = ({
   };
 
   return (
-    <div className='relative'>
-      <div className='max-w-max cursor-pointer' onClick={() => setOpen(!open)}>
-        {target}
-      </div>
-      <div
-        className={cn(
-          'z-20 overflow-y-auto rounded p-1 shadow transition-opacity',
-          center
-            ? 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'
-            : 'absolute ' + positionClasses[position],
-          open ? 'opacity-100' : 'pointer-events-none opacity-0',
-          bgColorClasses[bgColor],
-        )}
-      >
-        {dropdown}
-      </div>
-      {open && (
+    <div
+      className={cn('cursor-pointer', targetClassName)}
+      onClick={() => {
+        if (!open) {
+          setOpen(true);
+        }
+      }}
+    >
+      {target}
+      <div className='relative'>
         <div
-          className='fixed right-0 top-0 z-10 h-screen w-screen'
-          onClick={() => setOpen(false)}
-        />
-      )}
+          className={cn(
+            'z-20 overflow-y-auto rounded p-1 shadow transition-opacity',
+            center
+              ? 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'
+              : 'absolute ' + positionClasses[position],
+            open ? 'opacity-100' : 'pointer-events-none opacity-0',
+            bgColorClasses[bgColor],
+          )}
+        >
+          {dropdown}
+        </div>
+        {open && (
+          <div
+            className='fixed right-0 top-0 z-10 h-screen w-screen'
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -86,13 +86,12 @@ const DateTimePicker = ({
           </div>
         </div>
       }
-      popover={
-        <div className='flex gap-2'>
-          <DatePickerDropdown onDateChange={handleDateChange} />
-          <TimePickerDropdown onChange={handleTimeChange} />
-        </div>
-      }
-    />
+    >
+      <div className='flex gap-2'>
+        <DatePickerDropdown onDateChange={handleDateChange} />
+        <TimePickerDropdown onChange={handleTimeChange} />
+      </div>
+    </Popover>
   );
 };
 
