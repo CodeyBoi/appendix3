@@ -23,7 +23,7 @@ const MultiSelect = ({
   value,
   defaultValue: defaultValueProp,
   onChange,
-  className = '',
+  className,
   placeholder,
 }: MultiSelectCorpsProps) => {
   const [selected, setSelected] = useState<MultiValue<OptionType>>([]);
@@ -44,6 +44,15 @@ const MultiSelect = ({
   return (
     <Select
       className={className}
+      styles={{
+        control: (provided) => ({
+          ...provided,
+          backgroundColor: 'transparent',
+        }),
+      }}
+      classNames={{
+        container: () => 'shadow-sm border-gray-300 dark:border-gray-700',
+      }}
       isMulti
       isSearchable
       options={options}
