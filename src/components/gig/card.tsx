@@ -48,16 +48,9 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
 
   const isAdmin = corps.role?.name === 'admin';
 
-  const currentDate = dayjs().startOf('day');
-  const showSignup =
-    // Today is before the gig date
-    currentDate.subtract(1, 'day').isBefore(gig.date, 'day') &&
-    // There is no signup start date or today is after or at the signup start date
-    (!gig.signupStart ||
-      currentDate.add(1, 'day').isAfter(gig.signupStart, 'day')) &&
-    // There is no signup end date or today is before or at the signup end date
-    (!gig.signupEnd ||
-      currentDate.subtract(1, 'day').isBefore(gig.signupEnd, 'day'));
+  const date = new Date();
+  const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
+  const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
 
   return (
     <div className='rounded border shadow-md dark:border-neutral-800'>
@@ -73,10 +66,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 <IconDotsVertical />
               </ActionIcon>
             }
-            popover={<GigMenuContent gig={gig} isAdmin={isAdmin} />}
-          />
+          >
+            <GigMenuContent gig={gig} isAdmin={isAdmin} />
+          </Popover>
         </div>
-        <div className='flex flex-col justify-between gap-2 lg:flex-row'>
+        <div className='flex flex-col justify-between lg:flex-row'>
           <Link className='grow' href={`/gig/${gig.id}`}>
             <div className='flex grow cursor-pointer items-center space-x-4'>
               <Datebox date={dayjs(gig.date)} />
@@ -93,14 +87,28 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
               </div>
             </div>
           </Link>
-          <div className='w-full lg:w-56'>
-            {showSignup && (
-              <GigSignupBox
-                gigId={gig.id}
-                checkbox1={gig.checkbox1}
-                checkbox2={gig.checkbox2}
-                signup={signup ?? undefined}
-              />
+          <div className='flex w-full flex-col lg:w-56'>
+            {!isBeforeSignup && !isAfterSignup && (
+              <>
+                {gig.signupEnd && (
+                  <div className='pr-2 text-right text-xs italic leading-normal'>
+                    {lang('Anmälan stänger', 'Signup closes')}{' '}
+                    {dayjs(gig.signupEnd).format('YYYY-MM-DD HH:mm')}
+                  </div>
+                )}
+                <GigSignupBox
+                  gigId={gig.id}
+                  checkbox1={gig.checkbox1}
+                  checkbox2={gig.checkbox2}
+                  signup={signup ?? undefined}
+                />
+              </>
+            )}
+            {isBeforeSignup && (
+              <div className='pr-2 text-right text-xs italic leading-normal'>
+                {lang('Anmälan öppnar', 'Signup opens')}{' '}
+                {dayjs(gig.signupStart).format('YYYY-MM-DD HH:mm')}
+              </div>
             )}
           </div>
         </div>

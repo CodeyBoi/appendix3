@@ -30,7 +30,9 @@ const DateTimePicker = ({
   const [date, setDate] = useState<Date | null>(null);
 
   const handleDateChange = (d: Date) => {
-    const newDate = date ? new Date(date) : defaultValue ?? new Date();
+    const newDate = date
+      ? new Date(date)
+      : defaultValue ?? new Date(0, 0, 0, 0, 0, 0, 0);
     newDate.setFullYear(d.getFullYear());
     newDate.setMonth(d.getMonth());
     newDate.setDate(d.getDate());
@@ -39,7 +41,11 @@ const DateTimePicker = ({
   };
 
   const handleTimeChange = (d: Date) => {
-    const newDate = date ? new Date(date) : defaultValue ?? new Date();
+    const now = new Date();
+    const newDate = date
+      ? new Date(date)
+      : defaultValue ??
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     newDate.setHours(d.getHours());
     newDate.setMinutes(d.getMinutes());
     setDate(newDate);
