@@ -16,6 +16,7 @@ import NumberInput from 'components/input/number-input';
 import Checkbox from 'components/input/checkbox';
 import DatePicker from 'components/input/date-picker';
 import { api } from 'trpc/react';
+import DateTimePicker from 'components/input/datetime-picker';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -191,15 +192,15 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
               {...form.getInputProps('publicDescription')}
             />
           </div>
-          <DatePicker
+          <DateTimePicker
             label='Anmälningsstart'
-            placeholder='Välj datum...'
+            placeholder='Välj tid...'
             {...form.getInputProps('signupStart')}
             // clearable={true}
           />
-          <DatePicker
+          <DateTimePicker
             label='Anmälningsstopp'
-            placeholder='Välj datum...'
+            placeholder='Välj tid...'
             {...form.getInputProps('signupEnd')}
             // clearable={true}
           />

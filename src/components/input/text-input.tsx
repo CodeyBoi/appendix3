@@ -74,10 +74,10 @@ const TextInput = ({
   };
 
   return (
-    <div className='flex min-w-0 shrink flex-col'>
+    <div className='flex min-w-0 shrink flex-col pt-2'>
       <div
         className={cn(
-          'relative flex h-12 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
+          'relative flex h-10 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
           error && errorStyle,
         )}
       >
@@ -87,7 +87,7 @@ const TextInput = ({
           {...props}
           value={value}
           className={cn(
-            'pointer-events-auto min-w-0 flex-shrink flex-grow cursor-text bg-transparent pb-1 pt-5 font-display dark:text-darkText',
+            'pointer-events-auto h-10 min-w-0 flex-shrink flex-grow cursor-text rounded bg-transparent pb-2 pt-3 font-display dark:text-darkText',
             icon ? ' pl-9 pr-2' : ' px-2',
             props.className,
           )}
@@ -99,11 +99,10 @@ const TextInput = ({
           <div className={icon ? 'w-9' : 'w-2'} />
           <label
             className={cn(
-              'flex origin-left cursor-text gap-1 transition-transform duration-100',
-              focused || value !== ''
-                ? '-translate-y-2.5 scale-75'
-                : 'text-neutral-500',
-              variant === 'login' && 'text-white',
+              'flex origin-left cursor-text gap-1 px-1 text-sm text-neutral-500 transition-transform duration-100',
+              (focused || value !== '') && '-translate-y-5',
+              (focused || value !== '') && icon && '-translate-x-7',
+              variant === 'login' ? 'text-white' : 'bg-white dark:bg-darkBg',
             )}
           >
             {label}

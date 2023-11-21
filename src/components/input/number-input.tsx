@@ -23,12 +23,12 @@ const NumberInput = ({
   ...props
 }: NumberInputProps) => {
   return (
-    <div className='flex min-w-0 shrink flex-col'>
+    <div className={cn('relative flex pt-2', className)}>
       {label && (
-        <div className='flex items-center justify-between'>
+        <div className='absolute flex -translate-y-2.5 translate-x-2 items-center justify-between bg-white px-1 text-sm text-neutral-500 dark:bg-darkBg'>
           <label className='flex gap-1'>
             {label}
-            {withAsterisk && <span className='text-red-600'>*</span>}
+            {withAsterisk && <span className='text-base text-red-600'>*</span>}
           </label>
           {error && <span className='text-xs text-red-600'>{error}</span>}
         </div>
@@ -38,7 +38,6 @@ const NumberInput = ({
         className={cn(
           'min-w-0 flex-shrink flex-grow cursor-text rounded border bg-transparent p-2 font-display dark:border-neutral-800 dark:text-gray-300',
           error && errorStyle,
-          className,
         )}
         onChange={(e) => onChange?.(Number(e.currentTarget.value))}
         {...props}

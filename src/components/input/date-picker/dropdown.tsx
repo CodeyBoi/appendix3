@@ -4,6 +4,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import ActionIcon from 'components/input/action-icon';
+import { cn } from 'utils/class-names';
 
 const genCalender = (year: number, month: number) => {
   const date = new Date(year, month, 1);
@@ -31,18 +32,26 @@ const genCalender = (year: number, month: number) => {
 type DatePickerDropdownProps = {
   initialMonth?: number;
   initialYear?: number;
+  initialDay?: number;
   onDateChange?: (date: Date) => void;
 };
 
 const DatePickerDropdown = ({
   initialMonth,
   initialYear,
+  initialDay,
   onDateChange,
 }: DatePickerDropdownProps) => {
   const currentDate = new Date();
-  const year = initialYear ?? currentDate.getFullYear();
-  const month = initialMonth ?? currentDate.getMonth();
-  const [date, setDate] = useState(dayjs(new Date(year, month, 1)));
+  const [date, setDate] = useState(
+    dayjs(
+      new Date(
+        initialYear ?? currentDate.getFullYear(),
+        initialMonth ?? currentDate.getMonth(),
+        initialDay ?? currentDate.getDate(),
+      ),
+    ),
+  );
   const monthName = date
     .toDate()
     .toLocaleDateString('sv-SE', { month: 'long' });
@@ -84,7 +93,12 @@ const DatePickerDropdown = ({
               <button
                 key={`${i}-${j}`}
                 type='button'
-                className='rounded-full text-center text-neutral-500 hover:bg-red-600/10'
+                className={cn(
+                  'rounded-full text-center text-neutral-500',
+                  date.date() === day
+                    ? 'bg-red-600 text-white'
+                    : 'hover:bg-red-600/10',
+                )}
                 onClick={() => {
                   if (day) {
                     const newDate = date.date(day);
