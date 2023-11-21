@@ -62,7 +62,7 @@ const Popover = ({
 
   return (
     <div
-      className={cn('cursor-pointer', targetClassName)}
+      className={cn(!open && 'cursor-pointer', targetClassName)}
       onClick={() => {
         if (!open) {
           setOpen(true);
