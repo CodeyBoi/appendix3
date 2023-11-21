@@ -50,7 +50,7 @@ const DateTimePicker = ({
       target={
         <div className='relative mt-2 flex h-10 rounded border shadow-sm dark:border-neutral-800'>
           <input
-            className='absolute h-full w-full grow cursor-pointer bg-transparent px-3 pb-1 pt-3 text-left'
+            className='absolute h-full w-full grow cursor-pointer rounded bg-transparent px-3 pb-1 pt-3 text-left'
             type='text'
             value={value ? dayjs(value).format('YYYY-MM-DD HH:mm') : ''}
             placeholder={placeholder}
