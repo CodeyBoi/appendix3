@@ -88,6 +88,19 @@ h6 {
   background-color: var(--corps-red);
 }
 
+@keyframes picker-wheel-idle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }  
+}
+
+.picker-wheel-idle {
+  animation: picker-wheel-idle 25s linear infinite;
+}
+
 /* For hiding the other language when the other is active: */
 html.lang-en .lang-sv, html.lang-sv .lang-en {
   display: none;
