@@ -13,6 +13,7 @@ import Select from 'components/input/select';
 import { lang } from 'utils/language';
 import useLanguage, { Language } from 'hooks/use-language';
 import SegmentedControl from 'components/input/segmented-control';
+import { isAprilFools } from 'utils/date';
 
 const initialValues = {
   nickName: '',
@@ -79,11 +80,6 @@ const AccountPreferences = () => {
       ? 'VARNING!\n\nÄven om detta tema är mer bekvämt för ögonen, så finns risken att det påminner om en viss annan studentorkester.\n\nÄr du säker på att du vill byta?'
       : 'WARNING!\n\nEven though this theme is more comfortable for the eyes, there is a risk that it will remind you of a certain other student orchestra.\n\nAre you sure you want to switch?';
 
-  /* April fools */
-  const date = new Date();
-  const isAprilFools = date.getMonth() === 3 && date.getDate() === 1;
-  /* April fools */
-
   const instrumentOptions = corps?.instruments.map((i) => ({
     value: i.instrument.name,
     label: i.instrument.name,
@@ -104,7 +100,7 @@ const AccountPreferences = () => {
               checked={colorScheme === 'dark'}
               onChange={() => {
                 /* April fools */
-                if (isAprilFools) {
+                if (isAprilFools()) {
                   alert('get pranked');
                   window.open(
                     'https://www.youtube.com/watch?v=h-d4PlcAGb4',

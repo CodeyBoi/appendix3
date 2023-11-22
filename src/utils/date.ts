@@ -18,3 +18,10 @@ export const getOperatingYear = () => {
   // If month is September or later, return current year, else return previous year
   return month >= 8 ? year : year - 1;
 };
+
+export const isAprilFools = () => {
+  const date = new Date();
+  const month = date.getMonth();
+  const day = date.getDate();
+  return month === 3 && day === 1;
+};
