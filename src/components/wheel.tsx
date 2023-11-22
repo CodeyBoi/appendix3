@@ -1,7 +1,6 @@
 'use client';
 
 import { IconChevronLeft } from '@tabler/icons-react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
@@ -38,8 +37,6 @@ const Wheel = ({ options, onChange, value }: WheelProps) => {
   const [transition, setTransition] = useState('transition-all duration-[8s]');
   const isSpinning = finalRotation !== null;
 
-  const router = useRouter();
-
   useEffect(() => {
     if (value) {
       const rotation = getRotation(value, options);
@@ -75,15 +72,14 @@ const Wheel = ({ options, onChange, value }: WheelProps) => {
         onChange(newValue);
       }
       setShowSubmit(true);
-      router.refresh();
-    }, 8000);
+    }, 8200);
   };
 
   return (
     <div className='relative flex h-52 w-52 items-center justify-center rounded-full'>
       {showSubmit && (
         <div
-          className='absolute z-10 flex h-12 w-12 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-white text-center text-xs font-bold uppercase'
+          className='absolute z-10 flex h-12 w-12 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-white text-center text-xs font-bold uppercase text-black'
           onClick={handleClick}
         >
           anmäl
@@ -91,7 +87,7 @@ const Wheel = ({ options, onChange, value }: WheelProps) => {
       )}
       <div
         className={cn(
-          'relative flex h-52 w-52 transform-gpu items-center justify-center rounded-full ease-in-out',
+          'relative flex h-52 w-52 transform-gpu items-center justify-center rounded-full font-bold text-white ease-in-out',
           transition,
           !isSpinning && 'picker-wheel-idle',
         )}

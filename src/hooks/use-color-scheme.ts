@@ -15,11 +15,11 @@ const applyScheme = (scheme: ColorScheme) => {
 };
 
 const useColorScheme = (initialColorScheme?: ColorScheme) => {
-  const initColor = (sessionStorage?.getItem('colorScheme') ??
-    initialColorScheme ??
-    'light') as ColorScheme;
+  const initColor = (initialColorScheme ?? 'light') as ColorScheme;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(initColor);
-
+  if (initialColorScheme) {
+    applyScheme(initialColorScheme);
+  }
   const mutation = api.corps.setColorScheme.useMutation();
   const toggleColorScheme = (value?: ColorScheme) => {
     const newColorScheme =
