@@ -1,5 +1,7 @@
 'use client';
 
+import { IconPencil } from '@tabler/icons-react';
+import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
@@ -25,9 +27,13 @@ const beingPrefixes = ['dirigent', 'balett'];
 
 const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
-  if (!corps) {
+  const { data: self } = api.corps.getSelf.useQuery(undefined, {
+    enabled: open,
+  });
+  if (!corps || !self) {
     return <Loading msg='Hämtar corps...' />;
   }
+  const isAdmin = self.role?.name === 'admin';
   const { instruments, fullName, nickName, number, points } = corps;
   const mainInstrument =
     instruments.find((i) => i.isMainInstrument)?.instrument.name ?? '';
@@ -63,7 +69,14 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   return (
     <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='whitespace-nowrap text-lg font-bold'>
-        {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
+        <div className='flex flex-nowrap items-end gap-2'>
+          {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
+          {isAdmin && (
+            <ActionIcon variant='subtle' href={`/admin/corps/${corps.id}`}>
+              <IconPencil />
+            </ActionIcon>
+          )}
+        </div>
         {nickName && (
           <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>
             {'a.k.a. ' + nickName}
