@@ -1,6 +1,7 @@
 export type ColorScheme = 'light' | 'dark';
 import { useState } from 'react';
 import { api } from 'trpc/react';
+import { isAprilFools } from 'utils/date';
 
 const applyScheme = (scheme: ColorScheme) => {
   if (typeof window !== 'undefined') {
@@ -14,11 +15,11 @@ const applyScheme = (scheme: ColorScheme) => {
 };
 
 const useColorScheme = (initialColorScheme?: ColorScheme) => {
-  const initColor = (sessionStorage?.getItem('colorScheme') ??
-    initialColorScheme ??
-    'light') as ColorScheme;
+  const initColor = (initialColorScheme ?? 'light') as ColorScheme;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(initColor);
-
+  if (initialColorScheme) {
+    applyScheme(initialColorScheme);
+  }
   const mutation = api.corps.setColorScheme.useMutation();
   const toggleColorScheme = (value?: ColorScheme) => {
     const newColorScheme =
@@ -28,13 +29,8 @@ const useColorScheme = (initialColorScheme?: ColorScheme) => {
     applyScheme(newColorScheme);
   };
 
-  /* April Fools */
-  const date = new Date();
-  const isAprilFirst = date.getDate() === 1 && date.getMonth() === 3;
-  /* April Fools */
-
   return {
-    colorScheme: isAprilFirst ? 'dark' : colorScheme,
+    colorScheme: isAprilFools() ? 'dark' : colorScheme,
     toggleColorScheme,
   };
 };

@@ -15,6 +15,7 @@ import { ColorScheme } from 'hooks/use-color-scheme';
 import { cn } from 'utils/class-names';
 import dayjs from 'dayjs';
 import { Language } from 'hooks/use-language';
+import { isAprilFools } from 'utils/date';
 
 // Set global locale for dayjs
 dayjs.locale('sv');
@@ -39,7 +40,9 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     where: { id: session.user?.corps?.id },
     select: { colorScheme: true, language: true },
   });
-  const colorScheme = corps?.colorScheme as ColorScheme;
+  const colorScheme = (
+    isAprilFools() ? 'dark' : corps?.colorScheme
+  ) as ColorScheme;
   const language = corps?.language as Language;
 
   return (

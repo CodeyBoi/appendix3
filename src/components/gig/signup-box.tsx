@@ -7,6 +7,8 @@ import Checkbox from 'components/input/checkbox';
 import Select from 'components/input/select';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import { lang } from 'utils/language';
+import { isAprilFools } from 'utils/date';
+import Wheel from 'components/wheel';
 
 type Signup = {
   status: { value: string };
@@ -21,6 +23,12 @@ interface GigSignupBoxProps {
   checkbox2: string;
   signup?: Signup;
 }
+
+const SIGNUP_OPTIONS = [
+  { label: lang('Ja', 'Yes'), value: 'Ja', color: 'green' },
+  { label: lang('Nej', 'No'), value: 'Nej', color: 'var(--corps-red)' },
+  { label: lang('Kanske', 'Maybe'), value: 'Kanske', color: 'orange' },
+];
 
 const GigSignupBox = ({
   gigId,
@@ -69,32 +77,38 @@ const GigSignupBox = ({
 
   const loading = !corps || !mainInstrument;
 
+  const handleSignupStatusChange = (value: string) => {
+    if (!value || !corps) {
+      return;
+    }
+    setSubmitting(true);
+    setStatus(value);
+    addSignup.mutate({
+      gigId,
+      corpsId: corps.id,
+      status: value,
+      instrument,
+      checkbox1: checkbox1Checked,
+      checkbox2: checkbox2Checked,
+    });
+  };
+
   return (
     <FormLoadingOverlay showSpinner={false} visible={submitting || loading}>
       <div className='flex flex-col gap-2'>
-        <SegmentedControl
-          defaultValue={signup?.status.value ?? ''}
-          onChange={(s) => {
-            if (!s || !corps) {
-              return;
-            }
-            setSubmitting(true);
-            setStatus(s as string);
-            addSignup.mutate({
-              gigId,
-              corpsId: corps.id,
-              status: s as string,
-              instrument,
-              checkbox1: checkbox1Checked,
-              checkbox2: checkbox2Checked,
-            });
-          }}
-          options={[
-            { label: lang('Ja', 'Yes'), value: 'Ja' },
-            { label: lang('Nej', 'No'), value: 'Nej' },
-            { label: lang('Kanske', 'Maybe'), value: 'Kanske' },
-          ]}
-        />
+        {isAprilFools() ? (
+          <Wheel
+            options={SIGNUP_OPTIONS}
+            onChange={handleSignupStatusChange}
+            value={status}
+          />
+        ) : (
+          <SegmentedControl
+            defaultValue={signup?.status.value ?? ''}
+            onChange={(v) => handleSignupStatusChange(v.toString())}
+            options={SIGNUP_OPTIONS}
+          />
+        )}
         {checkbox1 && (
           <Checkbox
             checked={checkbox1Checked}
