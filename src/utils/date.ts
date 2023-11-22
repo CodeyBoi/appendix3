@@ -20,7 +20,6 @@ export const getOperatingYear = () => {
 };
 
 export const isAprilFools = () => {
-  return true;
   const date = new Date();
   const month = date.getMonth();
   const day = date.getDate();
