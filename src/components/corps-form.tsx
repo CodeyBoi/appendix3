@@ -119,21 +119,30 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={loading || submitting || corpsLoading}>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          <TextInput
-            withAsterisk
-            label='Förnamn'
-            {...form.getInputProps('firstName')}
-          />
-          <TextInput
-            withAsterisk
-            label='Efternamn'
-            {...form.getInputProps('lastName')}
-          />
+          <div className='flex gap-4'>
+            <TextInput
+              withAsterisk
+              label='Förnamn'
+              {...form.getInputProps('firstName')}
+            />
+            <TextInput
+              withAsterisk
+              label='Efternamn'
+              {...form.getInputProps('lastName')}
+            />
+          </div>
           <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <div className='flex gap-4'>
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
           </div>
+          <span className='self-end'>
+            <TextInput
+              withAsterisk
+              label='Email'
+              {...form.getInputProps('email')}
+            />
+          </span>
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
@@ -151,32 +160,23 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             }
             {...form.getInputProps('otherInstruments')}
           />
-          <span className='self-end'>
-            <TextInput
-              withAsterisk
-              label='Email'
-              {...form.getInputProps('email')}
-            />
-          </span>
-          <div className='grid grid-cols-2 gap-2'>
-            <MultiSelect
-              label='Behörighetsroller'
-              placeholder='Välj behörighet...'
-              options={
-                roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
-              }
-              {...form.getInputProps('roles')}
-            />
-            <Select
-              label='Språk'
-              options={[
-                { value: 'sv', label: 'Svenska' },
-                { value: 'en', label: 'English' },
-              ]}
-              withAsterisk
-              {...form.getInputProps('language')}
-            />
-          </div>
+          <MultiSelect
+            label='Behörighetsroller'
+            placeholder='Välj behörighet...'
+            options={
+              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
+            {...form.getInputProps('roles')}
+          />
+          <Select
+            label='Språk'
+            options={[
+              { value: 'sv', label: 'Svenska' },
+              { value: 'en', label: 'English' },
+            ]}
+            withAsterisk
+            {...form.getInputProps('language')}
+          />
         </div>
       </FormLoadingOverlay>
       <div className='flex justify-end p-2'>
