@@ -13,9 +13,11 @@ declare module 'next-auth' {
       | ({ id: string; email: string | null } & {
           corps: {
             id: string;
-            role: {
-              name: string;
-            } | null;
+            roles:
+              | {
+                  name: string;
+                }[]
+              | null;
           } | null;
         })
       | null;

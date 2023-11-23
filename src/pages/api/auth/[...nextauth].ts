@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
             corps: {
               select: {
                 id: true,
-                role: {
+                roles: {
                   select: {
                     name: true,
                   },
