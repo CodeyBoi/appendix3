@@ -179,7 +179,7 @@ export const corpsRouter = router({
         email: z.string(),
         mainInstrument: z.string(),
         otherInstruments: z.array(z.string()),
-        role: z.string(),
+        roles: z.array(z.string()),
         language: z.enum(['sv', 'en']),
       }),
     )
@@ -213,10 +213,10 @@ export const corpsRouter = router({
             ],
           },
         },
-        role: {
-          connect: {
-            name: input.role,
-          },
+        roles: {
+          connect: input.roles.map((role) => ({
+            name: role,
+          })),
         },
         language: input.language,
       };
