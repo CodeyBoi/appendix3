@@ -37,11 +37,7 @@ export const permissionRouter = router({
   }),
 
   getRoles: restrictedProcedure('managePermissions').query(async ({ ctx }) => {
-    const roles = await ctx.prisma.role.findMany({
-      include: {
-        permissions: true,
-      },
-    });
+    const roles = await ctx.prisma.role.findMany({});
     return roles;
   }),
 

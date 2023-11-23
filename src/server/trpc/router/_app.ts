@@ -6,13 +6,13 @@ import { corpsRouter } from './corps';
 import { statsRouter } from './stats';
 import { instrumentRouter } from './instrument';
 import { gigTypeRouter } from './gig-type';
-import { roleRouter } from './role';
 import { rehearsalRouter } from './rehearsal';
 import { songRouter } from './song';
 import { quoteRouter } from './quote';
 import { mailRouter } from './mail';
 import { sectionRouter } from './section';
 import { killerRouter } from './killer';
+import { permissionRouter } from './permission';
 
 export const appRouter = router({
   auth: authRouter,
@@ -21,13 +21,13 @@ export const appRouter = router({
   stats: statsRouter,
   instrument: instrumentRouter,
   gigType: gigTypeRouter,
-  role: roleRouter,
   rehearsal: rehearsalRouter,
   song: songRouter,
   quote: quoteRouter,
   mail: mailRouter,
   section: sectionRouter,
   killer: killerRouter,
+  permission: permissionRouter,
 });
 
 // export type definition of API

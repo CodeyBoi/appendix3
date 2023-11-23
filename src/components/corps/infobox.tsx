@@ -3,6 +3,7 @@
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
+import Restricted from 'components/restricted';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
@@ -23,7 +24,7 @@ const genOtherInstrumentsString = (instruments: string[]) => {
 };
 
 // A list of "instruments" which should have the prefix "är"
-const beingPrefixes = ['dirigent', 'balett'];
+const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
 
 const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
@@ -33,7 +34,6 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   if (!corps || !self) {
     return <Loading msg='Hämtar corps...' />;
   }
-  const isAdmin = self.role?.name === 'admin';
   const { instruments, fullName, nickName, number, points } = corps;
   const mainInstrument =
     instruments.find((i) => i.isMainInstrument)?.instrument.name ?? '';
@@ -71,11 +71,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       <div className='whitespace-nowrap text-lg font-bold'>
         <div className='flex flex-nowrap items-end gap-2'>
           {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
-          {isAdmin && (
+          <Restricted permissions='manageCorps'>
             <ActionIcon variant='subtle' href={`/admin/corps/${corps.id}`}>
               <IconPencil />
             </ActionIcon>
-          )}
+          </Restricted>
         </div>
         {nickName && (
           <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>

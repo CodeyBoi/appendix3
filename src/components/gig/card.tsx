@@ -46,8 +46,6 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
     corpsId: corps.id,
   });
 
-  const isAdmin = corps.role?.name === 'admin';
-
   const date = new Date();
   const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
   const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
@@ -67,7 +65,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
               </ActionIcon>
             }
           >
-            <GigMenuContent gig={gig} isAdmin={isAdmin} />
+            <GigMenuContent gig={gig} />
           </Popover>
         </div>
         <div className='flex flex-col justify-between lg:flex-row'>

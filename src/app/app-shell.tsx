@@ -1,7 +1,7 @@
 import Logo from 'components/logo';
-import NavbarBody from 'components/navbar';
 import NavbarButton from './navbar-button';
 import { ReactNode } from 'react';
+import NavbarContent from 'components/navbar';
 
 const AppShell = ({ children }: { children: ReactNode }) => {
   return (
@@ -14,12 +14,12 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         {/* Navbar burger */}
         <div className='lg:hidden'>
           <NavbarButton>
-            <NavbarBody />
+            <NavbarContent />
           </NavbarButton>
         </div>
       </header>
       <div className='fixed top-14 w-72 flex-none max-lg:hidden'>
-        <NavbarBody />
+        <NavbarContent />
       </div>
       <div className='p-6 lg:ml-72'>{children}</div>
     </>

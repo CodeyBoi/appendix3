@@ -11,6 +11,7 @@ import { api } from 'trpc/react';
 import useLanguage, { Language } from 'hooks/use-language';
 import { lang } from 'utils/language';
 import ActionIcon from 'components/input/action-icon';
+import Restricted from 'components/restricted';
 
 interface SignupListProps {
   gigId: string;
@@ -132,12 +133,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const { data: signups, isInitialLoading: signupsLoading } =
     api.gig.getSignups.useQuery({ gigId });
 
-  const { data: role } = api.corps.getRole.useQuery();
-  const isAdmin = role === 'admin';
-
   const [editMode, setEditMode] = useState(false);
 
-  const showAdminTools = isAdmin && editMode;
+  const { data: userPermissions } = api.permission.getOwnPermissions.useQuery();
+  const showAdminTools = userPermissions?.has('manageGigs') && editMode;
 
   const { data: instruments } = api.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -282,7 +281,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
                   <Entry
                     corps={signup.corps}
                     attended={signup.attended}
-                    isAdmin={showAdminTools}
+                    showAdminTools={showAdminTools}
                     setAttendance={(attended) =>
                       editAttendance.mutate({
                         corpsId: signup.corpsId,
@@ -352,18 +351,16 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   return (
     <div className='space-y-2'>
-      {isAdmin && (
-        <>
-          <Switch
-            label={lang('Redigera anmälningar', 'Edit signups')}
-            checked={editMode}
-            onChange={(val) => {
-              setEditMode(val);
-              utils.gig.getSignups.invalidate({ gigId });
-            }}
-          />
-        </>
-      )}
+      <Restricted permissions='manageGigs'>
+        <Switch
+          label={lang('Redigera anmälningar', 'Edit signups')}
+          checked={editMode}
+          onChange={(val) => {
+            setEditMode(val);
+            utils.gig.getSignups.invalidate({ gigId });
+          }}
+        />
+      </Restricted>
       {showAdminTools && (
         <form
           onSubmit={form.onSubmit(
@@ -437,11 +434,13 @@ const SignupList = ({ gigId }: SignupListProps) => {
           {maybeTable}
         </div>
       )}
-      {isAdmin && noList && noList.length > 0 && (
-        <div>
-          <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>
-          {noTable}
-        </div>
+      {noList && noList.length > 0 && (
+        <Restricted permissions='manageGigs'>
+          <div>
+            <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>
+            {noTable}
+          </div>
+        </Restricted>
       )}
     </div>
   );

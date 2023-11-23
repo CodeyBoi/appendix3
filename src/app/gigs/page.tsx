@@ -3,13 +3,13 @@ import Loading from 'components/loading';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { api } from 'trpc/server';
 import { IconPlus } from '@tabler/icons-react';
 import Tabs from 'components/input/tabs';
 import GigList from './list';
 import ParamsSelect from 'components/input/params-select';
 import { SelectItem } from 'components/input/select';
 import { lang } from 'utils/language';
+import Restricted from 'components/restricted';
 
 export const metadata: Metadata = {
   title: 'Spelningar',
@@ -50,9 +50,6 @@ const GigsPage = async ({
     });
   }
 
-  const corps = await api.corps.getSelf.query();
-  const isAdmin = corps?.role?.name === 'admin';
-
   return (
     <div className='flex max-w-fit flex-col'>
       <div className='flex flex-col gap-2'>
@@ -64,12 +61,12 @@ const GigsPage = async ({
             paramName='year'
             defaultValue={year}
           />
-          {isAdmin && (
+          <Restricted permissions='manageGigs'>
             <Button href='/admin/gig/new'>
               <IconPlus />
               {lang('Skapa spelning', 'Create gig')}
             </Button>
-          )}
+          </Restricted>
         </div>
         <Tabs options={tabs} />
       </div>

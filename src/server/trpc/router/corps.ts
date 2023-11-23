@@ -313,7 +313,7 @@ export const corpsRouter = router({
               roles: {
                 some: {
                   name: {
-                    contains: input.search,
+                    contains: input.role,
                   },
                 },
               },

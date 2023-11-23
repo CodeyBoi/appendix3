@@ -6,9 +6,9 @@ import Tabs from 'components/input/tabs';
 import Loading from 'components/loading';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { api } from 'trpc/server';
 import RehearsalStats from './stats';
 import RehearsalList from './list';
+import Restricted from 'components/restricted';
 
 const startYear = 2010;
 
@@ -44,20 +44,17 @@ const AdminRehearsalsPage = async ({
     });
   }
 
-  const corps = await api.corps.getSelf.query();
-  const isAdmin = corps?.role?.name === 'admin';
-
   return (
     <div className='flex max-w-max flex-col gap-2'>
       <h2>Repor</h2>
       <div className='flex items-end gap-4'>
         <ParamsSelect label='Verksamhetsår' options={years} paramName='year' />
-        {isAdmin && (
+        <Restricted permissions='manageRehearsals'>
           <Button href='/admin/rehearsal/edit/new'>
             <IconPlus />
             Skapa repa
           </Button>
-        )}
+        </Restricted>
       </div>
       <Tabs options={tabs} />
       <Suspense
