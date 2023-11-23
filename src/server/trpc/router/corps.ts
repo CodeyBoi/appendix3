@@ -1,7 +1,6 @@
 import { CorpsFoodPrefs } from '@prisma/client';
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
-import { adminProcedure } from './../trpc';
+import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -17,7 +16,7 @@ export const corpsRouter = router({
             email: true,
           },
         },
-        role: {
+        roles: {
           select: {
             name: true,
           },
@@ -50,7 +49,7 @@ export const corpsRouter = router({
               email: true,
             },
           },
-          role: {
+          roles: {
             select: {
               name: true,
             },
@@ -168,7 +167,7 @@ export const corpsRouter = router({
       });
     }),
 
-  upsert: adminProcedure
+  upsert: restrictedProcedure('manageCorps')
     .input(
       z.object({
         id: z.string().optional(),
@@ -311,9 +310,11 @@ export const corpsRouter = router({
               },
             },
             {
-              role: {
-                name: {
-                  contains: input.search,
+              roles: {
+                some: {
+                  name: {
+                    contains: input.search,
+                  },
                 },
               },
             },
@@ -389,10 +390,10 @@ export const corpsRouter = router({
     return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
   }),
 
-  getRole: protectedProcedure.query(async ({ ctx }) => {
+  getRoles: protectedProcedure.query(async ({ ctx }) => {
     const corps = await ctx.prisma.corps.findUnique({
       select: {
-        role: {
+        roles: {
           select: {
             name: true,
           },
@@ -405,7 +406,7 @@ export const corpsRouter = router({
     if (!corps) {
       return null;
     }
-    return corps.role?.name ?? 'user';
+    return corps.roles.map((role) => role.name);
   }),
 
   getPoints: protectedProcedure.query(async ({ ctx }) => {
@@ -435,7 +436,7 @@ export const corpsRouter = router({
       return { success: true };
     }),
 
-  getFoodPreferences: adminProcedure
+  getFoodPreferences: restrictedProcedure('viewFoodPrefs')
     .input(z.object({ corpsIds: z.string().or(z.array(z.string())) }))
     .query(async ({ ctx, input }) => {
       const corpsIds = Array.isArray(input.corpsIds)

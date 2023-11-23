@@ -1,7 +1,41 @@
 import { z } from 'zod';
-import { router, restrictedProcedure, ALL_PERMISSIONS } from '../trpc';
+import {
+  router,
+  restrictedProcedure,
+  ALL_PERMISSIONS,
+  protectedProcedure,
+} from '../trpc';
 
 export const permissionRouter = router({
+  getOwnPermissions: protectedProcedure.query(async ({ ctx }) => {
+    const corpsId = ctx.session.user.corps.id;
+    const permissions = await ctx.prisma.permission.findMany({
+      where: {
+        OR: [
+          {
+            corpsii: {
+              some: {
+                id: corpsId,
+              },
+            },
+          },
+          {
+            roles: {
+              some: {
+                corpsii: {
+                  some: {
+                    id: corpsId,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+    return new Set(permissions.map((permission) => permission.name));
+  }),
+
   getRoles: restrictedProcedure('managePermissions').query(async ({ ctx }) => {
     const roles = await ctx.prisma.role.findMany({
       include: {

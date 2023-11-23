@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
 import {
-  adminProcedure,
   protectedProcedure,
   publicProcedure,
+  restrictedProcedure,
   router,
 } from '../trpc';
 
@@ -96,7 +96,7 @@ export const gigRouter = router({
       });
     }),
 
-  upsert: adminProcedure
+  upsert: restrictedProcedure('manageGigs')
     .input(
       z.object({
         gigId: z.string().optional(),
@@ -148,7 +148,7 @@ export const gigRouter = router({
       });
     }),
 
-  remove: adminProcedure
+  remove: restrictedProcedure('manageGigs')
     .input(z.object({ gigId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.gig.delete({
@@ -331,7 +331,7 @@ export const gigRouter = router({
       });
     }),
 
-  addSignups: adminProcedure
+  addSignups: restrictedProcedure('manageGigs')
     .input(
       z.object({
         corpsIds: z.array(z.string()),
@@ -401,7 +401,7 @@ export const gigRouter = router({
       );
     }),
 
-  removeSignup: adminProcedure
+  removeSignup: restrictedProcedure('manageGigs')
     .input(
       z.object({
         corpsId: z.string(),
@@ -419,7 +419,7 @@ export const gigRouter = router({
       });
     }),
 
-  editAttendance: adminProcedure
+  editAttendance: restrictedProcedure('manageGigs')
     .input(
       z.object({
         corpsId: z.string(),
