@@ -1,7 +1,7 @@
 'use client';
 
-import type { Permission } from 'server/trpc/trpc';
 import { api } from 'trpc/react';
+import { Permission } from 'utils/permission';
 
 type RestrictedProps = {
   permissions: Permission[] | Permission;

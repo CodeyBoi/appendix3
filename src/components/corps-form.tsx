@@ -8,8 +8,8 @@ import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import MultiSelect from './multi-select';
 import { Language } from 'hooks/use-language';
-import { Permission } from 'server/trpc/trpc';
 import { api } from 'trpc/react';
+import { Permission } from 'utils/permission';
 
 const initialValues = {
   firstName: '',
