@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { router, adminProcedure } from '../trpc';
+import { router, restrictedProcedure } from '../trpc';
 
 export const sectionRouter = router({
-  getSectionLeader: adminProcedure
+  getSectionLeader: restrictedProcedure('manageSections')
     .input(z.object({ sectionId: z.number() }))
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
@@ -15,15 +15,17 @@ export const sectionRouter = router({
       return section?.leader;
     }),
 
-  getSectionLeaders: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.section.findMany({
-      include: {
-        leader: true,
-      },
-    });
-  }),
+  getSectionLeaders: restrictedProcedure('manageSections').query(
+    async ({ ctx }) => {
+      return await ctx.prisma.section.findMany({
+        include: {
+          leader: true,
+        },
+      });
+    },
+  ),
 
-  setSectionLeader: adminProcedure
+  setSectionLeader: restrictedProcedure('manageSections')
     .input(z.object({ sectionId: z.number(), corpsId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { sectionId, corpsId } = input;

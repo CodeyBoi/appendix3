@@ -1,7 +1,7 @@
 import { CorpsFoodPrefs } from '@prisma/client';
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
-import { adminProcedure } from './../trpc';
+import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import { corpsOrderBy } from 'utils/corps';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -17,7 +17,7 @@ export const corpsRouter = router({
             email: true,
           },
         },
-        role: {
+        roles: {
           select: {
             name: true,
           },
@@ -50,7 +50,7 @@ export const corpsRouter = router({
               email: true,
             },
           },
-          role: {
+          roles: {
             select: {
               name: true,
             },
@@ -168,7 +168,7 @@ export const corpsRouter = router({
       });
     }),
 
-  upsert: adminProcedure
+  upsert: restrictedProcedure('manageCorps')
     .input(
       z.object({
         id: z.string().optional(),
@@ -180,7 +180,7 @@ export const corpsRouter = router({
         email: z.string(),
         mainInstrument: z.string(),
         otherInstruments: z.array(z.string()),
-        role: z.string(),
+        roles: z.array(z.string()),
         language: z.enum(['sv', 'en']),
       }),
     )
@@ -214,10 +214,10 @@ export const corpsRouter = router({
             ],
           },
         },
-        role: {
-          connect: {
-            name: input.role,
-          },
+        roles: {
+          connect: input.roles.map((role) => ({
+            name: role,
+          })),
         },
         language: input.language,
       };
@@ -311,9 +311,11 @@ export const corpsRouter = router({
               },
             },
             {
-              role: {
-                name: {
-                  contains: input.search,
+              roles: {
+                some: {
+                  name: {
+                    contains: input.role,
+                  },
                 },
               },
             },
@@ -338,21 +340,7 @@ export const corpsRouter = router({
             },
           },
         },
-        orderBy: [
-          {
-            number: {
-              // Numbers are sorted descending, so that more recent corps members are at the top
-              sort: 'desc',
-              nulls: 'last',
-            },
-          },
-          {
-            lastName: 'asc',
-          },
-          {
-            firstName: 'asc',
-          },
-        ],
+        orderBy: corpsOrderBy,
       });
       return corpsii.map((corps) => ({
         id: corps.id,
@@ -389,10 +377,10 @@ export const corpsRouter = router({
     return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
   }),
 
-  getRole: protectedProcedure.query(async ({ ctx }) => {
+  getRoles: protectedProcedure.query(async ({ ctx }) => {
     const corps = await ctx.prisma.corps.findUnique({
       select: {
-        role: {
+        roles: {
           select: {
             name: true,
           },
@@ -405,7 +393,7 @@ export const corpsRouter = router({
     if (!corps) {
       return null;
     }
-    return corps.role?.name ?? 'user';
+    return corps.roles.map((role) => role.name);
   }),
 
   getPoints: protectedProcedure.query(async ({ ctx }) => {
@@ -435,7 +423,7 @@ export const corpsRouter = router({
       return { success: true };
     }),
 
-  getFoodPreferences: adminProcedure
+  getFoodPreferences: restrictedProcedure('viewFoodPrefs')
     .input(z.object({ corpsIds: z.string().or(z.array(z.string())) }))
     .query(async ({ ctx, input }) => {
       const corpsIds = Array.isArray(input.corpsIds)
@@ -486,6 +474,52 @@ export const corpsRouter = router({
         },
         data: {
           language: input,
+        },
+      });
+      return { success: true };
+    }),
+
+  addRole: restrictedProcedure('managePermissions')
+    .input(
+      z.object({
+        corpsId: z.string(),
+        roleId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.corps.update({
+        where: {
+          id: input.corpsId,
+        },
+        data: {
+          roles: {
+            connect: {
+              id: input.roleId,
+            },
+          },
+        },
+      });
+      return { success: true };
+    }),
+
+  removeRole: restrictedProcedure('managePermissions')
+    .input(
+      z.object({
+        corpsId: z.string(),
+        roleId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.corps.update({
+        where: {
+          id: input.corpsId,
+        },
+        data: {
+          roles: {
+            disconnect: {
+              id: input.roleId,
+            },
+          },
         },
       });
       return { success: true };

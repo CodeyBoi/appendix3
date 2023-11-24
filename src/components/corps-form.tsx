@@ -2,13 +2,14 @@
 
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { trpc } from 'utils/trpc';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import Select from 'components/input/select';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import MultiSelect from './multi-select';
 import { Language } from 'hooks/use-language';
+import { Permission } from 'server/trpc/trpc';
+import { api } from 'trpc/react';
 
 const initialValues = {
   firstName: '',
@@ -19,7 +20,7 @@ const initialValues = {
   email: '',
   mainInstrument: '',
   otherInstruments: [] as string[],
-  role: 'user',
+  roles: [] as Permission[],
   language: 'sv',
 };
 type FormValues = typeof initialValues;
@@ -33,16 +34,16 @@ interface AdminCorpsProps {
 }
 
 const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
-  const utils = trpc.useUtils();
+  const utils = api.useUtils();
   const creatingCorps = corpsId === 'new';
   const [loading, setLoading] = useState(!creatingCorps);
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: instruments } = trpc.instrument.getAll.useQuery();
-  const { data: corps, isLoading: corpsLoading } = trpc.corps.get.useQuery({
+  const { data: instruments } = api.instrument.getAll.useQuery();
+  const { data: corps, isLoading: corpsLoading } = api.corps.get.useQuery({
     id: corpsId,
   });
-  const { data: roles } = trpc.role.getAll.useQuery();
+  const { data: roles } = api.permission.getRoles.useQuery();
 
   const form = useForm<FormValues>({
     initialValues,
@@ -77,7 +78,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         email: corps.user.email ?? '',
         mainInstrument,
         otherInstruments,
-        role: corps.role?.name ?? 'user',
+        roles: corps.roles.map((r) => r.name as Permission),
         language: corps.language ?? 'sv',
       });
       setLoading(false);
@@ -88,7 +89,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
-  const mutation = trpc.corps.upsert.useMutation({
+  const mutation = api.corps.upsert.useMutation({
     onSuccess: () => {
       utils.corps.get.invalidate({ id: corpsId });
       utils.corps.getSelf.invalidate();
@@ -118,21 +119,30 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={loading || submitting || corpsLoading}>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          <TextInput
-            withAsterisk
-            label='Förnamn'
-            {...form.getInputProps('firstName')}
-          />
-          <TextInput
-            withAsterisk
-            label='Efternamn'
-            {...form.getInputProps('lastName')}
-          />
+          <div className='flex gap-4'>
+            <TextInput
+              withAsterisk
+              label='Förnamn'
+              {...form.getInputProps('firstName')}
+            />
+            <TextInput
+              withAsterisk
+              label='Efternamn'
+              {...form.getInputProps('lastName')}
+            />
+          </div>
           <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <div className='flex gap-4'>
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
           </div>
+          <span className='self-end'>
+            <TextInput
+              withAsterisk
+              label='Email'
+              {...form.getInputProps('email')}
+            />
+          </span>
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
@@ -150,33 +160,23 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             }
             {...form.getInputProps('otherInstruments')}
           />
-          <span className='self-end'>
-            <TextInput
-              withAsterisk
-              label='Email'
-              {...form.getInputProps('email')}
-            />
-          </span>
-          <div className='grid grid-cols-2 gap-2'>
-            <Select
-              label='Behörighetsroll'
-              placeholder='Välj behörighet...'
-              options={
-                roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
-              }
-              withAsterisk
-              {...form.getInputProps('role')}
-            />
-            <Select
-              label='Språk'
-              options={[
-                { value: 'sv', label: 'Svenska' },
-                { value: 'en', label: 'English' },
-              ]}
-              withAsterisk
-              {...form.getInputProps('language')}
-            />
-          </div>
+          <MultiSelect
+            label='Behörighetsroller'
+            placeholder='Välj behörighet...'
+            options={
+              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
+            }
+            {...form.getInputProps('roles')}
+          />
+          <Select
+            label='Språk'
+            options={[
+              { value: 'sv', label: 'Svenska' },
+              { value: 'en', label: 'English' },
+            ]}
+            withAsterisk
+            {...form.getInputProps('language')}
+          />
         </div>
       </FormLoadingOverlay>
       <div className='flex justify-end p-2'>

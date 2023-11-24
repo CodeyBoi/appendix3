@@ -15,7 +15,7 @@ interface SignupEntryProps {
   attended: boolean;
   checkbox1?: boolean;
   checkbox2?: boolean;
-  isAdmin?: boolean;
+  showAdminTools?: boolean;
   setAttendance: (attended: boolean) => void;
   handleDelete: () => void;
 }
@@ -25,7 +25,7 @@ const Entry = ({
   attended,
   checkbox1,
   checkbox2,
-  isAdmin = false,
+  showAdminTools = false,
   setAttendance,
   handleDelete,
 }: SignupEntryProps) => {
@@ -34,7 +34,7 @@ const Entry = ({
       <td>
         <CorpsDisplay corps={corps} />
       </td>
-      {isAdmin && (
+      {showAdminTools && (
         <>
           {checkbox1 !== undefined && (
             <td className='px-2 text-center'>{checkbox1 ? 'Ja' : 'Nej'}</td>

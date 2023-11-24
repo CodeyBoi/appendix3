@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { router, protectedProcedure, adminProcedure } from '../trpc';
+import { router, protectedProcedure, restrictedProcedure } from '../trpc';
 import { z } from 'zod';
 
 type Word = {
@@ -128,7 +128,7 @@ export const WORDS: Word[] = [
 ].sort((a, b) => a.sv.localeCompare(b.sv, 'sv-SE'));
 
 export const killerRouter = router({
-  get: adminProcedure
+  get: restrictedProcedure('manageKiller')
     .input(z.object({ id: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const date = new Date();
@@ -319,7 +319,7 @@ export const killerRouter = router({
     return game;
   }),
 
-  create: adminProcedure
+  create: restrictedProcedure('manageKiller')
     .input(
       z.object({
         name: z.string(),
@@ -342,7 +342,7 @@ export const killerRouter = router({
       return res;
     }),
 
-  remove: adminProcedure
+  remove: restrictedProcedure('manageKiller')
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.killerGame.delete({

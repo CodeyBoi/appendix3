@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { adminProcedure, protectedProcedure, router } from '../trpc';
+import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import { corpsOrderBy } from 'utils/corps';
 
 export const rehearsalRouter = router({
-  getWithId: adminProcedure
+  getWithId: restrictedProcedure('manageRehearsals')
     .input(z.string().cuid('Invalid CUID'))
     .query(async ({ ctx, input }) => {
       const rehearsal = await ctx.prisma.rehearsal.findUnique({
@@ -32,7 +33,7 @@ export const rehearsalRouter = router({
       return rehearsal;
     }),
 
-  getMany: adminProcedure
+  getMany: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         start: z.date().optional(),
@@ -67,7 +68,7 @@ export const rehearsalRouter = router({
       }));
     }),
 
-  upsert: adminProcedure
+  upsert: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         id: z.string().cuid('Invalid CUID').optional(),
@@ -95,7 +96,7 @@ export const rehearsalRouter = router({
       return rehearsal;
     }),
 
-  remove: adminProcedure
+  remove: restrictedProcedure('manageRehearsals')
     .input(z.string().cuid('Invalid CUID'))
     .mutation(async ({ ctx, input }) => {
       const rehearsal = await ctx.prisma.rehearsal.delete({
@@ -104,7 +105,7 @@ export const rehearsalRouter = router({
       return rehearsal;
     }),
 
-  getAttendence: adminProcedure
+  getAttendence: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         corpsId: z.string().cuid('Invalid CUID'),
@@ -124,7 +125,7 @@ export const rehearsalRouter = router({
       return !!attendance;
     }),
 
-  updateAttendance: adminProcedure
+  updateAttendance: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         id: z.string().cuid('Invalid CUID'),
@@ -153,7 +154,7 @@ export const rehearsalRouter = router({
       }
     }),
 
-  getOrchestraStats: adminProcedure
+  getOrchestraStats: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         start: z.date().optional(),
@@ -223,7 +224,7 @@ export const rehearsalRouter = router({
       };
     }),
 
-  getBalletStats: adminProcedure
+  getBalletStats: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         start: z.date().optional(),
@@ -293,7 +294,7 @@ export const rehearsalRouter = router({
       };
     }),
 
-  getTypes: adminProcedure.query(async ({ ctx }) => {
+  getTypes: restrictedProcedure('manageRehearsals').query(async ({ ctx }) => {
     const types = await ctx.prisma.rehearsalType.findMany();
     return types;
   }),
@@ -366,7 +367,7 @@ export const rehearsalRouter = router({
       return attendance / allRehearsals;
     }),
 
-  getAttendedRehearsalList: adminProcedure
+  getAttendedRehearsalList: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         id: z.string().cuid('Invalid CUID'),
@@ -412,20 +413,7 @@ export const rehearsalRouter = router({
             },
           },
         },
-        orderBy: [
-          {
-            number: {
-              sort: 'asc',
-              nulls: 'last',
-            },
-          },
-          {
-            lastName: 'asc',
-          },
-          {
-            firstName: 'asc',
-          },
-        ],
+        orderBy: corpsOrderBy,
       });
       const getMainInstrument = (corps: (typeof corpsii)[number]) => {
         for (const instrument of corps.instruments) {

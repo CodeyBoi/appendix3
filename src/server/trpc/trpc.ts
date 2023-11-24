@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
+import { Permission } from 'utils/permission';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -48,25 +49,67 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 });
 
 /**
- * Reusable middleware to ensure
- * user is admin
+ * Reusable middleware to make sure user has the relevant permissions
  */
-const isAdmin = t.middleware(async ({ ctx, next }) => {
-  const user = ctx.session?.user;
-  const corps = ctx.session?.user?.corps;
-  if (!ctx.session || !user || !corps || corps.role?.name !== 'admin') {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: {
-        ...ctx.session,
-        user: { ...ctx.session.user, corps },
+const withPermissions = (permissions: Permission[] | Permission) =>
+  t.middleware(async ({ ctx, next }) => {
+    const user = ctx.session?.user;
+    const corps = user?.corps;
+    if (!ctx.session || !user || !corps) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+    const corpsPermissions = await ctx.prisma.permission.findMany({
+      where: {
+        OR: [
+          {
+            corpsii: {
+              some: {
+                id: corps.id,
+              },
+            },
+          },
+          {
+            roles: {
+              some: {
+                corpsii: {
+                  some: {
+                    id: corps.id,
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
-    },
+    });
+
+    const permissionsSet = new Set(
+      corpsPermissions.map((permission) => permission.name),
+    );
+    const neededPermissions = Array.isArray(permissions)
+      ? permissions
+      : [permissions];
+    const missingPermissions = neededPermissions.filter(
+      (permission) => !permissionsSet.has(permission),
+    );
+
+    if (missingPermissions.length > 0) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: `Missing permissions`,
+      });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: {
+          ...ctx.session,
+          user: { ...ctx.session.user, corps, permissions: permissionsSet },
+        },
+      },
+    });
   });
-});
 
 /**
  * Protected procedure
@@ -74,6 +117,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
 export const protectedProcedure = t.procedure.use(isAuthed);
 
 /**
- * Admin procedure
+ * Procedure that requires certain permissions
  **/
-export const adminProcedure = t.procedure.use(isAdmin);
+export const restrictedProcedure = (permissions: Permission[] | Permission) =>
+  t.procedure.use(withPermissions(permissions));

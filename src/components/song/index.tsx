@@ -17,9 +17,6 @@ const getSong = async (song: Song | string) => {
 };
 
 const Song = async ({ song: songProp }: SongProps) => {
-  // const { data: corps } = trpc.corps.getSelf.useQuery();
-  // const isAdmin = corps?.role?.name === 'admin';
-  const isAdmin = true; // Remove this when we move songs to admin
   const song = await getSong(songProp);
 
   if (!song) {
@@ -34,13 +31,11 @@ const Song = async ({ song: songProp }: SongProps) => {
     <div className='flex max-w-3xl flex-col'>
       <div className='flex flex-nowrap items-start gap-2'>
         <h3>{song.title}</h3>
-        {isAdmin && (
-          <Link href={`/admin/songs/${song.id}`}>
-            <ActionIcon variant='subtle'>
-              <IconPencil />
-            </ActionIcon>
-          </Link>
-        )}
+        <Link href={`/admin/songs/${song.id}`}>
+          <ActionIcon variant='subtle'>
+            <IconPencil />
+          </ActionIcon>
+        </Link>
       </div>
       {song.melody && (
         <i>

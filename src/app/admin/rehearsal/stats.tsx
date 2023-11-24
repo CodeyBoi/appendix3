@@ -46,7 +46,7 @@ const RehearsalStats = async ({ year }: { year: string }) => {
   ]);
 
   return (
-    <div className='flex items-baseline gap-4'>
+    <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
       <div className='flex flex-col gap-2'>
         <h3>Orkesterrepor</h3>
         <RehearsalStatsTable

@@ -9,13 +9,13 @@ import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';
 import { lang } from 'utils/language';
+import Restricted from 'components/restricted';
 
 type GigMenuContentProps = {
   gig: Gig & { type: { name: string } };
-  isAdmin: boolean;
 };
 
-const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
+const GigMenuContent = ({ gig }: GigMenuContentProps) => {
   const getCalendarLink = (startTime: string, endTime: string) => {
     const dateStr = dayjs(gig.date).format('YYYYMMDD');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -80,32 +80,34 @@ const GigMenuContent = ({ gig, isAdmin }: GigMenuContentProps) => {
           {lang('Lägg till i kalender', 'Add to calendar')}
         </Button>
       </a>
-      {isAdmin && (
-        <>
-          <div className='-mx-1'>
-            <Divider />
-          </div>
-          <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
-          <Button
-            fullWidth
-            href={`/admin/gig/${gig.id}`}
-            className='flex justify-start hover:bg-red-600/10'
-            color='transparent'
-          >
-            <IconEdit />
-            {lang('Redigera', 'Edit')}
-          </Button>
-          <Button
-            fullWidth
-            href={`/admin/gig/${gig.id}/info`}
-            className='flex justify-start hover:bg-red-600/10'
-            color='transparent'
-          >
-            <IconApple />
-            {lang('Matpreferenser', 'Food preferences')}
-          </Button>
-        </>
-      )}
+      <Restricted permissions={['manageGigs', 'viewFoodPrefs']}>
+        <div className='-mx-1'>
+          <Divider />
+        </div>
+        <div className='px-3 py-1 text-xs text-gray-500'>Admin</div>
+      </Restricted>
+      <Restricted permissions='manageGigs'>
+        <Button
+          fullWidth
+          href={`/admin/gig/${gig.id}`}
+          className='flex justify-start hover:bg-red-600/10'
+          color='transparent'
+        >
+          <IconEdit />
+          {lang('Redigera', 'Edit')}
+        </Button>
+      </Restricted>
+      <Restricted permissions='viewFoodPrefs'>
+        <Button
+          fullWidth
+          href={`/admin/gig/${gig.id}/info`}
+          className='flex justify-start hover:bg-red-600/10'
+          color='transparent'
+        >
+          <IconApple />
+          {lang('Matpreferenser', 'Food preferences')}
+        </Button>
+      </Restricted>
     </>
   );
 };

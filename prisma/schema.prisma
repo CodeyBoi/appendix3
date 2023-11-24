@@ -73,13 +73,13 @@ model Corps {
   nickName    String?
   isActive    Boolean  @default(true)
   userId      String   @unique
-  roleId      Int?
   colorScheme String   @default("light")
   language    String   @default("sv")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  role            Role?             @relation(fields: [roleId], references: [id])
+  roles           Role[]
+  permissions     Permission[]
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   instruments     CorpsInstrument[]
   gigSignups      GigSignup[]
@@ -91,6 +91,22 @@ model Corps {
   songs           Song[]
   sectionLeaderOf Section[]
   killerProfiles  KillerPlayer[]
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  permissions Permission[]
+  corpsii     Corps[]
+}
+
+model Permission {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  roles   Role[]
+  corpsii Corps[]
 }
 
 model CorpsInstrument {
@@ -196,12 +212,6 @@ model HiddenGig {
   gig     Gig    @relation(fields: [gigId], references: [id], onDelete: Cascade)
 
   @@unique([corpsId, gigId])
-}
-
-model Role {
-  id    Int     @id
-  name  String  @unique
-  corps Corps[]
 }
 
 model Rehearsal {
