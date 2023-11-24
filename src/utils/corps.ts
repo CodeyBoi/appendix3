@@ -39,6 +39,21 @@ export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
 export const corpsOrderBy = [
   {
     number: {
+      sort: 'asc',
+      nulls: 'last',
+    },
+  },
+  {
+    lastName: 'asc',
+  },
+  {
+    firstName: 'asc',
+  },
+] as Prisma.CorpsOrderByWithRelationInput[];
+
+export const corpsOrderByNumberDesc = [
+  {
+    number: {
       // Numbers are sorted descending, so that more recent corps members are at the top
       sort: 'desc',
       nulls: 'last',

@@ -1,7 +1,7 @@
 import { CorpsFoodPrefs } from '@prisma/client';
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
-import { corpsOrderBy } from 'utils/corps';
+import { corpsOrderByNumberDesc } from 'utils/corps';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -340,7 +340,7 @@ export const corpsRouter = router({
             },
           },
         },
-        orderBy: corpsOrderBy,
+        orderBy: corpsOrderByNumberDesc,
       });
       return corpsii.map((corps) => ({
         id: corps.id,
