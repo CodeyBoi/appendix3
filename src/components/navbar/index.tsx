@@ -2,6 +2,7 @@ import {
   IconClipboard,
   IconHome,
   IconInfoSquare,
+  IconKey,
   IconLink,
   IconMicrophone2,
   IconMusic,
@@ -16,7 +17,7 @@ import Link from 'next/link';
 import NavbarControl from './control';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import { Permission } from 'server/trpc/trpc';
+import { Permission } from 'utils/permission';
 
 type NavbarLink = {
   label: React.ReactNode;
@@ -77,6 +78,12 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/rehearsal',
       icon: <IconPencil />,
       permission: 'manageRehearsals',
+    },
+    {
+      label: lang('Behörigheter', 'Permissions'),
+      href: '/admin/permissions',
+      icon: <IconKey />,
+      permission: 'managePermissions',
     },
     {
       label: lang('Sektioner', 'Sections'),

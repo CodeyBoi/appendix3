@@ -1,10 +1,12 @@
 import { z } from 'zod';
-import {
-  router,
-  restrictedProcedure,
-  ALL_PERMISSIONS,
-  protectedProcedure,
-} from '../trpc';
+import { router, restrictedProcedure, protectedProcedure } from '../trpc';
+import { ALL_PERMISSIONS, Permission } from 'utils/permission';
+
+type Role = {
+  id: number;
+  name: string;
+  permissions: { id: number; name: Permission }[];
+};
 
 export const permissionRouter = router({
   getOwnPermissions: protectedProcedure.query(async ({ ctx }) => {
@@ -33,12 +35,50 @@ export const permissionRouter = router({
         ],
       },
     });
-    return new Set(permissions.map((permission) => permission.name));
+    return new Set(
+      permissions.map((permission) => permission.name),
+    ) as Set<Permission>;
   }),
 
+  getRole: restrictedProcedure('managePermissions')
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const role = await ctx.prisma.role.findUnique({
+        where: { id: input.id },
+        include: {
+          permissions: {
+            orderBy: {
+              name: 'asc',
+            },
+          },
+        },
+      });
+
+      if (!role) {
+        throw new Error('Role not found');
+      }
+
+      return role as Role;
+    }),
+
   getRoles: restrictedProcedure('managePermissions').query(async ({ ctx }) => {
-    const roles = await ctx.prisma.role.findMany({});
-    return roles;
+    const roles = await ctx.prisma.role.findMany({
+      include: {
+        permissions: {
+          orderBy: {
+            name: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+    return roles as Role[];
   }),
 
   upsertRole: restrictedProcedure('managePermissions')
@@ -55,7 +95,7 @@ export const permissionRouter = router({
         update: {
           name: input.name,
           permissions: {
-            connect: input.permissions.map((permission) => ({
+            set: input.permissions.map((permission) => ({
               name: permission,
             })),
           },
@@ -69,7 +109,7 @@ export const permissionRouter = router({
           },
         },
       });
-      return role;
+      return role as Role;
     }),
 
   deleteRole: restrictedProcedure('managePermissions')
@@ -82,6 +122,6 @@ export const permissionRouter = router({
       const role = await ctx.prisma.role.delete({
         where: { id: input.id },
       });
-      return role;
+      return role as Role;
     }),
 });

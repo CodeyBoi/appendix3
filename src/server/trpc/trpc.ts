@@ -1,19 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
-
-// Defines the permissions that can be assigned to a corps or role.
-// NOTE: Keep this in sync with the permissions in the database!
-export const ALL_PERMISSIONS = [
-  'manageGigs',
-  'managePermissions',
-  'manageCorps',
-  'manageRehearsals',
-  'manageKiller',
-  'manageSections',
-  'viewFoodPrefs',
-] as const;
-export type Permission = (typeof ALL_PERMISSIONS)[number];
+import { Permission } from 'utils/permission';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
