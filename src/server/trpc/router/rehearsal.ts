@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import { corpsOrderBy } from 'utils/corps';
 
 export const rehearsalRouter = router({
   getWithId: restrictedProcedure('manageRehearsals')
@@ -412,20 +413,7 @@ export const rehearsalRouter = router({
             },
           },
         },
-        orderBy: [
-          {
-            number: {
-              sort: 'asc',
-              nulls: 'last',
-            },
-          },
-          {
-            lastName: 'asc',
-          },
-          {
-            firstName: 'asc',
-          },
-        ],
+        orderBy: corpsOrderBy,
       });
       const getMainInstrument = (corps: (typeof corpsii)[number]) => {
         for (const instrument of corps.instruments) {

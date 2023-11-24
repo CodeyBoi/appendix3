@@ -1,6 +1,7 @@
 import { CorpsFoodPrefs } from '@prisma/client';
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import { corpsOrderBy } from 'utils/corps';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -339,21 +340,7 @@ export const corpsRouter = router({
             },
           },
         },
-        orderBy: [
-          {
-            number: {
-              // Numbers are sorted descending, so that more recent corps members are at the top
-              sort: 'desc',
-              nulls: 'last',
-            },
-          },
-          {
-            lastName: 'asc',
-          },
-          {
-            firstName: 'asc',
-          },
-        ],
+        orderBy: corpsOrderBy,
       });
       return corpsii.map((corps) => ({
         id: corps.id,
@@ -487,6 +474,52 @@ export const corpsRouter = router({
         },
         data: {
           language: input,
+        },
+      });
+      return { success: true };
+    }),
+
+  addRole: restrictedProcedure('managePermissions')
+    .input(
+      z.object({
+        corpsId: z.string(),
+        roleId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.corps.update({
+        where: {
+          id: input.corpsId,
+        },
+        data: {
+          roles: {
+            connect: {
+              id: input.roleId,
+            },
+          },
+        },
+      });
+      return { success: true };
+    }),
+
+  removeRole: restrictedProcedure('managePermissions')
+    .input(
+      z.object({
+        corpsId: z.string(),
+        roleId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.corps.update({
+        where: {
+          id: input.corpsId,
+        },
+        data: {
+          roles: {
+            disconnect: {
+              id: input.roleId,
+            },
+          },
         },
       });
       return { success: true };

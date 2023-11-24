@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export const detailedName = (
   corps:
     | {
@@ -33,3 +35,19 @@ export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
   }
   return a.firstName.localeCompare(b.firstName);
 };
+
+export const corpsOrderBy = [
+  {
+    number: {
+      // Numbers are sorted descending, so that more recent corps members are at the top
+      sort: 'desc',
+      nulls: 'last',
+    },
+  },
+  {
+    lastName: 'asc',
+  },
+  {
+    firstName: 'asc',
+  },
+] as Prisma.CorpsOrderByWithRelationInput[];
