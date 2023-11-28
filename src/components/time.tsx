@@ -1,6 +1,6 @@
 'use client';
 
-import useLanguage from 'hooks/use-language';
+import { lang } from 'utils/language';
 
 type TimeProps = {
   date: Date;
@@ -8,9 +8,9 @@ type TimeProps = {
 };
 
 const Time = ({ date, options }: TimeProps) => {
-  const { language } = useLanguage();
-  const time = date.toLocaleDateString(language, options);
-  return <time dateTime={date.toISOString()}>{time}</time>;
+  const svTime = date.toLocaleDateString('sv', options);
+  const enTime = date.toLocaleDateString('en', options);
+  return <time dateTime={date.toISOString()}>{lang(svTime, enTime)}</time>;
 };
 
 export default Time;
