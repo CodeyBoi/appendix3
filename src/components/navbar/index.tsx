@@ -128,17 +128,21 @@ const NavbarContent = async () => {
       </div>
     ) : undefined;
 
-  const [killerGameExists, killerPlayer] = await Promise.all([
+  const [killerGame, killerPlayer] = await Promise.all([
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
   ]);
 
-  const hasntSignedUpForExistingKillerGame = killerGameExists && !killerPlayer;
+  const hasntSignedUpForExistingKillerGame =
+    killerGame.exists &&
+    killerGame.start &&
+    killerGame.start < new Date() &&
+    !killerPlayer;
 
   const userTabElement = (
     <div className='flex grow flex-col gap-1'>
       {userTab.links.map(toElement)}
-      {killerGameExists && toElement(killerLabel)}
+      {killerGame.exists && toElement(killerLabel)}
       {hasntSignedUpForExistingKillerGame && (
         <div className='flex justify-center p-2 text-white motion-safe:animate-bounce lg:hidden'>
           {lang('⬆️ Följ pilarna! ⬆️', '⬆️ Follow the arrows! ⬆️')}

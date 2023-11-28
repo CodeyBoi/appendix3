@@ -62,12 +62,16 @@ const HomePage = async () => {
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [killerGameExists, killerPlayer] = await Promise.all([
+  const [killerGame, killerPlayer] = await Promise.all([
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
   ]);
 
-  const hasntSignedUpForExistingKillerGame = killerGameExists && !killerPlayer;
+  const hasntSignedUpForExistingKillerGame =
+    killerGame.exists &&
+    killerGame.start &&
+    killerGame.start < new Date() &&
+    !killerPlayer;
 
   return (
     <div className='flex max-w-4xl flex-col gap-4'>
