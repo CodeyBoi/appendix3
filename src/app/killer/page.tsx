@@ -186,7 +186,9 @@ const KillerPage = async () => {
                             <CorpsDisplay corps={participant.corps} />
                           </td>
                           <td className='italic text-red-600'>
-                            {getDeathEuphemism(participant.corps)}{' '}
+                            {`sa "${participant.word}" och ${getDeathEuphemism(
+                              participant.corps,
+                            )} `}
                             <Time
                               date={participant.timeOfDeath as Date}
                               options={{
@@ -195,7 +197,6 @@ const KillerPage = async () => {
                                 minute: '2-digit',
                               }}
                             />
-                            {` av ordet "${participant.word}"`}
                           </td>
                         </tr>
                       ))}
