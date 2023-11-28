@@ -195,12 +195,14 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           <DateTimePicker
             label='Anmälningsstart'
             placeholder='Välj tid...'
+            defaultValue={gig?.signupStart || undefined}
             {...form.getInputProps('signupStart')}
             // clearable={true}
           />
           <DateTimePicker
             label='Anmälningsstopp'
             placeholder='Välj tid...'
+            defaultValue={gig?.signupEnd || undefined}
             {...form.getInputProps('signupEnd')}
             // clearable={true}
           />

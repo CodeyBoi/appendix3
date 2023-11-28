@@ -2,15 +2,14 @@ import { cn } from 'utils/class-names';
 import { useState } from 'react';
 
 type TimePickerDropdownProps = {
+  defaultTime?: Date;
   onChange?: (date: Date) => void;
-  initialHour?: number;
-  initialMinute?: number;
 };
 
 const TimePickerDropdown = (props: TimePickerDropdownProps) => {
   const { onChange } = props;
-  const [hour, setHour] = useState(props.initialHour ?? 0);
-  const [minute, setMinute] = useState(props.initialMinute ?? 0);
+  const [hour, setHour] = useState(props.defaultTime?.getHours() ?? 0);
+  const [minute, setMinute] = useState(props.defaultTime?.getMinutes() ?? 0);
   return (
     <div className='flex gap-1 rounded bg-white p-2 dark:bg-darkBg'>
       <div className='flex max-h-52 flex-col overflow-y-auto no-scrollbar'>

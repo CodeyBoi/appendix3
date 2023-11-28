@@ -27,7 +27,7 @@ const DateTimePicker = ({
   defaultValue,
   clearable = false,
 }: DateTimePickerProps) => {
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState<Date | null>(defaultValue ?? null);
 
   const handleDateChange = (d: Date) => {
     const newDate = date
@@ -94,8 +94,14 @@ const DateTimePicker = ({
       }
     >
       <div className='flex gap-2'>
-        <DatePickerDropdown onDateChange={handleDateChange} />
-        <TimePickerDropdown onChange={handleTimeChange} />
+        <DatePickerDropdown
+          onDateChange={handleDateChange}
+          defaultDate={defaultValue}
+        />
+        <TimePickerDropdown
+          onChange={handleTimeChange}
+          defaultTime={defaultValue}
+        />
       </div>
     </Popover>
   );

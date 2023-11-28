@@ -10,6 +10,9 @@ import GigMenuContent from './menu-content';
 import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
 import { lang } from 'utils/language';
+import Time from 'components/time';
+
+dayjs.locale('sv');
 
 type GigId = string;
 type Gig = PrismaGig & {
@@ -91,7 +94,16 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {dayjs(gig.signupEnd).format('YYYY-MM-DD HH:mm')}
+                    <Time
+                      date={gig.signupEnd}
+                      options={{
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                      }}
+                    />
                   </div>
                 )}
                 <GigSignupBox
@@ -102,10 +114,19 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 />
               </>
             )}
-            {isBeforeSignup && (
+            {isBeforeSignup && gig.signupStart && (
               <div className='pr-2 text-right text-xs italic leading-normal'>
                 {lang('Anmälan öppnar', 'Signup opens')}{' '}
-                {dayjs(gig.signupStart).format('YYYY-MM-DD HH:mm')}
+                <Time
+                  date={gig.signupStart}
+                  options={{
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  }}
+                />
               </div>
             )}
           </div>

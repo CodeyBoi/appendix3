@@ -30,39 +30,42 @@ const genCalender = (year: number, month: number) => {
 };
 
 type DatePickerDropdownProps = {
-  initialMonth?: number;
-  initialYear?: number;
-  initialDay?: number;
+  defaultDate?: Date;
   onDateChange?: (date: Date) => void;
 };
 
 const DatePickerDropdown = ({
-  initialMonth,
-  initialYear,
-  initialDay,
+  defaultDate,
   onDateChange,
 }: DatePickerDropdownProps) => {
-  const currentDate = new Date();
+  const initialDate = defaultDate ?? new Date();
+  const [year, setYear] = useState(initialDate.getFullYear());
+  const [month, setMonth] = useState(initialDate.getMonth());
   const [date, setDate] = useState(
     dayjs(
       new Date(
-        initialYear ?? currentDate.getFullYear(),
-        initialMonth ?? currentDate.getMonth(),
-        initialDay ?? currentDate.getDate(),
+        initialDate.getFullYear(),
+        initialDate.getMonth(),
+        initialDate.getDate(),
       ),
     ),
   );
-  const monthName = date
-    .toDate()
-    .toLocaleDateString('sv-SE', { month: 'long' });
+  const monthName = new Date(year, month, 1).toLocaleDateString('sv-SE', {
+    month: 'long',
+  });
   return (
     <div className='flex w-60 flex-col rounded bg-white p-2 dark:bg-darkBg'>
       <div className='flex items-center'>
-        <h4 className='grow select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName} ${date.year()}`}</h4>
+        <h4 className='grow select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName} ${year}`}</h4>
         <ActionIcon
           variant='subtle'
           onClick={() => {
-            setDate(date.subtract(1, 'month'));
+            if (month === 0) {
+              setMonth(11);
+              setYear(year - 1);
+            } else {
+              setMonth(month - 1);
+            }
           }}
         >
           <IconChevronLeft />
@@ -70,7 +73,12 @@ const DatePickerDropdown = ({
         <ActionIcon
           variant='subtle'
           onClick={() => {
-            setDate(date.add(1, 'month'));
+            if (month === 11) {
+              setMonth(0);
+              setYear(year + 1);
+            } else {
+              setMonth(month + 1);
+            }
           }}
         >
           <IconChevronRight />
@@ -85,7 +93,7 @@ const DatePickerDropdown = ({
             {day}
           </span>
         ))}
-        {genCalender(date.year(), date.month()).map((week, i) =>
+        {genCalender(year, month).map((week, i) =>
           week.map((day, j) => {
             return day === null ? (
               <span key={`${i}-${j}`} />
@@ -95,13 +103,15 @@ const DatePickerDropdown = ({
                 type='button'
                 className={cn(
                   'rounded-full text-center text-neutral-500',
-                  date.date() === day
+                  date.date() === day &&
+                    date.year() === year &&
+                    date.month() === month
                     ? 'bg-red-600 text-white'
                     : 'hover:bg-red-600/10',
                 )}
                 onClick={() => {
                   if (day) {
-                    const newDate = date.date(day);
+                    const newDate = date.year(year).month(month).date(day);
                     setDate(newDate);
                     onDateChange?.(newDate.toDate());
                   }
