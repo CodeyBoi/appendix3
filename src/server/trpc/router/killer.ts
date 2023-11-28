@@ -218,7 +218,10 @@ export const killerRouter = router({
         },
       },
     });
-    return !!game;
+    return {
+      exists: !!game,
+      start: game?.start,
+    };
   }),
 
   getOwnPlayerInfo: protectedProcedure.query(async ({ ctx }) => {

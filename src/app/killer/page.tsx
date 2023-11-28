@@ -9,6 +9,7 @@ import Countdown from 'components/countdown';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import { lang } from 'utils/language';
+import Time from 'components/time';
 
 export const metadata: Metadata = {
   title: 'Killer',
@@ -163,12 +164,50 @@ const KillerPage = async () => {
                 <div className='h-4' />
               </div>
             )}
-            <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
+            <div className='flex flex-col gap-4'>
+              {hasStarted && (
+                <div className='flex flex-col'>
+                  <h3>Corpses</h3>
+                  <table>
+                    <tbody className='text-sm dark:border-neutral-700'>
+                      {deadParticipants.length === 0 && (
+                        <tr>
+                          <td className='italic'>
+                            {lang(
+                              'Här kommer framtida vilsna själar listas...',
+                              'Here, future lost souls will be listed...',
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      {deadParticipants.map((participant) => (
+                        <tr key={participant.id}>
+                          <td className='whitespace-nowrap pr-2 line-through'>
+                            <CorpsDisplay corps={participant.corps} />
+                          </td>
+                          <td className='italic text-red-600'>
+                            {getDeathEuphemism(participant.corps)}{' '}
+                            <Time
+                              date={participant.timeOfDeath as Date}
+                              options={{
+                                weekday: 'long',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }}
+                            />
+                            {` av ordet "${participant.word}"`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <div className='flex flex-col'>
                 {game.participants.length > 0 && (
                   <h3>
                     {hasStarted
-                      ? 'Corps'
+                      ? 'Återstående corps'
                       : lang('Anmälda corps', 'Registered corps')}
                   </h3>
                 )}
@@ -215,40 +254,6 @@ const KillerPage = async () => {
                 )}
             </div>
           </div>
-          {hasStarted && (
-            <div className='flex flex-col'>
-              <h3>Corpses</h3>
-              <table>
-                <tbody className='text-sm dark:border-neutral-700'>
-                  {deadParticipants.length === 0 && (
-                    <tr>
-                      <td className='italic'>
-                        {lang(
-                          'Här kommer framtida vilsna själar listas...',
-                          'Here, future lost souls will be listed...',
-                        )}
-                      </td>
-                    </tr>
-                  )}
-                  {deadParticipants.map((participant) => (
-                    <tr key={participant.id}>
-                      <td className='whitespace-nowrap pr-2 line-through'>
-                        <CorpsDisplay corps={participant.corps} />
-                      </td>
-                      <td className='italic text-red-600'>
-                        {getDeathEuphemism(participant.corps)}{' '}
-                        {participant.timeOfDeath?.toLocaleDateString(language, {
-                          weekday: 'long',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
         <div className='flex flex-col gap-2'>
           {isParticipant &&
