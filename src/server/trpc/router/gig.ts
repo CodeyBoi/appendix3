@@ -217,7 +217,10 @@ export const gigRouter = router({
       });
 
       // Send discord alert if new gig on production server
-      if (process.env.DISCORD_WEBHOOK_GIG_URL) {
+      if (
+        process.env.DISCORD_WEBHOOK_GIG_URL &&
+        gig.date.getTime() + 1000 * 60 * 60 * 24 > new Date().getTime()
+      ) {
         await sendDiscordAlert(gig);
       }
 
