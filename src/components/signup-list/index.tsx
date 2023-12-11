@@ -435,7 +435,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </div>
       )}
       {noList && noList.length > 0 && (
-        <Restricted permissions='manageGigs'>
+        <Restricted permissions='manageAttendance'>
           <div>
             <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>
             {noTable}

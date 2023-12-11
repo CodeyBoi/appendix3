@@ -2,11 +2,16 @@
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "WillLuke.nextjs.hasPrompted": true,
   // To enable Tailwind IntelliSense in variables containing the string `Classes`:
   "tailwindCSS.classAttributes": ["class", "className", ".*Classes.*"],
-  "tailwindCSS.experimental.classRegex": ["cn([^)]*)", "tw`([^`]*)`"],
+  "tailwindCSS.experimental.classRegex": ["cn([^)]*)", "tw`([^`]*)`"]
 }
