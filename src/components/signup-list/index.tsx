@@ -136,7 +136,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const [editMode, setEditMode] = useState(false);
 
   const { data: userPermissions } = api.permission.getOwnPermissions.useQuery();
-  const showAdminTools = userPermissions?.has('manageGigs') && editMode;
+  const showAdminTools = userPermissions?.has('manageAttendance') && editMode;
 
   const { data: instruments } = api.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
@@ -351,7 +351,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   return (
     <div className='space-y-2'>
-      <Restricted permissions='manageGigs'>
+      <Restricted permissions='manageAttendance'>
         <Switch
           label={lang('Redigera anmälningar', 'Edit signups')}
           checked={editMode}

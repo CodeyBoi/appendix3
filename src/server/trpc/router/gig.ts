@@ -331,7 +331,7 @@ export const gigRouter = router({
       });
     }),
 
-  addSignups: restrictedProcedure('manageGigs')
+  addSignups: restrictedProcedure('manageAttendance')
     .input(
       z.object({
         corpsIds: z.array(z.string()),
@@ -401,7 +401,7 @@ export const gigRouter = router({
       );
     }),
 
-  removeSignup: restrictedProcedure('manageGigs')
+  removeSignup: restrictedProcedure('manageAttendance')
     .input(
       z.object({
         corpsId: z.string(),
@@ -419,7 +419,7 @@ export const gigRouter = router({
       });
     }),
 
-  editAttendance: restrictedProcedure('manageGigs')
+  editAttendance: restrictedProcedure('manageAttendance')
     .input(
       z.object({
         corpsId: z.string(),
