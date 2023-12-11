@@ -10,16 +10,20 @@ const MIN_SEARCH_LENGTH = 2;
 type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeSelf?: boolean;
   excludeIds?: string[];
+  defaultSearchValue?: string;
 };
 
 const SelectCorps = ({
   defaultValue,
+  defaultSearchValue,
   excludeIds,
   filter = () => true,
   ...props
 }: SelectCorpsProps) => {
   const [queryValue, setQueryValue] = React.useState('');
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchValue, setSearchValue] = React.useState(
+    defaultSearchValue ?? '',
+  );
 
   const { data: corpsii, status: corpsiiStatus } = trpc.corps.getMany.useQuery(
     {

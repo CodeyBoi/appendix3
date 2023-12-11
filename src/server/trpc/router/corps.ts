@@ -310,15 +310,15 @@ export const corpsRouter = router({
                 },
               },
             },
-            {
-              roles: {
-                some: {
-                  name: {
-                    contains: input.role,
-                  },
-                },
-              },
-            },
+            // {
+            //   roles: {
+            //     some: {
+            //       name: {
+            //         contains: input.role,
+            //       },
+            //     },
+            //   },
+            // },
           ],
         },
         select: {

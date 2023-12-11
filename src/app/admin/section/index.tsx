@@ -3,6 +3,7 @@
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
 import { api } from 'trpc/react';
+import { detailedName } from 'utils/corps';
 
 const AdminSection = () => {
   const utils = api.useUtils();
@@ -31,6 +32,9 @@ const AdminSection = () => {
                   });
                 }}
                 defaultValue={section.leader?.id}
+                defaultSearchValue={
+                  section.leader ? detailedName(section.leader) : undefined
+                }
                 placeholder='Välj sektionsledare...'
               />
             </div>

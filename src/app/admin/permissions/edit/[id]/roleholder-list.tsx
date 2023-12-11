@@ -78,7 +78,6 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
       >
         <SelectCorps
           label={lang('Lägg till corps', 'Add corps')}
-          name='corpsIdPermission'
           className='grow'
           onChange={(p) => setCorpsId(p)}
         />
