@@ -7,6 +7,55 @@ import {
   router,
 } from '../trpc';
 
+type Gig = {
+  id: string;
+  title: string;
+  date: Date;
+  type: {
+    name: string;
+  };
+  meetup: string | null;
+  start: string | null;
+  location: string | null;
+  description: string | null;
+  englishDescription: string | null;
+};
+
+const sendDiscordAlert = async (gig: Gig) => {
+  if (!process.env.DISCORD_WEBHOOK_GIG_URL) {
+    return;
+  }
+  const info = [];
+  info.push(`# ${gig.title}`);
+  info.push(
+    `*${
+      gig.meetup ? 'Samling ' + gig.meetup + ' ' : ''
+    }den ${gig.date.toLocaleDateString('sv', {
+      day: 'numeric',
+      month: 'long',
+    })}, ${gig.location}*`,
+  );
+  info.push('');
+  if (gig.description?.trim()) {
+    info.push(gig.description);
+    info.push('');
+  }
+  if (gig.englishDescription?.trim()) {
+    info.push(gig.englishDescription);
+    info.push('');
+  }
+  info.push(`[Anmälan!](<${process.env.NEXTAUTH_URL}/gig/${gig.id}>)`);
+  await fetch(process.env.DISCORD_WEBHOOK_GIG_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      content: info.join('\n'),
+    }),
+  });
+};
+
 export const gigRouter = router({
   getWithId: protectedProcedure
     .input(z.object({ gigId: z.string() }))
@@ -139,13 +188,38 @@ export const gigRouter = router({
           },
         },
       };
-      return ctx.prisma.gig.upsert({
+
+      const existingGig = await ctx.prisma.gig.findUnique({
         where: {
           id: gigId ?? '',
         },
-        update: data,
-        create: data,
       });
+
+      if (existingGig !== null) {
+        const gig = await ctx.prisma.gig.update({
+          where: {
+            id: gigId ?? '',
+          },
+          data,
+        });
+        return gig;
+      }
+
+      const gig = await ctx.prisma.gig.create({
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        data,
+      });
+
+      // Send discord alert if new gig on production server
+      if (process.env.DISCORD_WEBHOOK_GIG_URL) {
+        sendDiscordAlert(gig);
+      }
     }),
 
   remove: restrictedProcedure('manageGigs')

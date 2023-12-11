@@ -18,6 +18,10 @@ export const serverSchema = z.object({
   ),
   EMAIL_SERVER: z.string(),
   EMAIL_FROM: z.string(),
+  DISCORD_WEBHOOK_GIG_URL: z.preprocess(
+    (str) => (process.env.NODE_ENV === 'production' ? str : ''),
+    z.string().url(),
+  ),
 });
 
 /**
