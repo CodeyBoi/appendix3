@@ -2,6 +2,7 @@
 // NOTE: Keep this in sync with the permissions in the database!
 export const ALL_PERMISSIONS = [
   'manageGigs',
+  'manageAttendance',
   'managePermissions',
   'manageCorps',
   'manageRehearsals',
