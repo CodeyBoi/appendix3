@@ -136,7 +136,7 @@ const NavbarContent = async () => {
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&
     killerGame.start &&
-    killerGame.start < new Date() &&
+    killerGame.start > new Date() &&
     !killerPlayer;
 
   const userTabElement = (
