@@ -22,6 +22,10 @@ const makeGigList = async () => {
   ]);
   const language = corps?.language ?? 'sv';
 
+  if (gigs.length === 0) {
+    return null;
+  }
+
   let lastMonth = -1;
   const gigsByMonth = gigs.reduce(
     (acc, gig) => {
@@ -72,6 +76,24 @@ const HomePage = async () => {
     killerGame.start &&
     killerGame.start > new Date() &&
     !killerPlayer;
+
+  const gigs = await makeGigList();
+
+  if (!gigs) {
+    return (
+      <div className='flex flex-col gap-2 italic'>
+        <h3 className='uppercase'>
+          {lang('Här var det tomt...', 'This place is empty...')}
+        </h3>
+        <p>
+          {lang(
+            'Just nu finns det inga spelningar inplanerade.',
+            'There are no upcoming gigs at the moment.',
+          )}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className='flex max-w-4xl flex-col gap-4'>
