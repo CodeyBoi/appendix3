@@ -11,6 +11,7 @@ import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
 import { lang } from 'utils/language';
 import Time from 'components/time';
+import Countdown from 'components/countdown';
 
 dayjs.locale('sv');
 
@@ -94,16 +95,24 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    <Time
-                      date={gig.signupEnd}
-                      options={{
-                        year: 'numeric',
-                        month: 'numeric',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                      }}
-                    />
+                    {gig.signupEnd.getTime() + 1000 * 60 * 60 * 24 >
+                    Date.now() ? (
+                      <>
+                        {lang('om', 'in') + ' '}
+                        <Countdown end={gig.signupEnd} />
+                      </>
+                    ) : (
+                      <Time
+                        date={gig.signupEnd}
+                        options={{
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                        }}
+                      />
+                    )}
                   </div>
                 )}
                 <GigSignupBox
