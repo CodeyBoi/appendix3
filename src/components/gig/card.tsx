@@ -98,7 +98,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                     {gig.signupEnd.getTime() + 1000 * 60 * 60 * 24 >
                     Date.now() ? (
                       <>
-                        {lang('om', 'in') + ' '}
+                        {lang('om ', 'in ')}
                         <Countdown end={gig.signupEnd} />
                       </>
                     ) : (
