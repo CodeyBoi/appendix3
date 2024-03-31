@@ -93,6 +93,22 @@ const GigSignupBox = ({
     });
   };
 
+  const handleInstrumentChange = (value: string) => {
+    if (!value || !corps) {
+      return;
+    }
+    setSubmitting(true);
+    setInstrument(value);
+    addSignup.mutate({
+      gigId,
+      corpsId: corps.id,
+      status: status,
+      instrument: value,
+      checkbox1: checkbox1Checked,
+      checkbox2: checkbox2Checked,
+    });
+  };
+
   return (
     <FormLoadingOverlay showSpinner={false} visible={submitting || loading}>
       <div className='flex flex-col gap-2'>
@@ -151,33 +167,31 @@ const GigSignupBox = ({
             }}
           />
         )}
-        {(corps?.instruments.length ?? 0) > 1 && (
-          <Select
-            label='Instrument'
-            value={instrument}
-            onChange={(val) => {
-              if (!val || !corps) {
-                return;
+        {(corps?.instruments.length ?? 0) > 1 &&
+          (isAprilFools() ? (
+            <Wheel
+              options={
+                corps?.instruments.map((i) => ({
+                  label: aprilFoolsInstrumentLabel(i.instrument.name),
+                  value: i.instrument.name,
+                })) ?? []
               }
-              setSubmitting(true);
-              setInstrument(val);
-              addSignup.mutate({
-                gigId,
-                corpsId: corps.id,
-                status: status,
-                instrument: val,
-                checkbox1: checkbox1Checked,
-                checkbox2: checkbox2Checked,
-              });
-            }}
-            options={
-              corps?.instruments.map((i) => ({
-                label: aprilFoolsInstrumentLabel(i.instrument.name),
-                value: i.instrument.name,
-              })) ?? []
-            }
-          />
-        )}
+              onChange={handleInstrumentChange}
+              value={instrument}
+            />
+          ) : (
+            <Select
+              label='Instrument'
+              value={instrument}
+              onChange={handleInstrumentChange}
+              options={
+                corps?.instruments.map((i) => ({
+                  label: i.instrument.name,
+                  value: i.instrument.name,
+                })) ?? []
+              }
+            />
+          ))}
       </div>
     </FormLoadingOverlay>
   );
