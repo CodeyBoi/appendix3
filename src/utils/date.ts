@@ -25,3 +25,33 @@ export const isAprilFools = () => {
   const day = date.getDate();
   return month === 3 && day === 1;
 };
+
+const aprilFoolsInstruments: Record<string, string> = {
+  piccola: 'Pytteliten banjo',
+  flöjt: 'Banjo på tvärs',
+  oboe: 'Obanjo',
+  klarinett: 'Svart banjo',
+  fagott: 'Banjott',
+  basklarinett: 'Basbanjonett',
+  sopransax: 'Skrotad banjo',
+  altsax: 'Altekamererenbanjo',
+  tenorsax: 'Stor altekamererenbanjo',
+  barytonsax: 'Stor kurvig banjo',
+  horn: 'Rund banjo',
+  trumpet: 'Treknappsbanjo',
+  trombon: 'Dragbanjo',
+  eufonium: 'Fånig banjo',
+  tuba: 'Låg banjo',
+  slagverk: 'Ihålig banjo',
+  balett: 'Snurrig banjo',
+  dirigent: 'Banjo på vift',
+  annat: 'Banjo på avvägar',
+};
+
+export const aprilFoolsInstrumentLabel = (instrument: string) => {
+  if (!isAprilFools()) {
+    return instrument;
+  } else {
+    return aprilFoolsInstruments[instrument.toLowerCase()] ?? 'Okänd banjo';
+  }
+};

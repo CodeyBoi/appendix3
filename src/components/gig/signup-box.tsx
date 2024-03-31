@@ -7,7 +7,7 @@ import Checkbox from 'components/input/checkbox';
 import Select from 'components/input/select';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import { lang } from 'utils/language';
-import { isAprilFools } from 'utils/date';
+import { aprilFoolsInstrumentLabel, isAprilFools } from 'utils/date';
 import Wheel from 'components/wheel';
 
 type Signup = {
@@ -172,7 +172,7 @@ const GigSignupBox = ({
             }}
             options={
               corps?.instruments.map((i) => ({
-                label: i.instrument.name,
+                label: aprilFoolsInstrumentLabel(i.instrument.name),
                 value: i.instrument.name,
               })) ?? []
             }
