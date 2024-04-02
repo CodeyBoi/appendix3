@@ -28,9 +28,11 @@ const Song = async ({ song: songProp }: SongProps) => {
   }
 
   return (
-    <div className='flex max-w-3xl flex-col'>
+    <div className='flex max-w-xl flex-col'>
       <div className='flex flex-nowrap items-start gap-2'>
-        <h3>{song.title}</h3>
+        <div className='flex-grow'>
+          <h3>{song.title}</h3>
+        </div>
         <Link href={`/admin/songs/${song.id}`}>
           <ActionIcon variant='subtle'>
             <IconPencil />
@@ -43,14 +45,17 @@ const Song = async ({ song: songProp }: SongProps) => {
           {song.melody}
         </i>
       )}
-      {song.author && (
-        <i>
-          {lang('Skriven av: ', 'Written by: ')}
-          {song.author}
-        </i>
-      )}
       <div className='h-4' />
-      <div className='whitespace-pre-wrap'>{`${song.lyrics}`}</div>
+      <div className='whitespace-pre-wrap leading-snug'>{`${song.lyrics}`}</div>
+      {song.author && (
+        <>
+          <div className='h-4' />
+          <i>
+            {lang('Skriven av ', 'Written by ')}
+            {song.author}
+          </i>
+        </>
+      )}
     </div>
   );
 };
