@@ -32,10 +32,9 @@ const genCalender = (year: number, month: number) => {
   return weeks;
 };
 
-const years = range(1970, getOperatingYear() + 2).reverse().map(
-  (y) => ({ value: y, label: y.toString() }),
-);
-
+const years = range(1970, getOperatingYear() + 2)
+  .reverse()
+  .map((y) => ({ value: y, label: y.toString() }));
 
 type DatePickerDropdownProps = {
   defaultDate?: Date;
@@ -69,7 +68,7 @@ const DatePickerDropdown = ({
     } else {
       setMonth(month + 1);
     }
-  }
+  };
 
   const decreaseMonth = () => {
     if (month === 0) {
@@ -78,25 +77,23 @@ const DatePickerDropdown = ({
     } else {
       setMonth(month - 1);
     }
-  }
+  };
 
   return (
-    <div className='flex w-60 flex-col rounded bg-white p-2 gap-2 dark:bg-darkBg'>
-      <div className='flex items-space-between gap-1'>
-        <div className='flex grow gap-2 items-baseline'>
+    <div className='flex w-60 flex-col gap-2 rounded bg-white p-2 dark:bg-darkBg'>
+      <div className='flex gap-1'>
+        <div className='flex grow items-baseline gap-2'>
           <h4 className='select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName}`}</h4>
-          <Select options={years} value={year} onChange={(y) => setYear(parseInt(y))} />
+          <Select
+            options={years}
+            value={year}
+            onChange={(y) => setYear(parseInt(y))}
+          />
         </div>
-        <ActionIcon
-          variant='subtle'
-          onClick={decreaseMonth}
-        >
+        <ActionIcon variant='subtle' onClick={decreaseMonth}>
           <IconChevronLeft />
         </ActionIcon>
-        <ActionIcon
-          variant='subtle'
-          onClick={increaseMonth}
-        >
+        <ActionIcon variant='subtle' onClick={increaseMonth}>
           <IconChevronRight />
         </ActionIcon>
       </div>
