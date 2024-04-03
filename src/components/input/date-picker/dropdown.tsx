@@ -5,6 +5,9 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import ActionIcon from 'components/input/action-icon';
 import { cn } from 'utils/class-names';
+import Select from '../select';
+import { range } from 'utils/array';
+import { getOperatingYear } from 'utils/date';
 
 const genCalender = (year: number, month: number) => {
   const date = new Date(year, month, 1);
@@ -28,6 +31,11 @@ const genCalender = (year: number, month: number) => {
   }
   return weeks;
 };
+
+const years = range(1970, getOperatingYear() + 2).reverse().map(
+  (y) => ({ value: y, label: y.toString() }),
+);
+
 
 type DatePickerDropdownProps = {
   defaultDate?: Date;
@@ -53,33 +61,41 @@ const DatePickerDropdown = ({
   const monthName = new Date(year, month, 1).toLocaleDateString('sv-SE', {
     month: 'long',
   });
+
+  const increaseMonth = () => {
+    if (month === 11) {
+      setMonth(0);
+      setYear(year + 1);
+    } else {
+      setMonth(month + 1);
+    }
+  }
+
+  const decreaseMonth = () => {
+    if (month === 0) {
+      setMonth(11);
+      setYear(year - 1);
+    } else {
+      setMonth(month - 1);
+    }
+  }
+
   return (
-    <div className='flex w-60 flex-col rounded bg-white p-2 dark:bg-darkBg'>
-      <div className='flex items-center'>
-        <h4 className='grow select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName} ${year}`}</h4>
+    <div className='flex w-60 flex-col rounded bg-white p-2 gap-2 dark:bg-darkBg'>
+      <div className='flex items-space-between gap-1'>
+        <div className='flex grow gap-2 items-baseline'>
+          <h4 className='select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName}`}</h4>
+          <Select options={years} value={year} onChange={(y) => setYear(parseInt(y))} />
+        </div>
         <ActionIcon
           variant='subtle'
-          onClick={() => {
-            if (month === 0) {
-              setMonth(11);
-              setYear(year - 1);
-            } else {
-              setMonth(month - 1);
-            }
-          }}
+          onClick={decreaseMonth}
         >
           <IconChevronLeft />
         </ActionIcon>
         <ActionIcon
           variant='subtle'
-          onClick={() => {
-            if (month === 11) {
-              setMonth(0);
-              setYear(year + 1);
-            } else {
-              setMonth(month + 1);
-            }
-          }}
+          onClick={increaseMonth}
         >
           <IconChevronRight />
         </ActionIcon>

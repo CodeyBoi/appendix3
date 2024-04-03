@@ -9,6 +9,7 @@ import { Suspense } from 'react';
 import RehearsalStats from './stats';
 import RehearsalList from './list';
 import Restricted from 'components/restricted';
+import { getOperatingYear } from 'utils/date';
 
 const startYear = 2010;
 
@@ -22,7 +23,7 @@ const AdminRehearsalsPage = async ({
 }: {
   searchParams: { year: string; tab: string };
 }) => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = getOperatingYear();
   const { year, tab } = searchParams;
   if (
     !year ||
