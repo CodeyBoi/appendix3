@@ -1,3 +1,5 @@
+'use client';
+
 import Popover from 'components/popover';
 import DatePickerDropdown from './dropdown';
 import dayjs from 'dayjs';
