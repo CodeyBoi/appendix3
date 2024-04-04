@@ -26,22 +26,22 @@ const sendDiscordAlert = async (gig: Gig) => {
     return;
   }
   const info = [];
-  info.push(`# ${gig.title}`);
+  info.push(`# ${gig.title}`.trim());
   info.push(
     `*${
-      gig.meetup ? 'Samling ' + gig.meetup + ' ' : ''
-    }den ${gig.date.toLocaleDateString('sv', {
+      gig.meetup ? 'Samling ' + gig.meetup + ' d' : 'D'
+    }en ${gig.date.toLocaleDateString('sv', {
       day: 'numeric',
       month: 'long',
-    })}, ${gig.location}*`,
+    })}${gig.location?.trim() ? ', ' + gig.location.trim() : ''}*`,
   );
   info.push('');
   if (gig.description?.trim()) {
-    info.push(gig.description);
+    info.push(gig.description.trim());
     info.push('');
   }
   if (gig.englishDescription?.trim()) {
-    info.push(gig.englishDescription);
+    info.push(gig.englishDescription.trim());
     info.push('');
   }
   info.push(`[Anmälan!](<${process.env.NEXTAUTH_URL}/gig/${gig.id}>)`);
