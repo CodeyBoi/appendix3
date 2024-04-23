@@ -29,7 +29,7 @@ export const bingoRouter = router({
   upsertEntry: protectedProcedure
     .input(
       z.object({
-        id: z.string().optional(),
+        id: z.number().int().optional(),
         text: z.string(),
       }),
     )
@@ -37,7 +37,7 @@ export const bingoRouter = router({
       const corpsId = ctx.session.user.corps.id;
       return ctx.prisma.bingoEntry.upsert({
         where: {
-          id: input.id ?? '',
+          id: input.id ?? -1,
         },
         update: {
           text: input.text,
@@ -81,7 +81,7 @@ export const bingoRouter = router({
         entries: {
           createMany: {
             data: entries.map((entry, i) => ({
-              entryId: entry?.id ?? '',
+              entryId: entry?.id ?? -1,
               index: i,
             })),
           },
@@ -92,7 +92,7 @@ export const bingoRouter = router({
 
   isWin: protectedProcedure.input(
     z.object({
-      entryId: z.string(),
+      entryId: z.number().int(),
       cardId: z.string(),
       marked: z.boolean(),
     }),
@@ -125,20 +125,18 @@ export const bingoRouter = router({
         throw new Error('Corps unauthorized to mark this bingo card');
       }
 
-      let board = new Array(5);
-      for (let i = 0; i < board.length; i++) {
-        board[i] = new Array(5);
-      }
-
-      for (const entry of card.entries) {
-        const row = entry.index % 5;
-        const col = Math.floor(entry.index / 5);
-        if (entryId === entry.entryId) {
-          board[row][col] = true;
-        } else {
-          board[row][col] = entry.marked;
+      let board = new Array(5).map((i) => new Array(5).map((j) => {
+        const entry = card.entries[i*5 + j];
+        if (!entry) {
+          return false;
         }
-      }
+        if (entryId === entry.entryId) {
+          return true;
+        } else {
+          return entry.marked;
+        }
+      }));
+
       console.log(board);
       let count1 = 0;
       let count2 = 0;
@@ -146,7 +144,7 @@ export const bingoRouter = router({
 
       // Check rows
       for (let row = 0; row < board.length; row++) {
-        if (board[row].every((value) => value === true)) {
+        if (board[row]?.every((value) => value === true)) {
 
           console.log("DET ÄR ROWS SOM FUCKAR")
           return ctx.prisma.bingoCard.updateMany({
@@ -170,10 +168,10 @@ export const bingoRouter = router({
       }
 
       // Check columns
-      for (let col = 0; col < board[0].length; col++) {
+      for (let col = 0; col < (board[0]?.length ?? 0); col++) {
         let hasTrueColumn = true;
         for (let row = 0; row < board.length; row++) {
-          if (!board[row][col]) {
+          if (!board[row]?.[col]) {
             hasTrueColumn = false;
             break;
           }
@@ -204,7 +202,7 @@ export const bingoRouter = router({
       // Check diagonals
       let hasTrueDiagonal = true;
       for (let i = 0; i < board.length; i++) {
-        if (!board[i][i]) {
+        if (!board[i]?.[i]) {
           hasTrueDiagonal = false;
           break;
         }
@@ -233,7 +231,7 @@ export const bingoRouter = router({
 
       let hasTrueDiagonal1 = true;
       for (let i = 0; i < board.length; i++) {
-        if (!board[i][board.length - 1 - i]) {
+        if (!board[i]?.[board.length - 1 - i]) {
           hasTrueDiagonal1 = false;
           break;
         }
@@ -284,7 +282,7 @@ export const bingoRouter = router({
   markEntry: protectedProcedure
     .input(
       z.object({
-        entryId: z.string(),
+        entryId: z.number().int(),
         cardId: z.string(),
         marked: z.boolean(),
       }),
@@ -317,20 +315,17 @@ export const bingoRouter = router({
         throw new Error('Corps unauthorized to mark this bingo card');
       }
 
-      let board = new Array(5);
-      for (let i = 0; i < board.length; i++) {
-        board[i] = new Array(5);
-      }
-
-      for (const entry of card.entries) {
-        const row = entry.index % 5;
-        const col = Math.floor(entry.index / 5);
-        if (entryId === entry.entryId) {
-          board[row][col] = true;
-        } else {
-          board[row][col] = entry.marked;
+      let board = new Array(5).map((i) => new Array(5).map((j) => {
+        const entry = card.entries[i*5 + j];
+        if (!entry) {
+          return false;
         }
-      }
+        if (entryId === entry.entryId) {
+          return true;
+        } else {
+          return entry.marked;
+        }
+      }));
 
       console.log(board);
 
