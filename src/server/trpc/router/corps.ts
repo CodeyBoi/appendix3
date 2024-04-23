@@ -524,22 +524,4 @@ export const corpsRouter = router({
       });
       return { success: true };
     }),
-
-  permissions: protectedProcedure.query(async ({ ctx }) => {
-    const corpsId = ctx.session.user.corps.id;
-    const corps = await ctx.prisma.corps.findUnique({
-      where: {
-        id: corpsId,
-      },
-      include: {
-        role: true,
-      },
-    });
-
-    if (!corps || !corps.role) {
-      return [];
-    }
-
-    return [corps.role.name];
-  }),
 });

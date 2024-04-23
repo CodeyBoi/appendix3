@@ -3,6 +3,7 @@ import {
   IconHome,
   IconInfoSquare,
   IconKey,
+  IconLayoutGrid,
   IconLink,
   IconMicrophone2,
   IconMusic,
@@ -55,6 +56,7 @@ const userTab: NavbarLinkGroup = {
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
     { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
+    { label: 'Blingo™', href: '/blingo', icon: <IconLayoutGrid /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
