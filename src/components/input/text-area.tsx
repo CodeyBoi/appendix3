@@ -69,7 +69,7 @@ const TextArea = ({
       <div className='relative flex '>
         <textarea
           className={cn(
-            'h-20 flex-grow cursor-text resize-none rounded border bg-transparent pb-1 pt-5 font-display shadow-sm dark:border-neutral-800',
+            'h-20 grow cursor-text resize-none rounded border bg-transparent pb-1 pt-5 font-display shadow-sm dark:border-neutral-800',
             rightSection ? ' pl-2 pr-9' : ' px-2',
           )}
           onChange={handleChange}

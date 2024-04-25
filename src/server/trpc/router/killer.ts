@@ -247,16 +247,16 @@ export const killerRouter = router({
         () => Math.random() - 0.5,
       );
 
-      let usedWords: string[] = [];
+      const usedWords: string[] = [];
 
       // Connect each participant to the next participant as their target
       await ctx.prisma.$transaction(
         shuffledParticipants.map((participant, index) => {
+          // If we have run out of words, just pick a random one
           const gameWords =
             usedWords.length < WORDS.length
               ? WORDS.filter((word) => !usedWords.includes(word.sv))
-              : // If we have run out of words, just pick a random one
-                WORDS;
+              : WORDS;
           const word = gameWords[
             Math.floor(Math.random() * gameWords.length)
           ] as Word;
