@@ -6,12 +6,12 @@ const KillerRules = () => {
       <h3>{lang('Regler till Killergame', 'Rules for Killergame')}</h3>
       <div className='lang-sv flex max-w-4xl flex-col gap-2 text-left'>
         <p>
-          Varje spelare får i början av repveckan en (icke-fysisk) lapp med en
-          annan spelares namn och ett ord. Din uppgift är att &quot;döda&quot;
-          corpset på din lapp genom att få denne att säga ordet som också står
-          på lappen. När du har lyckats med detta visar du lappen för den du
-          dödat och får då deras lapp. På denna lapp står ditt nya offer. Den
-          som har flest mord när spelet tar slut vinner!
+          Varje spelare får vid start en (icke-fysisk) lapp med en annan
+          spelares namn och ett ord. Din uppgift är att &quot;döda&quot; corpset
+          på din lapp genom att få denne att säga ordet som också står på
+          lappen. När du har lyckats med detta visar du lappen för den du dödat
+          och får då deras lapp. På denna lapp står ditt nya offer. Den som har
+          flest mord när spelet tar slut vinner!
         </p>
 
         <h4 className='mt-2'>Förtydliganden</h4>
@@ -47,13 +47,12 @@ const KillerRules = () => {
       </div>
       <div className='lang-en flex max-w-4xl flex-col gap-2 text-left'>
         <p>
-          At the beginning of the rehearsal week, each player receives a
-          (non-physical) piece of paper with another player&apos;s name and a
-          word. Your task is to &quot;kill&quot; the corps on your note by
-          getting them to say the word that is also on the note. When you
-          succeed, you show the note to the person you killed and then get their
-          note. On this note is your new target. Whoever has the most notes when
-          the game ends wins!
+          At the start of the game, each player receives a (non-physical) piece
+          of paper with another player&apos;s name and a word. Your task is to
+          &quot;kill&quot; the corps on your note by getting them to say the
+          word that is also on the note. When you succeed, you show the note to
+          the person you killed and then get their note. On this note is your
+          new target. Whoever has the most notes when the game ends wins!
         </p>
         <h4 className='mt-2'>Clarifications</h4>
         <ul className='list-disc pl-4'>
