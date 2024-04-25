@@ -30,7 +30,7 @@ const Song = async ({ song: songProp }: SongProps) => {
   return (
     <div className='flex max-w-xl flex-col'>
       <div className='flex flex-nowrap items-start gap-2'>
-        <div className='flex-grow'>
+        <div className='grow'>
           <h3>{song.title}</h3>
         </div>
         <Link href={`/admin/songs/${song.id}`}>
