@@ -41,16 +41,18 @@ const BingoCard = ({ card }: BingoCardProps) => {
           onChange={async () => {
             const newMarkedState = !entry.marked;
             entry.marked = newMarkedState;
-            await isWin.mutateAsync({
-              cardId: card.id,
-              entryId: entry.id,
-              marked: newMarkedState,
-            });
+          
             await markEntry.mutateAsync({
               cardId: card.id,
               entryId: entry.id,
               marked: newMarkedState,
             });
+             isWin.mutateAsync({ //EN await här verkar hjälpa
+              cardId: card.id,
+              entryId: entry.id,
+              marked: entry.marked,
+            });
+           
           }}
         />
       ))}

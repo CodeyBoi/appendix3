@@ -11,7 +11,8 @@ export const bingoRouter = router({
         entries: {
           include: {
             entry: true,
-          }
+            // eslint-disable-next-line prettier/prettier
+          },
         },
       },
       where: {
@@ -90,13 +91,14 @@ export const bingoRouter = router({
     });
   }),
 
-  isWin: protectedProcedure.input(
-    z.object({
-      entryId: z.number().int(),
-      cardId: z.string(),
-      marked: z.boolean(),
-    }),
-  )
+  isWin: protectedProcedure
+    .input(
+      z.object({
+        entryId: z.number().int(),
+        cardId: z.string(),
+        marked: z.boolean(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { entryId, cardId, marked } = input;
       const corpsId = ctx.session.user.corps.id;
@@ -124,29 +126,45 @@ export const bingoRouter = router({
       if (card.corpsId !== corpsId) {
         throw new Error('Corps unauthorized to mark this bingo card');
       }
+      card.entries.sort((a,b)=> a.index - b.index);
+      let board = new Array(5).fill(null).map((_, i) =>
+        new Array(5).fill(null).map((_, j) => {
+          const entry = card.entries[i * 5 + j];
+          return entry ? entry.marked : false;
+        })
+      );
 
-      let board = new Array(5).map((i) => new Array(5).map((j) => {
-        const entry = card.entries[i*5 + j];
-        if (!entry) {
-          return false;
-        }
-        if (entryId === entry.entryId) {
-          return true;
-        } else {
-          return entry.marked;
-        }
-      }));
+     /*let board = new Array(5).map((i) =>
+        new Array(5).map((j) => {
+          const entry = card.entries[i * 5 + j];
+          if (!entry) {
+            return false;
+          }
+          if (entryId === entry.entryId) {
+            return true;
+          } else {
+            return entry.marked;
+          }
+        }),
+      );*/
+      
+      console.log(
+        'BOARD FINNS HÄR---------------------------------------------------------------------------',
+      );
 
       console.log(board);
-      let count1 = 0;
-      let count2 = 0;
-      let bingocheck = false;
-
+      console.log(
+        'BOARD FINNS HÄR---------------------------------------------------------------------------',
+      );
       // Check rows
       for (let row = 0; row < board.length; row++) {
-        if (board[row]?.every((value) => value === true)) {
-
-          console.log("DET ÄR ROWS SOM FUCKAR")
+        console.log(
+          'DET ÄR ROWS SOM FUCKAR---------------------------------------------------------------------------',
+        );
+        
+       // console.log(board);
+        console.log('Test för hitta variabel');
+        if (board[row]?.every((marked) => marked === true)) {
           return ctx.prisma.bingoCard.updateMany({
             where: {
               id: cardId,
@@ -160,10 +178,10 @@ export const bingoRouter = router({
             },
             data: {
               isWin: {
-                set: true
+                set: true,
               },
-            }
-          })
+            },
+          });
         }
       }
 
@@ -177,9 +195,8 @@ export const bingoRouter = router({
           }
         }
         if (hasTrueColumn) {
-          console.log("DET ÄR COLS SOM FUCKAR")
+          console.log('DET ÄR COLS SOM FUCKAR');
           return ctx.prisma.bingoCard.updateMany({
-
             where: {
               id: cardId,
               corpsId,
@@ -192,10 +209,10 @@ export const bingoRouter = router({
             },
             data: {
               isWin: {
-                set: true
+                set: true,
               },
-            }
-          })
+            },
+          });
         }
       }
 
@@ -208,9 +225,8 @@ export const bingoRouter = router({
         }
       }
       if (hasTrueDiagonal) {
-        console.log("DET ÄR DIAGONAL 1 SOM FUCKAR")
+        console.log('DET ÄR DIAGONAL 1 SOM FUCKAR');
         return ctx.prisma.bingoCard.updateMany({
-
           where: {
             id: cardId,
             corpsId,
@@ -223,10 +239,10 @@ export const bingoRouter = router({
           },
           data: {
             isWin: {
-              set: true
+              set: true,
             },
-          }
-        })
+          },
+        });
       }
 
       let hasTrueDiagonal1 = true;
@@ -237,9 +253,8 @@ export const bingoRouter = router({
         }
       }
       if (hasTrueDiagonal1) {
-        console.log("DET ÄR DIAGONAL 2 SOM FUCKAR")
+        console.log('DET ÄR DIAGONAL 2 SOM FUCKAR');
         return ctx.prisma.bingoCard.updateMany({
-
           where: {
             id: cardId,
             corpsId,
@@ -252,14 +267,13 @@ export const bingoRouter = router({
           },
           data: {
             isWin: {
-              set: true
+              set: true,
             },
-          }
-        })
+          },
+        });
       }
 
       return ctx.prisma.bingoCard.updateMany({
-
         where: {
           id: cardId,
           corpsId,
@@ -272,11 +286,10 @@ export const bingoRouter = router({
         },
         data: {
           isWin: {
-            set: false
+            set: false,
           },
-        }
-      })
-
+        },
+      });
     }),
 
   markEntry: protectedProcedure
@@ -315,18 +328,22 @@ export const bingoRouter = router({
         throw new Error('Corps unauthorized to mark this bingo card');
       }
 
-      let board = new Array(5).map((i) => new Array(5).map((j) => {
-        const entry = card.entries[i*5 + j];
-        if (!entry) {
-          return false;
-        }
-        if (entryId === entry.entryId) {
-          return true;
-        } else {
-          return entry.marked;
-        }
-      }));
+      
 
+      const board = new Array(5).map((i) =>
+        new Array(5).map((j) => {
+          const entry = card.entries[i * 5 + j];
+          if (!entry) {
+            return false;
+          }
+          if (entryId === entry.entryId) {
+            return true;
+          } else {
+            return entry.marked;
+          }
+        }),
+      );
+   
       console.log(board);
 
       return ctx.prisma.bingoCardEntry.update({

@@ -39,7 +39,7 @@ const BingoEntryForm = ({ entry }: BingoEntryFormProps) => {
       await mutation.mutateAsync(values);
       form.reset();
     } else {
-      await mutation.mutateAsync({ ...values, id: entry.id });
+      await mutation.mutateAsync({ ...values, id: parseInt(entry.id) }); // La till parseInt sus af
       router.push('/blingo');
     }
   };

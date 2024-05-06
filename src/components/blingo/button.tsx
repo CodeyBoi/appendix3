@@ -14,6 +14,8 @@ const GenerateBingoButton = () => {
     <Button
       onClick={async () => {
         await mutation.mutateAsync();
+        location.reload();
+        //Kanske onödig reload
       }}
     >
       Skapa blingobricka
