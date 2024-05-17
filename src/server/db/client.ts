@@ -18,6 +18,12 @@ const getNewPrismaClient = () => {
             corps.nickName || `${corps.firstName} ${corps.lastName}`,
         },
       },
+      streckTransaction: {
+        totalPrice: {
+          needs: { amount: true, pricePer: true },
+          compute: (transaction) => transaction.amount * transaction.pricePer,
+        },
+      },
     },
   });
 };
