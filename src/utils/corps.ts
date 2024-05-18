@@ -1,5 +1,22 @@
 import { Prisma } from '@prisma/client';
 
+export const displayName = (
+  corps:
+    | {
+        firstName: string;
+        lastName: string;
+        nickName: string | null;
+        number: number | null;
+      }
+    | null
+    | undefined,
+) =>
+  corps === null || corps === undefined
+    ? ''
+    : `${corps.number ? `#${corps.number}` : 'p.e.'} ${
+        corps.nickName ? corps.nickName : corps.firstName + ' ' + corps.lastName
+      }`;
+
 export const detailedName = (
   corps:
     | {

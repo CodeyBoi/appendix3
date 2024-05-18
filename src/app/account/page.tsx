@@ -16,6 +16,7 @@ const Account = async () => {
     corps?.number !== null
       ? '#' + corps?.number.toString()
       : 'p.e. ' + corps?.lastName;
+  const streckAccount = await api.streck.getOwnStreckAccount.query({});
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
@@ -24,7 +25,7 @@ const Account = async () => {
         {`${corps ? ', ' + corpsName : ''}!`}
       </h2>
       <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
-        <CorpsStats />
+        <CorpsStats balance={streckAccount.balance} />
         <AccountPreferences />
       </div>
     </div>

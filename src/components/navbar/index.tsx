@@ -1,5 +1,6 @@
 import {
   IconClipboard,
+  IconClipboardList,
   IconHome,
   IconInfoSquare,
   IconKey,
@@ -90,6 +91,12 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/section',
       icon: <IconMicrophone2 />,
       permission: 'manageSections',
+    },
+    {
+      label: lang('Streckkonton', 'Streck Accounts'),
+      href: '/admin/streck',
+      icon: <IconClipboardList />,
+      permission: 'manageStreck',
     },
     {
       label: 'Killer',

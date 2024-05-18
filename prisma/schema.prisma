@@ -78,19 +78,20 @@ model Corps {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  roles           Role[]
-  permissions     Permission[]
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  instruments     CorpsInstrument[]
-  gigSignups      GigSignup[]
-  hiddenGigs      HiddenGig[]
-  foodPrefs       CorpsFoodPrefs?
-  rehearsals      CorpsRehearsal[]
-  quotes          Quote[]           @relation("SaidQuotes")
-  citedQuotes     Quote[]           @relation("WrittenQuotes")
-  songs           Song[]
-  sectionLeaderOf Section[]
-  killerProfiles  KillerPlayer[]
+  roles              Role[]
+  permissions        Permission[]
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments        CorpsInstrument[]
+  gigSignups         GigSignup[]
+  hiddenGigs         HiddenGig[]
+  foodPrefs          CorpsFoodPrefs?
+  rehearsals         CorpsRehearsal[]
+  quotes             Quote[]             @relation("SaidQuotes")
+  citedQuotes        Quote[]             @relation("WrittenQuotes")
+  songs              Song[]
+  sectionLeaderOf    Section[]
+  killerProfiles     KillerPlayer[]
+  streckTransactions StreckTransaction[]
 }
 
 model Role {
@@ -309,4 +310,23 @@ model KillerGame {
   updatedAt DateTime @updatedAt
 
   participants KillerPlayer[]
+}
+
+model StreckItem {
+  id    Int    @id @default(autoincrement())
+  name  String
+  price Int
+}
+
+model StreckTransaction {
+  id        Int      @id @default(autoincrement())
+  item      String
+  pricePer  Int
+  amount    Int
+  time      DateTime @default(now())
+  corpsId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 }

@@ -5,7 +5,11 @@ import { trpc } from 'utils/trpc';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
 
-const CorpsStats = () => {
+type CorpsStatsProps = {
+  balance: number;
+};
+
+const CorpsStats = ({ balance }: CorpsStatsProps) => {
   const operatingYear = getOperatingYear();
   const start = new Date(operatingYear, 8, 1); // September 1st
   const currentDate = new Date();
@@ -43,7 +47,6 @@ const CorpsStats = () => {
     balletAttendanceLoading;
   return (
     <div className='flex flex-col space-y-2'>
-      <h3>{lang('Närvaro', 'Attendance')}</h3>
       {loading && <Loading msg='Hämtar statistik...' />}
       {points !== undefined && (
         <h5>
@@ -53,14 +56,15 @@ const CorpsStats = () => {
           )}
         </h5>
       )}
+      Strecksaldo: {balance}
       {corpsStats &&
         orchestraRehearsalAttendance !== undefined &&
         balletRehearsalAttendance !== undefined && (
           <div className='flex flex-col'>
-            <h6>
+            <h5>
               {lang('Nuvarande verksamhetsår', 'Current operating year')}
               {` (${operatingYear}-${operatingYear + 1}):`}
-            </h6>
+            </h5>
             <div>
               {lang('Spelpoäng: ', 'Gig points: ')}
               {corpsStats.gigsAttended}
