@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { router, restrictedProcedure, protectedProcedure } from '../trpc';
+import { Prisma } from '@prisma/client';
+import dayjs from 'dayjs';
 
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure
@@ -127,35 +129,70 @@ export const streckRouter = router({
       });
     }),
 
-  getActiveCorps: protectedProcedure.query(async ({ ctx }) => {
-    type ActiveCorps = {
-      id: string;
-      number: number | null;
-      firstName: string;
-      lastName: string;
-      nickName: string | null;
-      balance: number;
-    };
-    const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
+  getActiveCorps: protectedProcedure
+    .input(
+      z.object({
+        additionalCorps: z.array(z.string().cuid()).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      type ActiveCorps = {
+        id: string;
+        number: number | null;
+        firstName: string;
+        lastName: string;
+        nickName: string | null;
+        balance: number;
+      };
+
+      const { additionalCorps = [] } = input;
+
+      const recentlyActiveCorps = (
+        await ctx.prisma.streckTransaction.findMany({
+          select: {
+            corpsId: true,
+          },
+          distinct: ['corpsId'],
+          where: {
+            time: {
+              gt: dayjs(new Date()).subtract(28, 'days').toDate(),
+            },
+          },
+        })
+      ).map((e) => e.corpsId);
+
+      additionalCorps.push(...recentlyActiveCorps);
+
+      if (additionalCorps.length === 0) {
+        // This is to stop Prisma.join complaining about getting an empty array
+        additionalCorps.push('DUMMY VALUE');
+      }
+
+      console.log({ additionalCorps });
+
+      const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
         SELECT
-          corpsId as id,
+          Corps.id as id,
           number,
           firstName,
           lastName,
           nickName,
           SUM(COALESCE(amount * pricePer, 0)) AS balance
-        FROM StreckActiveCorps
-        LEFT JOIN StreckTransaction USING (corpsId)
-        LEFT JOIN Corps ON Corps.id = corpsId
-        GROUP BY corpsId
+        FROM Corps
+        LEFT JOIN StreckTransaction ON Corps.id = corpsId
+        WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+        GROUP BY Corps.id
         ORDER BY
-          ISNULL(number), number,
+          ISNULL(number),
+          number,
           lastName,
           firstName;
       `;
 
-    return activeCorps;
-  }),
+      console.log({ activeCorps });
+
+      return activeCorps;
+    }),
 
   setActiveCorps: restrictedProcedure('manageStreck')
     .input(z.object({ id: z.string().cuid(), active: z.boolean() }))

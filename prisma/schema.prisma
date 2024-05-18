@@ -92,7 +92,6 @@ model Corps {
   sectionLeaderOf    Section[]
   killerProfiles     KillerPlayer[]
   streckTransactions StreckTransaction[]
-  streckActiveCorps  StreckActiveCorps?
 }
 
 model Role {
@@ -328,12 +327,6 @@ model StreckTransaction {
   corpsId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
-}
-
-model StreckActiveCorps {
-  corpsId String @id @unique
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 }

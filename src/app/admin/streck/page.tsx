@@ -1,5 +1,5 @@
-import { IconCoins } from '@tabler/icons-react';
 import { IconTablePlus } from '@tabler/icons-react';
+import CorpsDisplay from 'components/corps/display';
 import Button from 'components/input/button';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -9,26 +9,44 @@ const AdminStreckPage = async () => {
   const transactions = await api.streck.getTransactions.query({});
 
   return (
-    <div className='flex flex-row-reverse'>
+    <div className='flex flex-row-reverse gap-4'>
       <div className='flex gap-2 flex-col'>
         <Button href='streck/new'>
           <IconTablePlus />
-          Ny strecklista
-        </Button>
-        <Button href='/admin/streck/deposit'>
-          <IconCoins />
-          Ny insättning
+          Skapa ny strecklista...
         </Button>
       </div>
-      <div className='flex grow flex-col'>
-        {transactions.map((transaction) => (
-          <div key={transaction.id}>
-            {`${dayjs(transaction.time).format('YYYY-MM-DD HH:mm')}: ${transaction.corps.fullName} streckade ${
-              transaction.amount
-            } st ${transaction.item.toLowerCase()} för ${-transaction.pricePer}p var, totalt ${-transaction.totalPrice}p.`}
-          </div>
-        ))}
-      </div>
+      <table className='table text-sm flex-grow'>
+        <thead>
+          <tr className='text-left'>
+            <th className='px-1'>Tid</th>
+            <th className='px-1'>Corps</th>
+            <th className='px-1'>Artikel</th>
+            <th className='px-1'>Styckpris</th>
+            <th className='px-1'>Antal</th>
+            <th className='px-1'>Total</th>
+          </tr>
+        </thead>
+        <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
+          {transactions.map((transaction) => (
+            <tr
+              key={transaction.id}
+              className='divide-x divide-solid dark:divide-neutral-800'
+            >
+              <td className='px-1'>
+                {dayjs(transaction.time).format('YYYY-MM-DD HH:mm')}
+              </td>
+              <td className='px-1'>
+                <CorpsDisplay corps={transaction.corps} />
+              </td>
+              <td className='px-1'>{transaction.item}</td>
+              <td className='px-1'>{-transaction.pricePer}</td>
+              <td className='px-1'>{transaction.amount}</td>
+              <td className='px-1'>{-transaction.totalPrice}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
