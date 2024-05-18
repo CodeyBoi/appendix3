@@ -56,7 +56,7 @@ const CorpsStats = ({ balance }: CorpsStatsProps) => {
           )}
         </h5>
       )}
-      {/*Strecksaldo: {balance}*/}
+      Strecksaldo: {balance}
       {corpsStats &&
         orchestraRehearsalAttendance !== undefined &&
         balletRehearsalAttendance !== undefined && (
