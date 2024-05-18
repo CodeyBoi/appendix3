@@ -37,6 +37,7 @@ const initialValues = {
   signupEnd: null as unknown as Date | null,
   isPublic: false,
   points: 1,
+  price: 0,
   countsPositively: false,
   checkbox1: '',
   checkbox2: '',
@@ -78,6 +79,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       date: (date) => (date ? null : 'Datum måste vara ifyllt'),
       points: (points) =>
         points >= 0 ? null : 'Spelpoäng kan inte vara negativt',
+      price: (price) => (price >= 0 ? null : 'Pris kan inte vara negativt'),
     },
   });
 
@@ -143,11 +145,18 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             }
             {...form.getInputProps('type')}
           />
-          <NumberInput
-            withAsterisk
-            label='Spelpoäng'
-            {...form.getInputProps('points')}
-          />
+          <div className='grid grid-cols-2 gap-x-4'>
+            <NumberInput
+              withAsterisk
+              label='Spelpoäng'
+              {...form.getInputProps('points')}
+            />
+            <NumberInput
+              withAsterisk
+              label='Kostnad'
+              {...form.getInputProps('price')}
+            />
+          </div>
           <DatePicker
             withAsterisk
             label='Spelningsdatum'

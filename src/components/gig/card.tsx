@@ -81,10 +81,14 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 <br />
                 {!!gig.location && `${gig.location}`}
                 {!!gig.location && <br />}
+                {gig.price !== 0 && lang('Pris: ', 'Price: ')}
+                {gig.price !== 0 && gig.price.toString()}
+                {gig.price !== 0 && lang(' kr', ' crowns')}
+                {gig.price !== 0 && <br />}
                 {!!gig.meetup && lang('Samling: ', 'Gathering: ')}
                 {gig.meetup}
                 {!!gig.meetup && <br />}
-                {!!gig.start && lang('Spelstart: ', 'Gig start: ')}
+                {!!gig.start && lang('Start: ', 'Start: ')}
                 {gig.start}
               </div>
             </div>
