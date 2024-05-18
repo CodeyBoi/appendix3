@@ -24,7 +24,8 @@ const AdminStreckPage = async () => {
     );
 
   return (
-    <div className='flex flex-row-reverse gap-4'>
+    <div className='flex flex-col gap-4 md:flex-row-reverse'>
+      <h2>Streckkonton</h2>
       <div className='flex flex-col gap-2'>
         <Button href='streck/new'>
           <IconTablePlus />
@@ -46,37 +47,39 @@ const AdminStreckPage = async () => {
       </div>
       <div className='flex grow flex-col gap-2'>
         <h3>Senaste händelser</h3>
-        <table className='table text-sm'>
-          <thead>
-            <tr className='text-left'>
-              <th className='px-1'>Tid</th>
-              <th className='px-1'>Corps</th>
-              <th className='px-1'>Artikel</th>
-              <th className='px-1'>Styckpris</th>
-              <th className='px-1'>Antal</th>
-              <th className='px-1'>Total</th>
-            </tr>
-          </thead>
-          <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
-            {transactions.map((transaction) => (
-              <tr
-                key={transaction.id}
-                className='divide-x divide-solid dark:divide-neutral-800'
-              >
-                <td className='px-1'>
-                  {dayjs(transaction.time).format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className='px-1'>
-                  <CorpsDisplay corps={transaction.corps} />
-                </td>
-                <td className='px-1'>{transaction.item}</td>
-                <td className='px-1'>{-transaction.pricePer}</td>
-                <td className='px-1'>{transaction.amount}</td>
-                <td className='px-1'>{-transaction.totalPrice}</td>
+        <div className='overflow-x-auto'>
+          <table className='table text-sm'>
+            <thead>
+              <tr className='text-left'>
+                <th className='px-1'>Tid</th>
+                <th className='px-1'>Corps</th>
+                <th className='px-1'>Artikel</th>
+                <th className='px-1'>Styckpris</th>
+                <th className='px-1'>Antal</th>
+                <th className='px-1'>Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
+              {transactions.map((transaction) => (
+                <tr
+                  key={transaction.id}
+                  className='divide-x divide-solid dark:divide-neutral-800'
+                >
+                  <td className='px-1'>
+                    {dayjs(transaction.time).format('YYYY-MM-DD HH:mm')}
+                  </td>
+                  <td className='px-1'>
+                    <CorpsDisplay corps={transaction.corps} />
+                  </td>
+                  <td className='px-1'>{transaction.item}</td>
+                  <td className='px-1'>{-transaction.pricePer}</td>
+                  <td className='px-1'>{transaction.amount}</td>
+                  <td className='px-1'>{-transaction.totalPrice}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
