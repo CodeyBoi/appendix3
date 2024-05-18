@@ -168,8 +168,6 @@ export const streckRouter = router({
         additionalCorps.push('DUMMY VALUE');
       }
 
-      console.log({ additionalCorps });
-
       const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
         SELECT
           Corps.id as id,
@@ -189,30 +187,26 @@ export const streckRouter = router({
           firstName;
       `;
 
-      console.log({ activeCorps });
-
       return activeCorps;
     }),
 
-  setActiveCorps: restrictedProcedure('manageStreck')
-    .input(z.object({ id: z.string().cuid(), active: z.boolean() }))
+  setPrices: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        items: z.array(
+          z.object({
+            name: z.string(),
+            price: z.number().int(),
+          }),
+        ),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const { id, active } = input;
-      await ctx.prisma.streckActiveCorps.delete({
-        where: {
-          corpsId: id,
-        },
+      const { items } = input;
+      await ctx.prisma.streckItem.deleteMany({});
+      const res = await ctx.prisma.streckItem.createMany({
+        data: items.map((item, i) => ({ ...item, id: i + 1 })),
       });
-      if (active) {
-        await ctx.prisma.streckActiveCorps.create({
-          data: {
-            corps: {
-              connect: {
-                id,
-              },
-            },
-          },
-        });
-      }
+      return res;
     }),
 });

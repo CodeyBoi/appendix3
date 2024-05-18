@@ -90,7 +90,7 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
         <table className='table text-sm'>
           <thead>
             <tr className='text-xs'>
-              <th className='px-1 text-right'>Namn</th>
+              <th className='px-1'>Namn</th>
               <th className='px-1'>Saldo</th>
               {items.map((item) => (
                 <th
@@ -129,7 +129,6 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
                 </td>
               </tr>
             ))}
-            <tr></tr>
           </tbody>
         </table>
         <div className='h-2' />
