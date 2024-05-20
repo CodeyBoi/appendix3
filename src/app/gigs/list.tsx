@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
@@ -23,6 +22,11 @@ const fetchGigs = async (year: number, tab: string) => {
   }
 };
 
+const numberSuffix = (n: number) => {
+  const lastDigit = n % 10;
+  return lastDigit === 1 || lastDigit === 2 ? 'a' : 'e';
+};
+
 const GigList = async ({ year, tab }: GigListProps) => {
   const [gigs, corps] = await Promise.all([
     fetchGigs(year, tab),
@@ -43,6 +47,7 @@ const GigList = async ({ year, tab }: GigListProps) => {
     <div className='flex flex-col divide-y divide-solid dark:divide-neutral-700'>
       {gigs.map((gig) => {
         const gigMonth = gig.date.getMonth();
+        const gigDate = gig.date.getDate();
         let shouldAddMonth = false;
         if (gigMonth !== lastGigMonth) {
           lastGigMonth = gigMonth;
@@ -57,10 +62,10 @@ const GigList = async ({ year, tab }: GigListProps) => {
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>
               <div className='flex cursor-pointer items-center gap-2 py-1 pl-2 hover:bg-red-300/5'>
-                <div className='w-24 shrink-0'>
-                  {dayjs(gig.date).format('YYYY-MM-DD')}
+                <div className='w-6 shrink-0 text-right'>
+                  {gigDate.toString() + ':' + numberSuffix(gigDate)}
                 </div>
-                {gig.title}
+                {gig.title.trim() + (gig.countsPositively ? '*' : '')}
               </div>
             </Link>
           </Fragment>

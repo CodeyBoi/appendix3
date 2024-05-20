@@ -136,10 +136,10 @@ export const gigRouter = router({
             date: input.dateOrder ?? 'asc',
           },
           {
-            meetup: 'asc',
+            meetup: input.dateOrder ?? 'asc',
           },
           {
-            start: 'asc',
+            start: input.dateOrder ?? 'asc',
           },
         ],
       });
