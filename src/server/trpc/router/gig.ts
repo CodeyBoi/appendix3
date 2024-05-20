@@ -559,9 +559,17 @@ export const gigRouter = router({
             lte: input.endDate,
           },
         },
-        orderBy: {
-          date: 'desc',
-        },
+        orderBy: [
+          {
+            date: 'desc',
+          },
+          {
+            meetup: 'desc',
+          },
+          {
+            start: 'desc',
+          },
+        ],
       });
     }),
 
