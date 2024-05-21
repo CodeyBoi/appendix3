@@ -597,7 +597,11 @@ export const statsRouter = router({
               corps: {
                 id: gigList.id,
               },
+              attended: true,
             },
+          },
+          points: {
+            gt: 0
           },
         },
         orderBy: {
