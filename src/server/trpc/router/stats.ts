@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
+import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 
 export const statsRouter = router({
   get: protectedProcedure
@@ -469,4 +470,160 @@ export const statsRouter = router({
         avgSignupChange: deltaDays,
       };
     }),
+
+  getPreliminaryMembers: protectedProcedure.query(async ({ ctx }) => {
+    const gigLimit = 50;
+    const rehearsalLimit = 25;
+
+    // This cannot be null as we know we have atleast one member in Bleckhornen
+    const currentMaxNumber = (
+      await ctx.prisma.corps.aggregate({
+        _max: {
+          number: true,
+        },
+      })
+    )._max.number as number;
+
+    type CorpsGigs = {
+      id: string;
+      number: number | null;
+      firstName: string;
+      lastName: string;
+      gigsAttended: number;
+    };
+
+    const gigLists = await ctx.prisma.$queryRaw<CorpsGigs[]>`
+        SELECT
+          Corps.id AS id,
+          number,
+          firstName,
+          lastName,
+          SUM(points) AS gigsAttended
+        FROM Corps
+        CROSS JOIN Gig
+        LEFT JOIN GigSignup ON corpsId = Corps.id AND gigId = Gig.id
+        WHERE number IS NULL
+          AND attended = true
+        GROUP BY Corps.id
+        HAVING gigsAttended >= ${gigLimit}
+      `;
+
+    const rehearsals = (
+      await ctx.prisma.corpsRehearsal.groupBy({
+        by: ['corpsId'],
+        where: {
+          corps: {
+            id: {
+              in: gigLists.map((gigList) => gigList.id),
+            },
+          },
+        },
+        _count: {
+          rehearsalId: true,
+        },
+        having: {
+          rehearsalId: {
+            _count: {
+              gte: rehearsalLimit,
+            },
+          },
+        },
+      })
+    ).reduce(
+      (acc, corps) => {
+        if (!acc) {
+          acc = {};
+        }
+        acc[corps.corpsId] = corps._count.rehearsalId;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const { start, end } = calcOperatingYearInterval(getOperatingYear());
+    const gigsThisYear = (
+      await ctx.prisma.gigSignup.groupBy({
+        by: ['corpsId'],
+        _count: {
+          gigId: true,
+        },
+        where: {
+          gig: {
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+          corps: {
+            id: {
+              in: gigLists.map((gigList) => gigList.id),
+            },
+          },
+        },
+      })
+    ).reduce(
+      (acc, corps) => {
+        if (!acc) {
+          acc = {};
+        }
+        acc[corps.corpsId] = corps._count.gigId;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    type ReturnValue = CorpsGigs & {
+      dateAchieved: Date;
+    };
+
+    const res: ReturnValue[] = [];
+    for (const gigList of gigLists) {
+      // Filter out corps with too few rehearsals
+      const corpsRehearsals = rehearsals[gigList.id];
+      if (!corpsRehearsals || corpsRehearsals < rehearsalLimit) {
+        continue;
+      }
+
+      // Filter out corps that haven't been to a gig this operating year
+      const corpsNoOfGigs = gigsThisYear[gigList.id];
+      if (!corpsNoOfGigs || corpsNoOfGigs === 0) {
+        continue;
+      }
+
+      const preliminaryMember = await ctx.prisma.gig.aggregate({
+        where: {
+          signups: {
+            some: {
+              corps: {
+                id: gigList.id,
+              },
+            },
+          },
+        },
+        orderBy: {
+          date: 'asc',
+        },
+        take: gigLimit,
+        _max: {
+          date: true,
+        },
+      });
+
+      if (!preliminaryMember._max.date) {
+        continue;
+      }
+
+      res.push({
+        ...gigList,
+        dateAchieved: preliminaryMember._max.date,
+      });
+    }
+
+    res.sort((a, b) => a.dateAchieved.getTime() - b.dateAchieved.getTime());
+
+    return res.map((corps, i) => ({
+      ...corps,
+      preliminaryNumber: currentMaxNumber + i + 1,
+    }));
+  }),
 });

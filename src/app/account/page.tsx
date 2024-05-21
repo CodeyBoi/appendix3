@@ -16,7 +16,6 @@ const Account = async () => {
     corps?.number !== null
       ? '#' + corps?.number.toString()
       : 'p.e. ' + corps?.lastName;
-  const streckAccount = await api.streck.getOwnStreckAccount.query({});
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
