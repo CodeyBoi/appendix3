@@ -601,7 +601,11 @@ export const statsRouter = router({
             },
           },
           points: {
+<<<<<<< Updated upstream
             gt: 0
+=======
+            gt: 0,
+>>>>>>> Stashed changes
           },
         },
         orderBy: {
