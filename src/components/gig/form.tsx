@@ -78,7 +78,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       type: (type) => (type ? null : 'Typ måste vara ifylld'),
       date: (date) => (date ? null : 'Datum måste vara ifyllt'),
       points: (points) =>
-        points >= 0 ? null : 'Spelpoäng kan inte vara negativt',
+        points >= 0 && points <= 1 ? null : 'Spelpoäng måste vara 0 eller 1',
       price: (price) => (price >= 0 ? null : 'Pris kan inte vara negativt'),
     },
   });
