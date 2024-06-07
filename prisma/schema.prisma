@@ -253,6 +253,7 @@ model Song {
   melody           String
   lyrics           String  @default("") @db.Text
   createdByCorpsId String?
+  views            Int @default(0)
 
   createdBy Corps?   @relation(fields: [createdByCorpsId], references: [id])
   createdAt DateTime @default(now())

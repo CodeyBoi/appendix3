@@ -63,6 +63,7 @@ export const songRouter = router({
         title: true,
         melody: true,
         author: true,
+        views: true,
       },
       orderBy: {
         title: 'asc',
@@ -71,6 +72,21 @@ export const songRouter = router({
     songs.sort((a, b) => a.title.localeCompare(b.title, 'sv-SE'));
     return songs;
   }),
+
+  increaseViewCount: protectedProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id = '' } = input;
+      const res = await ctx.prisma.song.update({
+        where: { id },
+        data: {
+          views: {
+            increment: 1,
+          },
+        },
+      });
+      return res;
+    }),
 
   // infiniteScroll: protectedProcedure
   //   .input(
