@@ -10,7 +10,7 @@ type Song = {
   title: string;
   author: string;
   melody: string;
-  views: string;
+  views: number;
 };
 
 type MatchFlag = 'title' | 'author' | 'melody' | 'views';
