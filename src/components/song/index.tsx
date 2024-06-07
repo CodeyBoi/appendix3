@@ -27,6 +27,10 @@ const Song = async ({ song: songProp }: SongProps) => {
     );
   }
 
+  await api.song.increaseViewCount.mutate({
+    id: song.id,
+  });
+
   return (
     <div className='flex max-w-xl flex-col'>
       <div className='flex flex-nowrap items-start gap-2'>

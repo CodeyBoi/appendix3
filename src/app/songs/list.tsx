@@ -10,16 +10,17 @@ type Song = {
   title: string;
   author: string;
   melody: string;
+  views: string;
 };
 
-type MatchFlags = 'title' | 'author' | 'melody';
+type MatchFlag = 'title' | 'author' | 'melody' | 'views';
 
 const filterSongs = (songs: Song[], search: string) => {
   if (search === '')
     return songs.map((song) => ({ ...song, matches: ['title'] }));
   const searchLower = search.toLowerCase();
   return songs.flatMap((song) => {
-    const matches: MatchFlags[] = [];
+    const matches: MatchFlag[] = [];
     const title = song.title.toLowerCase();
     if (title.includes(searchLower)) matches.push('title');
 
@@ -29,6 +30,7 @@ const filterSongs = (songs: Song[], search: string) => {
       if (author.includes(searchLower)) matches.push('author');
       const melody = song.melody.toLowerCase();
       if (melody.includes(searchLower)) matches.push('melody');
+      if (searchLower === 'views') matches.push('views');
     }
 
     if (matches.length === 0) {
@@ -48,7 +50,7 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
   let prevTitleLetter: string | undefined;
   return (
     <div className='flex flex-col divide-y divide-solid text-base dark:divide-neutral-700'>
-      {songs.map(({ id, title, author, melody, matches }) => {
+      {songs.map(({ id, title, author, melody, matches, views }) => {
         const titleLetter = title[0]?.toUpperCase() ?? '';
         let shouldAddLetter = false;
         if (titleLetter !== prevTitleLetter) {
@@ -60,7 +62,7 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
             {shouldAddLetter && <h5 className='py-2 pl-3'>{titleLetter}</h5>}
             <Link href={`/songs/${id}`}>
               <div className='flex cursor-pointer items-center gap-2 py-2 pl-6 hover:bg-red-300/10'>
-                <div>{title}</div>
+                <div className='grow'>{title}</div>
                 <div
                   className={
                     'text-xs text-neutral-500' +
@@ -78,6 +80,15 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
                 >
                   {lang('Melodi: ', 'Melody: ')}
                   {melody}
+                </div>
+                <div
+                  className={
+                    'text-xs text-neutral-500' +
+                    (matches.includes('views') ? '' : ' hidden')
+                  }
+                >
+                  {lang('Visningar: ', 'Views: ')}
+                  {views.toString()}
                 </div>
               </div>
             </Link>
