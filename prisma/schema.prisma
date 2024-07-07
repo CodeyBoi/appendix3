@@ -92,6 +92,7 @@ model Corps {
   sectionLeaderOf    Section[]
   killerProfiles     KillerPlayer[]
   streckTransactions StreckTransaction[]
+  votes               Vote[]
 }
 
 model Role {
@@ -253,7 +254,7 @@ model Song {
   melody           String
   lyrics           String  @default("") @db.Text
   createdByCorpsId String?
-  views            Int @default(0)
+  views            Int     @default(0)
 
   createdBy Corps?   @relation(fields: [createdByCorpsId], references: [id])
   createdAt DateTime @default(now())
@@ -331,4 +332,42 @@ model StreckTransaction {
   updatedAt DateTime @updatedAt
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+}
+
+model FolderSong {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Votation {
+  id        Int      @id @default(autoincrement())
+  startsAt  DateTime @default(now())
+  endsAt    DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  options VotationItem[]
+}
+
+model VotationItem {
+  id         Int    @id @default(autoincrement())
+  name       String
+  votationId Int
+
+  votation Votation @relation(fields: [votationId], references: [id], onDelete: Cascade)
+  votes    Vote[]
+}
+
+model Vote {
+  corpsId        String
+  votationItemId Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  corps   Corps        @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  voteFor VotationItem @relation(fields: [votationItemId], references: [id], onDelete: Cascade)
+
+  @@id([corpsId, votationItemId])
 }

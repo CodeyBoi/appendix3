@@ -14,6 +14,7 @@ import { sectionRouter } from './section';
 import { killerRouter } from './killer';
 import { permissionRouter } from './permission';
 import { streckRouter } from './streck';
+import { votationRouter } from './votation';
 
 export const appRouter = router({
   auth: authRouter,
@@ -30,6 +31,7 @@ export const appRouter = router({
   killer: killerRouter,
   permission: permissionRouter,
   streck: streckRouter,
+  votation: votationRouter,
 });
 
 // export type definition of API
