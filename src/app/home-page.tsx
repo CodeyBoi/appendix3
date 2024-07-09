@@ -4,6 +4,8 @@ import GigCard from 'components/gig/card';
 import GigSkeleton from 'components/gig/skeleton';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
+import Votation from './votation';
+import VotationResults from './votation-results';
 
 const WIDTHS = [
   [200, 120, 95, 0.6],
@@ -60,15 +62,28 @@ const makeGigList = async () => {
   return gigList;
 };
 
+const noGigs = (
+  <div className='flex flex-col gap-2 italic'>
+    <p>
+      {lang(
+        'Just nu finns det inga spelningar inplanerade.',
+        'There are no upcoming gigs at the moment.',
+      )}
+    </p>
+  </div>
+);
+
 const HomePage = async () => {
   const currentDate = new Date(
     new Date().toISOString().split('T')[0] ?? '2021-01-01',
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [killerGame, killerPlayer] = await Promise.all([
+  const [gigs, killerGame, killerPlayer, votation] = await Promise.all([
+    makeGigList(),
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
+    api.votation.getCurrent.query(),
   ]);
 
   const hasntSignedUpForExistingKillerGame =
@@ -77,23 +92,8 @@ const HomePage = async () => {
     killerGame.start > new Date() &&
     !killerPlayer;
 
-  const gigs = await makeGigList();
-
-  if (!gigs) {
-    return (
-      <div className='flex flex-col gap-2 italic'>
-        <h3 className='uppercase'>
-          {lang('Här var det tomt...', 'This place is empty...')}
-        </h3>
-        <p>
-          {lang(
-            'Just nu finns det inga spelningar inplanerade.',
-            'There are no upcoming gigs at the moment.',
-          )}
-        </p>
-      </div>
-    );
-  }
+  const now = new Date();
+  const votationHasEnded = votation && votation.endsAt < now;
 
   return (
     <div className='flex max-w-4xl flex-col gap-4'>
@@ -102,6 +102,8 @@ const HomePage = async () => {
           {lang('Anmäl dig till Killergame! ⬆️', 'Sign up for Killergame! ⬆️')}
         </div>
       )}
+      {votation && votationHasEnded && <VotationResults id={votation.id} />}
+      {votation && !votationHasEnded && <Votation votation={votation} />}
       <Suspense
         fallback={
           <>
@@ -119,6 +121,7 @@ const HomePage = async () => {
         <h2 className='text-2xl md:text-4xl'>
           {lang('Kommande spelningar', 'Upcoming gigs')}
         </h2>
+        {!gigs && noGigs}
         {gigs}
       </Suspense>
     </div>

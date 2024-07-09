@@ -1,6 +1,7 @@
 import {
   IconClipboard,
   IconClipboardList,
+  IconDirections,
   IconHome,
   IconInfoSquare,
   IconKey,
@@ -103,6 +104,12 @@ const adminTab: NavbarLinkGroup = {
       href: '/admin/killer',
       icon: <IconSwords />,
       permission: 'manageKiller',
+    },
+    {
+      label: lang('Starta omröstning', 'Start votation'),
+      href: '/admin/voting',
+      icon: <IconDirections />,
+      permission: 'manageVotations',
     },
   ],
 };

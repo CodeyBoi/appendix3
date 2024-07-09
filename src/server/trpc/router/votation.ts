@@ -4,31 +4,61 @@ import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 export const votationRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
     const now = new Date();
-    const res = await ctx.prisma.votation.findFirstOrThrow({
+    const corpsId = ctx.session.user.corps.id;
+    const votation = await ctx.prisma.votation.findFirst({
       where: {
         startsAt: {
           lte: now,
         },
         endsAt: {
-          gte: now,
+          gte: new Date(now.getTime() - 5 * 60 * 1000),
         },
       },
       include: {
         options: true,
       },
     });
-    return res;
+
+    if (!votation) {
+      return null;
+    }
+
+    const hasVotedQuery = await ctx.prisma.votation.findFirst({
+      where: {
+        id: votation.id,
+        AND: {
+          options: {
+            some: {
+              votes: {
+                some: {
+                  corpsId,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const hasVoted = !!hasVotedQuery;
+
+    return {
+      ...votation,
+      hasVoted,
+    };
   }),
 
   vote: protectedProcedure
     .input(
       z.object({
-        votationItemId: z.number().int(),
+        votationItemIds: z.number().int().or(z.array(z.number().int())),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const corpsId = ctx.session.user.corps.id;
-      const { votationItemId } = input;
+      const votationItemIds = Array.isArray(input.votationItemIds)
+        ? input.votationItemIds
+        : [input.votationItemIds];
 
       // If there exists a votation containing both the item
       // being voted for AND an item the corps has already
@@ -42,7 +72,9 @@ export const votationRouter = router({
             some: {
               votes: {
                 some: {
-                  votationItemId,
+                  votationItemId: {
+                    in: votationItemIds,
+                  },
                 },
               },
             },
@@ -65,62 +97,67 @@ export const votationRouter = router({
         throw new Error('Corps already voted in this votation');
       }
 
-      const res = await ctx.prisma.vote.create({
-        data: {
+      const res = await ctx.prisma.vote.createMany({
+        data: votationItemIds.map((id) => ({
           corpsId,
-          votationItemId,
-        },
+          votationItemId: id,
+        })),
       });
       return res;
     }),
 
-  lastResult: protectedProcedure.query(async ({ ctx }) => {
-    const now = new Date();
-    const votation = await ctx.prisma.votation.findFirstOrThrow({
-      include: {
-        options: {
-          include: {
-            votes: true,
+  getResult: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .query(async ({ ctx, input }) => {
+      const votation = await ctx.prisma.votation.findUniqueOrThrow({
+        include: {
+          options: {
+            include: {
+              votes: true,
+            },
           },
         },
-      },
-      where: {
-        endsAt: {
-          lt: now,
+        where: {
+          id: input.id,
         },
-      },
-      orderBy: {
-        endsAt: 'desc',
-      },
-    });
+      });
 
-    const votes = await ctx.prisma.vote.groupBy({
-      by: ['votationItemId'],
-      _count: {
-        votationItemId: true,
-      },
-      where: {
-        voteFor: {
-          votation: {
-            id: votation.id,
+      const votes = await ctx.prisma.vote.groupBy({
+        by: ['votationItemId'],
+        _count: {
+          votationItemId: true,
+        },
+        where: {
+          voteFor: {
+            votation: {
+              id: input.id,
+            },
           },
         },
-      },
-      orderBy: {
-        votationItemId: 'desc',
-      },
-    });
+        orderBy: {
+          _count: {
+            votationItemId: 'desc',
+          },
+        },
+      });
 
-    const votesFor = votes.reduce(
-      (acc, val) => {
-        acc[val.votationItemId] = val._count.votationItemId;
-        return acc;
-      },
-      {} as Record<number, number>,
-    );
+      const votesFor = votes.reduce(
+        (acc, val) => {
+          acc[val.votationItemId] = val._count.votationItemId;
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
 
-    return votesFor;
-  }),
+      const res = votation.options.map((option) => ({
+        ...option,
+        votes: votesFor[option.id] ?? 0,
+      }));
+
+      res.sort((a, b) => b.votes - a.votes);
+
+      return res;
+    }),
 
   create: restrictedProcedure('manageVotations')
     .input(
