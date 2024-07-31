@@ -16,11 +16,10 @@ const StatsYearSelect = (props: Omit<SelectProps, 'onChange'>) => {
       val = parseInt(val);
     }
     const { start, end } = calcOperatingYearInterval(val);
-    router.replace(
-      `/stats?start=${dayjs(start).format('YYYY-MM-DD')}&end=${dayjs(
-        end,
-      ).format('YYYY-MM-DD')}`,
-    );
+    const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
+    newSearchParams.set('start', dayjs(start).format('YYYY-MM-DD'));
+    newSearchParams.set('end', dayjs(end).format('YYYY-MM-DD'));
+    router.replace(`/stats?${newSearchParams.toString()}`);
   };
 
   return <Select {...props} onChange={handleChange} defaultValue={start} />;

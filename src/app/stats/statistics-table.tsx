@@ -9,9 +9,14 @@ import { lang } from 'utils/language';
 interface StatisticsTableProps {
   start: Date;
   end: Date;
+  showBoner: boolean;
 }
 
-const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
+const StatisticsTable = async ({
+  start,
+  end,
+  showBoner,
+}: StatisticsTableProps) => {
   const stats = await api.stats.get.query({
     start,
     end,
@@ -96,17 +101,14 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                 <th className='px-1 text-center'>
                   {lang('Närvaro', 'Attendence')}
                 </th>
+                {showBoner && <th className='px-1 text-center'>Fjång</th>}
               </tr>
             </thead>
             <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
-                // let addFjangDivider = false;
                 let addMemberDivider = false;
-                // if (Math.ceil(lastAttendence * 100) >= 100 && Math.ceil(stat.attendence * 100) < 100) {
-                //   addFjangDivider = true;
-                // }
                 if (
                   Math.ceil(lastAttendence * 100) >= 50 &&
                   Math.ceil(stat.attendence * 100) < 50
@@ -116,17 +118,6 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                 lastAttendence = stat.attendence;
                 return (
                   <React.Fragment key={stat.id}>
-                    {/* {addFjangDivider && (
-                      <tr style={{ border: '0' }}>
-                        <td colSpan={5} style={{ textAlign: 'center' }}>
-                          <Divider
-                            color='red'
-                            label='Fjång'
-                            labelPosition='center'
-                          />
-                        </td>
-                      </tr>
-                    )} */}
                     {addMemberDivider && (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>
@@ -145,10 +136,14 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                         <CorpsDisplay corps={stat} />
                       </td>
                       <td className='text-center'>{stat.gigsAttended}</td>
-                      <td
-                        align='center'
-                        style={{ paddingLeft: '0px' }}
-                      >{`${Math.ceil(stat.attendence * 100)}%`}</td>
+                      <td className='pl-0 text-center'>
+                        {`${Math.ceil(stat.attendence * 100)}%`}
+                      </td>
+                      {showBoner && (
+                        <td className='pl-0 text-center'>
+                          {`${Math.ceil(stat.bonerAttendence * 100)}%`}
+                        </td>
+                      )}
                     </tr>
                   </React.Fragment>
                 );
