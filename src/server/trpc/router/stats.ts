@@ -38,6 +38,7 @@ export const statsRouter = router({
         lastName: string;
         nickName: string | null;
         gigsAttended: number;
+        maxPossibleGigs: number;
       };
 
       const corpsStatsQuery = ctx.prisma.$queryRaw<CorpsStats[]>`
@@ -47,12 +48,17 @@ export const statsRouter = router({
           firstName,
           lastName,
           nickName,
-          SUM(points) AS gigsAttended
+          SUM(CASE WHEN attended THEN points ELSE 0 END) AS gigsAttended,
+          SUM(
+            CASE WHEN NOT COALESCE(attended, false) AND Gig.countsPositively = 1
+              THEN 0
+              ELSE points
+            END
+          ) AS maxPossibleGigs
         FROM Gig
         CROSS JOIN Corps
         LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
         WHERE Gig.date BETWEEN ${start} AND ${end}
-        AND attended = true
         AND (Corps.id = ${corpsId} OR ${!selfOnly})
         GROUP BY Corps.id
         HAVING gigsAttended > 0 OR ${selfOnly}
@@ -72,7 +78,7 @@ export const statsRouter = router({
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsStats = res[2];
 
-      return {
+      const ret = {
         corpsIds: corpsStats.map((corps) => corps.id),
         nbrOfGigs,
         positivelyCountedGigs,
@@ -87,6 +93,11 @@ export const statsRouter = router({
                 nbrOfGigs - positivelyCountedGigs > 0
                   ? corps.gigsAttended / (nbrOfGigs - positivelyCountedGigs)
                   : 1,
+              // fjång == boner
+              bonerAttendence:
+                corps.maxPossibleGigs === 0
+                  ? 1.0
+                  : corps.gigsAttended / corps.maxPossibleGigs,
             };
             return acc;
           },
@@ -94,12 +105,15 @@ export const statsRouter = router({
             string,
             CorpsStats & {
               attendence: number;
+              bonerAttendence: number;
               fullName: string;
               displayName: string;
             }
           >,
         ),
       };
+
+      return ret;
     }),
 
   getManyPoints: protectedProcedure

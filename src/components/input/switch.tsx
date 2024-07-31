@@ -3,7 +3,7 @@
 import React, { InputHTMLAttributes, useEffect, useState } from 'react';
 import { cn } from '../../utils/class-names';
 
-type SwitchProps = Omit<
+export type SwitchProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'onChange' | 'checked' | 'defaultChecked' | 'value'
 > & {
