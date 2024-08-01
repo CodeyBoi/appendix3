@@ -6,6 +6,7 @@ import { api } from 'trpc/react';
 import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
 import TextInput from 'components/input/text-input';
+import Restricted from 'components/restricted';
 
 const defaultValues = {
   title: '',
@@ -93,20 +94,22 @@ const SongForm = ({ song }: SongFormProps) => {
         />
         <div className='flex items-center justify-end gap-4'>
           {song && (
-            <Button
-              className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
-              color='transparent'
-              compact
-              onClick={async () => {
-                if (
-                  window.confirm('Är du säker på att du vill ta bort sången?')
-                ) {
-                  await removeMutation.mutateAsync({ id: song.id });
-                }
-              }}
-            >
-              RADERA SÅNG
-            </Button>
+            <Restricted permissions={'manageCorps'}>
+              <Button
+                className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
+                color='transparent'
+                compact
+                onClick={async () => {
+                  if (
+                    window.confirm('Är du säker på att du vill ta bort sången?')
+                  ) {
+                    await removeMutation.mutateAsync({ id: song.id });
+                  }
+                }}
+              >
+                RADERA SÅNG
+              </Button>
+            </Restricted>
           )}
           <Button type='submit'>
             {(newSong ? 'Skapa' : 'Uppdatera') + ' sång'}
