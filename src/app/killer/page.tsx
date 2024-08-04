@@ -271,9 +271,7 @@ const KillerPage = async () => {
                     </div>
                     <div className='flex gap-2'>
                       {lang('Ord:', 'Word:')}
-                      <div>
-                        {player.target.word}
-                      </div>
+                      <div>{player.target.word}</div>
                     </div>
                   </div>
                 </div>
