@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { router, protectedProcedure, restrictedProcedure } from '../trpc';
 import { z } from 'zod';
+import { numberAndFullName } from 'utils/corps';
 
 type Word = {
   sv: string;
@@ -253,10 +254,24 @@ export const killerRouter = router({
       await ctx.prisma.$transaction(
         shuffledParticipants.map((participant, index) => {
           // If we have run out of words, just pick a random one
-          const gameWords =
-            usedWords.length < WORDS.length
-              ? WORDS.filter((word) => !usedWords.includes(word.sv))
-              : WORDS;
+
+          // const gameWords =
+          //   usedWords.length < WORDS.length
+          //     ? WORDS.filter((word) => !usedWords.includes(word.sv))
+          //     : WORDS;
+          const gameWords = game.participants
+            .filter(
+              (participant) =>
+                !usedWords.includes(numberAndFullName(participant.corps)),
+            )
+            .map(
+              (participant) =>
+                ({
+                  sv: numberAndFullName(participant.corps),
+                  en: numberAndFullName(participant.corps),
+                }) as Word,
+            );
+
           const word = gameWords[
             Math.floor(Math.random() * gameWords.length)
           ] as Word;
@@ -333,7 +348,11 @@ export const killerRouter = router({
           },
         },
         include: {
-          participants: true,
+          participants: {
+            include: {
+              corps: true,
+            },
+          },
         },
       });
 
@@ -346,7 +365,22 @@ export const killerRouter = router({
 
       const usedWords =
         game.participants.map((participant) => participant.word) ?? [];
-      const gameWords = WORDS.filter((word) => !usedWords.includes(word.sv));
+      // const gameWords = WORDS.filter((word) => !usedWords.includes(word.sv));
+      const gameWords = game.participants
+        .filter(
+          (participant) =>
+            !usedWords.includes(numberAndFullName(participant.corps)),
+        )
+        .map(
+          (participant) =>
+            ({
+              sv: numberAndFullName(participant.corps),
+              en: numberAndFullName(participant.corps),
+            }) as Word,
+        );
+      if (gameWords.length === 0) {
+        gameWords.push(WORDS[0] as Word);
+      }
       const word = gameWords[
         Math.floor(Math.random() * gameWords.length)
       ] as Word;
@@ -391,7 +425,13 @@ export const killerRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { word } = input;
+      // Remove p.e. or number in front of word to make that part non-mandatory
+      const word = input.word
+        .toLowerCase()
+        .replace(/^(p\.e\.)/, '')
+        .replace(/^#\d*/, '')
+        .trim();
+
       const corpsId = ctx.session.user.corps.id;
 
       const date = new Date();
@@ -444,16 +484,21 @@ export const killerRouter = router({
         throw new Error('Corps is not in this game');
       }
 
-      const svWord = killer?.target?.target?.word;
-      const enWord = killer?.target?.target?.wordEnglish;
+      const svWord = killer?.target?.target?.word
+        .toLowerCase()
+        .replace(/^(p\.e\.)/, '')
+        .replace(/^#\d*/, '')
+        .trim();
+      const enWord = killer?.target?.target?.wordEnglish
+        .toLowerCase()
+        .replace(/^(p\.e\.)/, '')
+        .replace(/^#\d*/, '')
+        .trim();
       if (!svWord || !enWord) {
         throw new Error('No word for your target found');
       }
 
-      if (
-        svWord !== word.trim().toLowerCase() &&
-        enWord !== word.trim().toLowerCase()
-      ) {
+      if (svWord !== word && enWord !== word) {
         return {
           success: false,
           message: 'Fel ord',
