@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const Statistics = ({
   searchParams,
 }: {
-  searchParams: { start?: string; end?: string; };
+  searchParams: { start?: string; end?: string };
 }) => {
   if (!searchParams || !searchParams.end || !searchParams.start) {
     const { start, end } = calcOperatingYearInterval(getOperatingYear());

@@ -11,10 +11,7 @@ interface StatisticsTableProps {
   end: Date;
 }
 
-const StatisticsTable = async ({
-  start,
-  end,
-}: StatisticsTableProps) => {
+const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const stats = await api.stats.get.query({
     start,
     end,

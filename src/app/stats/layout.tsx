@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react';
 import StatsYearSelect from './year-select';
 import { getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
-import ParamsSwitch from 'components/input/params-switch';
-import Restricted from 'components/restricted';
 
 const startOperatingYear = 2010;
 const operatingYears = Array.from(

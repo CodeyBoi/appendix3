@@ -32,8 +32,8 @@ const MultiSelect = ({
     onChange?.(selectedOptions.map((o) => o.value));
   };
 
-  const defaultValue = options.filter(
-    (o) => defaultValueProp?.includes(o.value),
+  const defaultValue = options.filter((o) =>
+    defaultValueProp?.includes(o.value),
   );
 
   useEffect(() => {
