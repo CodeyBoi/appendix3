@@ -9,13 +9,11 @@ import { lang } from 'utils/language';
 interface StatisticsTableProps {
   start: Date;
   end: Date;
-  showBoner: boolean;
 }
 
 const StatisticsTable = async ({
   start,
   end,
-  showBoner,
 }: StatisticsTableProps) => {
   const stats = await api.stats.get.query({
     start,
@@ -101,7 +99,6 @@ const StatisticsTable = async ({
                 <th className='px-1 text-center'>
                   {lang('Närvaro', 'Attendence')}
                 </th>
-                {showBoner && <th className='px-1 text-center'>Fjång</th>}
               </tr>
             </thead>
             <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
@@ -139,11 +136,6 @@ const StatisticsTable = async ({
                       <td className='pl-0 text-center'>
                         {`${Math.ceil(stat.attendence * 100)}%`}
                       </td>
-                      {showBoner && (
-                        <td className='pl-0 text-center'>
-                          {`${Math.ceil(stat.bonerAttendence * 100)}%`}
-                        </td>
-                      )}
                     </tr>
                   </React.Fragment>
                 );

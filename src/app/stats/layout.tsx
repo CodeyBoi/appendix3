@@ -28,12 +28,6 @@ const StatsLayout = ({ children }: { children: ReactNode }) => {
             label={lang('Verksamhetsår', 'Operating year')}
           />
         </div>
-        <Restricted permissions={'manageCorps'}>
-          <ParamsSwitch
-            paramName='showBoner'
-            label={lang('Visa fjångstatistik', 'Show fjång stats')}
-          />
-        </Restricted>
       </div>
       {children}
     </div>
