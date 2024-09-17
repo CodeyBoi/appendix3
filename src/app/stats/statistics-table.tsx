@@ -69,8 +69,6 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
         )
       : undefined;
 
-  let lastAttendence = -516.0;
-
   return (
     <>
       {corpsIds && corpsIds.length === 0 && (
@@ -102,7 +100,6 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
-                lastAttendence = stat.attendence;
                 return (
                   <React.Fragment key={stat.id}>
                     <tr>
