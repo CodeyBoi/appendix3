@@ -105,29 +105,9 @@ const StatisticsTable = async ({
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
-                let addMemberDivider = false;
-                if (
-                  Math.ceil(lastAttendence * 100) >= 50 &&
-                  Math.ceil(stat.attendence * 100) < 50
-                ) {
-                  addMemberDivider = true;
-                }
                 lastAttendence = stat.attendence;
                 return (
                   <React.Fragment key={stat.id}>
-                    {addMemberDivider && (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center' }}>
-                          <div className='flex flex-nowrap items-center py-1'>
-                            <div className='h-px grow bg-red-600' />
-                            <div className='px-2 text-xs text-red-600'>
-                              {lang('Nummer', 'Number')}
-                            </div>
-                            <div className='h-px grow bg-red-600' />
-                          </div>
-                        </td>
-                      </tr>
-                    )}
                     <tr>
                       <td className='py-1'>
                         <CorpsDisplay corps={stat} />
