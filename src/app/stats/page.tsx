@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const Statistics = ({
   searchParams,
 }: {
-  searchParams: { start?: string; end?: string; showBoner?: string };
+  searchParams: { start?: string; end?: string; };
 }) => {
   if (!searchParams || !searchParams.end || !searchParams.start) {
     const { start, end } = calcOperatingYearInterval(getOperatingYear());
@@ -27,7 +27,6 @@ const Statistics = ({
 
   const start = new Date(searchParams.start);
   const end = new Date(searchParams.end);
-  const showBoner = !!searchParams.showBoner;
 
   return (
     <Suspense
@@ -36,7 +35,7 @@ const Statistics = ({
         <Loading msg={lang('Hämtar statistik...', 'Fetching statistics...')} />
       }
     >
-      <StatisticsTable start={start} end={end} showBoner={showBoner} />
+      <StatisticsTable start={start} end={end} />
     </Suspense>
   );
 };
