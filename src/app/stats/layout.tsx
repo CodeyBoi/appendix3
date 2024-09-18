@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react';
 import StatsYearSelect from './year-select';
 import { getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
-import ParamsSwitch from 'components/input/params-switch';
-import Restricted from 'components/restricted';
 
 const startOperatingYear = 2010;
 const operatingYears = Array.from(
@@ -28,12 +26,6 @@ const StatsLayout = ({ children }: { children: ReactNode }) => {
             label={lang('Verksamhetsår', 'Operating year')}
           />
         </div>
-        <Restricted permissions={'manageCorps'}>
-          <ParamsSwitch
-            paramName='showBoner'
-            label={lang('Visa fjångstatistik', 'Show fjång stats')}
-          />
-        </Restricted>
       </div>
       {children}
     </div>

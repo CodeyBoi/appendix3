@@ -204,8 +204,8 @@ const PersonalStats = () => {
     avgSignupDelayDays === 0
       ? 'samma dag'
       : avgSignupDelayDays === 1
-      ? 'nästa dag'
-      : 'efter ' + avgSignupDelayDays + ' dagar';
+        ? 'nästa dag'
+        : 'efter ' + avgSignupDelayDays + ' dagar';
   const attackText = `Attack är hur snabbt du anmäler dig till nya spelningar. När en spelning dykt upp i blindtarmen är du i snitt på hugget med en anmälan ${attackDaysText}!`;
 
   const strengthText = `Styrka är inte implementerat än lol. Just nu är det bara snittet av de andra fyra. Maila förslag pls.`;

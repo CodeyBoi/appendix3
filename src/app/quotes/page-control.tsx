@@ -10,14 +10,14 @@ const QuotePageControl = ({ defaultPage = '1' }: { defaultPage: string }) => {
     <div className='flex items-center justify-between'>
       {+page > 1 && (
         <Button onClick={() => setPage(Math.max(1, +page - 1).toString())}>
-          <div className='h-min w-min cursor-pointer rounded bg-red-600 p-1 text-white hover:bg-red-700'>
+          <div className='size-min cursor-pointer rounded bg-red-600 p-1 text-white hover:bg-red-700'>
             <IconArrowLeft />
           </div>
         </Button>
       )}
       <span>Sida {page}</span>
       <Button onClick={() => setPage((+page + 1).toString())}>
-        <div className='h-min w-min cursor-pointer rounded bg-red-600 p-1 text-white hover:bg-red-700'>
+        <div className='size-min cursor-pointer rounded bg-red-600 p-1 text-white hover:bg-red-700'>
           <IconArrowRight />
         </div>
       </Button>
