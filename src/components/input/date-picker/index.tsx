@@ -42,7 +42,7 @@ const DatePicker = ({
   return (
     <div className='relative mt-2 flex h-10 rounded border shadow-sm dark:border-neutral-800'>
       <input
-        className='absolute size-full grow rounded bg-transparent px-3 pb-1 pt-3 text-left'
+        className='absolute h-full w-full grow rounded bg-transparent px-3 pb-1 pt-3 text-left'
         type='text'
         value={value ? getDateString(value) : undefined}
         onChange={handleChange}
@@ -57,7 +57,7 @@ const DatePicker = ({
           </div>
         </label>
       )}
-      <div className='absolute right-0 flex size-10 items-center justify-center'>
+      <div className='absolute right-0 flex h-10 w-10 items-center justify-center'>
         <Popover
           position='left-bottom'
           target={

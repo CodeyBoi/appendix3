@@ -76,10 +76,10 @@ const Wheel = ({ options, onChange, value }: WheelProps) => {
   };
 
   return (
-    <div className='relative flex size-52 items-center justify-center rounded-full'>
+    <div className='relative flex h-52 w-52 items-center justify-center rounded-full'>
       {showSubmit && (
         <div
-          className='absolute z-10 flex size-12 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-white text-center text-xs font-bold uppercase text-black'
+          className='absolute z-10 flex h-12 w-12 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-white text-center text-xs font-bold uppercase text-black'
           onClick={handleClick}
         >
           anmäl
