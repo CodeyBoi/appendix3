@@ -16,7 +16,6 @@ const About = () => {
           <li>h.m. Hampus Wall</li>
           <li>#580 Hanna Nilsson</li>
           <li>!509 Hugo Rogmark</li>
-          <li>#558 Aron Paulsson</li>
         </ul>
         {lang(
           'Bjud dem gärna på ett streck eller dylikt om ni ser dem i vardagen. Vill man bidra med kod eller design kan man snacka med någon i ITK eller kolla in den publika ',

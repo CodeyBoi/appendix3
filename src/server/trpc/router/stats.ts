@@ -90,6 +90,11 @@ export const statsRouter = router({
               fullName,
               displayName: corps.nickName ?? fullName,
               attendence:
+                nbrOfGigs - positivelyCountedGigs > 0
+                  ? corps.gigsAttended / (nbrOfGigs - positivelyCountedGigs)
+                  : 1,
+              // fjång == boner
+              bonerAttendence:
                 corps.maxPossibleGigs === 0
                   ? 1.0
                   : corps.gigsAttended / corps.maxPossibleGigs,
@@ -100,6 +105,7 @@ export const statsRouter = router({
             string,
             CorpsStats & {
               attendence: number;
+              bonerAttendence: number;
               fullName: string;
               displayName: string;
             }

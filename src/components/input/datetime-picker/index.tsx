@@ -32,7 +32,7 @@ const DateTimePicker = ({
   const handleDateChange = (d: Date) => {
     const newDate = date
       ? new Date(date)
-      : (defaultValue ?? new Date(0, 0, 0, 0, 0, 0, 0));
+      : defaultValue ?? new Date(0, 0, 0, 0, 0, 0, 0);
     newDate.setFullYear(d.getFullYear());
     newDate.setMonth(d.getMonth());
     newDate.setDate(d.getDate());
@@ -44,8 +44,8 @@ const DateTimePicker = ({
     const now = new Date();
     const newDate = date
       ? new Date(date)
-      : (defaultValue ??
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0));
+      : defaultValue ??
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     newDate.setHours(d.getHours());
     newDate.setMinutes(d.getMinutes());
     setDate(newDate);
@@ -58,7 +58,7 @@ const DateTimePicker = ({
       target={
         <div className='relative mt-2 flex h-10 rounded border shadow-sm dark:border-neutral-800'>
           <input
-            className='absolute size-full grow cursor-pointer rounded bg-transparent px-3 pb-1 pt-3 text-left'
+            className='absolute h-full w-full grow cursor-pointer rounded bg-transparent px-3 pb-1 pt-3 text-left'
             type='text'
             value={value ? dayjs(value).format('YYYY-MM-DD HH:mm') : ''}
             placeholder={placeholder}
@@ -87,7 +87,7 @@ const DateTimePicker = ({
               </ActionIcon>
             </div>
           )}
-          <div className='absolute right-0 flex size-10 items-center justify-center text-red-600'>
+          <div className='absolute right-0 flex h-10 w-10 items-center justify-center text-red-600'>
             <IconCalendar />
           </div>
         </div>
