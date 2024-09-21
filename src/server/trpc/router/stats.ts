@@ -638,4 +638,47 @@ export const statsRouter = router({
       preliminaryNumber: currentMaxNumber + i + 1,
     }));
   }),
+
+  getStreak: protectedProcedure
+    .input(z.object({ corpsId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { corpsId = ctx.session.user.corps.id } = input;
+
+      const currentDate = new Date();
+      const recentGigs = await ctx.prisma.gig.findMany({
+        where: {
+          date: {
+            lte: currentDate,
+          },
+          points: {
+            gt: 0,
+          },
+        },
+        include: {
+          signups: {
+            where: {
+              corpsId,
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: 0x516,
+      });
+
+      let streak = 0;
+      for (const gig of recentGigs) {
+        const signup = gig.signups[0];
+        if (!signup || !signup.attended) {
+          if (!gig.countsPositively) {
+            break;
+          }
+        } else {
+          streak++;
+        }
+      }
+
+      return { streak };
+    }),
 });

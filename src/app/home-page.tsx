@@ -66,9 +66,10 @@ const HomePage = async () => {
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [killerGame, killerPlayer] = await Promise.all([
+  const [killerGame, killerPlayer, { streak }] = await Promise.all([
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
+    api.stats.getStreak.query({}),
   ]);
 
   const hasntSignedUpForExistingKillerGame =
@@ -78,6 +79,8 @@ const HomePage = async () => {
     !killerPlayer;
 
   const gigs = await makeGigList();
+
+  const fire = '🔥'.repeat(Math.floor(streak / 10 + 1));
 
   if (!gigs) {
     return (
@@ -116,6 +119,14 @@ const HomePage = async () => {
           </>
         }
       >
+        <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
+          {fire}
+          {lang(
+            ` Din spelningstreak är ${streak}! `,
+            ` Your gig streak is ${streak}! `,
+          )}
+          {fire}
+        </div>
         <h2 className='text-2xl md:text-4xl'>
           {lang('Kommande spelningar', 'Upcoming gigs')}
         </h2>
