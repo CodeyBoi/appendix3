@@ -119,14 +119,16 @@ const HomePage = async () => {
           </>
         }
       >
-        <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
-          {fire}
-          {lang(
-            ` Din spelningstreak är ${streak}! `,
-            ` Your gig streak is ${streak}! `,
-          )}
-          {fire}
-        </div>
+        {streak >= 5 && (
+          <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
+            {fire}
+            {lang(
+              ` Din spelningstreak är ${streak} `,
+              ` Your gig streak is ${streak} `,
+            )}
+            {fire}
+          </div>
+        )}
         <h2 className='text-2xl md:text-4xl'>
           {lang('Kommande spelningar', 'Upcoming gigs')}
         </h2>

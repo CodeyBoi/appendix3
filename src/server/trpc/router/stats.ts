@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
+import dayjs from 'dayjs';
 
 export const statsRouter = router({
   get: protectedProcedure
@@ -643,8 +644,12 @@ export const statsRouter = router({
     .input(z.object({ corpsId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const { corpsId = ctx.session.user.corps.id } = input;
+<<<<<<< Updated upstream
       const currentDate = new Date();
       currentDate.setHours(0, 0, 0, 0);
+=======
+      const currentDate = dayjs(new Date()).subtract(1, 'day').toDate();
+>>>>>>> Stashed changes
       const recentGigs = await ctx.prisma.gig.findMany({
         where: {
           date: {
