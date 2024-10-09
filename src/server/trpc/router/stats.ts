@@ -80,11 +80,14 @@ export const statsRouter = router({
               attended: true,
             },
           },
+          points: {
+            gt: 0,
+          },
         },
         include: {
           signups: true,
         },
-        take: 516,
+        take: 0x516,
       });
 
       const res = await ctx.prisma.$transaction([
@@ -110,10 +113,7 @@ export const statsRouter = router({
       let i = 0;
       for (const gig of recentGigs) {
         for (const signup of gig.signups.filter((e) => e.attended)) {
-          if (
-            corpsStreaks[signup.corpsId] &&
-            corpsStreaks[signup.corpsId] == i
-          ) {
+          if (corpsStreaks[signup.corpsId] == i) {
             corpsStreaks[signup.corpsId] = i + 1;
           }
         }
