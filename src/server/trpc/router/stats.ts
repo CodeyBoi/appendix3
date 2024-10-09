@@ -70,17 +70,58 @@ export const statsRouter = router({
           firstName;
       `;
 
+      const recentGigsQuery = ctx.prisma.gig.findMany({
+        orderBy: {
+          date: 'desc',
+        },
+        where: {
+          signups: {
+            some: {
+              attended: true,
+            },
+          },
+        },
+        include: {
+          signups: true,
+        },
+        take: 516,
+      });
+
       const res = await ctx.prisma.$transaction([
         nbrOfGigsQuery,
         positivelyCountedGigsQuery,
         corpsStatsQuery,
+        recentGigsQuery,
       ]);
       const nbrOfGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsStats = res[2];
+      const recentGigs = res[3];
+
+      const corpsIds = corpsStats.map((corps) => corps.id);
+
+      const corpsStreaks = corpsIds.reduce(
+        (acc, id) => {
+          acc[id] = 0;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+      let i = 0;
+      for (const gig of recentGigs) {
+        for (const signup of gig.signups.filter((e) => e.attended)) {
+          if (
+            corpsStreaks[signup.corpsId] &&
+            corpsStreaks[signup.corpsId] == i
+          ) {
+            corpsStreaks[signup.corpsId] = i + 1;
+          }
+        }
+        i++;
+      }
 
       const ret = {
-        corpsIds: corpsStats.map((corps) => corps.id),
+        corpsIds,
         nbrOfGigs,
         positivelyCountedGigs,
         corpsStats: corpsStats.reduce(
@@ -94,6 +135,7 @@ export const statsRouter = router({
                 corps.maxPossibleGigs === 0
                   ? 1.0
                   : corps.gigsAttended / corps.maxPossibleGigs,
+              streak: corpsStreaks[corps.id] ?? 0,
             };
             return acc;
           },
@@ -103,6 +145,7 @@ export const statsRouter = router({
               attendence: number;
               fullName: string;
               displayName: string;
+              streak: number;
             }
           >,
         ),
