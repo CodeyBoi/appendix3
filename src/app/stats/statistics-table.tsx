@@ -103,8 +103,9 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                 return (
                   <React.Fragment key={stat.id}>
                     <tr>
-                      <td className='py-1'>
+                      <td className='flex gap-2 py-1'>
                         <CorpsDisplay corps={stat} />
+                        {stat.streak >= 3 && `${stat.streak}🔥`}
                       </td>
                       <td className='text-center'>{stat.gigsAttended}</td>
                       <td className='pl-0 text-center'>
