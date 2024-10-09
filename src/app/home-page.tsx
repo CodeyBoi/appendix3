@@ -119,7 +119,7 @@ const HomePage = async () => {
           </>
         }
       >
-        {streak >= 5 && (
+        {streak >= 3 && (
           <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
             {fire}
             {lang(
