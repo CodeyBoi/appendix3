@@ -16,7 +16,11 @@ export const statsRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end = dayjs().add(1, 'year').toDate(), selfOnly = false } = input;
+      const {
+        start,
+        end = dayjs().add(1, 'year').toDate(),
+        selfOnly = false,
+      } = input;
       const corpsId = ctx.session.user.corps.id;
 
       const where = {
