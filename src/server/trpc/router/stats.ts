@@ -70,6 +70,13 @@ export const statsRouter = router({
         CROSS JOIN Corps
         LEFT JOIN GigSignup ON gigId = Gig.id AND corpsId = Corps.id
         WHERE Gig.date BETWEEN ${start} AND ${end}
+        AND points > 0
+        AND EXISTS (
+          SELECT *
+          FROM GigSignup
+          WHERE gigId = Gig.id
+          AND attended
+        )
         AND (Corps.id = ${corpsId} OR ${!selfOnly})
         GROUP BY Corps.id
         HAVING gigsAttended > 0 OR ${selfOnly}
