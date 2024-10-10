@@ -66,11 +66,13 @@ const HomePage = async () => {
   );
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [killerGame, killerPlayer, { streak }] = await Promise.all([
+  const [killerGame, killerPlayer, streaks] = await Promise.all([
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
     api.stats.getStreak.query({}),
   ]);
+
+  const streak = streaks.streaks[streaks.corpsIds[0] ?? ''] ?? 0;
 
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&

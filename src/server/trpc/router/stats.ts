@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
-import dayjs from 'dayjs';
+import { initObject } from 'utils/array';
 
 export const statsRouter = router({
   get: protectedProcedure
@@ -15,19 +15,24 @@ export const statsRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, selfOnly } = input;
+      const { start, end, selfOnly = false } = input;
       const corpsId = ctx.session.user.corps.id;
+
+      const where = {
+        date: { gte: start, lte: end },
+        signups: { some: { attended: true } },
+        points: { gt: 0 },
+      };
+
       const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
-        where: {
-          date: { gte: start, lte: end },
-        },
+        where,
       });
 
       const positivelyCountedGigsQuery = ctx.prisma.gig.aggregate({
         _sum: { points: true },
         where: {
-          date: { gte: start, lte: end },
+          ...where,
           countsPositively: true,
         },
       });
@@ -70,85 +75,43 @@ export const statsRouter = router({
           firstName;
       `;
 
-      const recentGigsQuery = ctx.prisma.gig.findMany({
-        orderBy: {
-          date: 'desc',
-        },
-        where: {
-          signups: {
-            some: {
-              attended: true,
-            },
-          },
-          points: {
-            gt: 0,
-          },
-        },
-        include: {
-          signups: true,
-        },
-        take: 0x516,
-      });
-
       const res = await ctx.prisma.$transaction([
         nbrOfGigsQuery,
         positivelyCountedGigsQuery,
         corpsStatsQuery,
-        recentGigsQuery,
       ]);
       const nbrOfGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
-      const corpsStats = res[2];
-      const recentGigs = res[3];
-
-      const corpsIds = corpsStats.map((corps) => corps.id);
-
-      const corpsStreaks = corpsIds.reduce(
-        (acc, id) => {
-          acc[id] = 0;
+      const corpsIds = res[2].map((corps) => corps.id);
+      const corpsStats = res[2].reduce(
+        (acc, corps) => {
+          const fullName = `${corps.firstName} ${corps.lastName}`;
+          acc[corps.id] = {
+            ...corps,
+            fullName,
+            displayName: corps.nickName ?? fullName,
+            attendence:
+              corps.maxPossibleGigs === 0
+                ? 1.0
+                : corps.gigsAttended / corps.maxPossibleGigs,
+          };
           return acc;
         },
-        {} as Record<string, number>,
-      );
-      let i = 0;
-      for (const gig of recentGigs) {
-        for (const signup of gig.signups.filter((e) => e.attended)) {
-          if (corpsStreaks[signup.corpsId] == i) {
-            corpsStreaks[signup.corpsId] = i + 1;
+        {} as Record<
+          string,
+          CorpsStats & {
+            attendence: number;
+            fullName: string;
+            displayName: string;
           }
-        }
-        i++;
-      }
+        >,
+      );
 
       const ret = {
         corpsIds,
         nbrOfGigs,
         positivelyCountedGigs,
-        corpsStats: corpsStats.reduce(
-          (acc, corps) => {
-            const fullName = `${corps.firstName} ${corps.lastName}`;
-            acc[corps.id] = {
-              ...corps,
-              fullName,
-              displayName: corps.nickName ?? fullName,
-              attendence:
-                corps.maxPossibleGigs === 0
-                  ? 1.0
-                  : corps.gigsAttended / corps.maxPossibleGigs,
-              streak: corpsStreaks[corps.id] ?? 0,
-            };
-            return acc;
-          },
-          {} as Record<
-            string,
-            CorpsStats & {
-              attendence: number;
-              fullName: string;
-              displayName: string;
-              streak: number;
-            }
-          >,
-        ),
+        corpsStats,
       };
 
       return ret;
@@ -684,14 +647,15 @@ export const statsRouter = router({
   }),
 
   getStreak: protectedProcedure
-    .input(z.object({ corpsId: z.string().optional() }))
+    .input(z.object({ corpsIds: z.array(z.string()).optional() }))
     .query(async ({ ctx, input }) => {
-      const { corpsId = ctx.session.user.corps.id } = input;
-      const currentDate = dayjs(new Date()).subtract(1, 'day').toDate();
+      const { corpsIds = [ctx.session.user.corps.id] } = input;
       const recentGigs = await ctx.prisma.gig.findMany({
         where: {
-          date: {
-            lte: currentDate,
+          signups: {
+            some: {
+              attended: true,
+            },
           },
           points: {
             gt: 0,
@@ -700,7 +664,9 @@ export const statsRouter = router({
         include: {
           signups: {
             where: {
-              corpsId,
+              corpsId: {
+                in: corpsIds,
+              },
             },
           },
         },
@@ -710,18 +676,27 @@ export const statsRouter = router({
         take: 0x516,
       });
 
-      let streak = 0;
-      for (const gig of recentGigs) {
-        const signup = gig.signups[0];
-        if (!signup || !signup.attended) {
-          if (!gig.countsPositively) {
-            break;
+      const streaks = initObject(corpsIds, 0);
+      for (const corpsId of corpsIds) {
+        for (const gig of recentGigs) {
+          const signup = gig.signups.find(
+            (signup) => signup.corpsId === corpsId && signup.attended,
+          );
+          if (signup) {
+            streaks[corpsId] = (streaks[corpsId] ?? 0) + 1;
+          } else {
+            if (!gig.countsPositively) {
+              break;
+            }
           }
-        } else {
-          streak++;
         }
       }
 
-      return { streak };
+      corpsIds.sort((a, b) => (streaks[b] ?? 0) - (streaks[a] ?? 0));
+
+      return {
+        corpsIds,
+        streaks,
+      };
     }),
 });

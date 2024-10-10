@@ -55,3 +55,5 @@ export const aprilFoolsInstrumentLabel = (instrument: string) => {
     return aprilFoolsInstruments[instrument.toLowerCase()] ?? 'Okänd banjo';
   }
 };
+
+export const startOperatingYear = 2010;

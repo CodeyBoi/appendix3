@@ -3,3 +3,15 @@ export const range = (start: number, stop: number, step = 1) =>
     { length: Math.ceil((stop - start) / step) },
     (_value, index) => start + index * step,
   );
+
+export const initObject = <K extends string | number | symbol, V>(
+  keys: K[],
+  initialValue: V,
+) =>
+  keys.reduce(
+    (acc, key) => {
+      acc[key] = initialValue;
+      return acc;
+    },
+    {} as Record<K, V>,
+  );
