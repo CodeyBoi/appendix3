@@ -4,6 +4,7 @@ import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import { initObject } from 'utils/array';
+import dayjs from 'dayjs';
 
 export const statsRouter = router({
   get: protectedProcedure
@@ -15,7 +16,7 @@ export const statsRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, selfOnly = false } = input;
+      const { start, end = dayjs().add(1, 'year').toDate(), selfOnly = false } = input;
       const corpsId = ctx.session.user.corps.id;
 
       const where = {
