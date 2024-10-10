@@ -662,6 +662,9 @@ export const statsRouter = router({
     .input(z.object({ corpsIds: z.array(z.string()).optional() }))
     .query(async ({ ctx, input }) => {
       const { corpsIds = [ctx.session.user.corps.id] } = input;
+
+      const streaks = initObject(corpsIds, 0);
+
       const recentGigs = await ctx.prisma.gig.findMany({
         where: {
           signups: {
@@ -685,20 +688,64 @@ export const statsRouter = router({
         orderBy: {
           date: 'desc',
         },
-        take: 0x516,
+        take: 50,
       });
 
-      const streaks = initObject(corpsIds, 0);
       for (const corpsId of corpsIds) {
-        for (const gig of recentGigs) {
-          const signup = gig.signups.find(
-            (signup) => signup.corpsId === corpsId && signup.attended,
-          );
-          if (signup) {
-            streaks[corpsId] = (streaks[corpsId] ?? 0) + 1;
-          } else {
-            if (!gig.countsPositively) {
+        let isDone = false;
+        let gigIdx = 0;
+
+        while (!isDone) {
+          while (gigIdx < recentGigs.length) {
+            const gig = recentGigs[gigIdx];
+            if (!gig) {
               break;
+            }
+
+            const signup = gig.signups.find(
+              (signup) => signup.corpsId === corpsId,
+            );
+            if (signup && signup.attended) {
+              streaks[corpsId] = (streaks[corpsId] ?? 0) + 1;
+            } else {
+              if (!gig.countsPositively) {
+                isDone = true;
+                break;
+              }
+            }
+            gigIdx++;
+          }
+
+          // If we aren't done yet we need to collect more gigs
+          if (!isDone) {
+            const moreGigs = await ctx.prisma.gig.findMany({
+              where: {
+                signups: {
+                  some: {
+                    attended: true,
+                  },
+                },
+                points: {
+                  gt: 0,
+                },
+              },
+              include: {
+                signups: {
+                  where: {
+                    corpsId: {
+                      in: corpsIds,
+                    },
+                  },
+                },
+              },
+              orderBy: {
+                date: 'desc',
+              },
+              take: 50,
+              skip: recentGigs.length,
+            });
+            for (const gig of moreGigs) {
+              recentGigs.push(gig);
             }
           }
         }
