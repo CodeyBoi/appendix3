@@ -8,7 +8,7 @@ import { lang } from 'utils/language';
 
 interface StatisticsTableProps {
   start: Date;
-  end: Date;
+  end: Date | undefined;
 }
 
 const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
@@ -19,11 +19,10 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
 
+  const corpsStreaks = await api.stats.getStreak.query({ corpsIds });
   const corps = await api.corps.getSelf.query();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const isNow = today <= end;
+  const isNow = !end;
 
   const nbrOfGigsMsg =
     nbrOfGigs !== 0
@@ -100,12 +99,13 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
+                const streak = corpsStreaks.streaks[id] ?? 0;
                 return (
                   <React.Fragment key={stat.id}>
                     <tr>
                       <td className='flex gap-2 py-1'>
                         <CorpsDisplay corps={stat} />
-                        {stat.streak >= 3 && `${stat.streak}🔥`}
+                        {streak >= 3 && `${streak}🔥`}
                       </td>
                       <td className='text-center'>{stat.gigsAttended}</td>
                       <td className='pl-0 text-center'>
