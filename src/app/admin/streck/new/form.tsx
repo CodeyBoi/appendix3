@@ -54,20 +54,10 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
         data.push({
           corpsId: corps.id,
           item: item.name,
-          amount: -formValue,
+          amount: +formValue,
           pricePer: item.price,
         });
       }
-      const deposit = values[`${corps.id}:Insättning`]?.trim();
-      if (!deposit) {
-        continue;
-      }
-      data.push({
-        corpsId: corps.id,
-        item: 'Insättning',
-        amount: 1,
-        pricePer: +deposit,
-      });
     }
     mutation.mutate({ transactions: data });
   };
@@ -98,7 +88,6 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
                   className='px-1'
                 >{`${item.name} ${item.price}p`}</th>
               ))}
-              <th className='px-1'>Insättning</th>
             </tr>
           </thead>
           <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
@@ -120,13 +109,6 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
                     />
                   </td>
                 ))}
-                <td className='px-1'>
-                  <input
-                    className='w-16 bg-transparent px-2 py-0.5'
-                    type='number'
-                    {...register(`${corps.id}:Insättning`)}
-                  />
-                </td>
               </tr>
             ))}
           </tbody>

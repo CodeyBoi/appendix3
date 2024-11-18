@@ -24,7 +24,7 @@ const AdminStreckPage = async () => {
     );
 
   return (
-    <div className='flex flex-col gap-4 md:flex-row-reverse'>
+    <div className='flex flex-col gap-4'>
       <h2>Streckkonton</h2>
       <div className='flex flex-col gap-2'>
         <Button href='streck/new'>
@@ -72,9 +72,9 @@ const AdminStreckPage = async () => {
                     <CorpsDisplay corps={transaction.corps} />
                   </td>
                   <td className='px-1'>{transaction.item}</td>
-                  <td className='px-1'>{-transaction.pricePer}</td>
-                  <td className='px-1'>{transaction.amount}</td>
-                  <td className='px-1'>{-transaction.totalPrice}</td>
+                  <td className='px-1 text-right'>{transaction.pricePer}</td>
+                  <td className='px-1 text-right'>{transaction.amount}</td>
+                  <td className='px-1 text-right'>{transaction.totalPrice}</td>
                 </tr>
               ))}
             </tbody>

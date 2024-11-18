@@ -33,7 +33,7 @@ export const streckRouter = router({
         balanceListQuery,
       ]);
 
-      const balance = balanceList.reduce((acc, t) => acc + t.totalPrice, 0);
+      const balance = -balanceList.reduce((acc, t) => acc + t.totalPrice, 0);
 
       return {
         balance,
@@ -77,7 +77,7 @@ export const streckRouter = router({
           z.object({
             corpsId: z.string().cuid(),
             item: z.string(),
-            amount: z.number().int(),
+            amount: z.number().int().positive(),
             pricePer: z.number().int(),
             time: z.date().optional(),
           }),
@@ -175,7 +175,7 @@ export const streckRouter = router({
           firstName,
           lastName,
           nickName,
-          SUM(COALESCE(amount * pricePer, 0)) AS balance
+          SUM(COALESCE(amount * -pricePer, 0)) AS balance
         FROM Corps
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
