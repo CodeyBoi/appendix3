@@ -1,5 +1,4 @@
 import React from 'react';
-import CorpsDisplay from 'components/corps/display';
 import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 

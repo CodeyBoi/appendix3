@@ -1,4 +1,3 @@
-import TransactionsTable from 'app/admin/streck/view/transactions-table';
 import Loading from 'components/loading';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
