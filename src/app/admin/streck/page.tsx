@@ -1,14 +1,20 @@
-import { IconCoins, IconDownload, IconTablePlus } from '@tabler/icons-react';
-import CorpsDisplay from 'components/corps/display';
+import {
+  IconCoins,
+  IconDownload,
+  IconSearch,
+  IconTablePlus,
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
+import Loading from 'components/loading';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { displayName } from 'utils/corps';
+import { lang } from 'utils/language';
+import TransactionsTable from './view/transactions-table';
 
 const AdminStreckPage = async () => {
-  const [transactions, activeCorps, items] = await Promise.all([
-    api.streck.getTransactions.query({}),
+  const [activeCorps, items] = await Promise.all([
     api.streck.getActiveCorps.query({}),
     api.streck.getItems.query(),
   ]);
@@ -26,59 +32,48 @@ const AdminStreckPage = async () => {
   return (
     <div className='flex flex-col gap-4'>
       <h2>Streckkonton</h2>
-      <div className='flex flex-col gap-2'>
-        <Button href='streck/new'>
-          <IconTablePlus />
-          Inför ny strecklista...
-        </Button>
-        <a
-          href={downloadLink}
-          download={`Strecklista ${dayjs(new Date()).format('YYYY-MM-DD')}.csv`}
-        >
-          <Button>
-            <IconDownload />
-            Ladda ner som CSV
+      <div className='flex flex-col md:flex-row'>
+        <div className='flex grow flex-col gap-2'>
+          <h3>Senaste händelser</h3>
+          <div className='overflow-x-auto'>
+            <Suspense
+              fallback={
+                <Loading
+                  msg={lang(
+                    'Hämtar transaktioner...',
+                    'Fetching transactions...',
+                  )}
+                />
+              }
+            >
+              <TransactionsTable />
+            </Suspense>
+          </div>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <Button href='streck/view'>
+            <IconSearch />
+            Se transaktioner...
           </Button>
-        </a>
-        <Button href='/admin/streck/prices'>
-          <IconCoins />
-          Ändra priser...
-        </Button>
-      </div>
-      <div className='flex grow flex-col gap-2'>
-        <h3>Senaste händelser</h3>
-        <div className='overflow-x-auto'>
-          <table className='table text-sm'>
-            <thead>
-              <tr className='text-left'>
-                <th className='px-1'>Tid</th>
-                <th className='px-1'>Corps</th>
-                <th className='px-1'>Artikel</th>
-                <th className='px-1'>Styckpris</th>
-                <th className='px-1'>Antal</th>
-                <th className='px-1'>Total</th>
-              </tr>
-            </thead>
-            <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
-              {transactions.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className='divide-x divide-solid dark:divide-neutral-800'
-                >
-                  <td className='px-1'>
-                    {dayjs(transaction.time).format('YYYY-MM-DD HH:mm')}
-                  </td>
-                  <td className='px-1'>
-                    <CorpsDisplay corps={transaction.corps} />
-                  </td>
-                  <td className='px-1'>{transaction.item}</td>
-                  <td className='px-1 text-right'>{transaction.pricePer}</td>
-                  <td className='px-1 text-right'>{transaction.amount}</td>
-                  <td className='px-1 text-right'>{transaction.totalPrice}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Button href='streck/new'>
+            <IconTablePlus />
+            Inför ny strecklista...
+          </Button>
+          <a
+            href={downloadLink}
+            download={`Strecklista ${dayjs(new Date()).format(
+              'YYYY-MM-DD',
+            )}.csv`}
+          >
+            <Button>
+              <IconDownload />
+              Ladda ner som CSV
+            </Button>
+          </a>
+          <Button href='/admin/streck/prices'>
+            <IconCoins />
+            Ändra priser...
+          </Button>
         </div>
       </div>
     </div>

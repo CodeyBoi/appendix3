@@ -14,6 +14,16 @@ interface AdminStreckFormProps {
   items: PrismaStreckItem[];
 }
 
+const rowBackgroundColor = (balance: number) => {
+  if (balance < 0) {
+    return 'bg-red-100 dark:bg-red-900';
+  } else if (balance < 200) {
+    return 'bg-gray-100 dark:bg-gray-800';
+  } else {
+    return '';
+  }
+};
+
 const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
@@ -39,6 +49,7 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
     onSuccess: () => {
       router.push('/admin/streck');
       utils.streck.getActiveCorps.invalidate();
+      utils.streck.getTransactions.invalidate();
       router.refresh();
     },
   });
@@ -68,14 +79,7 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='max-w-md'>
-        <SelectCorps
-          label='Lägg till corps...'
-          onChange={(id) => {
-            setAdditionalCorps((old) => [...old, id]);
-          }}
-        />
-      </div>
+      <h2>Lägg till strecklista</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <table className='table text-sm'>
           <thead>
@@ -90,14 +94,14 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
               ))}
             </tr>
           </thead>
-          <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
+          <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800 rounded'>
             {activeCorps.map((corps) => (
               <tr
                 key={corps.id}
-                className='divide-x divide-solid dark:divide-neutral-800'
+                className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(corps.balance)}`}
               >
                 <td className='px-1'>
-                  <CorpsDisplay corps={corps} />
+                  <CorpsDisplay corps={corps} nameFormat='full-name' />
                 </td>
                 <td className='px-1 text-center'>{corps.balance}</td>
                 {items.map((item) => (
@@ -123,6 +127,14 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
           {isSubmitted && 'Skickad!'}
         </Button>
       </form>
+      <div className='max-w-md'>
+        <SelectCorps
+          label='Lägg till corps...'
+          onChange={(id) => {
+            setAdditionalCorps((old) => [...old, id]);
+          }}
+        />
+      </div>
     </div>
   );
 };

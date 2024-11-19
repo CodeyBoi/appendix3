@@ -2,42 +2,34 @@ import { z } from 'zod';
 import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
+import { initObject } from 'utils/array';
 
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure
-    .input(
-      z.object({
-        take: z.number().int().optional(),
-        skip: z.number().int().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { take = 50, skip = 0 } = input;
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
       const corpsId = ctx.session.user.corps.id;
-      const transactionsQuery = ctx.prisma.streckTransaction.findMany({
+      const transactions = await ctx.prisma.streckTransaction.findMany({
         where: {
           corpsId,
         },
-        take,
-        skip,
-      });
-      const balanceListQuery = ctx.prisma.streckTransaction.findMany({
-        select: {
-          totalPrice: true,
+        orderBy: {
+          time: 'asc',
         },
-        where: { corpsId },
       });
 
-      const [transactions, balanceList] = await Promise.all([
-        transactionsQuery,
-        balanceListQuery,
-      ]);
-
-      const balance = -balanceList.reduce((acc, t) => acc + t.totalPrice, 0);
+      let balance = 0;
+      const transactionsWithBalance = transactions.map((transaction) => {
+        balance -= transaction.totalPrice;
+        return {
+          ...transaction,
+          balance,
+        };
+      });
 
       return {
         balance,
-        transactions,
+        transactions: transactionsWithBalance.reverse(),
       };
     }),
 
@@ -54,7 +46,12 @@ export const streckRouter = router({
     .query(async ({ ctx, input }) => {
       const { start, end, corpsId, take = 50, skip = 0 } = input;
 
-      return ctx.prisma.streckTransaction.findMany({
+      type SummaryItem = {
+        amount: number;
+        totalPrice: number;
+      };
+
+      const data = await ctx.prisma.streckTransaction.findMany({
         include: {
           corps: true,
         },
@@ -68,6 +65,34 @@ export const streckRouter = router({
         take,
         skip,
       });
+
+      const items = Array.from(new Set(data.map((t) => t.item))).sort((a, b) =>
+        a.localeCompare(b),
+      );
+
+      const summary = data.reduce(
+        (acc, transaction) => {
+          const item = transaction.item.trim();
+          const oldValue = acc[item]
+            ? (acc[item] as SummaryItem)
+            : {
+                amount: 0,
+                totalPrice: 0,
+              };
+          acc[item] = {
+            amount: oldValue.amount + transaction.amount,
+            totalPrice: oldValue.totalPrice + transaction.totalPrice,
+          };
+          return acc;
+        },
+        initObject(items, { amount: 0, totalPrice: 0 }),
+      );
+
+      return {
+        data,
+        items,
+        summary: summary ?? {},
+      };
     }),
 
   addTransactions: restrictedProcedure('manageStreck')
@@ -77,7 +102,7 @@ export const streckRouter = router({
           z.object({
             corpsId: z.string().cuid(),
             item: z.string(),
-            amount: z.number().int().positive(),
+            amount: z.number().int().nonnegative(),
             pricePer: z.number().int(),
             time: z.date().optional(),
           }),
@@ -89,6 +114,15 @@ export const streckRouter = router({
 
       return await ctx.prisma.streckTransaction.createMany({
         data: transactions,
+      });
+    }),
+
+  removeTransaction: restrictedProcedure('manageStreck')
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.streckTransaction.delete({
+        where: { id },
       });
     }),
 
@@ -147,19 +181,47 @@ export const streckRouter = router({
 
       const { additionalCorps = [] } = input;
 
+      const dateFilter = {
+        gt: dayjs(new Date()).subtract(28, 'days').toDate(),
+      };
       const recentlyActiveCorps = (
-        await ctx.prisma.streckTransaction.findMany({
+        await ctx.prisma.corps.findMany({
           select: {
-            corpsId: true,
+            id: true,
           },
-          distinct: ['corpsId'],
+          distinct: ['id'],
           where: {
-            time: {
-              gt: dayjs(new Date()).subtract(28, 'days').toDate(),
-            },
+            OR: [
+              {
+                streckTransactions: {
+                  some: {
+                    time: dateFilter,
+                  },
+                },
+              },
+              {
+                rehearsals: {
+                  some: {
+                    rehearsal: {
+                      date: dateFilter,
+                    },
+                  },
+                },
+              },
+              {
+                gigSignups: {
+                  some: {
+                    attended: true,
+                    gig: {
+                      date: dateFilter,
+                    },
+                  },
+                },
+              },
+            ],
           },
         })
-      ).map((e) => e.corpsId);
+      ).map((e) => e.id);
 
       additionalCorps.push(...recentlyActiveCorps);
 
@@ -167,6 +229,8 @@ export const streckRouter = router({
         // This is to stop Prisma.join complaining about getting an empty array
         additionalCorps.push('DUMMY VALUE');
       }
+
+      console.log({ additionalCorps });
 
       const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
         SELECT

@@ -267,7 +267,10 @@ const KillerPage = async () => {
                   <div className='max-w-max rounded border border-gray-500 p-3 text-lg font-bold italic text-red-600 shadow'>
                     <div className='flex gap-2'>
                       {lang('Offer:', 'Target:')}
-                      <CorpsDisplay corps={player.target.corps} />
+                      <CorpsDisplay
+                        corps={player.target.corps}
+                        nameFormat='full-name'
+                      />
                     </div>
                     <div className='flex gap-2'>
                       {lang('Ord:', 'Word:')}
