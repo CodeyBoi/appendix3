@@ -94,11 +94,13 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
               ))}
             </tr>
           </thead>
-          <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800 rounded'>
+          <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
             {activeCorps.map((corps) => (
               <tr
                 key={corps.id}
-                className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(corps.balance)}`}
+                className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(
+                  corps.balance,
+                )}`}
               >
                 <td className='px-1'>
                   <CorpsDisplay corps={corps} nameFormat='full-name' />
