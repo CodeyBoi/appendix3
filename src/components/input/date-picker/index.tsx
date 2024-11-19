@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
 import ActionIcon from '../action-icon';
 
-type DatePickerProps = {
+export type DatePickerProps = {
   value?: Date;
   onChange?: (date: Date) => void;
   label?: string;

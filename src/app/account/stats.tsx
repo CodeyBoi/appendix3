@@ -24,12 +24,14 @@ const CorpsStats = async () => {
   const streckAccountQuery = api.streck.getOwnStreckAccount.query({});
 
   const [
+    corps,
     points,
     stats,
     orchestraRehearsalAttendance,
     balletRehearsalAttendance,
     streckAccount,
   ] = await Promise.all([
+    api.corps.getSelf.query(),
     pointsQuery,
     statsQuery,
     orchestraRehearsalAttendanceQuery,
@@ -38,6 +40,10 @@ const CorpsStats = async () => {
   ]);
 
   const corpsStats = stats?.corpsStats[stats.corpsIds[0] as string];
+  const streckAccountStr = lang(
+    'Strecksaldo: ' + streckAccount.balance.toString(),
+    'Streck balance: ' + streckAccount.balance.toString(),
+  );
 
   return (
     <div className='flex flex-col space-y-2'>
@@ -48,9 +54,13 @@ const CorpsStats = async () => {
             `You have a total of ${points} gig points!`,
           )}
         </h5>
-        {lang(
-          'Strecksaldo: ' + streckAccount.balance.toString(),
-          'Streck balance: ' + streckAccount.balance.toString(),
+
+        {corps?.number ? (
+          <a className='hover:underline' href='account/streck'>
+            {streckAccountStr}
+          </a>
+        ) : (
+          <>{streckAccountStr}</>
         )}
       </div>
       <div className='flex flex-col'>
