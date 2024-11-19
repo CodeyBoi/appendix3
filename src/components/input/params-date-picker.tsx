@@ -7,12 +7,17 @@ import { useEffect, useState } from 'react';
 
 type ParamsDatePickerProps = DatePickerProps & {
   paramName: string;
+  defaultValue?: Date;
 };
 
-const ParamsDatePicker = ({ paramName, ...props }: ParamsDatePickerProps) => {
+const ParamsDatePicker = ({
+  paramName,
+  defaultValue,
+  ...props
+}: ParamsDatePickerProps) => {
   const [dateStr, setDateStr] = useSearchParamsState(
     paramName,
-    dayjs().format('YYYY-MM-DD'),
+    (defaultValue ? dayjs(defaultValue) : dayjs()).format('YYYY-MM-DD'),
   );
   const [value, setValue] = useState<Date>();
 

@@ -16,7 +16,11 @@ const AdminStreckViewPage = async ({
 }: {
   searchParams: { start?: string; end?: string };
 }) => {
-  const start = (searchParams.start ? dayjs(searchParams.start) : dayjs())
+  const start = (
+    searchParams.start
+      ? dayjs(searchParams.start)
+      : dayjs().subtract(1, 'month')
+  )
     .startOf('day')
     .toDate();
   const end = (searchParams.end ? dayjs(searchParams.end) : dayjs())
@@ -28,7 +32,11 @@ const AdminStreckViewPage = async ({
       <h2>Transaktioner</h2>
       <div className='flex flex-row gap-2'>
         <div className='w-36'>
-          <ParamsDatePicker paramName='start' label='Startdatum' />
+          <ParamsDatePicker
+            paramName='start'
+            label='Startdatum'
+            defaultValue={start}
+          />
         </div>
         <div className='w-36'>
           <ParamsDatePicker paramName='end' label='Slutdatum' />
