@@ -13,7 +13,7 @@ import { displayName } from 'utils/corps';
 import { lang } from 'utils/language';
 import TransactionsTable from './view/transactions-table';
 
-const AdminStreckPage = async () => {
+const generateStreckList = async () => {
   const [activeCorps, items] = await Promise.all([
     api.streck.getActiveCorps.query({}),
     api.streck.getItems.query(),
@@ -28,7 +28,12 @@ const AdminStreckPage = async () => {
         .map((corps) => `${displayName(corps)},${corps.balance}`)
         .join('\n'),
     );
+  
+  return downloadLink;
+}
 
+const AdminStreckPage = async () => {
+  const downloadLink = await generateStreckList();
   return (
     <div className='flex flex-col gap-4'>
       <h2>Streckkonton</h2>
