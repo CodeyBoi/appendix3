@@ -13,8 +13,8 @@ export const displayName = (
 ) =>
   corps === null || corps === undefined
     ? ''
-    : `${corps.number ? `#${corps.number}` : 'p.e.'} ${
-        corps.nickName ? corps.nickName : corps.firstName + ' ' + corps.lastName
+    : `${displayNumber(corps)} ${
+        corps.nickName ? corps.nickName.trim() : fullName(corps)
       }`;
 
 export const detailedName = (
@@ -30,16 +30,13 @@ export const detailedName = (
 ) =>
   corps === null || corps === undefined
     ? ''
-    : `${corps.number ? `#${corps.number}` : 'p.e.'} ${corps.firstName}${
-        corps.nickName ? ` "${corps.nickName}"` : ''
-      } ${corps.lastName}`;
+    : `${displayNumber(corps)} ${corps.firstName.trim()}${
+        corps.nickName ? ` "${corps.nickName.trim()}"` : ''
+      } ${corps.lastName.trim()}`;
 
-export const numberAndFullName = (
+export const displayNumber = (
   corps:
     | {
-        firstName: string;
-        lastName: string;
-        nickName: string | null;
         number: number | null;
       }
     | null
@@ -47,9 +44,36 @@ export const numberAndFullName = (
 ) =>
   corps === null || corps === undefined
     ? ''
-    : `${corps.number ? `#${corps.number}` : 'p.e.'} ${
-        corps.firstName + ' ' + corps.lastName
-      }`;
+    : corps.number
+    ? `#${corps.number}`
+    : 'p.e.';
+
+export const numberAndFullName = (
+  corps:
+    | {
+        firstName: string;
+        lastName: string;
+        number: number | null;
+      }
+    | null
+    | undefined,
+) =>
+  corps === null || corps === undefined
+    ? ''
+    : `${displayNumber(corps)} ${fullName(corps)}`;
+
+export const fullName = (
+  corps:
+    | {
+        firstName: string;
+        lastName: string;
+      }
+    | null
+    | undefined,
+) =>
+  corps === null || corps === undefined
+    ? ''
+    : `${corps.firstName.trim() + ' ' + corps.lastName.trim()}`;
 
 type CorpsSort = {
   number: number | null;
@@ -68,6 +92,22 @@ export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
     return a.lastName.localeCompare(b.lastName);
   }
   return a.firstName.localeCompare(b.firstName);
+};
+
+export const sortCorpsByName = (a: CorpsSort, b: CorpsSort) => {
+  const lastName = a.lastName.localeCompare(b.lastName, 'sv');
+  if (lastName !== 0) {
+    return lastName;
+  }
+  const firstName = a.firstName.localeCompare(b.firstName, 'sv');
+  if (firstName !== 0) {
+    return firstName;
+  } else if (a.number && !b.number) {
+    return -1;
+  } else if (!a.number && b.number) {
+    return 1;
+  }
+  return (a.number ?? 0x516) - (b.number ?? 0x516);
 };
 
 export const corpsOrderBy = [

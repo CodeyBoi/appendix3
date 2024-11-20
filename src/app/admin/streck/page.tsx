@@ -1,34 +1,17 @@
-import {
-  IconCoins,
-  IconDownload,
-  IconSearch,
-  IconTablePlus,
-} from '@tabler/icons-react';
+import { IconCoins, IconSearch, IconTablePlus } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
-import dayjs from 'dayjs';
 import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
-import { displayName } from 'utils/corps';
 import { lang } from 'utils/language';
 import TransactionsTable from './view/transactions-table';
+import DownloadStrecklistButton from './download';
 
 const AdminStreckPage = async () => {
   const [activeCorps, items] = await Promise.all([
     api.streck.getActiveCorps.query({}),
     api.streck.getItems.query(),
   ]);
-
-  const downloadLink =
-    `data:text/csv;charset=utf-8,Namn,Saldo,${encodeURIComponent(
-      items.map((item) => `${item.name} ${item.price}p`).join(',') + '\n',
-    )}` +
-    encodeURIComponent(
-      activeCorps
-        .map((corps) => `${displayName(corps)},${corps.balance}`)
-        .join('\n'),
-    );
-
   return (
     <div className='flex flex-col gap-4'>
       <h2>Streckkonton</h2>
@@ -59,17 +42,7 @@ const AdminStreckPage = async () => {
             <IconTablePlus />
             Inför ny strecklista...
           </Button>
-          <a
-            href={downloadLink}
-            download={`Strecklista ${dayjs(new Date()).format(
-              'YYYY-MM-DD',
-            )}.csv`}
-          >
-            <Button>
-              <IconDownload />
-              Ladda ner som CSV
-            </Button>
-          </a>
+          <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
           <Button href='/admin/streck/prices'>
             <IconCoins />
             Ändra priser...
