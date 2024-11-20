@@ -3,6 +3,7 @@ import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
 import { initObject } from 'utils/array';
+import { sortCorpsByName } from 'utils/corps';
 
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure
@@ -67,7 +68,7 @@ export const streckRouter = router({
       });
 
       const items = Array.from(new Set(data.map((t) => t.item))).sort((a, b) =>
-        a.localeCompare(b),
+        a.localeCompare(b, 'sv'),
       );
 
       const summary = data.reduce(
@@ -230,8 +231,6 @@ export const streckRouter = router({
         additionalCorps.push('DUMMY VALUE');
       }
 
-      console.log({ additionalCorps });
-
       const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
         SELECT
           Corps.id as id,
@@ -245,13 +244,13 @@ export const streckRouter = router({
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
         GROUP BY Corps.id
         ORDER BY
-          ISNULL(number),
-          number,
           lastName,
-          firstName;
+          firstName,
+          ISNULL(number),
+          number;
       `;
 
-      return activeCorps;
+      return activeCorps.sort(sortCorpsByName);
     }),
 
   setPrices: restrictedProcedure('manageStreck')
@@ -273,4 +272,13 @@ export const streckRouter = router({
       });
       return res;
     }),
+
+  getBleckhornenBalance: protectedProcedure.query(async ({ ctx }) => {
+    const balances = await ctx.prisma.$queryRaw<{ balance: number }[]>`
+        SELECT
+          SUM(COALESCE(amount * -pricePer, 0)) AS balance
+        FROM StreckTransaction
+      `;
+    return balances[0]?.balance ?? 0;
+  }),
 });

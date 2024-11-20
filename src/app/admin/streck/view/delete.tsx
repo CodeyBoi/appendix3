@@ -17,7 +17,6 @@ const DeleteTransactionButton = ({ id }: DeleteTransactionButtonProps) => {
       router.refresh();
     },
   });
-  console.log({ id });
   return (
     <ActionIcon
       variant='subtle'

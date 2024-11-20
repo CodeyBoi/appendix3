@@ -8,17 +8,19 @@ import TransactionsTable from './view/transactions-table';
 import DownloadStrecklistButton from './download';
 
 const AdminStreckPage = async () => {
-  const [activeCorps, items] = await Promise.all([
+  const [activeCorps, items, bleckhornenBalance] = await Promise.all([
     api.streck.getActiveCorps.query({}),
     api.streck.getItems.query(),
+    api.streck.getBleckhornenBalance.query(),
   ]);
   return (
     <div className='flex flex-col gap-4'>
       <h2>Streckkonton</h2>
-      <div className='flex flex-col md:flex-row'>
+      <h5>{`Corpssaldo: ${bleckhornenBalance.toString()}`}</h5>
+      <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
           <h3>Senaste händelser</h3>
-          <div className='overflow-x-auto'>
+          <div>
             <Suspense
               fallback={
                 <Loading

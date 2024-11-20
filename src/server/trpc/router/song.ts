@@ -67,7 +67,7 @@ export const songRouter = router({
         title: 'asc',
       },
     });
-    songs.sort((a, b) => a.title.localeCompare(b.title, 'sv-SE'));
+    songs.sort((a, b) => a.title.localeCompare(b.title, 'sv'));
     return songs;
   }),
 
