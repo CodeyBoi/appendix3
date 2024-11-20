@@ -1,7 +1,7 @@
 'use client';
 
-import { fullName, displayNumber, sortCorpsByName } from 'utils/corps';
-import ExcelJS, { Border, Borders, Fill } from 'exceljs';
+import { fullName, sortCorpsByName } from 'utils/corps';
+import ExcelJS, { Borders, Fill } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
