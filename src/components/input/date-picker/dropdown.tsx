@@ -83,7 +83,7 @@ const DatePickerDropdown = ({
     <div className='flex w-60 flex-col gap-2 rounded bg-white p-2 dark:bg-darkBg'>
       <div className='flex gap-1'>
         <div className='flex grow items-baseline gap-2'>
-          <h4 className='select-none whitespace-nowrap text-red-600 first-letter:capitalize'>{`${monthName}`}</h4>
+          <h4 className='select-none whitespace-nowrap text-sm text-red-600 first-letter:capitalize'>{`${monthName}`}</h4>
           <Select
             options={years}
             value={year}

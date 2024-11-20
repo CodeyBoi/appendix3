@@ -89,9 +89,9 @@ export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
   } else if (!a.number && b.number) {
     return 1;
   } else if (a.lastName !== b.lastName) {
-    return a.lastName.localeCompare(b.lastName);
+    return a.lastName.localeCompare(b.lastName, 'sv');
   }
-  return a.firstName.localeCompare(b.firstName);
+  return a.firstName.localeCompare(b.firstName, 'sv');
 };
 
 export const sortCorpsByName = (a: CorpsSort, b: CorpsSort) => {

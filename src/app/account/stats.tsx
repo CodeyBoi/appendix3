@@ -54,14 +54,15 @@ const CorpsStats = async () => {
             `You have a total of ${points} gig points!`,
           )}
         </h5>
-
-        {corps?.number ? (
-          <a className='hover:underline' href='account/streck'>
-            {streckAccountStr}
-          </a>
-        ) : (
-          <>{streckAccountStr}</>
-        )}
+        <span className='hidden'>
+          {corps?.number ? (
+            <a className='hover:underline' href='account/streck'>
+              {streckAccountStr}
+            </a>
+          ) : (
+            <>{streckAccountStr}</>
+          )}
+        </span>
       </div>
       <div className='flex flex-col'>
         <h5>

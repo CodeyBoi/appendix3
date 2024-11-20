@@ -1,6 +1,6 @@
 'use client';
 
-import { fullName, sortCorpsByName } from 'utils/corps';
+import { fullName } from 'utils/corps';
 import ExcelJS, { Borders, Fill } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
@@ -62,7 +62,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       orientation: 'landscape',
     },
   });
-  sheet.pageSetup.printTitlesRow = '1';
+  sheet.pageSetup.printTitlesRow = '1:2';
 
   const nameColWidth =
     Math.max(...activeCorps.map((corps) => fullName(corps).length)) * 0.93;
@@ -87,7 +87,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   }
 
   let rowIndex = headerRow + 1;
-  for (const corps of activeCorps.sort(sortCorpsByName)) {
+  for (const corps of activeCorps) {
     const row = sheet.getRow(rowIndex);
     row.values = [
       corps.number ? corps.number.toString() + ' ' : 'p.e. ',
@@ -98,7 +98,9 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     rowIndex++;
   }
 
-  sheet.columns.forEach((c) => (c.border = border));
+  sheet
+    .getRows(headerRow, activeCorps.length + 1)
+    ?.forEach((c) => (c.border = border));
 
   const filename = `Strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
 
@@ -122,7 +124,7 @@ const DownloadStrecklistButton = ({
   return (
     <Button onClick={() => generateStreckList(activeCorps, items)}>
       <IconDownload />
-      Ladda ner som XLSX
+      Ladda ner ny strecklista
     </Button>
   );
 };

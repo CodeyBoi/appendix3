@@ -174,11 +174,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
           // Compare last name
           if (a.corps.lastName !== b.corps.lastName) {
-            return a.corps.lastName.localeCompare(b.corps.lastName);
+            return a.corps.lastName.localeCompare(b.corps.lastName, 'sv');
           }
 
           // Compare first name
-          return a.corps.firstName.localeCompare(b.corps.firstName);
+          return a.corps.firstName.localeCompare(b.corps.firstName, 'sv');
         }) ?? [],
     [signups, instrumentPrecedence, gigHasHappened, showAdminTools],
   );

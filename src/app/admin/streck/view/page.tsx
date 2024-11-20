@@ -30,17 +30,15 @@ const AdminStreckViewPage = async ({
   return (
     <div className='flex flex-col gap-4'>
       <h2>Transaktioner</h2>
-      <div className='flex flex-row gap-2'>
-        <div className='w-36'>
-          <ParamsDatePicker
-            paramName='start'
-            label='Startdatum'
-            defaultValue={start}
-          />
-        </div>
-        <div className='w-36'>
-          <ParamsDatePicker paramName='end' label='Slutdatum' />
-        </div>
+      <div className='w-72'>
+        <ParamsDatePicker
+          paramName='start'
+          label='Startdatum'
+          defaultValue={start}
+        />
+      </div>
+      <div className='w-72'>
+        <ParamsDatePicker paramName='end' label='Slutdatum' />
       </div>
       <Suspense
         key={`${start}_${end}`}
@@ -53,13 +51,16 @@ const AdminStreckViewPage = async ({
         <h3>Sammanfattning</h3>
         <TransactionsSummary start={start} end={end} take={0x1337} />
         <h3>Alla transaktioner</h3>
-        <TransactionsTable
-          start={start}
-          end={end}
-          showCorps
-          take={0x1337}
-          showDelete
-        />
+        <div>
+          <TransactionsTable
+            start={start}
+            end={end}
+            showCorps
+            take={0x1337}
+            showDelete
+            showDownload
+          />
+        </div>
       </Suspense>
     </div>
   );
