@@ -1,6 +1,5 @@
 'use client';
 
-import { fullName } from 'utils/corps';
 import ExcelJS, { Borders, Fill } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
@@ -39,11 +38,21 @@ const border: Partial<Borders> = {
 };
 
 const font: Partial<ExcelJS.Font> = {
-  name: 'Cambria',
-  size: 11,
+  name: 'Arial',
+  size: 10,
 };
 
-const headerRow = 2;
+const bold: Partial<ExcelJS.Font> = {
+  ...font,
+  bold: true,
+};
+
+const headerRow = 1;
+const firstNameCol = 2;
+const lastNameCol = 3;
+const balanceCol = 4;
+
+const corpsPerPage = 32;
 
 const getStyle = (balance: number) => {
   const fill: Fill = {
@@ -51,9 +60,9 @@ const getStyle = (balance: number) => {
     pattern: 'none',
   };
   if (balance < 0) {
-    fill.pattern = 'mediumGray';
+    fill.pattern = 'darkGray';
   } else if (balance < 200) {
-    fill.pattern = 'lightGray';
+    fill.pattern = 'mediumGray';
   }
   return fill;
 };
@@ -65,60 +74,187 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     pageSetup: {
       paperSize: 9,
       orientation: 'landscape',
+      printTitlesRow: '1:1',
+
+      margins: {
+        left: 0.1,
+        right: 0.1,
+        top: 0.55,
+        bottom: 0.55,
+        header: 0.15,
+        footer: 0.15,
+      },
+      horizontalCentered: true,
+    },
+    headerFooter: {
+      oddHeader:
+        '&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: &D\n&RInförd:____________\nAv:____________',
+      oddFooter:
+        '&LStreck införda t.o.m.:____________\nInbetalningar införda t.o.m.:____________&C\nSkriv tydligt!!&R\nbrought to you by Sexporten (och ITK)©',
     },
   });
-  sheet.pageSetup.printTitlesRow = '1:2';
-  sheet.pageSetup.margins = {
-    left: 0.15,
-    right: 0.15,
-    top: 0.2,
-    bottom: 0.2,
-    header: 0.15,
-    footer: 0.15,
-  };
-  sheet.pageSetup.horizontalCentered = true;
-  sheet.pageSetup.verticalCentered = true;
 
-  const nameColWidth =
-    Math.max(...activeCorps.map((corps) => fullName(corps).length)) * 0.93;
+  const lastCol = 4 + items.length;
+
+  const firstNameColWidth = Math.max(
+    ...activeCorps.map((corps) => corps.firstName.trim().length),
+  );
+  const lastNameColWidth = Math.max(
+    ...activeCorps.map((corps) => corps.lastName.trim().length),
+  );
 
   const header = sheet.getRow(headerRow);
-  header.values = ['#', 'Namn', 'Saldo'].concat(
-    items.map((item) => `${item.name} ${item.price}p`),
+  header.values = ['#', 'Förnamn', 'Efternamn', 'p'].concat(
+    items.map((item) => `${item.name.trim()} ${item.price}p`),
   );
-  sheet.getRow(headerRow).border = border;
-  sheet.getRow(headerRow).font = font;
+  header.border = border;
+  header.font = bold;
+  header.height = 30;
 
   sheet.getColumn(1).alignment = { horizontal: 'right' };
   sheet.getColumn(1).width = 5;
 
-  sheet.getColumn(2).width = nameColWidth;
-  sheet.getColumn(2).alignment = { wrapText: true };
+  sheet.getColumn(firstNameCol).width = firstNameColWidth;
 
-  sheet.getColumn(3).width = 6;
-  sheet.getColumn(3).alignment = { horizontal: 'right' };
+  sheet.getColumn(lastNameCol).width = lastNameColWidth;
 
-  sheet.getRow(headerRow).alignment = { horizontal: 'left' };
+  sheet.getColumn(balanceCol).width = 6;
+  sheet.getColumn(balanceCol).alignment = { horizontal: 'right' };
+
+  sheet.getRow(headerRow).alignment = { horizontal: 'left', wrapText: true };
   sheet.getCell(headerRow, 1).alignment = { horizontal: 'center' };
 
-  const itemsWidth = (115 - 5 - nameColWidth - 6) / items.length;
+  const itemsWidth =
+    (145 - 5 - firstNameColWidth - lastNameColWidth - 6) / items.length;
   for (let i = 0; i < items.length; i++) {
-    sheet.getColumn(i + 4).width = itemsWidth;
+    sheet.getColumn(i + balanceCol + 1).width = itemsWidth;
   }
 
   let rowIndex = headerRow + 1;
   for (const corps of activeCorps) {
     const row = sheet.getRow(rowIndex);
     row.values = [
-      corps.number ? corps.number.toString() + ' ' : 'p.e. ',
-      fullName(corps),
+      corps.number ? corps.number.toString() + ' ' : '',
+      corps.firstName.trim(),
+      corps.lastName.trim(),
       corps.balance,
     ];
     row.fill = getStyle(corps.balance);
     row.font = font;
     row.getCell(2).font = { ...font, strike: corps.balance < 0 };
+    row.getCell(3).font = { ...font, strike: corps.balance < 0 };
+    if ((rowIndex - headerRow - 1) % corpsPerPage === corpsPerPage - 1) {
+      row.addPageBreak();
+    } else {
+      row.border = border;
+    }
     rowIndex++;
+  }
+
+  while ((rowIndex - headerRow - 1) % corpsPerPage !== 0) {
+    const row = sheet.getRow(rowIndex);
+    row.values = [' ', ' ', ' ', ' '];
     row.border = border;
+    rowIndex++;
+  }
+
+  // Set thick borders for header
+  sheet.getColumn(1).border = {
+    ...border,
+    left: {
+      style: 'medium',
+    },
+  };
+  sheet.getColumn(lastCol).border = {
+    ...border,
+    right: {
+      style: 'medium',
+    },
+  };
+  sheet.getRow(headerRow).border = {
+    ...border,
+    top: {
+      style: 'medium',
+    },
+    bottom: {
+      style: 'medium',
+    },
+  };
+  sheet.getColumn(balanceCol).border = {
+    ...border,
+    right: {
+      style: 'medium',
+    },
+  };
+  sheet.getCell(headerRow, 1).border = {
+    ...border,
+    left: {
+      style: 'medium',
+    },
+    top: {
+      style: 'medium',
+    },
+    bottom: {
+      style: 'medium',
+    },
+  };
+  sheet.getCell(headerRow, 4 + items.length).border = {
+    ...border,
+    right: {
+      style: 'medium',
+    },
+    top: {
+      style: 'medium',
+    },
+    bottom: {
+      style: 'medium',
+    },
+  };
+  sheet.getCell(headerRow, balanceCol).border = {
+    ...border,
+    right: {
+      style: 'medium',
+    },
+    top: {
+      style: 'medium',
+    },
+    bottom: {
+      style: 'medium',
+    },
+  };
+
+  const bottomRight: Partial<Borders> = {
+    ...border,
+    bottom: {
+      style: 'medium',
+    },
+    right: {
+      style: 'medium',
+    },
+  };
+
+  for (
+    rowIndex = headerRow + corpsPerPage;
+    rowIndex < activeCorps.length + headerRow + corpsPerPage;
+    rowIndex += corpsPerPage
+  ) {
+    sheet.getRow(rowIndex).border = {
+      ...border,
+      bottom: {
+        style: 'medium',
+      },
+    };
+    sheet.getCell(rowIndex, 1).border = {
+      ...border,
+      bottom: {
+        style: 'medium',
+      },
+      left: {
+        style: 'medium',
+      },
+    };
+    sheet.getCell(rowIndex, balanceCol).border = bottomRight;
+    sheet.getCell(rowIndex, lastCol).border = bottomRight;
   }
 
   const filename = `Strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
