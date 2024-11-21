@@ -38,6 +38,11 @@ const border: Partial<Borders> = {
   },
 };
 
+const font: Partial<ExcelJS.Font> = {
+  name: 'Cambria',
+  size: 11,
+};
+
 const headerRow = 2;
 
 const getStyle = (balance: number) => {
@@ -63,6 +68,16 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     },
   });
   sheet.pageSetup.printTitlesRow = '1:2';
+  sheet.pageSetup.margins = {
+    left: 0.15,
+    right: 0.15,
+    top: 0.2,
+    bottom: 0.2,
+    header: 0.15,
+    footer: 0.15,
+  };
+  sheet.pageSetup.horizontalCentered = true;
+  sheet.pageSetup.verticalCentered = true;
 
   const nameColWidth =
     Math.max(...activeCorps.map((corps) => fullName(corps).length)) * 0.93;
@@ -71,17 +86,22 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   header.values = ['#', 'Namn', 'Saldo'].concat(
     items.map((item) => `${item.name} ${item.price}p`),
   );
+  sheet.getRow(headerRow).border = border;
+  sheet.getRow(headerRow).font = font;
+
   sheet.getColumn(1).alignment = { horizontal: 'right' };
   sheet.getColumn(1).width = 5;
 
   sheet.getColumn(2).width = nameColWidth;
+  sheet.getColumn(2).alignment = { wrapText: true };
 
-  sheet.getColumn(3).width = 7;
+  sheet.getColumn(3).width = 6;
+  sheet.getColumn(3).alignment = { horizontal: 'right' };
 
   sheet.getRow(headerRow).alignment = { horizontal: 'left' };
   sheet.getCell(headerRow, 1).alignment = { horizontal: 'center' };
 
-  const itemsWidth = 13;
+  const itemsWidth = (115 - 5 - nameColWidth - 6) / items.length;
   for (let i = 0; i < items.length; i++) {
     sheet.getColumn(i + 4).width = itemsWidth;
   }
@@ -95,12 +115,11 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       corps.balance,
     ];
     row.fill = getStyle(corps.balance);
+    row.font = font;
+    row.getCell(2).font = { ...font, strike: corps.balance < 0 };
     rowIndex++;
+    row.border = border;
   }
-
-  sheet
-    .getRows(headerRow, activeCorps.length + 1)
-    ?.forEach((c) => (c.border = border));
 
   const filename = `Strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
 
