@@ -26,6 +26,7 @@ const AdminStreckPricesForm = ({
   const mutation = api.streck.setPrices.useMutation({
     onSuccess: () => {
       utils.streck.getItems.invalidate();
+      router.refresh();
       router.back();
     },
   });
