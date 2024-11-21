@@ -80,6 +80,14 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
   return (
     <div className='flex flex-col gap-4'>
       <h2>Lägg till strecklista</h2>
+      <div className='max-w-md'>
+        <SelectCorps
+          label='Lägg till corps...'
+          onChange={(id) => {
+            setAdditionalCorps((old) => [...old, id]);
+          }}
+        />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <table className='table text-sm'>
           <thead>
@@ -129,14 +137,6 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
           {isSubmitted && 'Skickad!'}
         </Button>
       </form>
-      <div className='max-w-md'>
-        <SelectCorps
-          label='Lägg till corps...'
-          onChange={(id) => {
-            setAdditionalCorps((old) => [...old, id]);
-          }}
-        />
-      </div>
     </div>
   );
 };
