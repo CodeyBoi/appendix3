@@ -59,7 +59,9 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
       <div className='flex flex-col space-y-2 p-4'>
         <div className='flex flex-nowrap items-start justify-between'>
           <Link className='grow' href={`/gig/${gig.id}`}>
-            <h4 className='cursor-pointer'>{gig.title}</h4>
+            <h4 className='cursor-pointer'>
+              {gig.title.trim() + (gig.countsPositively ? '*' : '')}
+            </h4>
           </Link>
           <Popover
             position='left-bottom'

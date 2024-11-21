@@ -68,6 +68,7 @@ const GigsPage = async ({
             </Button>
           </Restricted>
         </div>
+        * Anger positiv spelning
         <Tabs options={tabs} />
       </div>
       <Suspense
