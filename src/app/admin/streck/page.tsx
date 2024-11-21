@@ -1,4 +1,9 @@
-import { IconCoins, IconSearch, IconTablePlus } from '@tabler/icons-react';
+import {
+  IconCash,
+  IconCoins,
+  IconSearch,
+  IconTablePlus,
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import React, { Suspense } from 'react';
@@ -39,6 +44,10 @@ const AdminStreckPage = async () => {
           <Button href='streck/view'>
             <IconSearch />
             Se transaktioner...
+          </Button>
+          <Button href='streck/deposition/new'>
+            <IconCash />
+            Ny kostnad/insättning...
           </Button>
           <Button href='streck/new'>
             <IconTablePlus />
