@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
-import { initObject } from 'utils/array';
+import { initObject, sum } from 'utils/array';
 import { sortCorpsByName } from 'utils/corps';
 
 export const streckRouter = router({
@@ -238,7 +238,7 @@ export const streckRouter = router({
           firstName,
           lastName,
           nickName,
-          SUM(COALESCE(amount * -pricePer, 0)) AS balance
+          SUM(COALESCE(amount * pricePer, 0)) AS balance
         FROM Corps
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
@@ -274,11 +274,28 @@ export const streckRouter = router({
     }),
 
   getBleckhornenBalance: protectedProcedure.query(async ({ ctx }) => {
-    const balances = await ctx.prisma.$queryRaw<{ balance: number }[]>`
+    const balancesQuery = ctx.prisma.$queryRaw<{ balance: number }[]>`
         SELECT
-          SUM(COALESCE(amount * -pricePer, 0)) AS balance
+          SUM(COALESCE(amount * pricePer, 0)) AS balance,
         FROM StreckTransaction
       `;
-    return balances[0]?.balance ?? 0;
+    const unsettledDebtsQuery = ctx.prisma.$queryRaw<{ balance: number }[]>`
+        SELECT
+          SUM(COALESCE(amount * pricePer, 0)) AS balance,
+        FROM StreckTransaction
+        GROUP BY corpsId
+        HAVING balance < 0
+      `;
+
+    const [balances, unsettledDebts] = await Promise.all([
+      balancesQuery,
+      unsettledDebtsQuery,
+    ]);
+    return {
+      balance: balances[0]?.balance ?? 0,
+      unsettledDebt: sum(
+        unsettledDebts.map((unsettledDebt) => unsettledDebt.balance),
+      ),
+    };
   }),
 });

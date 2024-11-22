@@ -66,7 +66,7 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
           corpsId: corps.id,
           item: item.name,
           amount: +formValue,
-          pricePer: item.price,
+          pricePer: -item.price,
         });
       }
     }

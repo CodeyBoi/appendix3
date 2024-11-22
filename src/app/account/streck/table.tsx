@@ -34,7 +34,7 @@ const OwnTransactionsTable = async () => {
               <td className='px-2'>{transaction.item}</td>
               <td className='px-2 text-right'>{transaction.pricePer}</td>
               <td className='px-2 text-right'>{transaction.amount}</td>
-              <td className='px-2 text-right'>{-transaction.totalPrice}</td>
+              <td className='px-2 text-right'>{transaction.totalPrice}</td>
               <td className='px-2 text-right'>{transaction.balance}</td>
             </tr>
           ))}

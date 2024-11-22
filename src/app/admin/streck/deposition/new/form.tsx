@@ -71,7 +71,7 @@ const AdminTransactionForm = () => {
         corpsId: corps.id,
         item,
         amount: 1,
-        pricePer: -pricePer,
+        pricePer: +pricePer,
       });
     }
     mutation.mutate({ transactions: data });
