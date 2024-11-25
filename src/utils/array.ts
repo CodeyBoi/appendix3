@@ -16,4 +16,4 @@ export const initObject = <K extends string | number | symbol, V>(
     {} as Record<K, V>,
   );
 
-export const sum = (list: number[]) => list.reduce((acc, n) => acc + n);
+export const sum = (list: number[]) => list.reduce((acc, n) => +n + acc, 0);
