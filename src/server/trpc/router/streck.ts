@@ -274,28 +274,18 @@ export const streckRouter = router({
     }),
 
   getBleckhornenBalance: protectedProcedure.query(async ({ ctx }) => {
-    const balancesQuery = ctx.prisma.$queryRaw<{ balance: number }[]>`
+    const balances = (
+      await ctx.prisma.$queryRaw<{ balance: number }[]>`
         SELECT
-          SUM(COALESCE(amount * pricePer, 0)) AS balance,
-        FROM StreckTransaction
-      `;
-    const unsettledDebtsQuery = ctx.prisma.$queryRaw<{ balance: number }[]>`
-        SELECT
-          SUM(COALESCE(amount * pricePer, 0)) AS balance,
+          SUM(COALESCE(amount * pricePer, 0)) AS balance
         FROM StreckTransaction
         GROUP BY corpsId
-        HAVING balance < 0
-      `;
+      `
+    ).map((e) => e.balance);
 
-    const [balances, unsettledDebts] = await Promise.all([
-      balancesQuery,
-      unsettledDebtsQuery,
-    ]);
     return {
-      balance: balances[0]?.balance ?? 0,
-      unsettledDebt: sum(
-        unsettledDebts.map((unsettledDebt) => unsettledDebt.balance),
-      ),
+      balance: sum(balances),
+      unsettledDebt: sum(balances.filter((balance) => balance < 0)),
     };
   }),
 });
