@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
 import { fullName } from 'utils/corps';
+import { downloadXLSX } from 'utils/xlsx';
 
 type Corps = {
   number: number | null;
@@ -98,21 +99,10 @@ const generateTransactionsXLSX = (
     ]);
   }
 
-  const filename = `Streck ${dayjs(start).format('YYYY-MM-DD')} - ${dayjs(
-    end,
-  ).format('YYYY-MM-DD')}.xlsx`;
-
-  workbook.xlsx.writeBuffer().then((data) => {
-    const blob = new Blob([data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    anchor.click();
-    window.URL.revokeObjectURL(url);
-  });
+  const filename = `Strecktransaktioner ${dayjs(start).format(
+    'YYYY-MM-DD',
+  )} - ${dayjs(end).format('YYYY-MM-DD')}.xlsx`;
+  downloadXLSX(workbook, filename);
 };
 
 const DownloadTransactionsButton = ({

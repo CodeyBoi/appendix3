@@ -4,6 +4,7 @@ import ExcelJS, { Borders, Fill } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
+import { downloadXLSX } from 'utils/xlsx';
 
 type Item = {
   name: string;
@@ -75,7 +76,6 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       paperSize: 9,
       orientation: 'landscape',
       printTitlesRow: '1:1',
-
       margins: {
         left: 0.1,
         right: 0.1,
@@ -130,6 +130,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     sheet.getColumn(i + balanceCol + 1).width = itemsWidth;
   }
 
+  // Write corps row by row
   let rowIndex = headerRow + 1;
   for (const corps of activeCorps) {
     const row = sheet.getRow(rowIndex);
@@ -143,14 +144,11 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     row.font = font;
     row.getCell(2).font = { ...font, strike: corps.balance < 0 };
     row.getCell(3).font = { ...font, strike: corps.balance < 0 };
-    if ((rowIndex - headerRow - 1) % corpsPerPage === corpsPerPage - 1) {
-      row.addPageBreak();
-    } else {
-      row.border = border;
-    }
+    row.border = border;
     rowIndex++;
   }
 
+  // Fill out the rest of the rows on the last page (to have some empty spots)
   while ((rowIndex - headerRow - 1) % corpsPerPage !== 0) {
     const row = sheet.getRow(rowIndex);
     row.values = [' ', ' ', ' ', ' '];
@@ -233,11 +231,13 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     },
   };
 
+  // Split up into pages and add thick border to bottom of each page
   for (
     rowIndex = headerRow + corpsPerPage;
     rowIndex < activeCorps.length + headerRow + corpsPerPage;
     rowIndex += corpsPerPage
   ) {
+    sheet.getRow(rowIndex).addPageBreak();
     sheet.getRow(rowIndex).border = {
       ...border,
       bottom: {
@@ -258,18 +258,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   }
 
   const filename = `Strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
-
-  workbook.xlsx.writeBuffer().then((data) => {
-    const blob = new Blob([data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    anchor.click();
-    window.URL.revokeObjectURL(url);
-  });
+  downloadXLSX(workbook, filename);
 };
 
 const DownloadStrecklistButton = ({
