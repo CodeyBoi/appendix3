@@ -92,6 +92,7 @@ model Corps {
   sectionLeaderOf    Section[]
   killerProfiles     KillerPlayer[]
   streckTransactions StreckTransaction[]
+  createdStreckLists StreckList[]
 }
 
 model Role {
@@ -315,20 +316,43 @@ model KillerGame {
 }
 
 model StreckItem {
-  id    Int    @id @default(autoincrement())
-  name  String
-  price Int
+  id     Int    @id @default(autoincrement())
+  name   String
+  price  Int
+  listId Int
+
+  list StreckItemList @relation(fields: [listId], references: [id], onDelete: Cascade)
 }
 
 model StreckTransaction {
-  id        Int      @id @default(autoincrement())
-  item      String
-  pricePer  Int
-  amount    Int
-  time      DateTime @default(now())
-  corpsId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  item         String
+  pricePer     Int
+  amount       Int
+  time         DateTime @default(now())
+  corpsId      String
+  streckListId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  streckList StreckList @relation(fields: [streckListId], references: [id], onDelete: Cascade)
+  corps      Corps      @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+}
+
+model StreckList {
+  id           Int @id @default(autoincrement())
+  title        String
+  transactions StreckTransaction[]
+  createdById  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdBy Corps @relation(fields: [createdById], references: [id], onDelete: Cascade)
+}
+
+model StreckItemList {
+  id    Int @id @default(autoincrement())
+  title String
+
+  items StreckItem[]
 }

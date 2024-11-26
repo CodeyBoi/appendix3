@@ -10,7 +10,25 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
 
+type Corps = {
+  id: string;
+  number: number | null;
+  firstName: string;
+  lastName: string;
+};
+
+type Transaction = {
+  corps: Corps;
+  time: Date;
+  item: string;
+  pricePer: number;
+  amount: number;
+  totalPrice: number;
+};
+
 interface AdminStreckFormProps {
+  id?: number;
+  transactions?: Transaction[];
   items: PrismaStreckItem[];
 }
 
@@ -24,7 +42,11 @@ const rowBackgroundColor = (balance: number) => {
   }
 };
 
-const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
+const AdminStreckForm = ({
+  id,
+  transactions = [],
+  items,
+}: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
 
@@ -45,11 +67,20 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
     additionalCorps,
   });
 
-  const mutation = api.streck.addTransactions.useMutation({
+  const initialValues = transactions.reduce(
+    (acc, transaction) => {
+      const key = `${transaction.corps.id}:${transaction.item}`;
+      acc[key] = (acc[key] ?? 0) + transaction.totalPrice;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const mutation = api.streck.upsertStreckList.useMutation({
     onSuccess: () => {
-      router.push('/admin/streck');
       utils.streck.getActiveCorps.invalidate();
       utils.streck.getTransactions.invalidate();
+      utils.streck.getStreckList.invalidate();
       router.refresh();
     },
   });
@@ -70,7 +101,7 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
         });
       }
     }
-    mutation.mutate({ transactions: data });
+    mutation.mutate({ id, transactions: data });
   };
 
   if (isInitialLoading || isFetching || isRefetching) {
@@ -114,15 +145,19 @@ const AdminStreckForm = ({ items }: AdminStreckFormProps) => {
                   <CorpsDisplay corps={corps} nameFormat='full-name' />
                 </td>
                 <td className='px-1 text-center'>{corps.balance}</td>
-                {items.map((item) => (
-                  <td key={item.id} className='px-1'>
-                    <input
-                      className='w-16 bg-transparent px-2 py-0.5'
-                      type='number'
-                      {...register(`${corps.id}:${item.name}`)}
-                    />
-                  </td>
-                ))}
+                {items.map((item) => {
+                  const key = `${corps.id}:${item.name}`;
+                  return (
+                    <td key={item.id} className='px-1'>
+                      <input
+                        className='w-16 bg-transparent px-2 py-0.5'
+                        type='number'
+                        defaultValue={initialValues[key]}
+                        {...register(key)}
+                      />
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

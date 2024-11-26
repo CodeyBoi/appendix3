@@ -9,8 +9,8 @@ import Loading from 'components/loading';
 import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import TransactionsTable from './view/transactions-table';
 import DownloadStrecklistButton from './download';
+import StreckListTable from './view/strecklist-table';
 
 const AdminStreckPage = async () => {
   const [activeCorps, items, bleckhornenBalance] = await Promise.all([
@@ -37,7 +37,7 @@ const AdminStreckPage = async () => {
                 />
               }
             >
-              <TransactionsTable />
+              <StreckListTable take={50} />
             </Suspense>
           </div>
         </div>

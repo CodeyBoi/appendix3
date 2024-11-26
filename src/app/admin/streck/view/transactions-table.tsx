@@ -3,38 +3,33 @@ import Restricted from 'components/restricted';
 import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import DeleteTransactionButton from './delete';
-import DownloadTransactionsButton from './download';
+
+type CorpsOrListId = string | number;
 
 type TransactionsTableProps = {
-  start?: Date;
-  end?: Date;
-  corpsId?: string;
-  take?: number;
-  skip?: number;
+  sourceId: CorpsOrListId;
   showCorps?: boolean;
   dateFormat?: string;
   showDelete?: boolean;
   showDownload?: boolean;
 };
 
+const getTransactions = async (sourceId: CorpsOrListId) => {
+  if (typeof sourceId === 'number') {
+    return api.streck.getTransactions.query({ streckListId: sourceId });
+  } else {
+    return api.streck.getTransactions.query({ corpsId: sourceId });
+  }
+};
+
 const TransactionsTable = async ({
-  start,
-  end,
-  corpsId,
-  take,
-  skip,
+  sourceId,
   showCorps = false,
   dateFormat = 'YYYY-MM-DD',
   showDelete = false,
   showDownload = false,
 }: TransactionsTableProps) => {
-  const transactions = await api.streck.getTransactions.query({
-    start,
-    end,
-    corpsId,
-    take,
-    skip,
-  });
+  const transactions = await getTransactions(sourceId);
 
   if (transactions.data.length === 0) {
     return null;
@@ -42,15 +37,7 @@ const TransactionsTable = async ({
 
   return (
     <div className='flex flex-col gap-4'>
-      {showDownload && (
-        <DownloadTransactionsButton
-          transactions={transactions.data}
-          summary={transactions.summary}
-          items={transactions.items}
-          start={start ?? new Date()}
-          end={end ?? new Date()}
-        />
-      )}
+      {showDownload && <div>TODO: ADD DOWNLOAD</div>}
       <div>
         <table className='table text-sm'>
           <thead>
@@ -81,7 +68,7 @@ const TransactionsTable = async ({
                   <td className='px-2'>
                     <CorpsDisplay
                       corps={transaction.corps}
-                      nameFormat='number-only'
+                      nameFormat='full-name'
                     />
                   </td>
                 )}

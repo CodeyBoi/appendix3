@@ -21,7 +21,7 @@ export const streckRouter = router({
 
       let balance = 0;
       const transactionsWithBalance = transactions.map((transaction) => {
-        balance -= transaction.totalPrice;
+        balance += transaction.totalPrice;
         return {
           ...transaction,
           balance,
@@ -40,12 +40,13 @@ export const streckRouter = router({
         start: z.date().optional(),
         end: z.date().optional(),
         corpsId: z.string().cuid().optional(),
+        streckListId: z.number().int().optional(),
         take: z.number().int().optional(),
         skip: z.number().int().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, corpsId, take = 50, skip = 0 } = input;
+      const { start, end, corpsId, streckListId, take = 50, skip = 0 } = input;
 
       type SummaryItem = {
         amount: number;
@@ -59,6 +60,7 @@ export const streckRouter = router({
         where: {
           time: { gte: start, lte: end },
           corpsId,
+          streckListId,
         },
         orderBy: {
           time: 'desc',
@@ -96,9 +98,10 @@ export const streckRouter = router({
       };
     }),
 
-  addTransactions: restrictedProcedure('manageStreck')
+  upsertStreckList: restrictedProcedure('manageStreck')
     .input(
       z.object({
+        id: z.number().int().optional(),
         transactions: z.array(
           z.object({
             corpsId: z.string().cuid(),
@@ -111,11 +114,42 @@ export const streckRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { transactions } = input;
+      const { id, transactions } = input;
+      const corpsId = ctx.session.user.corps.id;
 
-      return await ctx.prisma.streckTransaction.createMany({
-        data: transactions,
+      if (id) {
+        await ctx.prisma.streckTransaction.deleteMany({
+          where: {
+            streckListId: id,
+          },
+        });
+      }
+
+      const res = await ctx.prisma.streckList.upsert({
+        where: {
+          id,
+        },
+        update: {
+          transactions: {
+            createMany: {
+              data: transactions,
+            },
+          },
+        },
+        create: {
+          createdBy: {
+            connect: {
+              id: corpsId,
+            },
+          },
+          transactions: {
+            createMany: {
+              data: transactions,
+            },
+          },
+        },
       });
+      return res;
     }),
 
   removeTransaction: restrictedProcedure('manageStreck')
@@ -139,6 +173,7 @@ export const streckRouter = router({
     .input(
       z.object({
         id: z.number().int().optional(),
+        listId: z.number().int(),
         name: z.string().min(1),
         price: z.number().int(),
       }),
@@ -256,6 +291,7 @@ export const streckRouter = router({
   setPrices: restrictedProcedure('manageStreck')
     .input(
       z.object({
+        listId: z.number().int(),
         items: z.array(
           z.object({
             name: z.string(),
@@ -265,10 +301,10 @@ export const streckRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { items } = input;
+      const { listId, items } = input;
       await ctx.prisma.streckItem.deleteMany({});
       const res = await ctx.prisma.streckItem.createMany({
-        data: items.map((item, i) => ({ ...item, id: i + 1 })),
+        data: items.map((item, i) => ({ ...item, id: i + 1, listId })),
       });
       return res;
     }),
@@ -288,4 +324,51 @@ export const streckRouter = router({
       unsettledDebt: sum(balances.filter((balance) => balance < 0)),
     };
   }),
+
+  getStreckList: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const res = await ctx.prisma.streckList.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          transactions: {
+            include: {
+              corps: true,
+            },
+          },
+        },
+      });
+      return res;
+    }),
+
+  getStreckLists: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        start: z.date().optional(),
+        end: z.date().optional(),
+        take: z.number().int().optional(),
+        skip: z.number().int().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { start, end, take, skip } = input;
+      const res = ctx.prisma.streckList.findMany({
+        where: {
+          createdAt: { gte: start, lte: end },
+        },
+        take,
+        skip,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+      return res;
+    }),
 });
