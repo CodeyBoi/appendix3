@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
+import CorpsDisplay from 'components/corps/display';
+import DeleteStreckListButton from './delete-streck-list';
 
 type StreckListTableProps = {
   start?: Date;
@@ -39,9 +41,9 @@ const StreckListTable = async ({
         <table className='table text-sm'>
           <thead>
             <tr className='text-left'>
-              <th className='px-1'>Namn</th>
-              <th className='px-1'>Tid</th>
-              <th className='px-1'>Totaländring</th>
+              <th className='px-1'>Införd</th>
+              <th className='px-1'>Av</th>
+              <th className='px-1'>Summa</th>
               <th />
               {showDelete && (
                 <Restricted permissions={'manageStreck'}>
@@ -56,11 +58,16 @@ const StreckListTable = async ({
                 key={streckList.id}
                 className='divide-x divide-solid dark:divide-neutral-800'
               >
-                <td className='px-2'>{streckList.title}</td>
                 <td className='px-2'>
                   {dayjs(streckList.createdAt).format(dateFormat)}
                 </td>
-                <td className='px-2 text-right'>TODO</td>
+                <td className='px-2'>
+                  <CorpsDisplay
+                    corps={streckList.createdBy}
+                    nameFormat='full-name'
+                  />
+                </td>
+                <td className='px-2 text-right'>{streckList.totalChange}</td>
                 <td className='px-2'>
                   <ActionIcon
                     href={`/admin/streck/view/${streckList.id}`}
@@ -71,7 +78,9 @@ const StreckListTable = async ({
                 </td>
                 {showDelete && (
                   <Restricted permissions={'manageStreck'}>
-                    <td className='px-2'>TODO: ADD DELETE BUTTON</td>
+                    <td className='px-2'>
+                      <DeleteStreckListButton id={streckList.id} />
+                    </td>
                   </Restricted>
                 )}
               </tr>

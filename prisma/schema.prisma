@@ -319,9 +319,6 @@ model StreckItem {
   id     Int    @id @default(autoincrement())
   name   String
   price  Int
-  listId Int
-
-  list StreckItemList @relation(fields: [listId], references: [id], onDelete: Cascade)
 }
 
 model StreckTransaction {
@@ -331,7 +328,7 @@ model StreckTransaction {
   amount       Int
   time         DateTime @default(now())
   corpsId      String
-  streckListId Int
+  streckListId Int      @default(1)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -341,18 +338,10 @@ model StreckTransaction {
 
 model StreckList {
   id           Int @id @default(autoincrement())
-  title        String
   transactions StreckTransaction[]
   createdById  String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   createdBy Corps @relation(fields: [createdById], references: [id], onDelete: Cascade)
-}
-
-model StreckItemList {
-  id    Int @id @default(autoincrement())
-  title String
-
-  items StreckItem[]
 }

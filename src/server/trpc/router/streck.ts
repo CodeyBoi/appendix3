@@ -127,7 +127,7 @@ export const streckRouter = router({
 
       const res = await ctx.prisma.streckList.upsert({
         where: {
-          id,
+          id: id ?? -1,
         },
         update: {
           transactions: {
@@ -291,7 +291,7 @@ export const streckRouter = router({
   setPrices: restrictedProcedure('manageStreck')
     .input(
       z.object({
-        listId: z.number().int(),
+        listId: z.number().int().optional(),
         items: z.array(
           z.object({
             name: z.string(),
@@ -301,10 +301,10 @@ export const streckRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { listId, items } = input;
+      const { items } = input;
       await ctx.prisma.streckItem.deleteMany({});
       const res = await ctx.prisma.streckItem.createMany({
-        data: items.map((item, i) => ({ ...item, id: i + 1, listId })),
+        data: items.map((item, i) => ({ ...item, id: i + 1 })),
       });
       return res;
     }),
@@ -359,9 +359,13 @@ export const streckRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { start, end, take, skip } = input;
-      const res = ctx.prisma.streckList.findMany({
+      const streckLists = await ctx.prisma.streckList.findMany({
         where: {
           createdAt: { gte: start, lte: end },
+        },
+        include: {
+          createdBy: true,
+          transactions: true,
         },
         take,
         skip,
@@ -369,6 +373,26 @@ export const streckRouter = router({
           createdAt: 'desc',
         },
       });
+
+      const res = streckLists.map((streckList) => ({
+        ...streckList,
+        transactions: undefined,
+        totalChange: sum(streckList.transactions.map((t) => t.totalPrice)),
+      }));
+
       return res;
+    }),
+
+  removeStreckList: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return ctx.prisma.streckList.delete({
+        where: { id },
+      });
     }),
 });

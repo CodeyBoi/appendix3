@@ -3,7 +3,8 @@ import AdminStreckForm from './form';
 
 const AdminStreckFormPage = async ({ params }: { params: { id: string } }) => {
   const items = await api.streck.getItems.query();
-  const newList = params.id !== 'new';
+  const { id } = params;
+  const newList = id === 'new';
 
   const transactions = newList
     ? undefined
@@ -15,9 +16,11 @@ const AdminStreckFormPage = async ({ params }: { params: { id: string } }) => {
 
   return (
     <div className='flex flex-col'>
-      <div className='overflow-x-auto'>
-        <AdminStreckForm items={items} transactions={transactions} />
-      </div>
+      <AdminStreckForm
+        items={items}
+        transactions={transactions}
+        id={newList ? undefined : +id}
+      />
     </div>
   );
 };

@@ -93,7 +93,7 @@ const adminTab: NavbarLinkGroup = {
       permission: 'manageSections',
     },
     {
-      label: lang('Streckkonton', 'Streck Accounts'),
+      label: lang('Strecklistor', 'Streck Lists'),
       href: '/admin/streck',
       icon: <IconClipboardList />,
       permission: 'manageStreck',

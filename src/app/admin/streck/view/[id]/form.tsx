@@ -67,9 +67,18 @@ const AdminStreckForm = ({
     additionalCorps,
   });
 
-  const initialValues = transactions.reduce(
+  const initialAmounts = transactions.reduce(
     (acc, transaction) => {
       const key = `${transaction.corps.id}:${transaction.item}`;
+      acc[key] = (acc[key] ?? 0) + transaction.amount;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const initialBalances = transactions.reduce(
+    (acc, transaction) => {
+      const key = transaction.corps.id;
       acc[key] = (acc[key] ?? 0) + transaction.totalPrice;
       return acc;
     },
@@ -102,11 +111,10 @@ const AdminStreckForm = ({
       }
     }
     mutation.mutate({ id, transactions: data });
+    router.back();
   };
 
-  if (isInitialLoading || isFetching || isRefetching) {
-    return <Loading msg='Laddar strecklista...' />;
-  }
+  const isReady = !isInitialLoading && !isFetching && !isRefetching;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -119,59 +127,66 @@ const AdminStreckForm = ({
           }}
         />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <table className='table text-sm'>
-          <thead>
-            <tr className='text-xs'>
-              <th className='px-1'>Namn</th>
-              <th className='px-1'>Saldo</th>
-              {items.map((item) => (
-                <th
-                  key={item.id}
-                  className='px-1'
-                >{`${item.name} ${item.price}p`}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
-            {activeCorps.map((corps) => (
-              <tr
-                key={corps.id}
-                className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(
-                  corps.balance,
-                )}`}
-              >
-                <td className='px-1'>
-                  <CorpsDisplay corps={corps} nameFormat='full-name' />
-                </td>
-                <td className='px-1 text-center'>{corps.balance}</td>
-                {items.map((item) => {
-                  const key = `${corps.id}:${item.name}`;
-                  return (
-                    <td key={item.id} className='px-1'>
-                      <input
-                        className='w-16 bg-transparent px-2 py-0.5'
-                        type='number'
-                        defaultValue={initialValues[key]}
-                        {...register(key)}
-                      />
+      {!isReady && <Loading msg='Laddar strecklista...' />}
+      {isReady && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className='overflow-x-auto'>
+            <table className='table text-sm'>
+              <thead>
+                <tr className='text-left align-bottom text-xs'>
+                  <th className='px-1'>Namn</th>
+                  <th className='px-1'>Saldo</th>
+                  {items.map((item) => (
+                    <th
+                      key={item.id}
+                      className='w-16 px-1'
+                    >{`${item.name} ${item.price}p`}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
+                {activeCorps.map((corps) => (
+                  <tr
+                    key={corps.id}
+                    className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(
+                      corps.balance - (initialBalances[corps.id] ?? 0),
+                    )}`}
+                  >
+                    <td className='px-1'>
+                      <CorpsDisplay corps={corps} nameFormat='full-name' />
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className='h-2' />
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          disabled={isSubmitting || !isDirty || isLoading || isSubmitted}
-        >
-          {!isSubmitting && !isSubmitted && 'Skicka in'}
-          {isSubmitting && 'Skickar...'}
-          {isSubmitted && 'Skickad!'}
-        </Button>
-      </form>
+                    <td className='px-1 text-center'>
+                      {corps.balance - (initialBalances[corps.id] ?? 0)}
+                    </td>
+                    {items.map((item) => {
+                      const key = `${corps.id}:${item.name}`;
+                      return (
+                        <td key={item.id} className='px-1'>
+                          <input
+                            className='w-16 bg-transparent px-2 py-0.5'
+                            type='number'
+                            defaultValue={initialAmounts[key]}
+                            {...register(key)}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className='h-2' />
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSubmitting || !isDirty || isLoading}
+          >
+            {!isSubmitting && !isSubmitted && 'Skicka in'}
+            {isSubmitting && 'Skickar...'}
+            {isSubmitted && 'Skickad!'}
+          </Button>
+        </form>
+      )}
     </div>
   );
 };
