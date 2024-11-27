@@ -328,7 +328,7 @@ model StreckTransaction {
   amount       Int
   time         DateTime @default(now())
   corpsId      String
-  streckListId Int      @default(1)
+  streckListId Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
