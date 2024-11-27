@@ -1,6 +1,5 @@
 'use client';
 
-import { StreckItem as PrismaStreckItem } from '@prisma/client';
 import CorpsDisplay from 'components/corps/display';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
@@ -26,10 +25,15 @@ type Transaction = {
   totalPrice: number;
 };
 
+type StreckItem = {
+  name: string;
+  price: number;
+};
+
 interface AdminStreckFormProps {
   id?: number;
   transactions?: Transaction[];
-  items: PrismaStreckItem[];
+  items: StreckItem[];
 }
 
 const rowBackgroundColor = (balance: number) => {
@@ -67,9 +71,21 @@ const AdminStreckForm = ({
     additionalCorps,
   });
 
+  const itemsSet = new Set(items.map((i) => `${i.name}:${i.price}`));
+  for (const transaction of transactions) {
+    const key = `${transaction.item}:${-transaction.pricePer}`;
+    if (itemsSet.has(key)) {
+      continue;
+    }
+    itemsSet.add(key);
+    items.push({ name: transaction.item, price: -transaction.pricePer });
+  }
+
   const initialAmounts = transactions.reduce(
     (acc, transaction) => {
-      const key = `${transaction.corps.id}:${transaction.item}`;
+      const key = `${transaction.corps.id}:${
+        transaction.item
+      }:${-transaction.pricePer}`;
       acc[key] = (acc[key] ?? 0) + transaction.amount;
       return acc;
     },
@@ -98,7 +114,8 @@ const AdminStreckForm = ({
     const data = [];
     for (const corps of activeCorps) {
       for (const item of items) {
-        const formValue = values[`${corps.id}:${item.name}`]?.trim();
+        const formValue =
+          values[`${corps.id}:${item.name}:${item.price}`]?.trim();
         if (!formValue) {
           continue;
         }
@@ -138,7 +155,7 @@ const AdminStreckForm = ({
                   <th className='px-1'>Saldo</th>
                   {items.map((item) => (
                     <th
-                      key={item.id}
+                      key={`${item.name}:${item.price}`}
                       className='w-16 px-1'
                     >{`${item.name} ${item.price}p`}</th>
                   ))}
@@ -159,9 +176,9 @@ const AdminStreckForm = ({
                       {corps.balance - (initialBalances[corps.id] ?? 0)}
                     </td>
                     {items.map((item) => {
-                      const key = `${corps.id}:${item.name}`;
+                      const key = `${corps.id}:${item.name}:${item.price}`;
                       return (
-                        <td key={item.id} className='px-1'>
+                        <td key={key} className='px-1'>
                           <input
                             className='w-16 bg-transparent px-2 py-0.5'
                             type='number'
