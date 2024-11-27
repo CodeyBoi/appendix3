@@ -47,7 +47,7 @@ const AdminTransactionForm = () => {
     additionalCorps,
   });
 
-  const mutation = api.streck.addTransactions.useMutation({
+  const mutation = api.streck.upsertStreckList.useMutation({
     onSuccess: () => {
       router.push('/admin/streck');
       utils.streck.getActiveCorps.invalidate();
