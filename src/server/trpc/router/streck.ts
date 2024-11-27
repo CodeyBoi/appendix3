@@ -46,7 +46,7 @@ export const streckRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, corpsId, streckListId, take = 50, skip = 0 } = input;
+      const { start, end, corpsId, streckListId, take, skip = 0 } = input;
 
       type SummaryItem = {
         amount: number;
