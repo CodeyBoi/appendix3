@@ -268,7 +268,7 @@ const DownloadStrecklistButton = ({
   return (
     <Button onClick={() => generateStreckList(activeCorps, items)}>
       <IconDownload />
-      Ladda ner ny strecklista
+      Ladda ner tom strecklista
     </Button>
   );
 };

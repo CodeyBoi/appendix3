@@ -9,8 +9,8 @@ import Loading from 'components/loading';
 import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import TransactionsTable from './view/transactions-table';
 import DownloadStrecklistButton from './download';
+import StreckListTable from './view/strecklist-table';
 
 const AdminStreckPage = async () => {
   const [activeCorps, items, bleckhornenBalance] = await Promise.all([
@@ -25,7 +25,7 @@ const AdminStreckPage = async () => {
       <h5>{`Total corpsskuld: ${bleckhornenBalance.unsettledDebt}`}</h5>
       <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
-          <h3>Senaste händelser</h3>
+          <h3>Senaste strecklistor</h3>
           <div>
             <Suspense
               fallback={
@@ -37,7 +37,7 @@ const AdminStreckPage = async () => {
                 />
               }
             >
-              <TransactionsTable />
+              <StreckListTable take={50} showDelete />
             </Suspense>
           </div>
         </div>
@@ -50,9 +50,9 @@ const AdminStreckPage = async () => {
             <IconCash />
             Ny kostnad/insättning...
           </Button>
-          <Button href='streck/new'>
+          <Button href='streck/view/new'>
             <IconTablePlus />
-            Inför ny strecklista...
+            Inför strecklista...
           </Button>
           <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
           <Button href='/admin/streck/prices'>

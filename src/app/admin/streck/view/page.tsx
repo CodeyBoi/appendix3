@@ -1,11 +1,11 @@
 import ParamsDatePicker from 'components/input/params-date-picker';
 import React, { Suspense } from 'react';
-import TransactionsTable from './transactions-table';
 import { Metadata } from 'next';
 import dayjs from 'dayjs';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import TransactionsSummary from './transactions-summary';
+import StreckListTable from './strecklist-table';
 
 export const metadata: Metadata = {
   title: 'Streck',
@@ -50,16 +50,9 @@ const AdminStreckViewPage = async ({
       >
         <h3>Sammanfattning</h3>
         <TransactionsSummary start={start} end={end} take={0x1337} />
-        <h3>Alla transaktioner</h3>
-        <div>
-          <TransactionsTable
-            start={start}
-            end={end}
-            showCorps
-            take={0x1337}
-            showDelete
-            showDownload
-          />
+        <h3>Alla strecklistor</h3>
+        <div className='overflow-x-auto'>
+          <StreckListTable start={start} end={end} showDelete />
         </div>
       </Suspense>
     </div>
