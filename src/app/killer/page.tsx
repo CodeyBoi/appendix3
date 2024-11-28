@@ -208,7 +208,7 @@ const KillerPage = async () => {
                 {game.participants.length > 0 && (
                   <h3>
                     {hasStarted
-                      ? 'Återstående corps'
+                      ? lang('Återstående corps', 'Remaining corps')
                       : lang('Anmälda corps', 'Registered corps')}
                   </h3>
                 )}

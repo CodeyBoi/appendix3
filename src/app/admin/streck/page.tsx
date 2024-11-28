@@ -20,19 +20,19 @@ const AdminStreckPage = async () => {
   ]);
   return (
     <div className='flex flex-col gap-4'>
-      <h2>Streckkonton</h2>
+      <h2>{lang('Strecklistor', 'Strecklists')}</h2>
       <h5>{`Corpssaldo: ${bleckhornenBalance.balance}`}</h5>
-      <h5>{`Total corpsskuld: ${bleckhornenBalance.unsettledDebt}`}</h5>
+      <h5>{`Summan av negativa saldon: ${bleckhornenBalance.unsettledDebt}`}</h5>
       <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
-          <h3>Senaste strecklistor</h3>
+          <h3>{lang('Senaste strecklistor', 'Latest strecklists')}</h3>
           <div>
             <Suspense
               fallback={
                 <Loading
                   msg={lang(
-                    'Hämtar transaktioner...',
-                    'Fetching transactions...',
+                    'Hämtar strecklistor...',
+                    'Fetching strecklists...',
                   )}
                 />
               }
@@ -44,20 +44,20 @@ const AdminStreckPage = async () => {
         <div className='flex flex-col gap-2'>
           <Button href='streck/view'>
             <IconSearch />
-            Se transaktioner...
+            {lang('Se transaktioner...', 'See transactions...')}
           </Button>
           <Button href='streck/deposition/new'>
             <IconCash />
-            Ny kostnad/insättning...
+            {lang('Ny kostnad/insättning...', 'New payment/deposit...')}
           </Button>
           <Button href='streck/view/new'>
             <IconTablePlus />
-            Inför strecklista...
+            {lang('Inför strecklista...', 'Submit strecklist...')}
           </Button>
           <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
           <Button href='/admin/streck/prices'>
             <IconCoins />
-            Ändra priser...
+            {lang('Ändra priser...', 'Change prices...')}
           </Button>
         </div>
       </div>

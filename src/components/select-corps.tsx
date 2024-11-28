@@ -79,7 +79,7 @@ const SelectCorps = ({
   };
 
   const nothingFound =
-    corpsiiStatus === 'loading' ? 'Laddar corps...' : 'Inga corps hittades';
+    corpsiiStatus === 'loading' ? 'Hämtar corps...' : 'Inga corps hittades';
 
   if (defaultValue && !corpsiiData?.find((c) => c.value === defaultValue)) {
     return null;
@@ -91,7 +91,7 @@ const SelectCorps = ({
     label: props.label ?? 'Sök...',
     placeholder:
       queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading'
-        ? 'Laddar corps...'
+        ? 'Hämtar corps...'
         : props.placeholder,
     nothingFound:
       searchValue.length < MIN_SEARCH_LENGTH

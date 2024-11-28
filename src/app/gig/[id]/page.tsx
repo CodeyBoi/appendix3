@@ -29,7 +29,7 @@ const GigPage = async ({ params }: { params: { id: string } }) => {
       <GigCard gig={gigId} />
       <Suspense
         fallback={
-          <Loading msg={lang('Laddar anmälningar...', 'Fetching signups...')} />
+          <Loading msg={lang('Hämtar anmälningar...', 'Fetching signups...')} />
         }
       >
         <SignupList gigId={gigId} />

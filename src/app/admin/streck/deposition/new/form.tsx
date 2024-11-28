@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
+import { lang } from 'utils/language';
 
 const rowBackgroundColor = (balance: number) => {
   if (balance < 0) {
@@ -86,7 +87,9 @@ const AdminTransactionForm = () => {
       en intäkt för medlemmen (t.ex. insättning på streckkonto eller återbäring
       för utlägg) och ett negativt belopp en kostnad för medlemmen (t.ex.
       corpsafton eller Pryl&Prov-saker).
-      {!isReady && <Loading msg='Hämtar corpslista...' />}
+      {!isReady && (
+        <Loading msg={lang('Hämtar corpslista...', 'Fetching corps list...')} />
+      )}
       {isReady && (
         <>
           <div className='max-w-md'>
@@ -147,9 +150,9 @@ const AdminTransactionForm = () => {
                 isSubmitting || !isDirty || isLoading || isSubmitted || !isValid
               }
             >
-              {!isSubmitting && !isSubmitted && 'Skicka in'}
-              {isSubmitting && 'Skickar...'}
-              {isSubmitted && 'Skickad!'}
+              {!isSubmitting && !isSubmitted && lang('Spara', 'Submit')}
+              {isSubmitting && lang('Sparar...', 'Submitting...')}
+              {isSubmitted && lang('Sparad!', 'Submitted!')}
             </Button>
           </form>
         </>

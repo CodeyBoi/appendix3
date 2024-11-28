@@ -392,7 +392,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </form>
       )}
       {signupsLoading && (
-        <Loading msg={lang('Laddar anmälningar...', 'Fetching signups...')} />
+        <Loading msg={lang('Hämtar anmälningar...', 'Fetching signups...')} />
       )}
       {!signupsLoading && (
         <div>

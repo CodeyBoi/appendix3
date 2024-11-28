@@ -66,6 +66,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       ? ', men ' + temp2 + 'även ' + genOtherInstrumentsString(otherInstruments)
       : '') +
     '.';
+
   return (
     <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='whitespace-nowrap text-lg font-bold'>
