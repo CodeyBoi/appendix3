@@ -1,5 +1,5 @@
 import CorpsDisplay from 'components/corps/display';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/server';
 import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import DeleteTransactionButton from './delete';

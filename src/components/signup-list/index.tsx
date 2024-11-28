@@ -11,7 +11,7 @@ import { api } from 'trpc/react';
 import useLanguage, { Language } from 'hooks/use-language';
 import { lang } from 'utils/language';
 import ActionIcon from 'components/input/action-icon';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/client';
 import { aprilFoolsInstrumentLabel } from 'utils/date';
 
 interface SignupListProps {

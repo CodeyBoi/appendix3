@@ -6,7 +6,7 @@ import { api } from 'trpc/react';
 import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
 import TextInput from 'components/input/text-input';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/client';
 
 const defaultValues = {
   title: '',

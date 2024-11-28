@@ -9,7 +9,7 @@ import Button from 'components/input/button';
 import Divider from 'components/divider';
 import dayjs from 'dayjs';
 import { lang } from 'utils/language';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/server';
 
 type GigMenuContentProps = {
   gig: Gig & { type: { name: string } };

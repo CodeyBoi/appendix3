@@ -3,7 +3,7 @@
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/client';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 

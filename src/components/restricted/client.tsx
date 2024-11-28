@@ -10,12 +10,12 @@ type RestrictedProps = {
 };
 
 const Restricted = (props: RestrictedProps) => {
-  const permissions = Array.isArray(props.permissions)
+  const { data: userPermissions } = api.permission.getOwnPermissions.useQuery();
+  const requiredPermissions = Array.isArray(props.permissions)
     ? props.permissions
     : [props.permissions];
-  const { data: userPermissions } = api.permission.getOwnPermissions.useQuery();
   const hasPermissions =
-    userPermissions && permissions.some((p) => userPermissions.has(p));
+    userPermissions && requiredPermissions.every((p) => userPermissions.has(p));
 
   if (!hasPermissions) {
     return props.fallback ?? null;
