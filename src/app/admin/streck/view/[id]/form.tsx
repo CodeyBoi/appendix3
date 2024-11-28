@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
+import { lang } from 'utils/language';
 
 type Corps = {
   id: string;
@@ -170,7 +171,11 @@ const AdminStreckForm = ({
           }}
         />
       </div>
-      {!isReady && <Loading msg='Laddar strecklista...' />}
+      {!isReady && (
+        <Loading
+          msg={lang('Hämtar strecklista...', 'Fetching strecklist...')}
+        />
+      )}
       {isReady && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='overflow-x-auto'>
@@ -223,9 +228,9 @@ const AdminStreckForm = ({
             onClick={handleSubmit(onSubmit)}
             disabled={isSubmitting || !isDirty || isLoading}
           >
-            {!isSubmitting && !isSubmitted && 'Skicka in'}
-            {isSubmitting && 'Skickar...'}
-            {isSubmitted && 'Skickad!'}
+            {!isSubmitting && !isSubmitted && lang('Spara', 'Submit')}
+            {isSubmitting && lang('Sparar...', 'Submitting...')}
+            {isSubmitted && lang('Sparad!', 'Submitted!')}
           </Button>
         </form>
       )}

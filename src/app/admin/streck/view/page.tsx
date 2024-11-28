@@ -33,18 +33,18 @@ const AdminStreckViewPage = async ({
       <div className='w-72'>
         <ParamsDatePicker
           paramName='start'
-          label='Startdatum'
+          label='Från och med'
           defaultValue={start}
         />
       </div>
       <div className='w-72'>
-        <ParamsDatePicker paramName='end' label='Slutdatum' />
+        <ParamsDatePicker paramName='end' label='Till och med' />
       </div>
       <Suspense
         key={`${start}_${end}`}
         fallback={
           <Loading
-            msg={lang('Hämtar transaktioner...', 'Fetching transactions...')}
+            msg={lang('Hämtar strecklistor...', 'Fetching strecklists...')}
           />
         }
       >

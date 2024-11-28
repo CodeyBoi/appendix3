@@ -45,7 +45,7 @@ const KillerWordForm = () => {
           type='submit'
           className='rounded bg-red-600 p-2 text-white hover:bg-red-700'
         >
-          {lang('Skicka', 'Send')}
+          {lang('Skicka', 'Submit')}
         </button>
       </div>
       {error && <div className='text-red-600'>{error}</div>}
