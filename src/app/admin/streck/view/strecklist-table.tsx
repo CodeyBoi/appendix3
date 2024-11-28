@@ -1,4 +1,4 @@
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/server';
 import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import { IconPencil } from '@tabler/icons-react';

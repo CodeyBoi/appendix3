@@ -9,7 +9,7 @@ import GigList from './list';
 import ParamsSelect from 'components/input/params-select';
 import { SelectItem } from 'components/input/select';
 import { lang } from 'utils/language';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/server';
 
 export const metadata: Metadata = {
   title: 'Spelningar',

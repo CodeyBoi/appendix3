@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import RehearsalStats from './stats';
 import RehearsalList from './list';
-import Restricted from 'components/restricted';
+import Restricted from 'components/restricted/server';
 import { getOperatingYear } from 'utils/date';
 
 const startYear = 2010;
