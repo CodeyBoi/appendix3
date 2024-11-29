@@ -5,6 +5,7 @@ import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import CorpsDisplay from 'components/corps/display';
 import DeleteStreckListButton from './delete-streck-list';
+import DownloadTransactionsButton from './download';
 
 type StreckListTableProps = {
   start?: Date;
@@ -23,12 +24,14 @@ const StreckListTable = async ({
   skip,
   dateFormat = 'YYYY-MM-DD HH:mm',
   showDelete = false,
+  showDownload = false,
 }: StreckListTableProps) => {
   const streckLists = await api.streck.getStreckLists.query({
     start,
     end,
     take,
     skip,
+    getTransactions: true,
   });
 
   if (streckLists.length === 0) {
@@ -37,6 +40,14 @@ const StreckListTable = async ({
 
   return (
     <div className='flex flex-col gap-4'>
+      {showDownload && (
+        <DownloadTransactionsButton
+          streckLists={streckLists}
+          filename={`Strecklistor ${dayjs(start).format(
+            'YYYY-MM-DD',
+          )} - ${dayjs(end).format('YYYY-MM-DD')}.xlsx`}
+        />
+      )}
       <div>
         <table className='table text-sm'>
           <thead>
