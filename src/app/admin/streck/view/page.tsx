@@ -52,7 +52,7 @@ const AdminStreckViewPage = async ({
         <TransactionsSummary start={start} end={end} take={0x1337} />
         <h3>Alla strecklistor</h3>
         <div className='overflow-x-auto'>
-          <StreckListTable start={start} end={end} showDelete />
+          <StreckListTable start={start} end={end} showDelete showDownload />
         </div>
       </Suspense>
     </div>

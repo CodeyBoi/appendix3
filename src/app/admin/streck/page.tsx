@@ -22,7 +22,7 @@ const AdminStreckPage = async () => {
     <div className='flex flex-col gap-4'>
       <h2>{lang('Strecklistor', 'Strecklists')}</h2>
       <h5>{`Corpssaldo: ${bleckhornenBalance.balance}`}</h5>
-      <h5>{`Summan av negativa saldon: ${bleckhornenBalance.unsettledDebt}`}</h5>
+      <h5>{`Summa av negativa saldon: ${bleckhornenBalance.unsettledDebt}`}</h5>
       <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
           <h3>{lang('Senaste strecklistor', 'Latest strecklists')}</h3>

@@ -353,19 +353,24 @@ export const streckRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
+        getTransactions: z.boolean().optional(),
         take: z.number().int().optional(),
         skip: z.number().int().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, take, skip } = input;
+      const { start, end, getTransactions = false, take, skip } = input;
       const streckLists = await ctx.prisma.streckList.findMany({
         where: {
           createdAt: { gte: start, lte: end },
         },
         include: {
           createdBy: true,
-          transactions: true,
+          transactions: {
+            include: {
+              corps: true,
+            },
+          },
         },
         take,
         skip,
@@ -376,7 +381,7 @@ export const streckRouter = router({
 
       const res = streckLists.map((streckList) => ({
         ...streckList,
-        transactions: undefined,
+        transactions: getTransactions ? streckList.transactions : [],
         totalChange: sum(streckList.transactions.map((t) => t.totalPrice)),
       }));
 
