@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
-import { fullName, numberAndFullName } from 'utils/corps';
+import { numberAndFullName } from 'utils/corps';
 import { downloadXLSX } from 'utils/xlsx';
 
 type Corps = {
@@ -56,7 +56,11 @@ const generateTransactionsXLSX = (
 
   const header = summarySheet.getRow(headerRow);
   header.values = ['Artikel', 'Antal', 'Totalpris'];
-  summarySheet.getColumn(1).width = 12;
+  header.font = {
+    name: 'Arial',
+    bold: true,
+  };
+  summarySheet.getColumn(1).width = 19;
 
   const items: string[] = [];
   const summaries = streckLists.reduce((acc, streckList) => {
@@ -91,7 +95,9 @@ const generateTransactionsXLSX = (
   });
 
   streckListsSheet.getRow(headerRow).values = [
-    'Corps',
+    '#',
+    'Förnamn',
+    'Efternamn',
     'Artikel',
     'Styckpris',
     'Antal',
@@ -101,9 +107,14 @@ const generateTransactionsXLSX = (
     name: 'Arial',
     bold: true,
   };
-  streckListsSheet.getColumn(1).width = 25;
-  streckListsSheet.getColumn(2).width = 17;
-  streckListsSheet.getColumn(3).width = 20;
+  streckListsSheet.getColumn(1).width = 5;
+  streckListsSheet.getColumn(2).width = 15;
+  streckListsSheet.getColumn(3).width = 19;
+  streckListsSheet.getColumn(4).width = 18;
+
+  streckListsSheet.getColumn(1).alignment = {
+    horizontal: 'center',
+  };
 
   for (const streckList of streckLists) {
     streckListsSheet.addRow(['']);
@@ -117,7 +128,6 @@ const generateTransactionsXLSX = (
       // streckListHeader should be defined as we just added a row
       continue;
     }
-    streckListHeader.height = 22;
     streckListHeader.font = {
       name: 'Arial',
       bold: true,
@@ -126,7 +136,9 @@ const generateTransactionsXLSX = (
 
     for (const transaction of streckList.transactions) {
       streckListsSheet.addRow([
-        fullName(transaction.corps),
+        transaction.corps.number ?? 'p.e.',
+        transaction.corps.firstName.trim(),
+        transaction.corps.lastName.trim(),
         transaction.item,
         transaction.pricePer,
         transaction.amount,
