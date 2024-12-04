@@ -108,6 +108,16 @@ const HomePage = async () => {
           {lang('Anmäl dig till Killergame! ⬆️', 'Sign up for Killergame! ⬆️')}
         </div>
       )}
+      {streak >= 3 && (
+        <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
+          {fire}
+          {lang(
+            ` Din spelningstreak är ${streak} `,
+            ` Your gig streak is ${streak} `,
+          )}
+          {fire}
+        </div>
+      )}
       <h2 className='text-2xl md:text-4xl'>
         {lang('Kommande spelningar', 'Upcoming gigs')}
         {isChristmas() ? '🎄' : ''}
@@ -115,7 +125,7 @@ const HomePage = async () => {
       <Suspense
         fallback={
           <>
-            <h3>{`${month.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
+            <h3 className='first-letter:uppercase'>{month}</h3>
             <GigSkeleton widths={WIDTHS[0]} />
             <GigSkeleton widths={WIDTHS[1]} />
             <GigSkeleton widths={WIDTHS[2]} />
@@ -123,16 +133,6 @@ const HomePage = async () => {
           </>
         }
       >
-        {streak >= 3 && (
-          <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
-            {fire}
-            {lang(
-              ` Din spelningstreak är ${streak} `,
-              ` Your gig streak is ${streak} `,
-            )}
-            {fire}
-          </div>
-        )}
         {gigs}
       </Suspense>
     </div>
