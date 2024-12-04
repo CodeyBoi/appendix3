@@ -57,3 +57,5 @@ export const aprilFoolsInstrumentLabel = (instrument: string) => {
 };
 
 export const startOperatingYear = 2010;
+
+export const isChristmas = () => new Date().getMonth() === 11;
