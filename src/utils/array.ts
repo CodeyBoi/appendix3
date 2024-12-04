@@ -1,8 +1,11 @@
-export const range = (start: number, stop: number, step = 1) =>
-  Array.from(
-    { length: Math.ceil((stop - start) / step) },
-    (_value, index) => start + index * step,
+export const range = (startOrStop: number, stop?: number, step = 1) => {
+  const [begin, end] =
+    stop !== undefined ? [startOrStop, stop] : [0, startOrStop];
+  return Array.from(
+    { length: Math.ceil((end - begin) / step) },
+    (_value, index) => begin + index * step,
   );
+};
 
 export const initObject = <K extends string | number | symbol, V>(
   keys: K[],

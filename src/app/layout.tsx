@@ -15,7 +15,8 @@ import { ColorScheme } from 'hooks/use-color-scheme';
 import { cn } from 'utils/class-names';
 import dayjs from 'dayjs';
 import { Language } from 'hooks/use-language';
-import { isAprilFools } from 'utils/date';
+import { isAprilFools, isChristmas } from 'utils/date';
+import { range } from 'utils/array';
 
 // Set global locale for dayjs
 dayjs.locale('sv');
@@ -44,6 +45,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     isAprilFools() ? 'dark' : corps?.colorScheme
   ) as ColorScheme;
   const language = corps?.language as Language;
+
+  const snowflakes = isChristmas() ? (
+    <>
+      {range(8).map((i) => (
+        <div key={i} className='snowflake'>
+          <div className='inner'>❄️</div>
+        </div>
+      ))}
+    </>
+  ) : null;
 
   return (
     <html
@@ -81,6 +92,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         <meta name='theme-color' content='#B80900'></meta>
       </head>
       <body className='overflow-y-auto bg-white text-black dark:bg-darkBg dark:text-darkText'>
+        {isChristmas() && snowflakes}
         <TRPCReactProvider headers={headers()}>
           <AppProvider
             defaultColorScheme={colorScheme}
