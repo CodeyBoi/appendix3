@@ -16,7 +16,7 @@ To setup the project on Windows, you will need the following:
 
 To setup the project on Linux/MacOS, you will need the following:
 
-- Git (`sudo apt install git`)x
+- Git (`sudo apt install git`)
 - [nvm](https://github.com/nvm-sh/nvm)
 
 You can install `nvm` via
