@@ -63,12 +63,11 @@ This project is build using the [T3 stack](https://github.com/t3-oss/create-t3-a
 - [Next.js](https://nextjs.org/) - For building the website
 - [Prisma](https://www.prisma.io/) - For querying and defining our database
 - [tRPC](https://trpc.io/) - For creating a type-safe API for our database
-- [Mantine](https://mantine.dev/) - Contains a lot of pre-made components for our website (buttons, forms, etc.)
 
 The entire project (except for a couple files) is written in TypeScript, which is a typed extension of JavaScript. This means that we can define the types of variables, functions, and so on. This is very useful, as it allows us to catch errors at compile time, instead of at runtime. It also often makes it easier to read and understand the code.
 
 ## Adding a new page
-In Next.js, you create a new page by creating a new file in the `/src/pages` folder. Next will then automatically create a route for that page. For example, if you create a file `/src/pages/about.tsx`, you can access it by going to `localhost:3000/about`. Naming a file `index.tsx` will make it the default page for that route. For example, if you create a file `/src/pages/gig/index.tsx`, you can access it by going to `localhost:3000/gig`. This is (in this project) the preferred way of creating new pages.
+In Next.js, you create a new page by creating a new file in the `/src/app` folder called `page.tsx`. Next will then automatically create a route for that page. For example, if you create a file `/src/pages/about/page.tsx`, you can access it by going to `localhost:3000/about`.
 
 We will now create a new page for our website. We will create a page which lists all the corps of Bleckhornen. This is a good example, as it will show you how to use Prisma and tRPC.
 
@@ -76,7 +75,7 @@ You should at any point be able to check the progress by going to [`localhost:30
 
 ### 1. Setting up the page
 
-First, create a new file `/src/pages/corps/index.tsx`. Then, add the following code:
+First, create a new file `/src/app/corps/page.tsx`. Then, add the following code:
 
 ```tsx
 import React from 'react';
@@ -165,18 +164,16 @@ Now, we need to fetch the data in our frontend. Change the corps page to the fol
 
 ```tsx
 import React from 'react';
-import { trpc } from '../../utils/trpc';
+import { api } from 'trpc/server';
 
-const Corps = () => {
-
-  const { data: corpsii } = trpc.corpsExample.getCorpsii.useQuery();
-
+const Corps = async () => {
+  const corpsii = await api.corps.getCorpsii.query();
   return (
     <div>
       <h1>Corpsii</h1>
-      {corpsii?.map((corps) => (
+      {corpsii.map((corps) => (
         <div key={corps.id}>
-          <h2>{`${corps.number ? '#' + corps.number : 'p.e.'} ${corps.name}`}</h2>
+          <h2>{`${corps.number ? '#' + corps.number : 'p.e.'} ${corps.firstName} ${corps.lastName}`}</h2>
         </div>
       ))}
     </div>
@@ -186,14 +183,12 @@ const Corps = () => {
 export default Corps;
 ```
 
-The `useQuery` call will automatically fetch and cache from the database into the `data` variable (here renamed to `corpsii`). We then map over the corps, and render them on the page.
-
-Note! The `data` object will be `undefined` until the data is fetched, so make sure to handle that case. Above we use the [optional chaining operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining) to check if `corpsii` is defined. If it is not, the entire expression will evaluate to `undefined`, and nothing will be rendered.
+The `query` call will fetch data from the database into the `corpsii` variable. We then map over the corpsii, and render them on the page. Note that the function changed to `async` (at line 4) and that the `query` call has the `await` keyword in front of it. This means the page is _server side rendered_, meaning it's generated on the server before being sent to the client. This simplifies data fetching, but disables the ability to have any interactive elements (mostly). To be able to use client side rendering you must add `'use client';` to the top of the file, and you won't then be able to use the `async` and `await` keywords. The differences between server components and client components are pretty complex, but can be read about [here](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
 
 You should now be able to see all the corps on the page. If you want to manually view or edit the database, you can use [Prisma Studio](https://www.prisma.io/docs/concepts/components/prisma-studio) to do so by running
 
 ```bash
-npx prisma studio
+bunx prisma studio
 ```
 
 This should open a new tab in your browser at `localhost:5555`.
