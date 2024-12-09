@@ -17,12 +17,20 @@ type Signup = {
   checkbox2: boolean;
 };
 
-interface GigSignupBoxProps {
+type Instrument = {
+  name: string;
+  id: number;
+};
+
+type GigSignupBoxProps = {
+  corpsId: string;
   gigId: string;
+  instruments: Instrument[];
+  mainInstrument: Instrument;
   checkbox1: string;
   checkbox2: string;
   signup?: Signup;
-}
+};
 
 const SIGNUP_OPTIONS = [
   { label: lang('Ja', 'Yes'), value: 'Ja', color: 'green' },
@@ -31,7 +39,10 @@ const SIGNUP_OPTIONS = [
 ];
 
 const GigSignupBox = ({
+  corpsId,
   gigId,
+  instruments,
+  mainInstrument,
   checkbox1,
   checkbox2,
   signup,
@@ -39,17 +50,12 @@ const GigSignupBox = ({
   const utils = trpc.useUtils();
 
   const addSignup = trpc.gig.addSignup.useMutation({
-    onSuccess: async () => {
-      if (corps) {
-        await utils.gig.getSignup.invalidate({ gigId, corpsId: corps.id });
-      }
-      await utils.gig.getSignups.invalidate({ gigId });
+    onSuccess: () => {
+      utils.gig.getSignup.invalidate({ gigId, corpsId });
+      utils.gig.getSignups.invalidate({ gigId });
       setSubmitting(false);
     },
   });
-
-  const { data: corps } = trpc.corps.getSelf.useQuery();
-  const { data: mainInstrument } = trpc.corps.getMainInstrument.useQuery();
 
   const [instrument, setInstrument] = useState('');
   const [status, setStatus] = useState(signup?.status.value ?? '');
@@ -75,17 +81,15 @@ const GigSignupBox = ({
     }
   }, [mainInstrument, signup]);
 
-  const loading = !corps || !mainInstrument;
-
   const handleSignupStatusChange = (value: string) => {
-    if (!value || !corps) {
+    if (!value) {
       return;
     }
     setSubmitting(true);
     setStatus(value);
     addSignup.mutate({
       gigId,
-      corpsId: corps.id,
+      corpsId,
       status: value,
       instrument,
       checkbox1: checkbox1Checked,
@@ -94,14 +98,14 @@ const GigSignupBox = ({
   };
 
   const handleInstrumentChange = (value: string) => {
-    if (!value || !corps) {
+    if (!value) {
       return;
     }
     setSubmitting(true);
     setInstrument(value);
     addSignup.mutate({
       gigId,
-      corpsId: corps.id,
+      corpsId,
       status: status,
       instrument: value,
       checkbox1: checkbox1Checked,
@@ -110,7 +114,7 @@ const GigSignupBox = ({
   };
 
   return (
-    <FormLoadingOverlay showSpinner={false} visible={submitting || loading}>
+    <FormLoadingOverlay showSpinner={false} visible={submitting}>
       <div className='flex flex-col gap-2'>
         {isAprilFools() ? (
           <Wheel
@@ -130,14 +134,11 @@ const GigSignupBox = ({
             checked={checkbox1Checked}
             label={checkbox1}
             onChange={(e) => {
-              if (!corps) {
-                return;
-              }
               setSubmitting(true);
               setCheckbox1Checked(e.currentTarget.checked);
               addSignup.mutate({
                 gigId,
-                corpsId: corps.id,
+                corpsId,
                 status,
                 instrument,
                 checkbox1: e.currentTarget.checked,
@@ -151,14 +152,11 @@ const GigSignupBox = ({
             checked={checkbox2Checked}
             label={checkbox2}
             onChange={(e) => {
-              if (!corps) {
-                return;
-              }
               setSubmitting(true);
               setCheckbox2Checked(e.currentTarget.checked);
               addSignup.mutateAsync({
                 gigId,
-                corpsId: corps.id,
+                corpsId,
                 status,
                 instrument,
                 checkbox1: checkbox1Checked,
@@ -167,15 +165,13 @@ const GigSignupBox = ({
             }}
           />
         )}
-        {(corps?.instruments.length ?? 0) > 1 &&
+        {instruments.length > 1 &&
           (isAprilFools() ? (
             <Wheel
-              options={
-                corps?.instruments.map((i) => ({
-                  label: aprilFoolsInstrumentLabel(i.instrument.name),
-                  value: i.instrument.name,
-                })) ?? []
-              }
+              options={instruments.map((instrument) => ({
+                label: aprilFoolsInstrumentLabel(instrument.name),
+                value: instrument.name,
+              }))}
               onChange={handleInstrumentChange}
               value={instrument}
             />
@@ -184,12 +180,10 @@ const GigSignupBox = ({
               label='Instrument'
               value={instrument}
               onChange={handleInstrumentChange}
-              options={
-                corps?.instruments.map((i) => ({
-                  label: i.instrument.name,
-                  value: i.instrument.name,
-                })) ?? []
-              }
+              options={instruments.map((instrument) => ({
+                label: instrument.name,
+                value: instrument.name,
+              }))}
             />
           ))}
       </div>

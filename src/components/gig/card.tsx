@@ -30,11 +30,12 @@ const isGig = (gig: Gig | GigId): gig is Gig => {
 };
 
 const GigCard = async ({ gig: gigProp }: GigCardProps) => {
-  const [corps, gig] = await Promise.all([
+  const [corps, gig, mainInstrument] = await Promise.all([
     api.corps.getSelf.query(),
     isGig(gigProp)
       ? gigProp
       : await api.gig.getWithId.query({ gigId: gigProp }),
+    api.corps.getMainInstrument.query(),
   ]);
 
   if (!corps) {
@@ -53,6 +54,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
   const date = new Date();
   const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
   const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
+
+  const instruments = corps.instruments.map((i) => ({
+    name: i.instrument.name,
+    id: i.instrument.id,
+  }));
 
   return (
     <div className='rounded border shadow-md dark:border-neutral-800'>
@@ -121,7 +127,10 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                   </div>
                 )}
                 <GigSignupBox
+                  corpsId={corps.id}
                   gigId={gig.id}
+                  instruments={instruments}
+                  mainInstrument={mainInstrument}
                   checkbox1={gig.checkbox1}
                   checkbox2={gig.checkbox2}
                   signup={signup ?? undefined}
@@ -130,7 +139,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             )}
             {isBeforeSignup && gig.signupStart && (
               <div className='pr-2 text-right text-xs italic leading-normal'>
-                {lang('Anmälan öppnar', 'Signup opens')}{' '}
+                {lang('Anmälan öppnar ', 'Signup opens ')}
                 <Time
                   date={gig.signupStart}
                   options={{
@@ -141,6 +150,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                     minute: 'numeric',
                   }}
                 />
+              </div>
+            )}
+            {isAfterSignup && gig.signupEnd && (
+              <div className='pr-2 text-right text-xs italic leading-normal'>
+                {lang('Anmälan har stängt!', 'Signup has closed!')}
               </div>
             )}
           </div>
