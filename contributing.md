@@ -24,7 +24,7 @@ You now can create a new branch. This is done with
 
 Make your changes to your local repo (more info about how to write code for the website will be in the section *Writing code for Blindtarmen 3*).
 
-Before you can upload your changes to the remote repo you need to *commit* them. Firstly, add the files you want to change to your commit using `git add path/to/file`, or `git add -A` to add all files in your repo which you have changed. Then run
+Before you can upload your changes to the remote repo you need to *commit* them. Firstly, add the files you want to change to your commit using `git add path/to/file`, or `git add -A` to add all files in your repo which you have modified. Then run
 
     $ git commit -m "A message which very briefly describes your changes"
 
@@ -47,7 +47,7 @@ If the changes to the main branch and to your branch could be automatically reso
 
 ## 4. Applying your changes to the main branch
 
-So you're happy with your code, and everything looks great. Wonderful! All that's left to do is to create a *pull request*, which will pull your changes into the main branch.
+So you're happy with your code, and everything looks great. Wonderful! All that's left to do is to create a *pull request* (also called *merge request*), which will pull your changes into the main branch.
 
 Firstly, open a web browser of your choice and go to [the repo on github](https://github.com/CodeyBoi/appendix2.0). Then switch to your branch using the branch selector (it can be found in the top left under the header, it should say *main*). 
 
@@ -91,7 +91,7 @@ const Corps = () => {
 export default Corps;
 ```
 
-This is a very simple page, which just renders a header with the text "Corpsii".
+This is a very simple page, which just renders a header with the text "Corpsii". A page on the website is defined by a function which returns JSX, which basically is a superset of JavaScript which can contain HTML elements. In the last line we define the default export of the file to be `Corps`, which is the function we defined above which returns JSX. You can read more about JSX [here](https://legacy.reactjs.org/docs/introducing-jsx.html) and more about HTML [here](https://html.com/).
 
 ### 2. Fetching data from the database
 
@@ -142,9 +142,9 @@ export const corpsExampleRouter = router({
 
 For every query we get a `ctx` object, which is a context object. This object contains a lot of useful information, such as the database client. This contains the `prisma` object, which we can use to query the database. In this case, we use the `findMany` function to get all corps. To see all the functions available, you can check out the [Prisma documentation](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference). If you are used to SQL, this is pretty similar.
 
-The standard way to execute a query is therefore `ctx.prisma.<model>.<function>`. For example, if we wanted to get all corps with the first name "John", we would use `ctx.prisma.corps.findMany({ where: { firstName: "John" } })`.
+The standard way to execute a query inside of a tRPC router function is therefore `ctx.prisma.<model>.<function>`. For example, if we wanted to get all corps with the first name "John", we would use `ctx.prisma.corps.findMany({ where: { firstName: "John" } })`.
 
-Next, we add this router to our main tPRC router. Open `/src/server/trpc/router/_app.ts` and add the following lines:
+Next, we need to add this router to our main tPRC router. Open `/src/server/trpc/router/_app.ts` and add the following lines:
 
 ```ts
 // ... other router imports
@@ -183,9 +183,13 @@ const Corps = async () => {
 export default Corps;
 ```
 
-The `query` call will fetch data from the database into the `corpsii` variable. We then map over the corpsii, and render them on the page. Note that the function changed to `async` (at line 4) and that the `query` call has the `await` keyword in front of it. This means the page is _server side rendered_, meaning it's generated on the server before being sent to the client. This simplifies data fetching, but disables the ability to have any interactive elements (mostly). To be able to use client side rendering you must add `'use client';` to the top of the file, and you won't then be able to use the `async` and `await` keywords. The differences between server components and client components are pretty complex, but can be read about [here](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+The `query` call will fetch data from the database into the `corpsii` variable. We then map over the corpsii, and render them on the page. You should now be able to see all corpsii.
 
-You should now be able to see all the corps on the page. If you want to manually view or edit the database, you can use [Prisma Studio](https://www.prisma.io/docs/concepts/components/prisma-studio) to do so by running
+Note that the function changed to `async` (at line 4) and that the `query` call has the `await` keyword in front of it. For a component to be able to fetch data in this manner it has to be _server side rendered_ (, meaning its HTML is generated on the server before being sent to the client. This simplifies data fetching, but disables the ability to have any interactive elements (mostly). To be able to use client side rendering you must add `'use client';` to the top of the file, but then you won't then be able to use the `async` and `await` keywords. The differences between server components and client components are pretty complex, but can be read about [here](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+
+As a rule of thumb, if a component only needs to fetch and display data (e.g. the statistics list on the global statistics page), it should be server side rendered. If it needs any type of user interactivity (e.g. the "Ja", "Kanske" or "Nej"-element for a gig signup) it should be client side rendered.
+
+If you want to manually view or edit the database, you can use [Prisma Studio](https://www.prisma.io/docs/concepts/components/prisma-studio) to do so by running
 
 ```bash
 bunx prisma studio
