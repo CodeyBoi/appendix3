@@ -68,6 +68,9 @@ const GigsPage = async ({
             </Button>
           </Restricted>
         </div>
+        <h5 className='text-sm font-light italic'>
+          {lang('* = positiv spelning', '* = positive gig')}
+        </h5>
         <Tabs options={tabs} />
       </div>
       <Suspense
