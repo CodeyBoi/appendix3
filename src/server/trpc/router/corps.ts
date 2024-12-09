@@ -372,9 +372,10 @@ export const corpsRouter = router({
       },
     });
     if (!corps) {
-      return null;
+      throw new Error('Calling user should always be defined');
     }
-    return corps.instruments.find((i) => i.isMainInstrument)?.instrument;
+    const res = corps.instruments.find((i) => i.isMainInstrument)?.instrument;
+    return res as { id: number; name: string; sectionId: number | null };
   }),
 
   getRoles: protectedProcedure.query(async ({ ctx }) => {

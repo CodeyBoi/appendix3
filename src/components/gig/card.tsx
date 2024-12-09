@@ -30,11 +30,12 @@ const isGig = (gig: Gig | GigId): gig is Gig => {
 };
 
 const GigCard = async ({ gig: gigProp }: GigCardProps) => {
-  const [corps, gig] = await Promise.all([
+  const [corps, gig, mainInstrument] = await Promise.all([
     api.corps.getSelf.query(),
     isGig(gigProp)
       ? gigProp
       : await api.gig.getWithId.query({ gigId: gigProp }),
+    api.corps.getMainInstrument.query(),
   ]);
 
   if (!corps) {
@@ -54,12 +55,19 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
   const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
   const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
 
+  const instruments = corps.instruments.map((i) => ({
+    name: i.instrument.name,
+    id: i.instrument.id,
+  }));
+
   return (
     <div className='rounded border shadow-md dark:border-neutral-800'>
       <div className='flex flex-col space-y-2 p-4'>
         <div className='flex flex-nowrap items-start justify-between'>
           <Link className='grow' href={`/gig/${gig.id}`}>
-            <h4 className='cursor-pointer'>{gig.title}</h4>
+            <h4 className='cursor-pointer'>{`${gig.title}${
+              gig.countsPositively ? '*' : ''
+            }`}</h4>
           </Link>
           <Popover
             position='left-bottom'
@@ -83,7 +91,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 {!!gig.location && <br />}
                 {gig.price !== 0 && lang('Pris: ', 'Price: ')}
                 {gig.price !== 0 && gig.price.toString()}
-                {gig.price !== 0 && lang(' kr', ' crowns')}
+                {gig.price !== 0 && lang(' kr', ' SEK')}
                 {gig.price !== 0 && <br />}
                 {!!gig.meetup && lang('Samling: ', 'Gathering: ')}
                 {gig.meetup}
@@ -99,7 +107,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {gig.signupEnd.getTime() + 1000 * 60 * 60 * 24 >
+                    {gig.signupEnd.getTime() + 1000 * 60 * 60 * 2 >
                     Date.now() ? (
                       <>
                         {lang('om ', 'in ')}
@@ -121,7 +129,10 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                   </div>
                 )}
                 <GigSignupBox
+                  corpsId={corps.id}
                   gigId={gig.id}
+                  instruments={instruments}
+                  mainInstrument={mainInstrument}
                   checkbox1={gig.checkbox1}
                   checkbox2={gig.checkbox2}
                   signup={signup ?? undefined}
@@ -130,7 +141,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             )}
             {isBeforeSignup && gig.signupStart && (
               <div className='pr-2 text-right text-xs italic leading-normal'>
-                {lang('Anmälan öppnar', 'Signup opens')}{' '}
+                {lang('Anmälan öppnar ', 'Signup opens ')}
                 <Time
                   date={gig.signupStart}
                   options={{
@@ -141,6 +152,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                     minute: 'numeric',
                   }}
                 />
+              </div>
+            )}
+            {isAfterSignup && gig.signupEnd && (
+              <div className='pr-2 text-right text-xs italic leading-normal'>
+                {lang('Anmälan har stängt!', 'Signup has closed!')}
               </div>
             )}
           </div>
