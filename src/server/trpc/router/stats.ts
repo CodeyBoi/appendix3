@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
-import { initObject } from 'utils/array';
 import dayjs from 'dayjs';
 
 export const statsRouter = router({
@@ -659,11 +658,9 @@ export const statsRouter = router({
   }),
 
   getStreak: protectedProcedure
-    .input(z.object({ corpsIds: z.array(z.string()).optional() }))
+    .input(z.object({ getAll: z.boolean().optional() }))
     .query(async ({ ctx, input }) => {
-      const { corpsIds = [ctx.session.user.corps.id] } = input;
-
-      const streaks = initObject(corpsIds, 0);
+      const { getAll = false } = input;
 
       const recentGigs = await ctx.prisma.gig.findMany({
         where: {
@@ -677,20 +674,34 @@ export const statsRouter = router({
           },
         },
         include: {
-          signups: {
-            where: {
-              corpsId: {
-                in: corpsIds,
+          signups: getAll
+            ? true
+            : {
+                where: {
+                  corpsId: ctx.session.user.corps.id,
+                },
               },
-            },
-          },
         },
         orderBy: {
           date: 'desc',
         },
-        take: 50,
+        take: 100,
       });
 
+      // Collect all corps ids
+      const corpsIdsSet = new Set();
+      const corpsIds: string[] = [];
+      for (const gig of recentGigs) {
+        for (const corpsId of gig.signups.map((s) => s.corpsId)) {
+          if (corpsIdsSet.has(corpsId)) {
+            continue;
+          }
+          corpsIdsSet.add(corpsId);
+          corpsIds.push(corpsId);
+        }
+      }
+
+      const streaks = new Map<string, number>();
       for (const corpsId of corpsIds) {
         let isDone = false;
         let gigIdx = 0;
@@ -706,7 +717,7 @@ export const statsRouter = router({
               (signup) => signup.corpsId === corpsId,
             );
             if (signup && signup.attended) {
-              streaks[corpsId] = (streaks[corpsId] ?? 0) + 1;
+              streaks.set(corpsId, (streaks.get(corpsId) ?? 0) + 1);
             } else {
               if (!gig.countsPositively) {
                 isDone = true;
@@ -741,7 +752,7 @@ export const statsRouter = router({
               orderBy: {
                 date: 'desc',
               },
-              take: 50,
+              take: 100,
               skip: recentGigs.length,
             });
             for (const gig of moreGigs) {
@@ -751,11 +762,75 @@ export const statsRouter = router({
         }
       }
 
-      corpsIds.sort((a, b) => (streaks[b] ?? 0) - (streaks[a] ?? 0));
+      corpsIds.sort((a, b) => (streaks.get(b) ?? 0) - (streaks.get(a) ?? 0));
 
       return {
         corpsIds,
         streaks,
       };
+    }),
+
+  getAllTimeStreak: protectedProcedure
+    .input(z.object({ corpsId: z.string().cuid() }))
+    .query(async ({ ctx, input }) => {
+      const { corpsId } = input;
+      const take = 400;
+
+      const getGigs = (skip: number) =>
+        ctx.prisma.gig.findMany({
+          where: {
+            signups: {
+              some: {
+                attended: true,
+              },
+            },
+            points: {
+              gt: 0,
+            },
+            date: {
+              gt: new Date('1970-01-01'),
+            },
+          },
+          select: {
+            points: true,
+            countsPositively: true,
+            signups: {
+              where: {
+                corpsId,
+              },
+              select: {
+                attended: true,
+              },
+            },
+          },
+          orderBy: {
+            date: 'desc',
+          },
+          take,
+          skip,
+        });
+
+      let skipIndex = 0;
+      let maxStreak = 0;
+      let currentStreak = 0;
+      while (true) {
+        const gigs = await getGigs(skipIndex);
+        if (gigs.length === 0) {
+          break;
+        }
+        for (const gig of gigs) {
+          const attended = gig.signups[0]?.attended ?? false;
+          if (attended) {
+            currentStreak += 1;
+            if (currentStreak > maxStreak) {
+              maxStreak = currentStreak;
+            }
+          } else if (!attended && !gig.countsPositively) {
+            currentStreak = 0;
+          }
+        }
+        skipIndex += take;
+      }
+      return maxStreak;
     }),
 });

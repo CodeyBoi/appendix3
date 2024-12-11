@@ -31,8 +31,12 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const { data: self } = api.corps.getSelf.useQuery(undefined, {
     enabled: open,
   });
-  if (!corps || !self) {
-    return <Loading msg='Hämtar corps...' />;
+  const { data: allTimeStreak } = api.stats.getAllTimeStreak.useQuery(
+    { corpsId: id },
+    { enabled: open },
+  );
+  if (!corps || !self || !allTimeStreak) {
+    return <Loading msg={lang('Hämtar corps...', 'Fetching corps...')} />;
   }
   const { instruments, fullName, nickName, number, points } = corps;
   const mainInstrument =
@@ -67,6 +71,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
+  const allTimeStreakMsg = lang(
+    `Deras längsta spelningsstreak är ${allTimeStreak}🔥.`,
+    `Their longest gig streak is ${allTimeStreak}🔥.`,
+  );
+
   return (
     <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='whitespace-nowrap text-lg font-bold'>
@@ -90,7 +99,9 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
         {points}
       </div>
       <div className='h-1.5' />
-      <div>{instrumentsMsg}</div>
+      <div className='text-sm font-light'>
+        {instrumentsMsg} {allTimeStreakMsg}
+      </div>
     </div>
   );
 };
