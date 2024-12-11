@@ -4,6 +4,7 @@ import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
 import Restricted from 'components/restricted/client';
+import { useState } from 'react';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
@@ -31,8 +32,15 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const { data: self } = api.corps.getSelf.useQuery(undefined, {
     enabled: open,
   });
-  if (!corps || !self) {
-    return <Loading msg='Hämtar corps...' />;
+  const { data: allTimeStreak } = api.stats.getAllTimeStreak.useQuery(
+    { corpsId: id },
+    { enabled: open },
+  );
+
+  const [showAllStreaks, setShowAllStreaks] = useState(false);
+
+  if (!corps || !self || !allTimeStreak) {
+    return <Loading msg={lang('Hämtar corps...', 'Fetching corps...')} />;
   }
   const { instruments, fullName, nickName, number, points } = corps;
   const mainInstrument =
@@ -90,7 +98,17 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
         {points}
       </div>
       <div className='h-1.5' />
-      <div>{instrumentsMsg}</div>
+      <div className='text-sm font-light'>
+        {instrumentsMsg}{' '}
+        {lang(
+          'Deras längsta spelningsstreak är ',
+          'Their longest gig streak is ',
+        )}{' '}
+        <span onClick={() => setShowAllStreaks(!showAllStreaks)}>
+          {`${allTimeStreak.maxStreak}🔥`}
+        </span>
+        {showAllStreaks ? ' (' + allTimeStreak.streaks.join(', ') + ')' : ''}.
+      </div>
     </div>
   );
 };

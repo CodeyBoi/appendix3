@@ -3,6 +3,7 @@
 import Burger from 'components/burger';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { isJuly } from 'utils/date';
 
 const NavbarButton = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
@@ -14,7 +15,11 @@ const NavbarButton = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Burger active={open} onClick={() => setOpen(!open)} />
+      <Burger
+        active={open}
+        onClick={() => setOpen(!open)}
+        variant={isJuly() ? 'burger' : 'normal'}
+      />
       <div
         className={
           'fixed top-0 bottom-0 left-0 z-10 right-0 w-screen duration-200 transition-colors mt-14' +

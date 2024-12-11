@@ -19,7 +19,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
     stats ?? {};
 
-  const corpsStreaks = await api.stats.getStreak.query({ corpsIds });
+  const corpsStreaks = await api.stats.getStreak.query({ getAll: true });
   const corps = await api.corps.getSelf.query();
 
   const isNow = !end;
@@ -99,7 +99,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
               {corpsIds.map((id) => {
                 const stat = corpsStats[id];
                 if (!stat) return null;
-                const streak = corpsStreaks.streaks[id] ?? 0;
+                const streak = corpsStreaks.streaks.get(id) ?? 0;
                 return (
                   <React.Fragment key={stat.id}>
                     <tr>

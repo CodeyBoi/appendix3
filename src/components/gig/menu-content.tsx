@@ -60,7 +60,7 @@ const GigMenuContent = ({ gig }: GigMenuContentProps) => {
   const calenderLink = generateCalendarLink();
 
   return (
-    <>
+    <div className='flex flex-col'>
       <Button
         href={`/gig/${gig.id}`}
         fullWidth
@@ -108,7 +108,7 @@ const GigMenuContent = ({ gig }: GigMenuContentProps) => {
           {lang('Matpreferenser', 'Food preferences')}
         </Button>
       </Restricted>
-    </>
+    </div>
   );
 };
 
