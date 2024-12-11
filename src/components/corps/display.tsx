@@ -40,7 +40,7 @@ const CorpsDisplay = ({
   const displayName = `${numberStr} ${getName(corps, nameFormat)}`.trim();
   return (
     <Popover
-      position='top-right'
+      position='bottom-right'
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
       targetClassName='max-w-max'
