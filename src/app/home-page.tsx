@@ -73,7 +73,7 @@ const HomePage = async () => {
     api.stats.getStreak.query({}),
   ]);
 
-  const streak = streaks.streaks[streaks.corpsIds[0] ?? ''] ?? 0;
+  const streak = streaks.streaks.get(streaks.corpsIds[0] ?? '') ?? 0;
 
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&
