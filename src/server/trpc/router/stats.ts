@@ -812,6 +812,7 @@ export const statsRouter = router({
 
       let skipIndex = 0;
       let currentStreak = 0;
+      let currentAntiStreak = 0;
       const streaks: number[] = [];
       while (true) {
         const gigs = await getGigs(skipIndex);
@@ -821,11 +822,16 @@ export const statsRouter = router({
         for (const gig of gigs) {
           const attended = gig.signups[0]?.attended ?? false;
           if (attended) {
-            currentStreak += 1;
+            if (currentAntiStreak > 0) {
+              streaks.push(-currentAntiStreak);
+            }
+            currentStreak += gig.points;
+            currentAntiStreak = 0;
           } else if (!attended && !gig.countsPositively) {
-            if (currentStreak >= 3) {
+            if (currentStreak > 0) {
               streaks.push(currentStreak);
             }
+            currentAntiStreak += gig.points;
             currentStreak = 0;
           }
         }
