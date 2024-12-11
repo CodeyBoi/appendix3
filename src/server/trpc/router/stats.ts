@@ -811,8 +811,8 @@ export const statsRouter = router({
         });
 
       let skipIndex = 0;
-      let maxStreak = 0;
       let currentStreak = 0;
+      const streaks: number[] = [];
       while (true) {
         const gigs = await getGigs(skipIndex);
         if (gigs.length === 0) {
@@ -822,15 +822,18 @@ export const statsRouter = router({
           const attended = gig.signups[0]?.attended ?? false;
           if (attended) {
             currentStreak += 1;
-            if (currentStreak > maxStreak) {
-              maxStreak = currentStreak;
-            }
           } else if (!attended && !gig.countsPositively) {
+            if (currentStreak >= 3) {
+              streaks.push(currentStreak);
+            }
             currentStreak = 0;
           }
         }
         skipIndex += take;
       }
-      return maxStreak;
+      return {
+        maxStreak: Math.max(...streaks),
+        streaks,
+      };
     }),
 });

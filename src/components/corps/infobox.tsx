@@ -4,6 +4,7 @@ import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
 import Restricted from 'components/restricted/client';
+import { useState } from 'react';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
@@ -35,6 +36,9 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     { corpsId: id },
     { enabled: open },
   );
+
+  const [showAllStreaks, setShowAllStreaks] = useState(false);
+
   if (!corps || !self || !allTimeStreak) {
     return <Loading msg={lang('Hämtar corps...', 'Fetching corps...')} />;
   }
@@ -71,11 +75,6 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
-  const allTimeStreakMsg = lang(
-    `Deras längsta spelningsstreak är ${allTimeStreak}🔥.`,
-    `Their longest gig streak is ${allTimeStreak}🔥.`,
-  );
-
   return (
     <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='whitespace-nowrap text-lg font-bold'>
@@ -100,7 +99,15 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       </div>
       <div className='h-1.5' />
       <div className='text-sm font-light'>
-        {instrumentsMsg} {allTimeStreakMsg}
+        {instrumentsMsg}{' '}
+        {lang(
+          'Deras längsta spelningsstreak är ',
+          'Their longest gig streak is ',
+        )}{' '}
+        <span onClick={() => setShowAllStreaks(!showAllStreaks)}>
+          {`${allTimeStreak.maxStreak}🔥`}
+        </span>
+        {showAllStreaks ? ' (' + allTimeStreak.streaks.join(', ') + ')' : ''}.
       </div>
     </div>
   );
