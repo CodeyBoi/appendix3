@@ -525,4 +525,35 @@ export const corpsRouter = router({
       });
       return { success: true };
     }),
+
+  changeNickname: protectedProcedure
+    .input(
+      z.object({
+        corpsId: z.string().cuid(),
+        nickname: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { corpsId, nickname } = input;
+      const corps = await ctx.prisma.corps.findUnique({
+        where: {
+          id: corpsId,
+        },
+      });
+
+      if (!corps) {
+        throw new Error(`No corps with id '${corpsId}' found`);
+      } else if (corps.number === null) {
+        throw new Error('Cannot change nickname of corps without number');
+      }
+
+      const res = await ctx.prisma.nickname.create({
+        data: {
+          nickname,
+          createdById: ctx.session.user.corps.id,
+          forId: corpsId,
+        },
+      });
+      return res;
+    }),
 });

@@ -93,6 +93,8 @@ model Corps {
   killerProfiles     KillerPlayer[]
   streckTransactions StreckTransaction[]
   createdStreckLists StreckList[]
+  givenNicknames     Nickname[]          @relation("GivenNicknames")
+  createdNicknames   Nickname[]          @relation("CreatedNicknames")
 }
 
 model Role {
@@ -254,7 +256,7 @@ model Song {
   melody           String
   lyrics           String  @default("") @db.Text
   createdByCorpsId String?
-  views            Int @default(0)
+  views            Int     @default(0)
 
   createdBy Corps?   @relation(fields: [createdByCorpsId], references: [id])
   createdAt DateTime @default(now())
@@ -316,9 +318,9 @@ model KillerGame {
 }
 
 model StreckItem {
-  id     Int    @id @default(autoincrement())
-  name   String
-  price  Int
+  id    Int    @id @default(autoincrement())
+  name  String
+  price Int
 }
 
 model StreckTransaction {
@@ -337,11 +339,22 @@ model StreckTransaction {
 }
 
 model StreckList {
-  id           Int @id @default(autoincrement())
+  id           Int                 @id @default(autoincrement())
   transactions StreckTransaction[]
   createdById  String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 
   createdBy Corps @relation(fields: [createdById], references: [id], onDelete: Cascade)
+}
+
+model Nickname {
+  id          Int      @id @default(autoincrement())
+  nickname    String
+  forId       String
+  createdById String
+  createdAt   DateTime @default(now())
+
+  for       Corps @relation("GivenNicknames", fields: [forId], references: [id], onDelete: Cascade)
+  createdBy Corps @relation("CreatedNicknames", fields: [createdById], references: [id], onDelete: Cascade)
 }
