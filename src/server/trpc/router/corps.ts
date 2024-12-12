@@ -533,7 +533,7 @@ export const corpsRouter = router({
         nickname: z.string(),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { corpsId, nickname } = input;
       const corps = await ctx.prisma.corps.findUnique({
         where: {
@@ -547,13 +547,26 @@ export const corpsRouter = router({
         throw new Error('Cannot change nickname of corps without number');
       }
 
-      const res = await ctx.prisma.nickname.create({
-        data: {
-          nickname,
-          createdById: ctx.session.user.corps.id,
-          forId: corpsId,
-        },
-      });
-      return res;
+      await Promise.all([
+        ctx.prisma.nickname.create({
+          data: {
+            nickname,
+            createdById: ctx.session.user.corps.id,
+            forId: corpsId,
+          },
+        }),
+        ctx.prisma.corps.update({
+          where: {
+            id: corpsId,
+          },
+          data: {
+            nickName: nickname,
+          },
+        }),
+      ]);
+
+      return {
+        success: true,
+      };
     }),
 });

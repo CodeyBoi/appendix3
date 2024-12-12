@@ -3,8 +3,9 @@
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Loading from 'components/loading';
-import Restricted from 'components/restricted/client';
-import { useState } from 'react';
+import Modal from 'components/modal';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
@@ -28,6 +29,8 @@ const genOtherInstrumentsString = (instruments: string[]) => {
 const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
 
 const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
+  const router = useRouter();
+  const utils = api.useUtils();
   const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
   const { data: self } = api.corps.getSelf.useQuery(undefined, {
     enabled: open,
@@ -38,9 +41,25 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   );
 
   const [showAllStreaks, setShowAllStreaks] = useState(false);
+  const [nickname, setNickname] = useState('');
+
+  const mutation = api.corps.changeNickname.useMutation({
+    onSuccess: () => {
+      utils.corps.get.invalidate({ id });
+      router.refresh();
+    },
+  });
 
   if (!corps || !self || !allTimeStreak) {
-    return <Loading msg={lang('Hämtar corps...', 'Fetching corps...')} />;
+    return (
+      <Loading
+        msg={
+          <span className='whitespace-nowrap'>
+            {lang('Hämtar corps...', 'Fetching corps...')}
+          </span>
+        }
+      />
+    );
   }
   const { instruments, fullName, nickName, number, points } = corps;
   const mainInstrument =
@@ -75,16 +94,59 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
+  const numberAndFullName = `${number ? `#${number}` : 'p.e.'} ${fullName}`;
+  const displayName =
+    numberAndFullName.length > 25
+      ? numberAndFullName.slice(0, 25) +
+        numberAndFullName.slice(25).replace(' ', '\n')
+      : numberAndFullName;
+
+  const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    mutation.mutate({
+      corpsId: id,
+      nickname,
+    });
+  };
+
   return (
     <div className='flex w-min flex-col p-2 text-left text-sm'>
-      <div className='whitespace-nowrap text-lg font-bold'>
-        <div className='flex flex-nowrap items-end gap-2'>
-          {`${number ? `#${number}` : 'p.e.'} ${fullName} `}
-          <Restricted permissions='manageCorps'>
-            <ActionIcon variant='subtle' href={`/admin/corps/${corps.id}`}>
-              <IconPencil />
-            </ActionIcon>
-          </Restricted>
+      <div className='text-lg font-bold'>
+        <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
+          {displayName}
+          {!!number && self.id !== id && (
+            <Modal
+              title='Byt smeknamn'
+              withCloseButton
+              target={
+                <ActionIcon variant='subtle'>
+                  <IconPencil />
+                </ActionIcon>
+              }
+            >
+              <form
+                className='flex flex-col gap-2'
+                onSubmit={handleNicknameSubmit}
+              >
+                <div className='flex w-full gap-2'>
+                  <input
+                    placeholder='Nytt smeknamn'
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    name='nickname'
+                    type='text'
+                    className='grow rounded border border-gray-300 bg-white p-2 dark:border-gray-700'
+                  />
+                  <button
+                    type='submit'
+                    className='rounded bg-red-600 p-2 text-white hover:bg-red-700'
+                  >
+                    {lang('Spara', 'Submit')}
+                  </button>
+                </div>
+              </form>
+            </Modal>
+          )}
         </div>
         {nickName && (
           <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>

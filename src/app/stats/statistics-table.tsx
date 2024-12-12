@@ -105,7 +105,9 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                     <tr>
                       <td className='flex gap-2 py-1'>
                         <CorpsDisplay corps={stat} />
-                        {streak >= 3 && `${streak}🔥`}
+                        <span className='whitespace-nowrap'>
+                          {streak >= 3 && `${streak}🔥`}
+                        </span>
                       </td>
                       <td className='text-center'>{stat.gigsAttended}</td>
                       <td className='pl-0 text-center'>
