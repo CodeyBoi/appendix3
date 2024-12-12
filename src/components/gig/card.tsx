@@ -107,8 +107,8 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {gig.signupEnd.getTime() + 1000 * 60 * 60 * 2 >
-                    Date.now() ? (
+                    {Date.now() + 1000 * 60 * 60 >
+                    gig.signupEnd.getTime() ? (
                       <>
                         {lang('om ', 'in ')}
                         <br />
