@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 import Button from 'components/input/button';
 import TextArea from 'components/input/text-area';
-import TextInput from 'components/input/text-input';
 import Restricted from 'components/restricted/client';
+import Form from 'components/input/react-hook-form/form';
+import TextInput from 'components/input/react-hook-form/text-input';
 
 const defaultValues = {
   title: '',
@@ -68,13 +69,14 @@ const SongForm = ({ song }: SongFormProps) => {
   });
 
   return (
-    <form style={{ width: '100%' }} onSubmit={form.onSubmit(handleSubmit)}>
+    <Form className='w-full' onSubmit={handleSubmit} defaultValues={defaultValues}>
       <div className='flex flex-col gap-2'>
         <TextInput
+          name='title'
           label='Titel'
           withAsterisk
           spellCheck={false}
-          {...form.getInputProps('title')}
+          register={register}
         />
         <TextInput
           label='Författare'
