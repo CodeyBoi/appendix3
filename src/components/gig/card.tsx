@@ -54,6 +54,9 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
   const date = new Date();
   const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
   const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
+  const gigHasBeen = dayjs(date).isAfter(
+    dayjs(gig.date).add(1, 'day').startOf('day'),
+  );
 
   const instruments = corps.instruments.map((i) => ({
     name: i.instrument.name,
@@ -102,13 +105,12 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
             </div>
           </Link>
           <div className='flex w-full flex-col lg:w-56'>
-            {!isBeforeSignup && !isAfterSignup && (
+            {!isBeforeSignup && !isAfterSignup && !gigHasBeen && (
               <>
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {gig.signupEnd.getTime() + 1000 * 60 * 60 * 2 >
-                    Date.now() ? (
+                    {Date.now() + 1000 * 60 * 60 > gig.signupEnd.getTime() ? (
                       <>
                         {lang('om ', 'in ')}
                         <br />
@@ -154,7 +156,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
                 />
               </div>
             )}
-            {isAfterSignup && gig.signupEnd && (
+            {isAfterSignup && gig.signupEnd && !gigHasBeen && (
               <div className='pr-2 text-right text-xs italic leading-normal'>
                 {lang('Anmälan har stängt!', 'Signup has closed!')}
               </div>

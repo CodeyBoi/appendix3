@@ -12,7 +12,7 @@ const TimePickerDropdown = (props: TimePickerDropdownProps) => {
   const [minute, setMinute] = useState(props.defaultTime?.getMinutes() ?? 0);
   return (
     <div className='flex gap-1 rounded bg-white p-2 dark:bg-darkBg'>
-      <div className='flex max-h-52 flex-col overflow-y-auto no-scrollbar'>
+      <div className='flex max-h-72 flex-col overflow-y-auto no-scrollbar'>
         {Array.from({ length: 24 }).map((_, i) => {
           const h = i.toString().padStart(2, '0');
           return (
@@ -36,7 +36,7 @@ const TimePickerDropdown = (props: TimePickerDropdownProps) => {
           );
         })}
       </div>
-      <div className='flex max-h-52 flex-col overflow-y-auto no-scrollbar'>
+      <div className='flex max-h-72 flex-col overflow-y-auto no-scrollbar'>
         {Array.from({ length: 12 }).map((_, i) => {
           const m = i * 5;
           const mString = m.toString().padStart(2, '0');

@@ -88,7 +88,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       utils.gig.getWithId.invalidate({ gigId: id });
       utils.gig.getMany.invalidate();
       setSubmitting(false);
-      router.push(`/gig/${id}`);
+      router.back();
       router.refresh();
     },
   });
