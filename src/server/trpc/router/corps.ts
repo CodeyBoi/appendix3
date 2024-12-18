@@ -5,7 +5,7 @@ import { corpsOrderByNumberDesc } from 'utils/corps';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.corps.findUnique({
+    return ctx.prisma.corps.findUniqueOrThrow({
       include: {
         instruments: {
           include: {
@@ -25,7 +25,7 @@ export const corpsRouter = router({
         foodPrefs: true,
       },
       where: {
-        userId: ctx.session?.user.id || '',
+        userId: ctx.session.user.id,
       },
     });
   }),
@@ -55,6 +55,51 @@ export const corpsRouter = router({
               name: true,
             },
           },
+          gigSignups: {
+            select: {
+              gig: {
+                select: {
+                  date: true,
+                },
+              },
+            },
+            where: {
+              attended: true,
+              gig: {
+                date: {
+                  gt: new Date('1970-01-02'),
+                },
+              },
+            },
+            orderBy: {
+              gig: {
+                date: 'asc',
+              },
+            },
+            take: 1,
+          },
+          rehearsals: {
+            select: {
+              rehearsal: {
+                select: {
+                  date: true,
+                },
+              },
+            },
+            where: {
+              rehearsal: {
+                date: {
+                  gt: new Date('1970-01-02'),
+                },
+              },
+            },
+            orderBy: {
+              rehearsal: {
+                date: 'asc',
+              },
+            },
+            take: 1,
+          },
         },
         where: {
           id: input.id,
@@ -79,6 +124,10 @@ export const corpsRouter = router({
       }
       return {
         ...corps,
+        gigSignups: undefined,
+        rehearsals: undefined,
+        firstGigDate: corps.gigSignups[0]?.gig.date,
+        firstRehearsalDate: corps.rehearsals[0]?.rehearsal.date,
         points: points._sum.points ?? 0,
       };
     }),

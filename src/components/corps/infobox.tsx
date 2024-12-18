@@ -61,7 +61,15 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       />
     );
   }
-  const { instruments, fullName, nickName, number, points } = corps;
+  const {
+    instruments,
+    fullName,
+    nickName,
+    number,
+    points,
+    firstGigDate,
+    firstRehearsalDate,
+  } = corps;
   const mainInstrument =
     instruments.find((i) => i.isMainInstrument)?.instrument.name ?? '';
   const otherInstruments = instruments
@@ -74,6 +82,17 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const isPlayingOtherInstrument = !otherInstruments.some((i) =>
     beingPrefixes.includes(i.toLowerCase()),
   );
+
+  const joinedAt =
+    (firstGigDate?.getTime() ?? Number.MAX_VALUE) <
+    (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
+      ? firstGigDate
+      : firstRehearsalDate;
+
+  const joinedMsg = `Gick med i corpset den ${joinedAt?.getDate()} ${joinedAt?.toLocaleDateString(
+    'sv',
+    { month: 'long' },
+  )} ${joinedAt?.getFullYear()}.`;
 
   const temp1 = isPlayingMainInstrument ? 'Spelar ' : 'Är ';
 
@@ -161,7 +180,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       </div>
       <div className='h-1.5' />
       <div className='text-sm font-light'>
-        {instrumentsMsg}{' '}
+        {joinedAt && joinedMsg} {instrumentsMsg}{' '}
         {lang(
           'Deras längsta spelningsstreak är ',
           'Their longest gig streak is ',
