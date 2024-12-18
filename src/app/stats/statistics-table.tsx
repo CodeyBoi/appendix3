@@ -47,10 +47,8 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
         )
       : '.';
 
-  const ownPoints =
-    corps && stats ? stats.corpsStats[corps.id]?.gigsAttended : undefined;
-  const ownAttendence =
-    corps && stats ? stats.corpsStats[corps.id]?.attendence : undefined;
+  const ownPoints = stats.corpsStats.get(corps.id)?.gigsAttended;
+  const ownAttendence = stats.corpsStats.get(corps.id)?.attendence;
   // Somehow ownPoints is a string, so == is used instead of ===
   const ownPointsMsg =
     ownPoints && ownAttendence && nbrOfGigs !== 0
@@ -87,7 +85,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
           {ownPointsMsg && <div>{ownPointsMsg}</div>}
           <table className='divide-y divide-solid dark:border-neutral-700'>
             <thead>
-              <tr>
+              <tr className='text-xs'>
                 <th className='text-left'>Corps</th>
                 <th className='px-1 text-center'>{lang('Poäng', 'Points')}</th>
                 <th className='px-1 text-center'>
@@ -97,9 +95,16 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
             </thead>
             <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
               {corpsIds.map((id) => {
-                const stat = corpsStats[id];
+                const stat = corpsStats.get(id);
                 if (!stat) return null;
                 const streak = corpsStreaks.streaks.get(id) ?? 0;
+                const points = `${
+                  stat.gigsAttended - stat.positiveGigsAttended
+                }${
+                  stat.positiveGigsAttended > 0
+                    ? `+${stat.positiveGigsAttended}`
+                    : ''
+                }`;
                 return (
                   <React.Fragment key={stat.id}>
                     <tr>
@@ -109,7 +114,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                           {streak >= 3 && `${streak}🔥`}
                         </span>
                       </td>
-                      <td className='text-center'>{stat.gigsAttended}</td>
+                      <td className='text-center'>{points}</td>
                       <td className='pl-0 text-center'>
                         {`${Math.ceil(stat.attendence * 100)}%`}
                       </td>

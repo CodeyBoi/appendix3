@@ -48,6 +48,7 @@ export const statsRouter = router({
         lastName: string;
         nickName: string | null;
         gigsAttended: number;
+        positiveGigsAttended: number;
         maxPossibleGigs: number;
       };
 
@@ -59,6 +60,7 @@ export const statsRouter = router({
           lastName,
           nickName,
           SUM(CASE WHEN attended THEN points ELSE 0 END) AS gigsAttended,
+          SUM(CASE WHEN attended AND Gig.countsPositively THEN points ELSE 0 END) AS positiveGigsAttended,
           SUM(
             CASE WHEN NOT COALESCE(attended, false) AND Gig.countsPositively = 1
               THEN 0
@@ -97,7 +99,7 @@ export const statsRouter = router({
       const corpsStats = res[2].reduce(
         (acc, corps) => {
           const fullName = `${corps.firstName} ${corps.lastName}`;
-          acc[corps.id] = {
+          acc.set(corps.id, {
             ...corps,
             fullName,
             displayName: corps.nickName ?? fullName,
@@ -105,17 +107,23 @@ export const statsRouter = router({
               corps.maxPossibleGigs === 0
                 ? 1.0
                 : corps.gigsAttended / corps.maxPossibleGigs,
-          };
+          });
           return acc;
         },
-        {} as Record<
+        new Map<
           string,
           CorpsStats & {
             attendence: number;
             fullName: string;
             displayName: string;
           }
-        >,
+        >(),
+      );
+
+      corpsIds.sort(
+        (a, b) =>
+          (corpsStats.get(b)?.attendence ?? 0) -
+          (corpsStats.get(a)?.attendence ?? 0),
       );
 
       const ret = {
