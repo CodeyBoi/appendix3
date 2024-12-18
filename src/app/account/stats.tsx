@@ -39,7 +39,7 @@ const CorpsStats = async () => {
     streckAccountQuery,
   ]);
 
-  const corpsStats = stats?.corpsStats[stats.corpsIds[0] as string];
+  const corpsStats = stats?.corpsStats.get(stats.corpsIds[0] as string);
   const streckAccountStr = lang(
     'Strecksaldo: ' + streckAccount.balance.toString(),
     'Streck balance: ' + streckAccount.balance.toString(),
