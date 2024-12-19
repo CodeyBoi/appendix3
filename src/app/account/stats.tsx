@@ -12,7 +12,7 @@ const CorpsStats = async () => {
   const end = currentDate < operatingYearEnd ? currentDate : operatingYearEnd;
 
   const pointsQuery = api.corps.getPoints.query();
-  const statsQuery = api.stats.get.query({
+  const statsQuery = api.stats.getMany.query({
     start,
     end,
     selfOnly: true,

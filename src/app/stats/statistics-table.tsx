@@ -11,137 +11,152 @@ interface StatisticsTableProps {
   end: Date | undefined;
 }
 
-const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
-  const stats = await api.stats.get.query({
-    start,
-    end,
-  });
-  const { nbrOfGigs, positivelyCountedGigs, corpsStats, corpsIds } =
-    stats ?? {};
+type StreakEmoji = [number, string];
+const streakEmojis: StreakEmoji[] = [
+  [3, '🔥'],
+  [10, '❤️‍🔥'],
+  [25, '🔴'],
+  [50, '🪨'],
+  [75, '🐐'],
+  [100, '🗿'],
+].reverse() as StreakEmoji[];
 
-  const corpsStreaks = await api.stats.getStreak.query({ getAll: true });
-  const corps = await api.corps.getSelf.query();
+const getStreakEmoji = (streak: number) =>
+  streakEmojis.find(([limit, _]) => streak >= limit)?.[1] ?? '';
+
+const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
+  const [
+    { totalGigs, ordinaryGigs, positivelyCountedGigs, corpsStats, corpsIds },
+    corpsStreaks,
+    corps,
+  ] = await Promise.all([
+    api.stats.getMany.query({
+      start,
+      end,
+    }),
+    api.stats.getStreak.query({ getAll: true }),
+    api.corps.getSelf.query(),
+  ]);
 
   const isNow = !end;
 
   const nbrOfGigsMsg =
-    nbrOfGigs !== 0
+    totalGigs !== 0
       ? lang(
           `Denna period ${
             isNow ? 'har vi hittills haft' : 'hade vi'
-          } ${nbrOfGigs} spelning${nbrOfGigs === 1 ? '' : 'ar'}`,
-          `During this period we ${isNow ? 'have' : ''} had ${nbrOfGigs} gig${
-            nbrOfGigs === 1 ? '' : 's'
-          }`,
+          } ${ordinaryGigs} ordinarie ${
+            positivelyCountedGigs > 0
+              ? `och ${positivelyCountedGigs} positiva `
+              : ''
+          } spelning${
+            positivelyCountedGigs === 1 ||
+            (positivelyCountedGigs === 0 && ordinaryGigs === 1)
+              ? ''
+              : 'ar'
+          }.`,
+          `During this period we ${
+            isNow ? 'have' : ''
+          } had ${ordinaryGigs} ordinary ${
+            positivelyCountedGigs > 0
+              ? `and ${positivelyCountedGigs} positive `
+              : ''
+          } gig${
+            positivelyCountedGigs === 1 ||
+            (positivelyCountedGigs === 0 && ordinaryGigs === 1)
+              ? ''
+              : 's'
+          }.`,
         )
       : '';
-  const positiveGigsString =
-    (positivelyCountedGigs ?? 0) > 0
-      ? lang(
-          `, där ${positivelyCountedGigs} ${
-            isNow ? 'räknats' : 'räknades'
-          } positivt.`,
-          `, of which ${positivelyCountedGigs} ${
-            isNow ? 'are' : 'were'
-          } counted positively.`,
-        )
-      : '.';
 
-  const ownPoints = stats.corpsStats.get(corps.id)?.gigsAttended;
-  const ownAttendence = stats.corpsStats.get(corps.id)?.attendence;
-  // Somehow ownPoints is a string, so == is used instead of ===
+  const ownPoints = corpsStats.get(corps.id)?.gigsAttended ?? 0;
+  const ownPositivePoints = corpsStats.get(corps.id)?.positiveGigsAttended ?? 0;
+  const ownAttendence = corpsStats.get(corps.id)?.attendence ?? 0;
   const ownPointsMsg =
-    ownPoints && ownAttendence && nbrOfGigs !== 0
+    totalGigs !== 0
       ? lang(
-          `Du ${isNow ? 'har varit' : 'var'} med på ${ownPoints} spelning${
-            ownPoints == 1 ? '' : 'ar'
-          }, vilket ${isNow ? 'motsvarar' : 'motsvarade'} ${Math.ceil(
-            ownAttendence * 100,
-          )}% närvaro.`,
+          `Du ${isNow ? 'har varit' : 'var'} med på ${
+            ownPoints + (ownPositivePoints > 0 ? '+' + ownPositivePoints : '')
+          } spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
+            isNow ? 'motsvarar' : 'motsvarade'
+          } ${Math.ceil(ownAttendence * 100)}% närvaro.`,
           `You ${isNow ? 'have been to' : 'were at'} ${ownPoints} gig${
-            ownPoints == 1 ? '' : 's'
+            ownPoints === 1 ? '' : 's'
           }, which ${isNow ? 'corresponds' : 'corresponded'} to ${Math.ceil(
             ownAttendence * 100,
           )}% attendance.`,
         )
-      : undefined;
+      : '';
 
-  return (
-    <>
-      {corpsIds && corpsIds.length === 0 && (
-        <div>
-          {lang(
-            'Det finns inga statistikuppgifter för denna period.',
-            'There are no statistics for this period.',
-          )}
-        </div>
+  return corpsIds.length === 0 ? (
+    <div>
+      {lang(
+        'Det finns inga statistikuppgifter för denna period.',
+        'There are no statistics for this period.',
       )}
-      {corpsIds && corpsIds.length !== 0 && corpsStats && (
-        <div className='flex flex-col gap-2'>
-          <div>
-            {nbrOfGigsMsg}
-            {nbrOfGigs !== 0 ? positiveGigsString : ''}
-          </div>
-          {ownPointsMsg && <div>{ownPointsMsg}</div>}
-          <table className='divide-y divide-solid dark:border-neutral-700'>
-            <thead>
-              <tr className='text-xs'>
-                <th className='text-left'>Corps</th>
-                <th className='px-1 text-center'>{lang('Poäng', 'Points')}</th>
-                <th className='px-1 text-center'>
-                  {lang('Närvaro', 'Attendence')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
-              {corpsIds.map((id) => {
-                const stat = corpsStats.get(id);
-                if (!stat) return null;
-                const streak = corpsStreaks.streaks.get(id) ?? 0;
-                const points = `${
-                  stat.gigsAttended - stat.positiveGigsAttended
-                }${
-                  stat.positiveGigsAttended > 0
-                    ? `+${stat.positiveGigsAttended}`
-                    : ''
-                }`;
-                return (
-                  <React.Fragment key={stat.id}>
-                    <tr>
-                      <td className='flex gap-2 py-1'>
-                        <CorpsDisplay corps={stat} />
-                        <span className='whitespace-nowrap'>
-                          {streak >= 3 && `${streak}🔥`}
-                        </span>
-                      </td>
-                      <td className='text-center'>{points}</td>
-                      <td className='pl-0 text-center'>
-                        {`${Math.ceil(stat.attendence * 100)}%`}
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-          <div className='h-96' />
-          <div className='h-96' />
-          <div className='h-96' />
-          <div className='h-96' />
-          <div className='h-96' />
-          <div className='h-96' />
-          <div className='h-96' />
-          <Link href='/stats/for/nerds'>
-            <div className='flex justify-center'>
-              <Button>
-                <IconMoodNerd />
-                {lang('Statistik för nördar', 'Stats for nerds')}
-              </Button>
-            </div>
-          </Link>
+    </div>
+  ) : (
+    <div className='flex flex-col gap-2'>
+      <div>{nbrOfGigsMsg}</div>
+      {ownPointsMsg && <div>{ownPointsMsg}</div>}
+      <div className='overflow-x-auto overflow-y-hidden'>
+        <table className='divide-y divide-solid dark:border-neutral-700'>
+          <thead>
+            <tr className='text-xs'>
+              <th className='text-left'>Corps</th>
+              <th className='px-1 text-center'>{lang('Poäng', 'Points')}</th>
+              <th className='px-1 text-center'>
+                {lang('Närvaro', 'Attendence')}
+              </th>
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
+            {corpsIds.map((id) => {
+              const stat = corpsStats.get(id);
+              if (!stat) return null;
+              const streak = corpsStreaks.streaks.get(id) ?? 0;
+              const points = `${stat.gigsAttended - stat.positiveGigsAttended}${
+                stat.positiveGigsAttended > 0
+                  ? `+${stat.positiveGigsAttended}`
+                  : ''
+              }`;
+              return (
+                <React.Fragment key={stat.id}>
+                  <tr>
+                    <td className='flex gap-2 py-1'>
+                      <CorpsDisplay corps={stat} />
+                      <span className='whitespace-nowrap'>
+                        {streak >= 3 && `${streak}${getStreakEmoji(streak)}`}
+                      </span>
+                    </td>
+                    <td className='text-center'>{points}</td>
+                    <td className='text-center'>
+                      {`${Math.ceil(stat.attendence * 100)}%`}
+                    </td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className='h-96' />
+      <div className='h-96' />
+      <div className='h-96' />
+      <div className='h-96' />
+      <div className='h-96' />
+      <div className='h-96' />
+      <div className='h-96' />
+      <Link href='/stats/for/nerds'>
+        <div className='flex justify-center'>
+          <Button>
+            <IconMoodNerd />
+            {lang('Statistik för nördar', 'Stats for nerds')}
+          </Button>
         </div>
-      )}
-    </>
+      </Link>
+    </div>
   );
 };
 
