@@ -6,7 +6,7 @@ import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import dayjs from 'dayjs';
 
 export const statsRouter = router({
-  get: protectedProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         start: z.date().optional(),
@@ -93,7 +93,7 @@ export const statsRouter = router({
         positivelyCountedGigsQuery,
         corpsStatsQuery,
       ]);
-      const nbrOfGigs = res[0]._sum.points ?? 0;
+      const totalGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsIds = res[2].map((corps) => corps.id);
       const corpsStats = res[2].reduce(
@@ -128,7 +128,8 @@ export const statsRouter = router({
 
       const ret = {
         corpsIds,
-        nbrOfGigs,
+        totalGigs,
+        ordinaryGigs: totalGigs - positivelyCountedGigs,
         positivelyCountedGigs,
         corpsStats,
       };
