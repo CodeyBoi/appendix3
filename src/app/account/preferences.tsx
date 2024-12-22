@@ -134,7 +134,7 @@ const AccountPreferences = () => {
           </div>
           <div className='flex w-min flex-col space-y-2'>
             <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>
-            {!!corps?.number && (
+            {!corps?.number && (
               <TextInput
                 label={lang('Visningsnamn', 'Display name')}
                 {...form.getInputProps('nickName')}
