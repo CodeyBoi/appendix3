@@ -24,6 +24,8 @@ type Transaction = {
   pricePer: number;
   amount: number;
   totalPrice: number;
+  verificationNumber?: string;
+  note: string;
 };
 
 type StreckItem = {
@@ -119,6 +121,16 @@ const AdminStreckForm = ({
     return acc;
   }, new Map<string, number>());
 
+  const initialNotes = isMonoList
+    ? transactions.reduce((acc, { corps, verificationNumber, note }) => {
+        acc.set(corps.id, { verificationNumber, note });
+        return acc;
+      }, new Map<string, { verificationNumber?: string; note: string }>())
+    : undefined;
+
+  console.log(transactions);
+  console.log(initialNotes);
+
   const mutation = api.streck.upsertStreckList.useMutation({
     onSuccess: () => {
       utils.streck.getActiveCorps.invalidate();
@@ -132,8 +144,13 @@ const AdminStreckForm = ({
     const data = [];
     for (const corps of activeCorps) {
       for (const item of items) {
-        const formValue = values[`${corps.id}:${item.name}`]?.trim();
-        if (!formValue) {
+        const formValue = parseInt(
+          values[`${corps.id}:${item.name}`]?.trim() ?? '',
+        );
+        const verificationNumber =
+          values[`${corps.id}:verificationNumber`]?.trim();
+        const note = values[`${corps.id}:note`]?.trim();
+        if (isNaN(formValue)) {
           continue;
         }
 
@@ -141,10 +158,12 @@ const AdminStreckForm = ({
         const entry = isNaN(item.price)
           ? {
               amount: 1,
-              pricePer: +formValue,
+              pricePer: formValue,
+              verificationNumber,
+              note,
             }
           : {
-              amount: +formValue,
+              amount: formValue,
               pricePer: -item.price,
             };
         data.push({
@@ -178,7 +197,7 @@ const AdminStreckForm = ({
       )}
       {isReady && (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='overflow-x-auto'>
+          <div className='overflow-x-auto overflow-y-hidden'>
             <table className='table text-sm'>
               <thead>
                 <tr className='divide-x border-b text-left align-bottom text-xs'>
@@ -189,6 +208,12 @@ const AdminStreckForm = ({
                       item.name
                     } ${isNaN(item.price) ? '' : `${item.price}p`}`}</th>
                   ))}
+                  {isMonoList && (
+                    <>
+                      <th className='px-1'>Verifikatsnummer</th>
+                      <th className='px-1'>Anteckning</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
@@ -218,6 +243,28 @@ const AdminStreckForm = ({
                         </td>
                       );
                     })}
+                    {isMonoList && initialNotes && (
+                      <>
+                        <td className='px-1'>
+                          <input
+                            className='w-24 bg-transparent px-2 py-0.5'
+                            type='text'
+                            defaultValue={
+                              initialNotes.get(corps.id)?.verificationNumber
+                            }
+                            {...register(`${corps.id}:verificationNumber`)}
+                          />
+                        </td>
+                        <td className='px-1'>
+                          <input
+                            className='bg-transparent px-2 py-0.5'
+                            type='text'
+                            defaultValue={initialNotes.get(corps.id)?.note}
+                            {...register(`${corps.id}:note`)}
+                          />
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

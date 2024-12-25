@@ -64,15 +64,20 @@ const AdminTransactionForm = () => {
       return;
     }
     for (const corps of activeCorps) {
-      const pricePer = values[corps.id]?.trim();
-      if (!pricePer) {
+      const pricePer = parseInt(values[`${corps.id}_pricePer`]?.trim() ?? '');
+      const verificationNumber =
+        values[`${corps.id}_verificationNumber`]?.trim();
+      const note = values[`${corps.id}_note`]?.trim();
+      if (isNaN(pricePer)) {
         continue;
       }
       data.push({
         corpsId: corps.id,
         item,
         amount: 1,
-        pricePer: +pricePer,
+        pricePer,
+        verificationNumber,
+        note,
       });
     }
     mutation.mutate({ transactions: data });
@@ -81,7 +86,7 @@ const AdminTransactionForm = () => {
   const isReady = !isInitialLoading && !isFetching && !isRefetching;
 
   return (
-    <div className='flex max-w-lg flex-col gap-4'>
+    <div className='flex max-w-2xl flex-col gap-4'>
       <h2>Lägg till kostnad eller insättning</h2>
       Belopp avser förändring för medlemmen, d.v.s. betyder ett positivt belopp
       en intäkt för medlemmen (t.ex. insättning på streckkonto eller återbäring
@@ -104,10 +109,12 @@ const AdminTransactionForm = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <table className='table text-sm'>
               <thead>
-                <tr className='text-xs'>
+                <tr className='text-left text-xs'>
                   <th className='px-1'>Namn</th>
                   <th className='px-1'>Saldo</th>
                   <th className='px-1'>Belopp</th>
+                  <th className='px-1'>Verifikatsnummer</th>
+                  <th className='px-1'>Anteckning</th>
                 </tr>
               </thead>
               <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
@@ -126,7 +133,21 @@ const AdminTransactionForm = () => {
                       <input
                         className='w-16 bg-transparent px-2 py-0.5'
                         type='number'
-                        {...register(corps.id)}
+                        {...register(`${corps.id}_pricePer`)}
+                      />
+                    </td>
+                    <td className='px-1'>
+                      <input
+                        className='w-24 bg-transparent px-2 py-0.5'
+                        type='text'
+                        {...register(`${corps.id}_verificationNumber`)}
+                      />
+                    </td>
+                    <td className='px-1'>
+                      <input
+                        className='bg-transparent px-2 py-0.5'
+                        type='text'
+                        {...register(`${corps.id}_note`)}
                       />
                     </td>
                   </tr>

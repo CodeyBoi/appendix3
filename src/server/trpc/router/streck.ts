@@ -15,7 +15,9 @@ export const streckRouter = router({
           corpsId,
         },
         orderBy: {
-          time: 'asc',
+          streckList: {
+            time: 'desc',
+          },
         },
       });
 
@@ -58,12 +60,16 @@ export const streckRouter = router({
           corps: true,
         },
         where: {
-          time: { gte: start, lte: end },
+          streckList: {
+            time: { gte: start, lte: end },
+          },
           corpsId,
           streckListId,
         },
         orderBy: {
-          time: 'desc',
+          streckList: {
+            time: 'desc',
+          },
         },
         take,
         skip,
@@ -108,6 +114,8 @@ export const streckRouter = router({
             item: z.string(),
             amount: z.number().int().nonnegative(),
             pricePer: z.number().int(),
+            verificationNumber: z.string().optional(),
+            note: z.string().optional(),
             time: z.date().optional(),
           }),
         ),
@@ -231,7 +239,9 @@ export const streckRouter = router({
               {
                 streckTransactions: {
                   some: {
-                    time: dateFilter,
+                    streckList: {
+                      time: dateFilter,
+                    },
                   },
                 },
               },
