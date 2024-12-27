@@ -27,11 +27,11 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
 
 ## 2. Setting up the project
 
-Open a new command prompt window and run the following commands to install Node.js 16 and Bun:
+Open a new command prompt window and run the following commands to install Node.js 18 and Bun:
 
 ```bash
-nvm install 16
-nvm use 16
+nvm install 18
+nvm use 18
 npm install --global bun
 ```
 
