@@ -10,6 +10,8 @@ import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
+export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
+
 type Corps = {
   id: string;
   number: number | null;
@@ -19,12 +21,11 @@ type Corps = {
 
 type Transaction = {
   corps: Corps;
-  time: Date;
   item: string;
   pricePer: number;
   amount: number;
   totalPrice: number;
-  verificationNumber?: string;
+  verificationNumber: string | null;
   note: string;
 };
 
@@ -37,6 +38,7 @@ interface AdminStreckFormProps {
   id?: number;
   transactions?: Transaction[];
   items: StreckItem[];
+  type: AdminStreckFormType;
 }
 
 const rowBackgroundColor = (balance: number) => {
@@ -52,7 +54,8 @@ const rowBackgroundColor = (balance: number) => {
 const AdminStreckForm = ({
   id,
   transactions = [],
-  items: propItems,
+  items,
+  type,
 }: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
@@ -74,44 +77,20 @@ const AdminStreckForm = ({
     additionalCorps,
   });
 
-  // If transactions has exactly one type of item, this is a one-time
-  // payment/deposit (aka. monolist). We handle monolists by only
-  // having one item, letting the user fill in price for each corps
-  // and fixing `amount` at 1.
-  const isMonoList =
-    new Set(transactions.map((transaction) => transaction.item)).size === 1;
-  const items: StreckItem[] = [];
-  if (isMonoList) {
-    const firstTransaction = transactions[0];
-    if (!firstTransaction) {
-      throw new Error(
-        'This should be unreachable as `isMonoList === true` implies `transactions` has a length of at least 1',
-      );
+  const getAmount = (transaction: Transaction) => {
+    switch (type) {
+      case 'strecklist':
+        return transaction.amount;
+      case 'deposit':
+        return transaction.pricePer;
+      case 'cost':
+        return -transaction.pricePer;
     }
-    items.push({
-      name: firstTransaction.item,
-      price: NaN,
-    });
-  } else {
-    items.push(...propItems);
-    const itemsSet = new Set(items.map((i) => i.name));
-    for (const transaction of transactions) {
-      const key = transaction.item;
-      if (itemsSet.has(key)) {
-        continue;
-      }
-      itemsSet.add(key);
-      items.push({ name: transaction.item, price: -transaction.pricePer });
-    }
-  }
+  };
 
   const initialAmounts = transactions.reduce((acc, transaction) => {
     const key = `${transaction.corps.id}:${transaction.item}`;
-    acc.set(
-      key,
-      (acc.get(key) ?? 0) +
-        (isMonoList ? transaction.pricePer : transaction.amount),
-    );
+    acc.set(key, (acc.get(key) ?? 0) + getAmount(transaction));
     return acc;
   }, new Map<string, number>());
 
@@ -121,15 +100,12 @@ const AdminStreckForm = ({
     return acc;
   }, new Map<string, number>());
 
-  const initialNotes = isMonoList
+  const initialNotes = ['deposit', 'cost'].includes(type)
     ? transactions.reduce((acc, { corps, verificationNumber, note }) => {
         acc.set(corps.id, { verificationNumber, note });
         return acc;
-      }, new Map<string, { verificationNumber?: string; note: string }>())
+      }, new Map<string, { verificationNumber: string | null; note: string }>())
     : undefined;
-
-  console.log(transactions);
-  console.log(initialNotes);
 
   const mutation = api.streck.upsertStreckList.useMutation({
     onSuccess: () => {
@@ -148,7 +124,7 @@ const AdminStreckForm = ({
           values[`${corps.id}:${item.name}`]?.trim() ?? '',
         );
         const verificationNumber =
-          values[`${corps.id}:verificationNumber`]?.trim();
+          values[`${corps.id}:verificationNumber`]?.trim() || undefined;
         const note = values[`${corps.id}:note`]?.trim();
         if (isNaN(formValue)) {
           continue;
@@ -158,7 +134,7 @@ const AdminStreckForm = ({
         const entry = isNaN(item.price)
           ? {
               amount: 1,
-              pricePer: formValue,
+              pricePer: type === 'deposit' ? formValue : -formValue,
               verificationNumber,
               note,
             }
@@ -181,7 +157,6 @@ const AdminStreckForm = ({
 
   return (
     <div className='flex flex-col gap-4'>
-      <h2>Inför strecklista</h2>
       <div className='max-w-md'>
         <SelectCorps
           label='Lägg till corps...'
@@ -208,11 +183,11 @@ const AdminStreckForm = ({
                       item.name
                     } ${isNaN(item.price) ? '' : `${item.price}p`}`}</th>
                   ))}
-                  {isMonoList && (
-                    <>
-                      <th className='px-1'>Verifikatsnummer</th>
-                      <th className='px-1'>Anteckning</th>
-                    </>
+                  {type === 'deposit' && (
+                    <th className='px-1'>Verifikatsnummer</th>
+                  )}
+                  {(type === 'deposit' || type === 'cost') && (
+                    <th className='px-1'>Anteckning</th>
                   )}
                 </tr>
               </thead>
@@ -243,18 +218,21 @@ const AdminStreckForm = ({
                         </td>
                       );
                     })}
-                    {isMonoList && initialNotes && (
-                      <>
-                        <td className='px-1'>
-                          <input
-                            className='w-24 bg-transparent px-2 py-0.5'
-                            type='text'
-                            defaultValue={
-                              initialNotes.get(corps.id)?.verificationNumber
-                            }
-                            {...register(`${corps.id}:verificationNumber`)}
-                          />
-                        </td>
+                    {type === 'deposit' && initialNotes && (
+                      <td className='px-1'>
+                        <input
+                          className='w-24 bg-transparent px-2 py-0.5'
+                          type='text'
+                          defaultValue={
+                            initialNotes.get(corps.id)?.verificationNumber ||
+                            undefined
+                          }
+                          {...register(`${corps.id}:verificationNumber`)}
+                        />
+                      </td>
+                    )}
+                    {(type === 'deposit' || type === 'cost') &&
+                      initialNotes && (
                         <td className='px-1'>
                           <input
                             className='bg-transparent px-2 py-0.5'
@@ -263,8 +241,7 @@ const AdminStreckForm = ({
                             {...register(`${corps.id}:note`)}
                           />
                         </td>
-                      </>
-                    )}
+                      )}
                   </tr>
                 ))}
               </tbody>

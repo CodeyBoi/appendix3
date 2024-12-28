@@ -1,6 +1,5 @@
 import CorpsDisplay from 'components/corps/display';
 import Restricted from 'components/restricted/server';
-import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import DeleteTransactionButton from './delete';
 
@@ -25,7 +24,6 @@ const getTransactions = async (sourceId: CorpsOrListId) => {
 const TransactionsTable = async ({
   sourceId,
   showCorps = false,
-  dateFormat = 'YYYY-MM-DD',
   showDelete = false,
   showDownload = false,
 }: TransactionsTableProps) => {
@@ -42,7 +40,6 @@ const TransactionsTable = async ({
         <table className='table text-sm'>
           <thead>
             <tr className='text-left'>
-              <th className='px-1'>Datum</th>
               {showCorps && <th className='px-1'>Corps</th>}
               <th className='px-1'>Artikel</th>
               <th className='px-1'>Styckpris</th>
@@ -61,9 +58,6 @@ const TransactionsTable = async ({
                 key={transaction.id}
                 className='divide-x divide-solid dark:divide-neutral-800'
               >
-                <td className='px-2'>
-                  {dayjs(transaction.time).format(dateFormat)}
-                </td>
                 {showCorps && (
                   <td className='px-2'>
                     <CorpsDisplay
