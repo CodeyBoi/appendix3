@@ -202,7 +202,7 @@ const AdminStreckForm = ({
                     <td className='px-1'>
                       <CorpsDisplay corps={corps} nameFormat='full-name' />
                     </td>
-                    <td className='px-1 text-center'>
+                    <td className='px-1 text-right'>
                       {corps.balance - (initialBalances.get(corps.id) ?? 0)}
                     </td>
                     {items.map((item) => {

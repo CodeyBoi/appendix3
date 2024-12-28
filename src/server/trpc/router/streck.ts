@@ -211,7 +211,7 @@ export const streckRouter = router({
     .input(
       z.object({
         additionalCorps: z.array(z.string().cuid()).optional(),
-        until: z.date().optional(), 
+        until: z.date().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {

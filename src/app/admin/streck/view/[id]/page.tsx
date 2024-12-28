@@ -50,7 +50,7 @@ const AdminStreckFormPage = async ({
   const isMonoList =
     new Set(transactions.map((transaction) => transaction.item)).size === 1;
   const type = isNew
-    ? searchParams.type
+    ? searchParams.type ?? 'strecklist'
     : !isMonoList
     ? 'strecklist'
     : (transactions[0]?.pricePer ?? 0) < 0
@@ -63,9 +63,9 @@ const AdminStreckFormPage = async ({
         case 'strecklist':
           return await api.streck.getItems.query();
         case 'deposit':
-          return [{ name: 'Insättning', price: NaN }];
+          return [{ name: 'Belopp', price: NaN }];
         case 'cost':
-          return [{ name: 'Kostnad', price: NaN }];
+          return [{ name: 'Belopp', price: NaN }];
       }
     }
     const items = [];
