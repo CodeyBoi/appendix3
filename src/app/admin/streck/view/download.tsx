@@ -15,7 +15,6 @@ type Corps = {
 
 type Transaction = {
   corps: Corps;
-  time: Date;
   item: string;
   pricePer: number;
   amount: number;
@@ -29,6 +28,7 @@ type Summary = {
 
 type StreckList = {
   transactions: Transaction[];
+  time: Date;
   createdBy: Corps;
   createdAt: Date;
 };
@@ -119,7 +119,7 @@ const generateTransactionsXLSX = (
   for (const streckList of streckLists) {
     streckListsSheet.addRow(['']);
     streckListsSheet.addRow([
-      `Strecklista införd ${dayjs(streckList.createdAt).format(
+      `Strecklista införd ${dayjs(streckList.time).format(
         'YYYY-MM-DD',
       )} av ${numberAndFullName(streckList.createdBy)}`,
     ]);

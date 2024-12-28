@@ -15,7 +15,9 @@ export const streckRouter = router({
           corpsId,
         },
         orderBy: {
-          time: 'asc',
+          streckList: {
+            time: 'desc',
+          },
         },
       });
 
@@ -58,12 +60,16 @@ export const streckRouter = router({
           corps: true,
         },
         where: {
-          time: { gte: start, lte: end },
+          streckList: {
+            time: { gte: start, lte: end },
+          },
           corpsId,
           streckListId,
         },
         orderBy: {
-          time: 'desc',
+          streckList: {
+            time: 'desc',
+          },
         },
         take,
         skip,
@@ -108,6 +114,8 @@ export const streckRouter = router({
             item: z.string(),
             amount: z.number().int().nonnegative(),
             pricePer: z.number().int(),
+            verificationNumber: z.string().optional(),
+            note: z.string().optional(),
             time: z.date().optional(),
           }),
         ),
@@ -203,6 +211,7 @@ export const streckRouter = router({
     .input(
       z.object({
         additionalCorps: z.array(z.string().cuid()).optional(),
+        until: z.date().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -215,7 +224,7 @@ export const streckRouter = router({
         balance: number;
       };
 
-      const { additionalCorps = [] } = input;
+      const { additionalCorps = [], until = new Date() } = input;
 
       const dateFilter = {
         gt: dayjs(new Date()).subtract(28, 'days').toDate(),
@@ -231,7 +240,9 @@ export const streckRouter = router({
               {
                 streckTransactions: {
                   some: {
-                    time: dateFilter,
+                    streckList: {
+                      time: dateFilter,
+                    },
                   },
                 },
               },
@@ -276,7 +287,9 @@ export const streckRouter = router({
           SUM(COALESCE(amount * pricePer, 0)) AS balance
         FROM Corps
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
+        LEFT JOIN StreckList ON streckListId = StreckList.id
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+          AND (time IS NULL OR time < ${until})
         GROUP BY Corps.id
         ORDER BY
           lastName,

@@ -4,6 +4,7 @@ import { router } from '../trpc';
 import { protectedProcedure } from './../trpc';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import dayjs from 'dayjs';
+import { toMap } from 'utils/array';
 
 export const statsRouter = router({
   getMany: protectedProcedure
@@ -96,29 +97,42 @@ export const statsRouter = router({
       const totalGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsIds = res[2].map((corps) => corps.id);
-      const corpsStats = res[2].reduce(
-        (acc, corps) => {
-          const fullName = `${corps.firstName} ${corps.lastName}`;
-          acc.set(corps.id, {
-            ...corps,
-            fullName,
-            displayName: corps.nickName ?? fullName,
-            attendence:
-              corps.maxPossibleGigs === 0
-                ? 1.0
-                : corps.gigsAttended / corps.maxPossibleGigs,
-          });
-          return acc;
-        },
-        new Map<
-          string,
-          CorpsStats & {
-            attendence: number;
-            fullName: string;
-            displayName: string;
-          }
-        >(),
-      );
+      // const corpsStats = res[2].reduce(
+      //   (acc, corps) => {
+      //     const fullName = `${corps.firstName} ${corps.lastName}`;
+      //     acc.set(corps.id, {
+      //       ...corps,
+      //       fullName,
+      //       displayName: corps.nickName ?? fullName,
+      //       attendence:
+      //         corps.maxPossibleGigs === 0
+      //           ? 1.0
+      //           : corps.gigsAttended / corps.maxPossibleGigs,
+      //     });
+      //     return acc;
+      //   },
+      //   new Map<
+      //     string,
+      //     CorpsStats & {
+      //       attendence: number;
+      //       fullName: string;
+      //       displayName: string;
+      //     }
+      //   >(),
+      // );
+
+      const corpsStats = toMap(res[2], 'id', (corps) => {
+        const fullName = `${corps.firstName} ${corps.lastName}`;
+        return {
+          ...corps,
+          fullName,
+          displayName: corps.nickName ?? fullName,
+          attendence:
+            corps.maxPossibleGigs === 0
+              ? 1.0
+              : corps.gigsAttended / corps.maxPossibleGigs,
+        };
+      });
 
       corpsIds.sort(
         (a, b) =>

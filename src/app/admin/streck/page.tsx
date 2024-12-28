@@ -1,9 +1,4 @@
-import {
-  IconCash,
-  IconCoins,
-  IconSearch,
-  IconTablePlus,
-} from '@tabler/icons-react';
+import { IconCoins, IconSearch, IconTablePlus } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import React, { Suspense } from 'react';
@@ -25,14 +20,14 @@ const AdminStreckPage = async () => {
       <h5>{`Summa av negativa saldon: ${bleckhornenBalance.unsettledDebt}`}</h5>
       <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
-          <h3>{lang('Senaste strecklistor', 'Latest strecklists')}</h3>
+          <h3>{lang('Senaste transaktioner', 'Latest transactions')}</h3>
           <div>
             <Suspense
               fallback={
                 <Loading
                   msg={lang(
-                    'Hämtar strecklistor...',
-                    'Fetching strecklists...',
+                    'Hämtar transaktioner...',
+                    'Fetching transactions...',
                   )}
                 />
               }
@@ -46,19 +41,15 @@ const AdminStreckPage = async () => {
             <IconSearch />
             {lang('Se transaktioner...', 'See transactions...')}
           </Button>
-          <Button href='streck/deposition/new'>
-            <IconCash />
-            {lang('Ny kostnad/insättning...', 'New payment/deposit...')}
-          </Button>
           <Button href='streck/view/new'>
             <IconTablePlus />
-            {lang('Inför strecklista...', 'Submit strecklist...')}
+            {lang('Inför transaktion...', 'Submit transaktion...')}
           </Button>
-          <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
           <Button href='/admin/streck/prices'>
             <IconCoins />
             {lang('Ändra priser...', 'Change prices...')}
           </Button>
+          <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
         </div>
       </div>
     </div>

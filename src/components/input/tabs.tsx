@@ -4,7 +4,7 @@ import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { cn } from '../../utils/class-names';
 
 type TabsProps = {
-  options: { label: React.ReactNode; value: string }[];
+  options: ({ label: React.ReactNode; value: string } | string)[];
   name?: string;
   defaultTab?: string;
   onTabChange?: (value: string) => void;
@@ -15,10 +15,13 @@ const translateX = ['translate-x-0', 'translate-x-36', 'translate-x-72'];
 const Tabs = ({
   defaultTab,
   onTabChange,
-  options,
+  options: optionsProp,
   name = 'tab',
 }: TabsProps) => {
   const [tab, setTab] = useSearchParamsState(name, defaultTab);
+  const options = optionsProp.map((o) =>
+    typeof o === 'string' ? { value: o, label: o } : o,
+  );
   const tabIndex = options.findIndex((o) => o.value === tab);
   return (
     <div className='relative flex flex-nowrap border-b-2 border-b-neutral-300 px-2 dark:border-b-neutral-700'>
