@@ -1,4 +1,5 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 
 const OwnTransactionsTable = async () => {
@@ -13,6 +14,7 @@ const OwnTransactionsTable = async () => {
       <table className='table text-sm'>
         <thead>
           <tr className='text-left'>
+            <th className='px-1'>Datum</th>
             <th className='px-1'>Artikel</th>
             <th className='px-1'>Styckpris</th>
             <th className='px-1'>Antal</th>
@@ -26,6 +28,9 @@ const OwnTransactionsTable = async () => {
               key={transaction.id}
               className='divide-x divide-solid dark:divide-neutral-800'
             >
+              <td className='px-2'>
+                {dayjs(transaction.time).format('YYYY-MM-DD')}
+              </td>
               <td className='px-2'>{transaction.item}</td>
               <td className='px-2 text-right'>{transaction.pricePer}</td>
               <td className='px-2 text-right'>{transaction.amount}</td>

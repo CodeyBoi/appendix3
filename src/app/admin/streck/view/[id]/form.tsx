@@ -10,8 +10,6 @@ import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
-export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
-
 type Corps = {
   id: string;
   number: number | null;
@@ -21,12 +19,11 @@ type Corps = {
 
 type Transaction = {
   corps: Corps;
+  time: Date;
   item: string;
   pricePer: number;
   amount: number;
   totalPrice: number;
-  verificationNumber: string | null;
-  note: string;
 };
 
 type StreckItem = {
@@ -38,7 +35,6 @@ interface AdminStreckFormProps {
   id?: number;
   transactions?: Transaction[];
   items: StreckItem[];
-  type: AdminStreckFormType;
 }
 
 const rowBackgroundColor = (balance: number) => {
@@ -54,8 +50,7 @@ const rowBackgroundColor = (balance: number) => {
 const AdminStreckForm = ({
   id,
   transactions = [],
-  items,
-  type,
+  items: propItems,
 }: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
@@ -77,20 +72,44 @@ const AdminStreckForm = ({
     additionalCorps,
   });
 
-  const getAmount = (transaction: Transaction) => {
-    switch (type) {
-      case 'strecklist':
-        return transaction.amount;
-      case 'deposit':
-        return transaction.pricePer;
-      case 'cost':
-        return -transaction.pricePer;
+  // If transactions has exactly one type of item, this is a one-time
+  // payment/deposit (aka. monolist). We handle monolists by only
+  // having one item, letting the user fill in price for each corps
+  // and fixing `amount` at 1.
+  const isMonoList =
+    new Set(transactions.map((transaction) => transaction.item)).size === 1;
+  const items: StreckItem[] = [];
+  if (isMonoList) {
+    const firstTransaction = transactions[0];
+    if (!firstTransaction) {
+      throw new Error(
+        'This should be unreachable as `isMonoList === true` implies `transactions` has a length of at least 1',
+      );
     }
-  };
+    items.push({
+      name: firstTransaction.item,
+      price: NaN,
+    });
+  } else {
+    items.push(...propItems);
+    const itemsSet = new Set(items.map((i) => i.name));
+    for (const transaction of transactions) {
+      const key = transaction.item;
+      if (itemsSet.has(key)) {
+        continue;
+      }
+      itemsSet.add(key);
+      items.push({ name: transaction.item, price: -transaction.pricePer });
+    }
+  }
 
   const initialAmounts = transactions.reduce((acc, transaction) => {
     const key = `${transaction.corps.id}:${transaction.item}`;
-    acc.set(key, (acc.get(key) ?? 0) + getAmount(transaction));
+    acc.set(
+      key,
+      (acc.get(key) ?? 0) +
+        (isMonoList ? transaction.pricePer : transaction.amount),
+    );
     return acc;
   }, new Map<string, number>());
 
@@ -99,13 +118,6 @@ const AdminStreckForm = ({
     acc.set(key, (acc.get(key) ?? 0) + transaction.totalPrice);
     return acc;
   }, new Map<string, number>());
-
-  const initialNotes = ['deposit', 'cost'].includes(type)
-    ? transactions.reduce((acc, { corps, verificationNumber, note }) => {
-        acc.set(corps.id, { verificationNumber, note });
-        return acc;
-      }, new Map<string, { verificationNumber: string | null; note: string }>())
-    : undefined;
 
   const mutation = api.streck.upsertStreckList.useMutation({
     onSuccess: () => {
@@ -120,13 +132,8 @@ const AdminStreckForm = ({
     const data = [];
     for (const corps of activeCorps) {
       for (const item of items) {
-        const formValue = parseInt(
-          values[`${corps.id}:${item.name}`]?.trim() ?? '',
-        );
-        const verificationNumber =
-          values[`${corps.id}:verificationNumber`]?.trim() || undefined;
-        const note = values[`${corps.id}:note`]?.trim();
-        if (isNaN(formValue)) {
+        const formValue = values[`${corps.id}:${item.name}`]?.trim();
+        if (!formValue) {
           continue;
         }
 
@@ -134,12 +141,10 @@ const AdminStreckForm = ({
         const entry = isNaN(item.price)
           ? {
               amount: 1,
-              pricePer: type === 'deposit' ? formValue : -formValue,
-              verificationNumber,
-              note,
+              pricePer: +formValue,
             }
           : {
-              amount: formValue,
+              amount: +formValue,
               pricePer: -item.price,
             };
         data.push({
@@ -157,6 +162,7 @@ const AdminStreckForm = ({
 
   return (
     <div className='flex flex-col gap-4'>
+      <h2>Inför strecklista</h2>
       <div className='max-w-md'>
         <SelectCorps
           label='Lägg till corps...'
@@ -172,7 +178,7 @@ const AdminStreckForm = ({
       )}
       {isReady && (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='overflow-x-auto overflow-y-hidden'>
+          <div className='overflow-x-auto'>
             <table className='table text-sm'>
               <thead>
                 <tr className='divide-x border-b text-left align-bottom text-xs'>
@@ -183,12 +189,6 @@ const AdminStreckForm = ({
                       item.name
                     } ${isNaN(item.price) ? '' : `${item.price}p`}`}</th>
                   ))}
-                  {type === 'deposit' && (
-                    <th className='px-1'>Verifikatsnummer</th>
-                  )}
-                  {(type === 'deposit' || type === 'cost') && (
-                    <th className='px-1'>Anteckning</th>
-                  )}
                 </tr>
               </thead>
               <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
@@ -202,7 +202,7 @@ const AdminStreckForm = ({
                     <td className='px-1'>
                       <CorpsDisplay corps={corps} nameFormat='full-name' />
                     </td>
-                    <td className='px-1 text-right'>
+                    <td className='px-1 text-center'>
                       {corps.balance - (initialBalances.get(corps.id) ?? 0)}
                     </td>
                     {items.map((item) => {
@@ -218,30 +218,6 @@ const AdminStreckForm = ({
                         </td>
                       );
                     })}
-                    {type === 'deposit' && initialNotes && (
-                      <td className='px-1'>
-                        <input
-                          className='w-24 bg-transparent px-2 py-0.5'
-                          type='text'
-                          defaultValue={
-                            initialNotes.get(corps.id)?.verificationNumber ||
-                            undefined
-                          }
-                          {...register(`${corps.id}:verificationNumber`)}
-                        />
-                      </td>
-                    )}
-                    {(type === 'deposit' || type === 'cost') &&
-                      initialNotes && (
-                        <td className='px-1'>
-                          <input
-                            className='bg-transparent px-2 py-0.5'
-                            type='text'
-                            defaultValue={initialNotes.get(corps.id)?.note}
-                            {...register(`${corps.id}:note`)}
-                          />
-                        </td>
-                      )}
                   </tr>
                 ))}
               </tbody>
