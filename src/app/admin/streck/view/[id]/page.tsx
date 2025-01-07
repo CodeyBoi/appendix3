@@ -63,9 +63,9 @@ const AdminStreckFormPage = async ({
         case 'strecklist':
           return await api.streck.getItems.query();
         case 'deposit':
-          return [{ name: 'Belopp', price: NaN }];
+          return [{ name: 'Intäkt', price: NaN }];
         case 'cost':
-          return [{ name: 'Belopp', price: NaN }];
+          return [{ name: 'Kostnad', price: NaN }];
       }
     }
     const items = [];

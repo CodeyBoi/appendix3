@@ -1,10 +1,9 @@
 'use client';
 
-import ExcelJS from 'exceljs';
+import ExcelJS, { Workbook } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
-import { numberAndFullName } from 'utils/corps';
 import { downloadXLSX } from 'utils/xlsx';
 
 type Corps = {
@@ -19,6 +18,8 @@ type Transaction = {
   pricePer: number;
   amount: number;
   totalPrice: number;
+  verificationNumber: string | null;
+  note: string;
 };
 
 type Summary = {
@@ -39,6 +40,45 @@ type DownloadTransactionsButtonProps = {
 };
 
 const headerRow = 1;
+
+const generateStreckListSheet = (workbook: Workbook, name: string) => {
+  const sheet = workbook.addWorksheet(name, {
+    pageSetup: {
+      paperSize: 9,
+      orientation: 'portrait',
+      printTitlesRow: `${headerRow}:${headerRow}`,
+    },
+  });
+
+  sheet.getRow(headerRow).values = [
+    '#',
+    'Förnamn',
+    'Efternamn',
+    'Artikel',
+    'Styckpris',
+    'Antal',
+    'Total',
+    'Verifikatsnr.',
+    'Anteckning',
+  ];
+  sheet.getRow(headerRow).font = {
+    name: 'Arial',
+    bold: true,
+  };
+  sheet.getColumn(1).width = 5;
+  sheet.getColumn(2).width = 15;
+  sheet.getColumn(3).width = 19;
+  sheet.getColumn(4).width = 18;
+
+  sheet.getColumn(8).width = 14;
+  sheet.getColumn(9).width = 19;
+
+  sheet.getColumn(1).alignment = {
+    horizontal: 'center',
+  };
+
+  return sheet;
+};
 
 const generateTransactionsXLSX = (
   streckLists: StreckList[],
@@ -86,56 +126,15 @@ const generateTransactionsXLSX = (
     summarySheet.addRow([item, summary.amount, summary.total]);
   }
 
-  const streckListsSheet = workbook.addWorksheet('Alla strecklistor', {
-    pageSetup: {
-      paperSize: 9,
-      orientation: 'portrait',
-      printTitlesRow: `${headerRow}:${headerRow}`,
-    },
-  });
-
-  streckListsSheet.getRow(headerRow).values = [
-    '#',
-    'Förnamn',
-    'Efternamn',
-    'Artikel',
-    'Styckpris',
-    'Antal',
-    'Total',
-  ];
-  streckListsSheet.getRow(headerRow).font = {
-    name: 'Arial',
-    bold: true,
-  };
-  streckListsSheet.getColumn(1).width = 5;
-  streckListsSheet.getColumn(2).width = 15;
-  streckListsSheet.getColumn(3).width = 19;
-  streckListsSheet.getColumn(4).width = 18;
-
-  streckListsSheet.getColumn(1).alignment = {
-    horizontal: 'center',
-  };
-
+  let lastName = null;
+  let currentSheet = null;
   for (const streckList of streckLists) {
-    streckListsSheet.addRow(['']);
-    streckListsSheet.addRow([
-      `Strecklista införd ${dayjs(streckList.time).format(
-        'YYYY-MM-DD',
-      )} av ${numberAndFullName(streckList.createdBy)}`,
-    ]);
-    const streckListHeader = streckListsSheet.lastRow;
-    if (!streckListHeader) {
-      // streckListHeader should be defined as we just added a row
-      continue;
+    const name = dayjs(streckList.time).format('YYYY-MM-DD');
+    if (currentSheet === null || lastName !== name) {
+      currentSheet = generateStreckListSheet(workbook, name);
     }
-    streckListHeader.font = {
-      name: 'Arial',
-      bold: true,
-      size: 12,
-    };
-
     for (const transaction of streckList.transactions) {
-      streckListsSheet.addRow([
+      currentSheet.addRow([
         transaction.corps.number ?? 'p.e.',
         transaction.corps.firstName.trim(),
         transaction.corps.lastName.trim(),
@@ -143,8 +142,11 @@ const generateTransactionsXLSX = (
         transaction.pricePer,
         transaction.amount,
         transaction.totalPrice,
+        transaction.verificationNumber,
+        transaction.note,
       ]);
     }
+    lastName = name;
   }
 
   downloadXLSX(workbook, filename);
