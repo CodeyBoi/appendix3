@@ -43,7 +43,7 @@ const StreckListTable = async ({
       {showDownload && (
         <DownloadTransactionsButton
           streckLists={streckLists}
-          filename={`Strecklistor ${dayjs(start).format(
+          filename={`Transaktioner ${dayjs(start).format(
             'YYYY-MM-DD',
           )} - ${dayjs(end).format('YYYY-MM-DD')}.xlsx`}
         />
