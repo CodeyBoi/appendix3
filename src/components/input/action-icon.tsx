@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ButtonHTMLAttributes } from 'react';
 import { cn } from 'utils/class-names';
 
-type ActionIconVariant = 'default' | 'subtle';
+export type ActionIconVariant = 'default' | 'subtle';
 const variants: Record<ActionIconVariant, string> = {
   default: 'bg-red-600 hover:bg-red-700 text-white',
   subtle: 'bg-transparent hover:bg-red-600/10 text-red-600',

@@ -3,8 +3,9 @@
 import ExcelJS, { Workbook } from 'exceljs';
 import dayjs from 'dayjs';
 import Button from 'components/input/button';
-import { IconDownload } from '@tabler/icons-react';
 import { downloadXLSX } from 'utils/xlsx';
+import ActionIcon, { ActionIconVariant } from 'components/input/action-icon';
+import { ReactNode } from 'react';
 
 type Corps = {
   number: number | null;
@@ -35,8 +36,10 @@ type StreckList = {
 };
 
 type DownloadTransactionsButtonProps = {
+  children: ReactNode;
   streckLists: StreckList[];
   filename: string;
+  variant?: ActionIconVariant;
 };
 
 const headerRow = 1;
@@ -153,15 +156,27 @@ const generateTransactionsXLSX = (
 };
 
 const DownloadTransactionsButton = ({
+  children,
   streckLists,
   filename,
+  variant = 'default',
 }: DownloadTransactionsButtonProps) => {
-  return (
-    <Button onClick={() => generateTransactionsXLSX(streckLists, filename)}>
-      <IconDownload />
-      Exportera som XLSX
-    </Button>
-  );
+  if (variant === 'default') {
+    return (
+      <Button onClick={() => generateTransactionsXLSX(streckLists, filename)}>
+        {children}
+      </Button>
+    );
+  } else if (variant === 'subtle') {
+    return (
+      <ActionIcon
+        variant='subtle'
+        onClick={() => generateTransactionsXLSX(streckLists, filename)}
+      >
+        {children}
+      </ActionIcon>
+    );
+  }
 };
 
 export default DownloadTransactionsButton;
