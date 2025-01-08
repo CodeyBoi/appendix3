@@ -35,12 +35,12 @@ const StreckListTable = async ({
   });
 
   if (streckLists.length === 0) {
-    return null;
+    return <h4 className='italic'>Här var det tomt...</h4>;
   }
 
   return (
     <div className='flex flex-col gap-4'>
-      <div>
+      <div className='overflow-x-auto overflow-y-hidden'>
         <table className='table text-sm'>
           <thead>
             <tr className='text-left'>
@@ -60,7 +60,7 @@ const StreckListTable = async ({
               return (
                 <tr
                   key={streckList.id}
-                  className='divide-x divide-solid dark:divide-neutral-800'
+                  className='divide-x divide-solid whitespace-nowrap dark:divide-neutral-800'
                 >
                   <td className='px-2'>
                     {new Set(streckList.transactions.map((t) => t.item))
@@ -73,7 +73,7 @@ const StreckListTable = async ({
                       : 'Blandat'}
                   </td>
                   <td className='px-2'>
-                    {dayjs(streckList.createdAt).format(dateFormat)}
+                    {dayjs(streckList.time).format(dateFormat)}
                   </td>
                   <td className='px-2'>
                     <CorpsDisplay
@@ -91,11 +91,6 @@ const StreckListTable = async ({
                         <IconPencil />
                       </ActionIcon>
                     </td>
-                    {showDelete && (
-                      <td>
-                        <DeleteStreckListButton id={streckList.id} />
-                      </td>
-                    )}
                     <td>
                       <DownloadTransactionsButton
                         variant='subtle'
@@ -107,6 +102,11 @@ const StreckListTable = async ({
                         <IconDownload />
                       </DownloadTransactionsButton>
                     </td>
+                    {showDelete && (
+                      <td>
+                        <DeleteStreckListButton id={streckList.id} />
+                      </td>
+                    )}
                   </Restricted>
                 </tr>
               );
