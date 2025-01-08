@@ -375,7 +375,7 @@ export const streckRouter = router({
       const { start, end, getTransactions = false, take, skip } = input;
       const streckLists = await ctx.prisma.streckList.findMany({
         where: {
-          createdAt: { gte: start, lte: end },
+          time: { gte: start, lte: end },
         },
         include: {
           createdBy: true,
