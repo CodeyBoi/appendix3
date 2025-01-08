@@ -59,6 +59,7 @@ const AdminStreckForm = ({
 }: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
+  const isNew = id === undefined;
 
   const {
     handleSubmit,
@@ -66,7 +67,11 @@ const AdminStreckForm = ({
     formState: { isSubmitting, isSubmitted, isDirty, isLoading },
   } = useForm();
 
-  const [additionalCorps, setAdditionalCorps] = useState<string[]>([]);
+  const corpsInList = new Set(transactions.map((t) => t.corps.id));
+
+  const [additionalCorps, setAdditionalCorps] = useState<string[]>(
+    Array.from(corpsInList),
+  );
 
   const {
     data: activeCorps = [],
@@ -76,6 +81,11 @@ const AdminStreckForm = ({
   } = api.streck.getActiveCorps.useQuery({
     additionalCorps,
   });
+
+  const additionalCorpsSet = new Set(additionalCorps);
+  const corpsii = isNew
+    ? activeCorps
+    : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
 
   const getAmount = (transaction: Transaction) => {
     switch (type) {
@@ -118,7 +128,7 @@ const AdminStreckForm = ({
 
   const onSubmit = (values: Record<string, string>) => {
     const data = [];
-    for (const corps of activeCorps) {
+    for (const corps of corpsii) {
       for (const item of items) {
         const formValue = parseInt(
           values[`${corps.id}:${item.name}`]?.trim() ?? '',
@@ -192,7 +202,7 @@ const AdminStreckForm = ({
                 </tr>
               </thead>
               <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
-                {activeCorps.map((corps) => (
+                {corpsii.map((corps) => (
                   <tr
                     key={corps.id}
                     className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(
