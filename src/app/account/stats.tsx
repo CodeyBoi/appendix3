@@ -21,7 +21,7 @@ const CorpsStats = async () => {
     api.rehearsal.getOwnOrchestraAttendance.query({ start, end });
   const balletRehearsalAttendanceQuery =
     api.rehearsal.getOwnBalletAttendance.query({ start, end });
-  const streckAccountQuery = api.streck.getOwnStreckAccount.query({});
+  const streckAccountQuery = api.streck.getOwnStreckAccount.query();
 
   const [
     corps,
