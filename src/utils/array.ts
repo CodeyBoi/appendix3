@@ -34,3 +34,14 @@ export const toMap = <T, V>(
     return acc;
   }, new Map<T[typeof keyName], MapValue<T, V, typeof transform>>());
 };
+
+export const intersection = <T>(a: T[], b: T[]) => {
+  const bSet = new Set(b);
+  const c = [];
+  for (const v of a) {
+    if (bSet.has(v)) {
+      c.push(v);
+    }
+  }
+  return c;
+};

@@ -43,7 +43,7 @@ const AdminStreckPage = async () => {
           </Button>
           <Button href='streck/view/new'>
             <IconTablePlus />
-            {lang('Inför transaktion...', 'Submit transaktion...')}
+            {lang('Ny transaktion...', 'New transaktion...')}
           </Button>
           <Button href='/admin/streck/prices'>
             <IconCoins />

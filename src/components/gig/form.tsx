@@ -53,7 +53,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
 
   const router = useRouter();
 
-  const { data: corpsii } = api.corps.getMany.useQuery({});
+  const { data: corpsii } = api.corps.search.useQuery({});
   const corpsiiOptions = corpsii?.map((c) => ({
     label:
       (c.number ? '#' + c.number : 'p.e.') +

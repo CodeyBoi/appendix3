@@ -1,13 +1,14 @@
 'use client';
 
-import CorpsDisplay from 'components/corps/display';
 import Button from 'components/input/button';
+import TextInput from 'components/input/text-input';
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
+import { numberAndFullName } from 'utils/corps';
 import { lang } from 'utils/language';
 
 export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
@@ -72,6 +73,8 @@ const AdminStreckForm = ({
   const [additionalCorps, setAdditionalCorps] = useState<string[]>(
     Array.from(corpsInList),
   );
+  // Use this value if `type` is 'cost'
+  const [itemName, setItemName] = useState('');
 
   const {
     data: activeCorps = [],
@@ -154,7 +157,7 @@ const AdminStreckForm = ({
             };
         data.push({
           corpsId: corps.id,
-          item: item.name,
+          item: itemName || item.name,
           ...entry,
         });
       }
@@ -168,6 +171,13 @@ const AdminStreckForm = ({
   return (
     <div className='flex flex-col gap-4'>
       <div className='max-w-md'>
+        {type === 'cost' && (
+          <TextInput
+            label={lang('Vad är det för kostnad?', 'What is the cost for?')}
+            onChange={setItemName}
+            value={itemName}
+          />
+        )}
         <SelectCorps
           label='Lägg till corps...'
           onChange={(id) => {
@@ -175,12 +185,11 @@ const AdminStreckForm = ({
           }}
         />
       </div>
-      {!isReady && (
+      {!isReady ? (
         <Loading
           msg={lang('Hämtar strecklista...', 'Fetching strecklist...')}
         />
-      )}
-      {isReady && (
+      ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='overflow-x-auto overflow-y-hidden'>
             <table className='table text-sm'>
@@ -210,7 +219,7 @@ const AdminStreckForm = ({
                     )}`}
                   >
                     <td className='whitespace-nowrap px-1'>
-                      <CorpsDisplay corps={corps} nameFormat='full-name' />
+                      {numberAndFullName(corps)}
                     </td>
                     <td className='px-1 text-right'>
                       {corps.balance - (initialBalances.get(corps.id) ?? 0)}

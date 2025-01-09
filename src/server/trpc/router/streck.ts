@@ -6,35 +6,56 @@ import { initObject, sum } from 'utils/array';
 import { sortCorpsByName } from 'utils/corps';
 
 export const streckRouter = router({
-  getOwnStreckAccount: protectedProcedure
-    .input(z.object({}))
-    .query(async ({ ctx }) => {
-      const corpsId = ctx.session.user.corps.id;
-      const transactions = await ctx.prisma.streckTransaction.findMany({
-        where: {
-          corpsId,
-        },
-        orderBy: {
-          streckList: {
-            time: 'desc',
+  getOwnStreckAccount: protectedProcedure.query(async ({ ctx }) => {
+    const corpsId = ctx.session.user.corps.id;
+    const streckLists = await ctx.prisma.streckList.findMany({
+      include: {
+        transactions: {
+          where: {
+            corpsId,
           },
         },
-      });
+      },
+      where: {
+        transactions: {
+          some: {
+            corpsId,
+          },
+        },
+      },
+      orderBy: {
+        time: 'asc',
+      },
+    });
 
-      let balance = 0;
-      const transactionsWithBalance = transactions.map((transaction) => {
-        balance += transaction.totalPrice;
-        return {
-          ...transaction,
+    let balance = 0;
+    const transactionsWithBalance = streckLists.flatMap((streckList) => {
+      const firstTransaction = streckList.transactions[0];
+      if (!firstTransaction) {
+        return [];
+      }
+      const item =
+        new Set(streckList.transactions.map((t) => t.item)).size !== 1
+          ? 'Strecklista'
+          : firstTransaction.note.trim() || firstTransaction.item;
+      const totalPrice = sum(streckList.transactions.map((t) => t.totalPrice));
+      balance += totalPrice;
+      return [
+        {
+          id: streckList.id,
+          item,
+          totalPrice,
+          time: streckList.time,
           balance,
-        };
-      });
+        },
+      ];
+    });
 
-      return {
-        balance,
-        transactions: transactionsWithBalance.reverse(),
-      };
-    }),
+    return {
+      balance,
+      transactions: transactionsWithBalance.reverse(),
+    };
+  }),
 
   getTransactions: restrictedProcedure('manageStreck')
     .input(

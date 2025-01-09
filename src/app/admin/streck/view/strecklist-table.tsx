@@ -3,9 +3,9 @@ import dayjs from 'dayjs';
 import { api } from 'trpc/server';
 import { IconDownload, IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
-import CorpsDisplay from 'components/corps/display';
 import DeleteStreckListButton from './delete-streck-list';
 import DownloadTransactionsButton from './download';
+import { numberAndFullName } from 'utils/corps';
 
 type StreckListTableProps = {
   start?: Date;
@@ -76,10 +76,7 @@ const StreckListTable = async ({
                     {dayjs(streckList.time).format(dateFormat)}
                   </td>
                   <td className='px-2'>
-                    <CorpsDisplay
-                      corps={streckList.createdBy}
-                      nameFormat='full-name'
-                    />
+                    {numberAndFullName(streckList.createdBy)}
                   </td>
                   <td className='px-2 text-right'>{streckList.totalChange}</td>
                   <Restricted permissions='manageStreck'>
