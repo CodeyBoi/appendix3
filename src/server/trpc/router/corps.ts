@@ -2,6 +2,7 @@ import { CorpsFoodPrefs } from '@prisma/client';
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 import { corpsOrderByNumberDesc } from 'utils/corps';
+import { intersection } from 'utils/array';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -307,18 +308,75 @@ export const corpsRouter = router({
       });
     }),
 
-  getMany: protectedProcedure
+  search: protectedProcedure
     .input(
       z.object({
         search: z.string().optional(),
-        role: z.string().optional(),
-        instrument: z.string().optional(),
         excludeSelf: z.boolean().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const number = parseInt(input.search ?? '');
-      const bNumber = parseInt(input.search ?? '');
+      const { search = '', excludeSelf = false } = input;
+      const number = parseInt(search);
+      const searchTerms = search.split(' ').filter((term) => !!term.trim());
+      const matchingIds = await ctx.prisma.$transaction(
+        searchTerms.map((s) =>
+          ctx.prisma.corps.findMany({
+            where: {
+              userId: excludeSelf
+                ? {
+                    not: ctx.session?.user.id || undefined,
+                  }
+                : undefined,
+              OR: [
+                {
+                  firstName: {
+                    contains: s,
+                  },
+                },
+                {
+                  lastName: {
+                    contains: s,
+                  },
+                },
+                {
+                  nickName: {
+                    contains: s,
+                  },
+                },
+                {
+                  number: isNaN(number) ? undefined : number,
+                },
+                {
+                  bNumber: isNaN(number) ? undefined : number,
+                },
+                {
+                  instruments: {
+                    some: {
+                      instrument: {
+                        name: {
+                          contains: s,
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            select: {
+              id: true,
+            },
+          }),
+        ),
+      );
+      const intersectingIds = matchingIds.slice(1).reduce(
+        (acc, ids) =>
+          intersection(
+            acc,
+            ids.map((i) => i.id),
+          ),
+        matchingIds[0]?.map((i) => i.id) ?? [],
+      );
       const corpsii = await ctx.prisma.corps.findMany({
         where: {
           userId: input.excludeSelf
@@ -326,49 +384,12 @@ export const corpsRouter = router({
                 not: ctx.session?.user.id || undefined,
               }
             : undefined,
-          OR: [
-            {
-              firstName: {
-                contains: input.search,
-              },
-            },
-            {
-              lastName: {
-                contains: input.search,
-              },
-            },
-            {
-              nickName: {
-                contains: input.search,
-              },
-            },
-            {
-              number: isNaN(number) ? undefined : number,
-            },
-            {
-              bNumber: isNaN(bNumber) ? undefined : bNumber,
-            },
-            {
-              instruments: {
-                some: {
-                  instrument: {
-                    name: {
-                      contains: input.search,
-                    },
-                  },
+          id:
+            searchTerms.length === 0
+              ? undefined
+              : {
+                  in: intersectingIds,
                 },
-              },
-            },
-            // {
-            //   roles: {
-            //     some: {
-            //       name: {
-            //         contains: input.role,
-            //       },
-            //     },
-            //   },
-            // },
-          ],
         },
         select: {
           id: true,
@@ -378,6 +399,7 @@ export const corpsRouter = router({
           fullName: true,
           displayName: true,
           number: true,
+          bNumber: true,
           instruments: {
             select: {
               isMainInstrument: true,
@@ -399,6 +421,7 @@ export const corpsRouter = router({
         fullName: corps.fullName,
         displayName: corps.displayName,
         number: corps.number,
+        bNumber: corps.bNumber,
         mainInstrument: corps.instruments.find((i) => i.isMainInstrument)
           ?.instrument.name,
         otherInstruments: corps.instruments

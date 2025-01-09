@@ -8,7 +8,7 @@ type OptionType = {
 };
 
 const fetchOptions = async (): Promise<OptionType[]> => {
-  const corpsii = await api.corps.getMany.query({});
+  const corpsii = await api.corps.search.query({});
   const options = corpsii.map((c) => ({
     label:
       c.firstName +

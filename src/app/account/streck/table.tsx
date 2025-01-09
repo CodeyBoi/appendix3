@@ -1,40 +1,60 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
+import dayjs from 'dayjs';
 
 const OwnTransactionsTable = async () => {
-  const account = await api.streck.getOwnStreckAccount.query({});
+  const [account, corps] = await Promise.all([
+    api.streck.getOwnStreckAccount.query(),
+    api.corps.getSelf.query(),
+  ]);
 
   if (account.transactions.length === 0) {
-    return null;
+    return (
+      <h3 className='italic'>{lang('Här var det tomt...', 'How empty..')}</h3>
+    );
   }
 
+  let lastMonth: number;
   return (
-    <div>
-      <table className='table text-sm'>
-        <thead>
-          <tr className='text-left'>
-            <th className='px-1'>Artikel</th>
-            <th className='px-1'>Styckpris</th>
-            <th className='px-1'>Antal</th>
-            <th className='px-1'>Total</th>
-            <th className='px-1'>Saldo</th>
-          </tr>
-        </thead>
-        <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
-          {account.transactions.map((transaction) => (
-            <tr
-              key={transaction.id}
-              className='divide-x divide-solid dark:divide-neutral-800'
-            >
-              <td className='px-2'>{transaction.item}</td>
-              <td className='px-2 text-right'>{transaction.pricePer}</td>
-              <td className='px-2 text-right'>{transaction.amount}</td>
-              <td className='px-2 text-right'>{transaction.totalPrice}</td>
-              <td className='px-2 text-right'>{transaction.balance}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className='flex max-w-sm flex-col divide-y divide-solid dark:divide-neutral-800'>
+      {account.transactions.map((transaction) => {
+        const month = transaction.time.getMonth();
+        const shouldAddMonth = lastMonth !== month;
+        lastMonth = month;
+        return (
+          <Fragment key={transaction.id}>
+            {shouldAddMonth && (
+              <h3 className='pt-2 capitalize'>
+                {transaction.time.toLocaleString(corps.language, {
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </h3>
+            )}
+            <div className='flex flex-col text-lg'>
+              <div className='flex justify-between'>
+                <div className='grow text-ellipsis'>{transaction.item}</div>
+                <div
+                  className={
+                    transaction.totalPrice > 0
+                      ? 'text-green-700'
+                      : 'text-red-700'
+                  }
+                >
+                  {transaction.totalPrice}
+                </div>
+              </div>
+              <div className='flex justify-between text-xs font-thin'>
+                <div className='grow'>
+                  {dayjs(transaction.time).format('YYYY-MM-DD')}
+                </div>
+                <div>{transaction.balance}</div>
+              </div>
+            </div>
+          </Fragment>
+        );
+      })}
     </div>
   );
 };

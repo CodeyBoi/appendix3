@@ -11,14 +11,8 @@ const StreckPage = async () => {
   }
   return (
     <div>
-      <h2>Senaste strecksaldohändelser</h2>
-      <Suspense
-        fallback={
-          <Loading
-            msg={lang('Hämtar transaktioner...', 'Fetching transactions...')}
-          />
-        }
-      >
+      <h2>{lang('Strecksaldo', 'Streck balance')}</h2>
+      <Suspense fallback={<Loading msg={lang('Hämtar...', 'Fetching...')} />}>
         <OwnTransactionsTable />
       </Suspense>
     </div>

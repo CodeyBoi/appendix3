@@ -25,7 +25,7 @@ const SelectCorps = ({
     defaultSearchValue ?? '',
   );
 
-  const { data: corpsii, status: corpsiiStatus } = trpc.corps.getMany.useQuery(
+  const { data: corpsii, status: corpsiiStatus } = trpc.corps.search.useQuery(
     {
       search: queryValue,
       excludeSelf: props.excludeSelf,
@@ -95,7 +95,7 @@ const SelectCorps = ({
         : props.placeholder,
     nothingFound:
       searchValue.length < MIN_SEARCH_LENGTH
-        ? 'Skriv minst två tecken för att söka...'
+        ? 'Sök på namn, smeknamn, nummer eller sektion...'
         : nothingFound,
     filter,
     searchValue,

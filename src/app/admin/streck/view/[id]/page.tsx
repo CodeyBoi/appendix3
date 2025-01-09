@@ -53,7 +53,7 @@ const AdminStreckFormPage = async ({
     ? searchParams.type ?? 'strecklist'
     : !isMonoList
     ? 'strecklist'
-    : (transactions[0]?.pricePer ?? 0) < 0
+    : transactions.every((t) => t.pricePer < 0)
     ? 'cost'
     : 'deposit';
 
@@ -97,7 +97,11 @@ const AdminStreckFormPage = async ({
 
   return (
     <div className='flex flex-col gap-2'>
-      {isNew ? <h2>Inför transaktion</h2> : <h2>Ändra transaktion</h2>}
+      {isNew ? (
+        <h2>{lang('Ny transaktion', 'New transaction')}</h2>
+      ) : (
+        <h2>{lang('Ändra transaktion', 'Edit transaction')}</h2>
+      )}
       {isNew && (
         <div className='max-w-md'>
           <Tabs name='type' defaultTab='strecklist' options={tabOptions} />
