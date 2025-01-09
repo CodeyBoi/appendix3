@@ -10,8 +10,6 @@ type TabsProps = {
   onTabChange?: (value: string) => void;
 };
 
-const translateX = ['translate-x-0', 'translate-x-36', 'translate-x-72'];
-
 const Tabs = ({
   defaultTab,
   onTabChange,
@@ -22,19 +20,17 @@ const Tabs = ({
   const options = optionsProp.map((o) =>
     typeof o === 'string' ? { value: o, label: o } : o,
   );
-  const tabIndex = options.findIndex((o) => o.value === tab);
   return (
-    <div className='relative flex flex-nowrap border-b-2 border-b-neutral-300 px-2 dark:border-b-neutral-700'>
-      <div
-        className={cn(
-          'absolute my-0.5 h-full w-36 border-b-2 border-b-red-600 transition-transform duration-200',
-          translateX[tabIndex],
-        )}
-      />
+    <div className='flex flex-nowrap overflow-x-auto overflow-y-hidden px-2'>
       {options.map((o) => (
         <div
           key={o.value}
-          className='h-9 w-36 cursor-pointer whitespace-nowrap px-4 py-2 text-center hover:bg-red-300/5'
+          className={cn(
+            'h-9 w-36 whitespace-nowrap border-b-2 px-4 py-2 text-center',
+            o.value === tab
+              ? 'border-b-red-600'
+              : 'cursor-pointer border-b-neutral-300 hover:bg-red-300/5 dark:border-b-neutral-700',
+          )}
           onClick={() => {
             setTab(o.value);
             onTabChange?.(o.value);
