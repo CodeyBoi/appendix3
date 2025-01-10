@@ -6,11 +6,11 @@ import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
+import useKeyDown from 'hooks/use-key-down';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
-import { numberAndFullName } from 'utils/corps';
 import { lang } from 'utils/language';
 
 export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
@@ -47,7 +47,7 @@ const rowBackgroundColor = (balance: number) => {
   if (balance < 0) {
     return 'bg-red-100 dark:bg-red-900';
   } else if (balance < 200) {
-    return 'bg-gray-100 dark:bg-gray-800';
+    return 'bg-yellow-100 dark:bg-yellow-800';
   } else {
     return '';
   }
@@ -63,7 +63,11 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     register,
     formState: { isSubmitting, isDirty, isLoading },
     reset,
+    setFocus,
   } = useForm();
+
+  const [row, setRow] = useState<number | undefined>(undefined);
+  const [col, setCol] = useState<number | undefined>(undefined);
 
   const transactions = streckList?.transactions ?? [];
 
@@ -89,6 +93,24 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     isNew || type === 'strecklist'
       ? activeCorps
       : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
+
+  useKeyDown('ArrowUp', () =>
+    setRow((oldRow) => ((oldRow ?? 0) + corpsii.length - 1) % corpsii.length),
+  );
+  useKeyDown('ArrowDown', () =>
+    setRow((oldRow) => ((oldRow ?? 0) + 1) % corpsii.length),
+  );
+  useKeyDown('ArrowLeft', () =>
+    setCol((oldCol) => ((oldCol ?? 0) + items.length - 1) % items.length),
+  );
+  useKeyDown('ArrowRight', () =>
+    setCol((oldCol) => ((oldCol ?? 0) + 1) % items.length),
+  );
+
+  if (row !== undefined && col !== undefined) {
+    const focusedKey = `${corpsii[row]?.id}:${items[col]?.name}`;
+    setFocus(focusedKey);
+  }
 
   const getAmount = (transaction: Transaction) => {
     switch (type) {
@@ -180,17 +202,27 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
           />
         )}
       </div>
+      <div className='max-w-md'>
+        <SelectCorps
+          label='Lägg till corps...'
+          onChange={(id) => {
+            setAdditionalCorps((old) => [...old, id]);
+          }}
+        />
+      </div>
       {!isReady ? (
         <Loading
           msg={lang('Hämtar strecklista...', 'Fetching strecklist...')}
         />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='max-h-[65vh] max-w-max overflow-auto'>
+          <div className='max-h-[65vh] max-w-max overflow-y-auto pr-4 md:overflow-x-hidden'>
             <table className='relative table text-sm'>
               <thead>
                 <tr className='divide-x border-b text-left align-bottom text-xs'>
-                  <th className='sticky top-0 bg-white px-1'>Namn</th>
+                  <th className='sticky top-0 bg-white px-1 text-center'>#</th>
+                  <th className='sticky top-0 bg-white px-1'>Förnamn</th>
+                  <th className='sticky top-0 bg-white px-1'>Efternamn</th>
                   <th className='sticky top-0 bg-white px-1'>Saldo</th>
                   {items.map((item) => (
                     <th
@@ -201,15 +233,17 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                     }`}</th>
                   ))}
                   {type === 'deposit' && (
-                    <th className='px-1'>Verifikatsnummer</th>
+                    <th className='sticky top-0 bg-white px-1'>
+                      Verifikatsnummer
+                    </th>
                   )}
                   {(type === 'deposit' || type === 'cost') && (
-                    <th className='px-1'>Anteckning</th>
+                    <th className='sticky top-0 bg-white px-1'>Anteckning</th>
                   )}
                 </tr>
               </thead>
               <tbody className='gap-1 divide-y divide-solid rounded dark:divide-neutral-800'>
-                {corpsii.map((corps) => (
+                {corpsii.map((corps, r) => (
                   <tr
                     key={corps.id}
                     className={`divide-x divide-solid dark:divide-neutral-800 ${rowBackgroundColor(
@@ -217,16 +251,24 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                     )}`}
                   >
                     <td className='whitespace-nowrap px-1'>
-                      {numberAndFullName(corps)}
+                      {corps.number ? corps.number : ''}
                     </td>
+                    <td className='whitespace-nowrap px-1'>
+                      {corps.firstName}
+                    </td>
+                    <td className='whitespace-nowrap px-1'>{corps.lastName}</td>
                     <td className='px-1 text-right'>
                       {corps.balance - (initialBalances.get(corps.id) ?? 0)}
                     </td>
-                    {items.map((item) => {
+                    {items.map((item, c) => {
                       const key = `${corps.id}:${item.name}`;
                       return (
                         <td key={key} className='px-1'>
                           <input
+                            onFocus={() => {
+                              setRow(r);
+                              setCol(c);
+                            }}
                             className='w-16 bg-transparent px-2 py-0.5'
                             type='tel'
                             defaultValue={initialAmounts.get(key)}
@@ -265,22 +307,21 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
             </table>
           </div>
           <div className='h-2' />
-          <div className='flex max-w-3xl flex-col justify-between gap-2 md:flex-row'>
-            <div className='grow'>
-              <div className='max-w-md'>
-                <SelectCorps
-                  label='Lägg till corps...'
-                  onChange={(id) => {
-                    setAdditionalCorps((old) => [...old, id]);
-                  }}
-                />
-              </div>
-            </div>
-            <Button onClick={() => router.back()}>
+          <div className='flex max-w-3xl flex-row justify-between gap-2'>
+            <Button
+              onClick={() => {
+                utils.streck.getTransactions.invalidate();
+                utils.streck.getStreckLists.invalidate();
+                utils.streck.getStreckList.invalidate({ id: streckList?.id });
+                router.back();
+                router.refresh();
+              }}
+            >
               <IconArrowBackUp />
               {lang('Tillbaka', 'Go back')}
             </Button>
             <Button
+              type='submit'
               onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting || !isDirty || isLoading}
             >
