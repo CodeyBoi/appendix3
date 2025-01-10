@@ -39,8 +39,8 @@ const border: Partial<Borders> = {
 };
 
 const font: Partial<ExcelJS.Font> = {
-  name: 'Arial',
-  size: 10,
+  name: 'Calibri',
+  size: 11,
 };
 
 const bold: Partial<ExcelJS.Font> = {
@@ -53,7 +53,7 @@ const firstNameCol = 2;
 const lastNameCol = 3;
 const balanceCol = 4;
 
-const corpsPerPage = 32;
+const corpsPerPage = 30;
 
 const getStyle = (balance: number) => {
   const fill: Fill = {
@@ -61,9 +61,9 @@ const getStyle = (balance: number) => {
     pattern: 'none',
   };
   if (balance < 0) {
-    fill.pattern = 'darkGray';
-  } else if (balance < 200) {
     fill.pattern = 'mediumGray';
+  } else if (balance < 200) {
+    fill.pattern = 'lightGray';
   }
   return fill;
 };
@@ -87,10 +87,14 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       horizontalCentered: true,
     },
     headerFooter: {
-      oddHeader:
-        '&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: &D\n&RInförd:____________\nAv:____________',
-      oddFooter:
-        '&LStreck införda t.o.m.:____________\nInbetalningar införda t.o.m.:____________&C\nSkriv tydligt!!&R\nbrought to you by Sexporten (och ITK)©',
+      oddHeader: `&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: ${dayjs().format(
+        'YYYY-MM-DD',
+      )}&D\n&RAv:____________`,
+      oddFooter: `&LStreck införda t.o.m.: ${dayjs()
+        .subtract(1, 'day')
+        .format(
+          'YYYY-MM-DD',
+        )}\nInbetalningar införda t.o.m.:____________&C\nSkriv tydligt!!&R\nbrought to you by Sexporten (och ITK)©`,
     },
   });
 

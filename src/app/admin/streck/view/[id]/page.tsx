@@ -35,13 +35,10 @@ const AdminStreckFormPage = async ({
 }: AdminStreckFormPageProps) => {
   const isNew = id === 'new';
 
-  const transactions = isNew
-    ? []
-    : (
-        await api.streck.getTransactions.query({
-          streckListId: +id,
-        })
-      ).data;
+  const streckList = isNew
+    ? undefined
+    : await api.streck.getStreckList.query({ id: +id });
+  const transactions = streckList?.transactions ?? [];
 
   // If transactions has exactly one type of item, this is a one-time
   // payment/deposit (aka. monolist). We handle monolists by only
@@ -95,6 +92,17 @@ const AdminStreckFormPage = async ({
     return items;
   };
 
+  if (!isNew && !streckList) {
+    return (
+      <h3>
+        {lang(
+          `Det finns ingen lista med id ${id}.`,
+          `No list with id ${id} exists.`,
+        )}
+      </h3>
+    );
+  }
+
   return (
     <div className='flex flex-col gap-2'>
       {isNew ? (
@@ -128,9 +136,8 @@ const AdminStreckFormPage = async ({
         }
       >
         <AdminStreckForm
+          streckList={streckList || undefined}
           items={await getItems()}
-          transactions={transactions}
-          id={isNew ? undefined : +id}
           type={type}
         />
       </Suspense>
