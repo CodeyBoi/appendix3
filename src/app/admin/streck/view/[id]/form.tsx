@@ -1,5 +1,7 @@
 'use client';
 
+import { StreckList } from '@prisma/client';
+import { IconArrowBackUp, IconDeviceFloppy } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import Loading from 'components/loading';
@@ -36,8 +38,7 @@ type StreckItem = {
 };
 
 interface AdminStreckFormProps {
-  id?: number;
-  transactions?: Transaction[];
+  streckList?: StreckList & { transactions: Transaction[] };
   items: StreckItem[];
   type: AdminStreckFormType;
 }
@@ -52,21 +53,19 @@ const rowBackgroundColor = (balance: number) => {
   }
 };
 
-const AdminStreckForm = ({
-  id,
-  transactions = [],
-  items,
-  type,
-}: AdminStreckFormProps) => {
+const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
   const router = useRouter();
   const utils = api.useUtils();
-  const isNew = id === undefined;
+  const isNew = streckList === undefined;
 
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting, isSubmitted, isDirty, isLoading },
+    formState: { isSubmitting, isDirty, isLoading },
+    reset,
   } = useForm();
+
+  const transactions = streckList?.transactions ?? [];
 
   const corpsInList = new Set(transactions.map((t) => t.corps.id));
 
@@ -80,15 +79,16 @@ const AdminStreckForm = ({
     data: activeCorps = [],
     isInitialLoading,
     isFetching,
-    isRefetching,
   } = api.streck.getActiveCorps.useQuery({
     additionalCorps,
+    time: isNew ? undefined : streckList.time,
   });
 
   const additionalCorpsSet = new Set(additionalCorps);
-  const corpsii = isNew
-    ? activeCorps
-    : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
+  const corpsii =
+    isNew || type === 'strecklist'
+      ? activeCorps
+      : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
 
   const getAmount = (transaction: Transaction) => {
     switch (type) {
@@ -121,11 +121,13 @@ const AdminStreckForm = ({
     : undefined;
 
   const mutation = api.streck.upsertStreckList.useMutation({
-    onSuccess: () => {
-      utils.streck.getActiveCorps.invalidate();
+    onSuccess: ({ id }) => {
       utils.streck.getTransactions.invalidate();
-      utils.streck.getStreckList.invalidate();
-      router.refresh();
+      // utils.streck.getStreckList.invalidate();
+      if (isNew) {
+        router.replace(`/admin/streck/view/${id}`);
+      }
+      reset(undefined, { keepDirty: false, keepValues: true });
     },
   });
 
@@ -162,11 +164,10 @@ const AdminStreckForm = ({
         });
       }
     }
-    mutation.mutate({ id, transactions: data });
-    router.back();
+    mutation.mutate({ id: streckList?.id, transactions: data });
   };
 
-  const isReady = !isInitialLoading && !isFetching && !isRefetching;
+  const isReady = !isInitialLoading && !isFetching;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -178,12 +179,6 @@ const AdminStreckForm = ({
             value={itemName}
           />
         )}
-        <SelectCorps
-          label='Lägg till corps...'
-          onChange={(id) => {
-            setAdditionalCorps((old) => [...old, id]);
-          }}
-        />
       </div>
       {!isReady ? (
         <Loading
@@ -191,16 +186,19 @@ const AdminStreckForm = ({
         />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='overflow-x-auto overflow-y-hidden'>
-            <table className='table text-sm'>
+          <div className='max-h-[65vh] max-w-max overflow-auto'>
+            <table className='relative table text-sm'>
               <thead>
                 <tr className='divide-x border-b text-left align-bottom text-xs'>
-                  <th className='px-1'>Namn</th>
-                  <th className='px-1'>Saldo</th>
+                  <th className='sticky top-0 bg-white px-1'>Namn</th>
+                  <th className='sticky top-0 bg-white px-1'>Saldo</th>
                   {items.map((item) => (
-                    <th key={`${item.name}`} className='w-16 px-1'>{`${
-                      item.name
-                    } ${isNaN(item.price) ? '' : `${item.price}p`}`}</th>
+                    <th
+                      key={`${item.name}`}
+                      className='sticky top-0 w-16 bg-white px-1'
+                    >{`${item.name} ${
+                      isNaN(item.price) ? '' : `${item.price}p`
+                    }`}</th>
                   ))}
                   {type === 'deposit' && (
                     <th className='px-1'>Verifikatsnummer</th>
@@ -230,7 +228,7 @@ const AdminStreckForm = ({
                         <td key={key} className='px-1'>
                           <input
                             className='w-16 bg-transparent px-2 py-0.5'
-                            type='number'
+                            type='tel'
                             defaultValue={initialAmounts.get(key)}
                             {...register(key)}
                           />
@@ -267,14 +265,33 @@ const AdminStreckForm = ({
             </table>
           </div>
           <div className='h-2' />
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            disabled={isSubmitting || !isDirty || isLoading}
-          >
-            {!isSubmitting && !isSubmitted && lang('Spara', 'Submit')}
-            {isSubmitting && lang('Sparar...', 'Submitting...')}
-            {isSubmitted && lang('Sparad!', 'Submitted!')}
-          </Button>
+          <div className='flex max-w-3xl flex-col justify-between gap-2 md:flex-row'>
+            <div className='grow'>
+              <div className='max-w-md'>
+                <SelectCorps
+                  label='Lägg till corps...'
+                  onChange={(id) => {
+                    setAdditionalCorps((old) => [...old, id]);
+                  }}
+                />
+              </div>
+            </div>
+            <Button onClick={() => router.back()}>
+              <IconArrowBackUp />
+              {lang('Tillbaka', 'Go back')}
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={isSubmitting || !isDirty || isLoading}
+            >
+              <IconDeviceFloppy />
+              {isDirty
+                ? lang('Spara lista', 'Submit list')
+                : isSubmitting
+                ? lang('Sparar...', 'Submitting...')
+                : lang('Sparad!', 'Submitted!')}
+            </Button>
+          </div>
         </form>
       )}
     </div>

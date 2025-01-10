@@ -6,8 +6,17 @@ import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import DownloadStrecklistButton from './download';
 import StreckListTable from './view/strecklist-table';
+import ParamsSwitch from 'components/input/params-switch';
 
-const AdminStreckPage = async () => {
+type AdminStreckPageProps = {
+  searchParams: {
+    showDelete: string;
+  };
+};
+
+const AdminStreckPage = async ({
+  searchParams: { showDelete },
+}: AdminStreckPageProps) => {
   const [activeCorps, items, bleckhornenBalance] = await Promise.all([
     api.streck.getActiveCorps.query({}),
     api.streck.getItems.query(),
@@ -20,7 +29,13 @@ const AdminStreckPage = async () => {
       <h5>{`Summa av negativa saldon: ${bleckhornenBalance.unsettledDebt}`}</h5>
       <div className='flex flex-col-reverse gap-4 md:flex-row'>
         <div className='flex grow flex-col gap-2'>
-          <h3>{lang('Senaste transaktioner', 'Latest transactions')}</h3>
+          <div className='flex flex-nowrap gap-4'>
+            <h3>{lang('Senaste transaktioner', 'Latest transactions')}</h3>
+            <ParamsSwitch
+              paramName='showDelete'
+              label={lang('Visa Ta bort-knapp', 'Show Delete button')}
+            />
+          </div>
           <div>
             <Suspense
               fallback={
@@ -32,7 +47,7 @@ const AdminStreckPage = async () => {
                 />
               }
             >
-              <StreckListTable take={50} showDelete />
+              <StreckListTable take={50} showDelete={!!showDelete} />
             </Suspense>
           </div>
         </div>
