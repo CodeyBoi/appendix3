@@ -248,7 +248,7 @@ export const streckRouter = router({
       const { additionalCorps = [], time = new Date() } = input;
 
       const dateFilter = {
-        gte: dayjs(time).subtract(28, 'weeks').toDate(),
+        gte: dayjs(time).subtract(28, 'days').toDate(),
       };
       const recentlyActiveCorps = (
         await ctx.prisma.corps.findMany({

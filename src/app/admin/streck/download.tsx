@@ -45,6 +45,7 @@ const font: Partial<ExcelJS.Font> = {
 
 const bold: Partial<ExcelJS.Font> = {
   ...font,
+  size: 10,
   bold: true,
 };
 
@@ -76,15 +77,8 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       paperSize: 9,
       orientation: 'landscape',
       printTitlesRow: '1:1',
-      margins: {
-        left: 0.1,
-        right: 0.1,
-        top: 0.55,
-        bottom: 0.55,
-        header: 0.15,
-        footer: 0.15,
-      },
       horizontalCentered: true,
+      verticalCentered: true,
     },
     headerFooter: {
       oddHeader: `&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: ${dayjs().format(
@@ -108,7 +102,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   );
 
   const header = sheet.getRow(headerRow);
-  header.values = ['#', 'Förnamn', 'Efternamn', 'p'].concat(
+  header.values = ['Nr', 'Förnamn', 'Efternamn', 'p'].concat(
     items.map((item) => `${item.name.trim()} ${item.price}p`),
   );
   header.border = border;
@@ -122,14 +116,14 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
 
   sheet.getColumn(lastNameCol).width = lastNameColWidth;
 
-  sheet.getColumn(balanceCol).width = 6;
+  sheet.getColumn(balanceCol).width = 5;
   sheet.getColumn(balanceCol).alignment = { horizontal: 'right' };
 
   sheet.getRow(headerRow).alignment = { horizontal: 'left', wrapText: true };
   sheet.getCell(headerRow, 1).alignment = { horizontal: 'center' };
 
   const itemsWidth =
-    (145 - 5 - firstNameColWidth - lastNameColWidth - 6) / items.length;
+    (130 - 5 - firstNameColWidth - lastNameColWidth - 5) / items.length;
   for (let i = 0; i < items.length; i++) {
     sheet.getColumn(i + balanceCol + 1).width = itemsWidth;
   }
@@ -261,7 +255,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     sheet.getCell(rowIndex, lastCol).border = bottomRight;
   }
 
-  const filename = `Strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
+  const filename = `Tom strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
   downloadXLSX(workbook, filename);
 };
 

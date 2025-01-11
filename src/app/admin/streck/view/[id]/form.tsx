@@ -216,7 +216,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
         />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='max-h-[65vh] max-w-max overflow-y-auto pr-4 md:overflow-x-hidden'>
+          <div className='max-h-[45vh] max-w-max overflow-y-auto md:max-h-[65vh] md:overflow-x-hidden md:pr-4'>
             <table className='relative table text-sm'>
               <thead>
                 <tr className='divide-x border-b text-left align-bottom text-xs'>
