@@ -147,6 +147,15 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   }
 
   // Fill out the rest of the rows on the last page (to have some empty spots)
+  if (corpsPerPage - ((rowIndex - headerRow - 1) % corpsPerPage) < 8) {
+    // Add 30 empty rows if we have less than 8 empty spots
+    for (let i = 0; i < corpsPerPage; i++) {
+      const row = sheet.getRow(rowIndex);
+      row.values = [' ', ' ', ' ', ' '];
+      row.border = border;
+      rowIndex++;
+    }
+  }
   while ((rowIndex - headerRow - 1) % corpsPerPage !== 0) {
     const row = sheet.getRow(rowIndex);
     row.values = [' ', ' ', ' ', ' '];
