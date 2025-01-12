@@ -102,23 +102,28 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
       ? activeCorps
       : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
 
-  useKeyDown('ArrowUp', () =>
-    setRow((oldRow) => ((oldRow ?? 0) + corpsii.length - 1) % corpsii.length),
-  );
-  useKeyDown('ArrowDown', () =>
-    setRow((oldRow) => ((oldRow ?? 0) + 1) % corpsii.length),
-  );
-  useKeyDown('ArrowLeft', () =>
-    setCol((oldCol) => ((oldCol ?? 0) + items.length - 1) % items.length),
-  );
-  useKeyDown('ArrowRight', () =>
-    setCol((oldCol) => ((oldCol ?? 0) + 1) % items.length),
-  );
-
-  if (row !== undefined && col !== undefined) {
-    const focusedKey = `${corpsii[row]?.id}:${items[col]?.name}`;
-    setFocus(focusedKey);
-  }
+  const updateFocusedElement = () => {
+    if (row !== undefined || col !== undefined) {
+      const focusedKey = `${corpsii[row ?? 0]?.id}:${items[col ?? 0]?.name}`;
+      setFocus(focusedKey);
+    }
+  };
+  useKeyDown('ArrowUp', () => {
+    setRow((oldRow) => ((oldRow ?? 0) + corpsii.length - 1) % corpsii.length);
+    updateFocusedElement();
+  });
+  useKeyDown('ArrowDown', () => {
+    setRow((oldRow) => ((oldRow ?? 0) + 1) % corpsii.length);
+    updateFocusedElement();
+  });
+  useKeyDown('ArrowLeft', () => {
+    setCol((oldCol) => ((oldCol ?? 0) + items.length - 1) % items.length);
+    updateFocusedElement();
+  });
+  useKeyDown('ArrowRight', () => {
+    setCol((oldCol) => ((oldCol ?? 0) + 1) % items.length);
+    updateFocusedElement();
+  });
 
   const getAmount = (transaction: Transaction) => {
     switch (type) {
