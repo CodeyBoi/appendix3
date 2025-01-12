@@ -252,6 +252,7 @@ export const streckRouter = router({
         activeFrom = dayjs(time).subtract(1, 'month').toDate(),
       } = input;
 
+      const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1970-01-01'), 'day');
       const dateFilter = {
         gte: dayjs(activeFrom).startOf('day').toDate(),
         lte: dayjs(time).endOf('day').toDate(),
@@ -262,38 +263,40 @@ export const streckRouter = router({
             id: true,
           },
           distinct: ['id'],
-          where: {
-            OR: [
-              {
-                streckTransactions: {
-                  some: {
-                    streckList: {
-                      time: dateFilter,
+          where: shouldGetAll
+            ? undefined
+            : {
+                OR: [
+                  {
+                    streckTransactions: {
+                      some: {
+                        streckList: {
+                          time: dateFilter,
+                        },
+                      },
                     },
                   },
-                },
-              },
-              {
-                rehearsals: {
-                  some: {
-                    rehearsal: {
-                      date: dateFilter,
+                  {
+                    rehearsals: {
+                      some: {
+                        rehearsal: {
+                          date: dateFilter,
+                        },
+                      },
                     },
                   },
-                },
-              },
-              {
-                gigSignups: {
-                  some: {
-                    attended: true,
-                    gig: {
-                      date: dateFilter,
+                  {
+                    gigSignups: {
+                      some: {
+                        attended: true,
+                        gig: {
+                          date: dateFilter,
+                        },
+                      },
                     },
                   },
-                },
+                ],
               },
-            ],
-          },
         })
       ).map((e) => e.id);
 
