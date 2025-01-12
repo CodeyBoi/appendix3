@@ -3,9 +3,11 @@
 import { StreckList } from '@prisma/client';
 import { IconArrowBackUp, IconDeviceFloppy } from '@tabler/icons-react';
 import Button from 'components/input/button';
+import DatePicker from 'components/input/date-picker';
 import TextInput from 'components/input/text-input';
 import Loading from 'components/loading';
 import SelectCorps from 'components/select-corps';
+import dayjs from 'dayjs';
 import useKeyDown from 'hooks/use-key-down';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -68,6 +70,11 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
 
   const [row, setRow] = useState<number | undefined>(undefined);
   const [col, setCol] = useState<number | undefined>(undefined);
+  const [activeFrom, setActiveFrom] = useState(
+    dayjs(streckList?.time ?? new Date())
+      .subtract(1, 'month')
+      .toDate(),
+  );
 
   const transactions = streckList?.transactions ?? [];
 
@@ -86,6 +93,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
   } = api.streck.getActiveCorps.useQuery({
     additionalCorps,
     time: isNew ? undefined : streckList.time,
+    activeFrom,
   });
 
   const additionalCorpsSet = new Set(additionalCorps);
@@ -203,8 +211,15 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
         )}
       </div>
       <div className='max-w-md'>
+        <DatePicker
+          label='Inkludera corps som varit aktiva sedan...'
+          value={activeFrom}
+          onChange={setActiveFrom}
+        />
+      </div>
+      <div className='max-w-md'>
         <SelectCorps
-          label='Lägg till corps...'
+          label='Inkludera enskilt corps...'
           onChange={(id) => {
             setAdditionalCorps((old) => [...old, id]);
           }}
@@ -265,9 +280,10 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                       return (
                         <td key={key} className='px-1'>
                           <input
-                            onFocus={() => {
+                            onFocus={(event) => {
                               setRow(r);
                               setCol(c);
+                              event.target.select();
                             }}
                             className='w-16 bg-transparent px-2 py-0.5'
                             type='tel'

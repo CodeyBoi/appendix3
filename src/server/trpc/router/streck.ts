@@ -233,6 +233,7 @@ export const streckRouter = router({
       z.object({
         additionalCorps: z.array(z.string().cuid()).optional(),
         time: z.date().optional(),
+        activeFrom: z.date().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -245,10 +246,15 @@ export const streckRouter = router({
         balance: number;
       };
 
-      const { additionalCorps = [], time = new Date() } = input;
+      const {
+        additionalCorps = [],
+        time = new Date(),
+        activeFrom = dayjs(time).subtract(1, 'month').toDate(),
+      } = input;
 
       const dateFilter = {
-        gte: dayjs(time).subtract(28, 'days').toDate(),
+        gte: dayjs(activeFrom).startOf('day').toDate(),
+        lte: dayjs(time).endOf('day').toDate(),
       };
       const recentlyActiveCorps = (
         await ctx.prisma.corps.findMany({
