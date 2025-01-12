@@ -80,11 +80,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
 
   const transactions = streckList?.transactions ?? [];
 
-  const corpsInList = new Set(transactions.map((t) => t.corps.id));
-
-  const [additionalCorps, setAdditionalCorps] = useState<string[]>(
-    Array.from(corpsInList),
-  );
+  const [additionalCorps, setAdditionalCorps] = useState<string[]>([]);
   // Use this value if `type` is 'cost'
   const [itemName, setItemName] = useState('');
 
