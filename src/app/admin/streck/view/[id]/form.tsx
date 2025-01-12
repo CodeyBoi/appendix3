@@ -87,7 +87,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
   const [itemName, setItemName] = useState('');
 
   const {
-    data: activeCorps = [],
+    data: corpsii = [],
     isInitialLoading,
     isFetching,
   } = api.streck.getActiveCorps.useQuery({
@@ -95,12 +95,6 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     time: isNew ? undefined : streckList.time,
     activeFrom,
   });
-
-  const additionalCorpsSet = new Set(additionalCorps);
-  const corpsii =
-    isNew || type === 'strecklist'
-      ? activeCorps
-      : activeCorps.filter((c) => additionalCorpsSet.has(c.id));
 
   const updateFocusedElement = () => {
     if (row !== undefined || col !== undefined) {
