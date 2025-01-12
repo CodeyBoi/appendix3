@@ -414,7 +414,7 @@ export const streckRouter = router({
         take,
         skip,
         orderBy: {
-          createdAt: 'desc',
+          time: 'desc',
         },
       });
 
