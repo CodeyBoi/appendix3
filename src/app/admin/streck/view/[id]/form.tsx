@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { api } from 'trpc/react';
+import { numberAndFullName } from 'utils/corps';
 import { lang } from 'utils/language';
 
 export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
@@ -75,6 +76,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
       .subtract(1, 'month')
       .toDate(),
   );
+  const [errors, setErrors] = useState<string[]>([]);
 
   const transactions = streckList?.transactions ?? [];
 
@@ -166,15 +168,25 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
 
   const onSubmit = (values: Record<string, string>) => {
     const data = [];
+    const formErrors = [];
     for (const corps of corpsii) {
       for (const item of items) {
-        const formValue = parseInt(
-          values[`${corps.id}:${item.name}`]?.trim() ?? '',
-        );
+        const rawValue = values[`${corps.id}:${item.name}`]
+          ?.trim()
+          .replaceAll('−', '-');
+        if (!rawValue) {
+          continue;
+        }
+        const value = parseInt(rawValue);
         const verificationNumber =
           values[`${corps.id}:verificationNumber`]?.trim() || undefined;
         const note = values[`${corps.id}:note`]?.trim();
-        if (isNaN(formValue)) {
+        if (isNaN(value)) {
+          formErrors.push(
+            `Felaktigt värde '${rawValue}' på rad för ${numberAndFullName(
+              corps,
+            )}`,
+          );
           continue;
         }
 
@@ -182,12 +194,12 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
         const entry = isNaN(item.price)
           ? {
               amount: 1,
-              pricePer: type === 'deposit' ? formValue : -formValue,
+              pricePer: type === 'deposit' ? value : -value,
               verificationNumber,
               note,
             }
           : {
-              amount: formValue,
+              amount: value,
               pricePer: -item.price,
             };
         data.push({
@@ -197,6 +209,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
         });
       }
     }
+    setErrors(formErrors);
     mutation.mutate({ id: streckList?.id, transactions: data });
   };
 
@@ -325,6 +338,12 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
               </tbody>
             </table>
           </div>
+          {errors.map((e) => (
+            <span key={e} className='text-red-500'>
+              {e}
+              <br />
+            </span>
+          ))}
           <div className='h-2' />
           <div className='flex max-w-3xl flex-row justify-between gap-2'>
             <Button
