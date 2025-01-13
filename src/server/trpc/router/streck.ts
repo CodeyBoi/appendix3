@@ -13,6 +13,9 @@ export const streckRouter = router({
         transactions: {
           where: {
             corpsId,
+            streckList: {
+              deleted: false,
+            },
           },
         },
       },
@@ -20,6 +23,9 @@ export const streckRouter = router({
         transactions: {
           some: {
             corpsId,
+            streckList: {
+              deleted: false,
+            }
           },
         },
       },
@@ -83,6 +89,7 @@ export const streckRouter = router({
         where: {
           streckList: {
             time: { gte: start, lte: end },
+            deleted: false,
           },
           corpsId,
           streckListId,
@@ -405,6 +412,7 @@ export const streckRouter = router({
       const streckLists = await ctx.prisma.streckList.findMany({
         where: {
           time: { gte: start, lte: end },
+          deleted: false,
         },
         include: {
           createdBy: true,
@@ -430,6 +438,38 @@ export const streckRouter = router({
       return res;
     }),
 
+  deleteStreckList: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return ctx.prisma.streckList.update({
+        where: { id },
+        data: {
+          deleted: true,
+        }
+      });
+    }),
+
+  restoreStreckList: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return ctx.prisma.streckList.update({
+        where: { id },
+        data: {
+          deleted: false,
+        }
+      });
+    }),
+  
   removeStreckList: restrictedProcedure('manageStreck')
     .input(
       z.object({

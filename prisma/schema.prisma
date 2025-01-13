@@ -344,6 +344,7 @@ model StreckList {
   transactions StreckTransaction[]
   createdById  String
   time         DateTime            @default(now())
+  deleted      Boolean             @default(false)
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
 
