@@ -1,4 +1,9 @@
-import { IconCoins, IconSearch, IconTablePlus } from '@tabler/icons-react';
+import {
+  IconCoins,
+  IconSearch,
+  IconTablePlus,
+  IconTrash,
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import React, { Suspense } from 'react';
@@ -63,6 +68,10 @@ const AdminStreckPage = async ({
           <Button href='/admin/streck/prices'>
             <IconCoins />
             {lang('Ändra priser...', 'Change prices...')}
+          </Button>
+          <Button href='/admin/streck/view/deleted'>
+            <IconTrash />
+            {lang('Se borttagna listor...', 'View deleted lists...')}
           </Button>
           <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
         </div>

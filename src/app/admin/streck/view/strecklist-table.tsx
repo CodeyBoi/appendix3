@@ -6,6 +6,7 @@ import ActionIcon from 'components/input/action-icon';
 import DeleteStreckListButton from './delete-streck-list';
 import DownloadTransactionsButton from './download';
 import { numberAndFullName } from 'utils/corps';
+import RestoreStreckListButton from './restore-streck-list';
 
 type StreckListTableProps = {
   start?: Date;
@@ -15,6 +16,7 @@ type StreckListTableProps = {
   dateFormat?: string;
   showDelete?: boolean;
   showDownloadAll?: boolean;
+  showDeleted?: boolean;
 };
 
 const StreckListTable = async ({
@@ -25,6 +27,7 @@ const StreckListTable = async ({
   dateFormat = 'YYYY-MM-DD HH:mm',
   showDelete = false,
   showDownloadAll = false,
+  showDeleted = false,
 }: StreckListTableProps) => {
   const streckLists = await api.streck.getStreckLists.query({
     start,
@@ -32,6 +35,7 @@ const StreckListTable = async ({
     take,
     skip,
     getTransactions: true,
+    deleted: showDeleted,
   });
 
   if (streckLists.length === 0) {
@@ -50,6 +54,7 @@ const StreckListTable = async ({
               <th className='px-1'>Summa</th>
               <Restricted permissions='manageStreck'>
                 <th />
+                {showDeleted && <th />}
                 {showDelete && <th />}
                 <th />
               </Restricted>
@@ -99,9 +104,17 @@ const StreckListTable = async ({
                         <IconDownload />
                       </DownloadTransactionsButton>
                     </td>
+                    {showDeleted && (
+                      <td>
+                        <RestoreStreckListButton id={streckList.id} />
+                      </td>
+                    )}
                     {showDelete && (
                       <td>
-                        <DeleteStreckListButton id={streckList.id} />
+                        <DeleteStreckListButton
+                          id={streckList.id}
+                          properRemove={showDelete && showDeleted}
+                        />
                       </td>
                     )}
                   </Restricted>
