@@ -25,7 +25,7 @@ export const streckRouter = router({
             corpsId,
             streckList: {
               deleted: false,
-            }
+            },
           },
         },
       },
@@ -188,15 +188,6 @@ export const streckRouter = router({
       return res[1];
     }),
 
-  removeTransaction: restrictedProcedure('manageStreck')
-    .input(z.object({ id: z.number().int() }))
-    .mutation(async ({ ctx, input }) => {
-      const { id } = input;
-      return await ctx.prisma.streckTransaction.delete({
-        where: { id },
-      });
-    }),
-
   getItems: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.streckItem.findMany({
       orderBy: {
@@ -223,15 +214,6 @@ export const streckRouter = router({
           name,
           price,
         },
-      });
-    }),
-
-  removeItem: restrictedProcedure('manageStreck')
-    .input(z.object({ id: z.number().int() }))
-    .mutation(async ({ ctx, input }) => {
-      const { id } = input;
-      return await ctx.prisma.streckItem.delete({
-        where: { id },
       });
     }),
 
@@ -405,14 +387,22 @@ export const streckRouter = router({
         getTransactions: z.boolean().optional(),
         take: z.number().int().optional(),
         skip: z.number().int().optional(),
+        deleted: z.boolean().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { start, end, getTransactions = false, take, skip } = input;
+      const {
+        start,
+        end,
+        getTransactions = false,
+        take,
+        skip,
+        deleted = false,
+      } = input;
       const streckLists = await ctx.prisma.streckList.findMany({
         where: {
           time: { gte: start, lte: end },
-          deleted: false,
+          deleted,
         },
         include: {
           createdBy: true,
@@ -450,7 +440,7 @@ export const streckRouter = router({
         where: { id },
         data: {
           deleted: true,
-        }
+        },
       });
     }),
 
@@ -466,10 +456,10 @@ export const streckRouter = router({
         where: { id },
         data: {
           deleted: false,
-        }
+        },
       });
     }),
-  
+
   removeStreckList: restrictedProcedure('manageStreck')
     .input(
       z.object({

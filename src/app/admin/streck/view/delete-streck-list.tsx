@@ -7,25 +7,39 @@ import { api } from 'trpc/react';
 
 type DeleteStreckListButtonProps = {
   id: number;
+  properRemove?: boolean;
 };
 
-const DeleteStreckListButton = ({ id }: DeleteStreckListButtonProps) => {
+const DeleteStreckListButton = ({
+  id,
+  properRemove = false,
+}: DeleteStreckListButtonProps) => {
   const router = useRouter();
   const utils = api.useUtils();
-  const mutation = api.streck.removeStreckList.useMutation({
+  const options = {
     onSuccess: () => {
+      utils.streck.getTransactions.invalidate();
+      utils.streck.getStreckList.invalidate({ id });
+      utils.streck.getStreckLists.invalidate();
       router.refresh();
     },
-  });
+  };
+  const mutation = (
+    properRemove ? api.streck.removeStreckList : api.streck.deleteStreckList
+  ).useMutation(options);
   return (
     <ActionIcon
       variant='subtle'
       onClick={() => {
-        if (confirm('Är du säker på att du vill ta bort strecklistan?')) {
+        if (
+          confirm(
+            'Är du säker på att du vill ta bort strecklistan?' +
+              (properRemove
+                ? ' Detta är permanent och går inte att ångra!'
+                : ''),
+          )
+        ) {
           mutation.mutate({ id });
-          utils.streck.getTransactions.invalidate();
-          utils.streck.getStreckList.invalidate({ id });
-          utils.streck.getStreckLists.invalidate();
         }
       }}
     >
