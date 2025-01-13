@@ -153,39 +153,40 @@ export const streckRouter = router({
       const { id, transactions } = input;
       const corpsId = ctx.session.user.corps.id;
 
-      const res = await ctx.prisma.$transaction([
-        ctx.prisma.streckTransaction.deleteMany({
+      if (id) {
+        await ctx.prisma.streckTransaction.deleteMany({
           where: {
             streckListId: id,
           },
-        }),
-        ctx.prisma.streckList.upsert({
-          where: {
-            id: id ?? -1,
-          },
-          update: {
-            transactions: {
-              createMany: {
-                data: transactions,
-              },
-            },
-          },
-          create: {
-            createdBy: {
-              connect: {
-                id: corpsId,
-              },
-            },
-            transactions: {
-              createMany: {
-                data: transactions,
-              },
-            },
-          },
-        }),
-      ]);
+        });
+      }
 
-      return res[1];
+      const res = await ctx.prisma.streckList.upsert({
+        where: {
+          id: id ?? -1,
+        },
+        update: {
+          transactions: {
+            createMany: {
+              data: transactions,
+            },
+          },
+        },
+        create: {
+          createdBy: {
+            connect: {
+              id: corpsId,
+            },
+          },
+          transactions: {
+            createMany: {
+              data: transactions,
+            },
+          },
+        },
+      });
+
+      return res;
     }),
 
   getItems: protectedProcedure.query(async ({ ctx }) => {
