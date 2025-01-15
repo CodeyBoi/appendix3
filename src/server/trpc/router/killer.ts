@@ -146,7 +146,7 @@ export const killerRouter = router({
       for (const p of game.participants
         .filter((p) => p.timeOfDeath)
         // timeOfDeath cannot be null as we filter out those participants above
-         
+
         .sort((a, b) => a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime())) {
         sortedParticipants.push(p);
       }
@@ -272,9 +272,7 @@ export const killerRouter = router({
                 }) as Word,
             );
 
-          const word = gameWords[
-            Math.floor(Math.random() * gameWords.length)
-          ]!;
+          const word = gameWords[Math.floor(Math.random() * gameWords.length)]!;
           usedWords.push(word.sv);
           return ctx.prisma.killerPlayer.update({
             where: {
@@ -381,9 +379,7 @@ export const killerRouter = router({
       if (gameWords.length === 0) {
         gameWords.push(WORDS[0]!);
       }
-      const word = gameWords[
-        Math.floor(Math.random() * gameWords.length)
-      ]!;
+      const word = gameWords[Math.floor(Math.random() * gameWords.length)]!;
 
       const participant = await ctx.prisma.killerPlayer.create({
         data: {

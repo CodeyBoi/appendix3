@@ -40,23 +40,23 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
   });
 
   const mutation = trpc.quote.upsert.useMutation({
-    onSuccess: () => {
-      utils.quote.infiniteScroll.invalidate();
+    onSuccess: async () => {
+      await utils.quote.infiniteScroll.invalidate();
     },
   });
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     if (newQuote) {
-      await mutation.mutateAsync(values);
+      mutation.mutate(values);
       form.reset();
     } else {
-      await mutation.mutateAsync({ ...values, id: quote.id });
+      mutation.mutate({ ...values, id: quote.id });
       router.push('/quotes');
     }
   };
 
   const removeMutation = trpc.quote.remove.useMutation({
-    onSuccess: () => {
-      utils.quote.infiniteScroll.invalidate();
+    onSuccess: async () => {
+      await utils.quote.infiniteScroll.invalidate();
     },
   });
 
@@ -88,11 +88,11 @@ const QuoteForm = ({ quote }: QuoteFormProps) => {
               className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
               color='transparent'
               compact
-              onClick={async () => {
+              onClick={() => {
                 if (
                   window.confirm('Är du säker på att du vill ta bort citatet?')
                 ) {
-                  await removeMutation.mutateAsync({ id: quote.id });
+                  removeMutation.mutate({ id: quote.id });
                   router.push('/quotes');
                 }
               }}

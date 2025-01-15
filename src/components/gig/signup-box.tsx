@@ -50,9 +50,9 @@ const GigSignupBox = ({
   const utils = trpc.useUtils();
 
   const addSignup = trpc.gig.addSignup.useMutation({
-    onSuccess: () => {
-      utils.gig.getSignup.invalidate({ gigId, corpsId });
-      utils.gig.getSignups.invalidate({ gigId });
+    onSuccess: async () => {
+      await utils.gig.getSignup.invalidate({ gigId, corpsId });
+      await utils.gig.getSignups.invalidate({ gigId });
       setSubmitting(false);
     },
   });
@@ -154,7 +154,7 @@ const GigSignupBox = ({
             onChange={(e) => {
               setSubmitting(true);
               setCheckbox2Checked(e.currentTarget.checked);
-              addSignup.mutateAsync({
+              addSignup.mutate({
                 gigId,
                 corpsId,
                 status,

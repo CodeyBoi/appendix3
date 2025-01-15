@@ -30,10 +30,10 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
   const router = useRouter();
   const [corpsId, setCorpsId] = useState<string | null>(null);
   const addRole = api.corps.addRole.useMutation({
-    onSuccess: router.refresh,
+    onSuccess: () => router.refresh(),
   });
   const removeRole = api.corps.removeRole.useMutation({
-    onSuccess: router.refresh,
+    onSuccess: () => router.refresh(),
   });
 
   return (
@@ -44,7 +44,7 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
             <h5 className='grow'>{detailedName(corps)}</h5>
             <ActionIcon
               variant='subtle'
-              onClick={async () => {
+              onClick={() => {
                 if (
                   !confirm(
                     'Är du säker på att du vill ta bort behörighetsroll från corps?',
@@ -52,7 +52,7 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
                 ) {
                   return;
                 }
-                await removeRole.mutateAsync({
+                removeRole.mutate({
                   corpsId: corps.id,
                   roleId: role.id,
                 });
@@ -65,12 +65,12 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
       ))}
       <form
         className='flex items-end gap-4'
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
           if (!corpsId) {
             return;
           }
-          await addRole.mutateAsync({
+          addRole.mutate({
             corpsId,
             roleId: role.id,
           });

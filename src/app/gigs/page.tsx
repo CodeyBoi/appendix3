@@ -27,7 +27,7 @@ const tabs = [
   { value: 'all', label: lang('Alla spelningar', 'All gigs') },
 ];
 
-const GigsPage = async ({
+const GigsPage = ({
   searchParams,
   currentYear = new Date().getFullYear(),
 }: GigsPageProps) => {

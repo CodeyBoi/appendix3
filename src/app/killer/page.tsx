@@ -107,7 +107,7 @@ const KillerPage = async () => {
     .sort(
       (a, b) =>
         // timeOfDeath cannot be null as we filter out those participants above
-         
+
         a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime(),
     );
 

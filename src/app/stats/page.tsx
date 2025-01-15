@@ -34,7 +34,9 @@ const Statistics = ({
         </div>
       </div>
       <Suspense
-        key={`${start}_${end}`}
+        key={`${dayjs(start).format('YYYYMMDD')}_${dayjs(end).format(
+          'YYYYMMDD',
+        )}`}
         fallback={
           <Loading
             msg={lang('Hämtar statistik...', 'Fetching statistics...')}

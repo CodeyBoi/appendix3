@@ -20,9 +20,9 @@ const KillerDeletePlayer = ({ killerId }: DeletePlayerProps) => {
   return (
     <ActionIcon
       variant='subtle'
-      onClick={async () => {
+      onClick={() => {
         if (confirm('Är du säker på att du vill ta bort spelaren?')) {
-          await mutation.mutateAsync({
+          mutation.mutate({
             killerId,
           });
         }

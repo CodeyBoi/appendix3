@@ -24,8 +24,8 @@ const AdminStreckPricesForm = ({
   const [itemText, setItemText] = useState(initialItemText);
 
   const mutation = api.streck.setPrices.useMutation({
-    onSuccess: () => {
-      utils.streck.getItems.invalidate();
+    onSuccess: async () => {
+      await utils.streck.getItems.invalidate();
       router.refresh();
       router.back();
     },
@@ -43,7 +43,7 @@ const AdminStreckPricesForm = ({
             .map((line) => {
               const data = line.split(',');
               return {
-                name: data[0]?.trim()!,
+                name: data[0]?.trim() ?? 'Okänt',
                 price: +(data[1] || 0),
               };
             });

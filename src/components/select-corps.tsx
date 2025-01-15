@@ -60,7 +60,7 @@ const SelectCorps = ({
           .filter(
             (c) =>
               (!initialCorps || initialCorps.id !== c.id) &&
-              (!excludeIds?.includes(c.id)),
+              !excludeIds?.includes(c.id),
           )
           .map((c) => ({
             label: detailedName(c),

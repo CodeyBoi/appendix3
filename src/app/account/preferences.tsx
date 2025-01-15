@@ -59,19 +59,18 @@ const AccountPreferences = () => {
       email: corps.user.email || undefined,
       mainInstrument,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
   const mutation = trpc.corps.updateSelf.useMutation({
-    onSuccess: () => {
-      utils.corps.getSelf.invalidate();
+    onSuccess: async () => {
+      await utils.corps.getSelf.invalidate();
       setSubmitting(false);
       form.resetDirty();
     },
   });
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
-    await mutation.mutateAsync(values);
+    mutation.mutate(values);
     form.resetTouched();
   };
 

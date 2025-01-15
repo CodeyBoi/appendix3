@@ -41,8 +41,8 @@ const AdminKillerForm = () => {
       router.push('/killer');
     },
   });
-  const handleSubmit = async (values: FormValues) => {
-    await mutation.mutateAsync(values);
+  const handleSubmit = (values: FormValues) => {
+    mutation.mutate(values);
   };
 
   return (

@@ -161,7 +161,10 @@ export const statsRouter = router({
           corpsIds: [],
         };
       }
-      interface Entry { corpsId: string; points: number }
+      interface Entry {
+        corpsId: string;
+        points: number;
+      }
       const pointsQuery = await ctx.prisma.$queryRaw<Entry[]>`
         SELECT corpsId, SUM(points) AS points
         FROM GigSignup

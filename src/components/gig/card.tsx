@@ -47,7 +47,9 @@ const GigCard = async ({
   }
 
   if (!gig) {
-    return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
+    return (
+      <div>Error: No gig found with props: {`${JSON.stringify(gigProp)}`}.</div>
+    );
   }
 
   const signup = await api.gig.getSignup.query({

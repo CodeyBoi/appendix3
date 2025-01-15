@@ -38,7 +38,7 @@ const Login = () => {
   trpc.auth.checkIfEmailInUse.useQuery(email, {
     onSuccess: (data) => {
       if (data) {
-        signIn('email', {
+        void signIn('email', {
           email,
           redirect: true,
           callbackUrl: '/verified',
@@ -55,7 +55,7 @@ const Login = () => {
   trpc.auth.getEmailFromNumber.useQuery(numberInput, {
     onSuccess: (data) => {
       if (data) {
-        signIn('email', {
+        void signIn('email', {
           email: data,
           redirect: true,
           callbackUrl: '/verified',
@@ -81,7 +81,8 @@ const Login = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          setEmail(e.currentTarget.email.value);
+          const data = new FormData(e.currentTarget);
+          setEmail(data.get('email') as string);
         }}
       >
         <div className='flex flex-col items-center gap-6 rounded bg-red-600 p-4 shadow-2xl'>

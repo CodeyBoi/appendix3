@@ -18,7 +18,7 @@ const tabs = [
   { value: 'stats', label: 'Statistik' },
 ];
 
-const AdminRehearsalsPage = async ({
+const AdminRehearsalsPage = ({
   searchParams,
 }: {
   searchParams: { year: string; tab: string };

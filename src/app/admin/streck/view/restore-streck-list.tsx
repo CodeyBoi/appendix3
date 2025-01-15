@@ -13,10 +13,10 @@ const RestoreStreckListButton = ({ id }: RestoreStreckListButtonProps) => {
   const router = useRouter();
   const utils = api.useUtils();
   const options = {
-    onSuccess: () => {
-      utils.streck.getTransactions.invalidate();
-      utils.streck.getStreckList.invalidate({ id });
-      utils.streck.getStreckLists.invalidate();
+    onSuccess: async () => {
+      await utils.streck.getTransactions.invalidate();
+      await utils.streck.getStreckList.invalidate({ id });
+      await utils.streck.getStreckLists.invalidate();
       router.refresh();
     },
   };

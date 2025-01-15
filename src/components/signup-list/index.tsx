@@ -214,11 +214,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
   });
 
   const addSignup = api.gig.addSignup.useMutation({
-    onMutate: async () => {
+    onMutate: () => {
       form.reset();
     },
-    onSettled: () => {
-      utils.gig.getSignups.invalidate({ gigId });
+    onSettled: async () => {
+      await utils.gig.getSignups.invalidate({ gigId });
     },
   });
 
@@ -233,7 +233,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const handleDelete = (corpsId: string) => {
     if (window.confirm('Är du säker på att du vill ta bort anmälningen?')) {
-      removeSignup.mutateAsync({ corpsId, gigId });
+      removeSignup.mutate({ corpsId, gigId });
     }
   };
 
@@ -361,21 +361,20 @@ const SignupList = ({ gigId }: SignupListProps) => {
           checked={editMode}
           onChange={(val) => {
             setEditMode(val);
-            utils.gig.getSignups.invalidate({ gigId });
+            void utils.gig.getSignups.invalidate({ gigId });
           }}
         />
       </Restricted>
       {showAdminTools && (
         <form
-          onSubmit={form.onSubmit(
-            async (values) =>
-              await addSignup.mutateAsync({
-                corpsId: values.corpsId,
-                gigId,
-                status: 'Ja',
-                checkbox1: false,
-                checkbox2: false,
-              }),
+          onSubmit={form.onSubmit((values) =>
+            addSignup.mutate({
+              corpsId: values.corpsId,
+              gigId,
+              status: 'Ja',
+              checkbox1: false,
+              checkbox2: false,
+            }),
           )}
         >
           <div className='flex flex-nowrap gap-4'>
@@ -421,7 +420,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
             <div>
               <div className='h-4' />
               {missingInstrumentsMessages.map((msg) => (
-                <React.Fragment key={msg.toString()}>
+                <React.Fragment key={JSON.stringify(msg)}>
                   {msg}
                   <br />
                 </React.Fragment>

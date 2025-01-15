@@ -84,9 +84,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   });
 
   const mutation = trpc.gig.upsert.useMutation({
-    onSuccess: ({ id }) => {
-      utils.gig.getWithId.invalidate({ gigId: id });
-      utils.gig.getMany.invalidate();
+    onSuccess: async ({ id }) => {
+      await utils.gig.getWithId.invalidate({ gigId: id });
+      await utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.back();
       router.refresh();
@@ -94,16 +94,16 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   });
 
   const removeGig = trpc.gig.remove.useMutation({
-    onSuccess: () => {
-      utils.gig.getWithId.invalidate({ gigId });
-      utils.gig.getMany.invalidate();
+    onSuccess: async () => {
+      await utils.gig.getWithId.invalidate({ gigId });
+      await utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.push('/');
       router.refresh();
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
@@ -113,9 +113,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       hiddenFor: values.isPublic ? [] : values.hiddenFor,
     };
     if (newGig) {
-      await mutation.mutateAsync(data);
+      mutation.mutate(data);
     } else {
-      await mutation.mutateAsync({ ...data, gigId });
+      mutation.mutate({ ...data, gigId });
     }
   };
 

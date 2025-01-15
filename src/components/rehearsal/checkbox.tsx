@@ -17,8 +17,8 @@ const RehearsalCheckbox = ({
 }: RehearsalCheckboxProps) => {
   const utils = api.useUtils();
   const mutation = api.rehearsal.updateAttendance.useMutation({
-    onSuccess: () => {
-      utils.rehearsal.getAttendence.invalidate({
+    onSuccess: async () => {
+      await utils.rehearsal.getAttendence.invalidate({
         id: rehearsal.id,
         corpsId: corps.id,
       });

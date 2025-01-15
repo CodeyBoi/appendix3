@@ -30,7 +30,7 @@ const KillerAddPlayer = ({
   return corpsId ? (
     <Button
       onClick={() => {
-        mutation.mutateAsync({
+        mutation.mutate({
           corpsId,
         });
       }}
@@ -41,7 +41,7 @@ const KillerAddPlayer = ({
   ) : (
     <SelectCorps
       onChange={(id) => {
-        mutation.mutateAsync({
+        mutation.mutate({
           corpsId: id,
         });
       }}

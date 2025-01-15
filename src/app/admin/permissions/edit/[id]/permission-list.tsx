@@ -27,7 +27,9 @@ const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
   const router = useRouter();
   const [newPermission, setNewPermission] = useState<Permission | null>(null);
   const mutation = api.permission.upsertRole.useMutation({
-    onSuccess: router.refresh,
+    onSuccess: () => {
+      router.refresh();
+    },
   });
   const permissionNames = role.permissions.map((p) => p.name);
 
@@ -39,7 +41,7 @@ const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
             <h5 className='grow'>{permission.name}</h5>
             <ActionIcon
               variant='subtle'
-              onClick={async () => {
+              onClick={() => {
                 if (
                   !confirm('Är du säker på att du vill ta bort behörighet?')
                 ) {
@@ -48,7 +50,7 @@ const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
                 const newPermissions = permissionNames.filter(
                   (p) => p !== permission.name,
                 );
-                await mutation.mutateAsync({
+                mutation.mutate({
                   id: role.id,
                   name: role.name,
                   permissions: newPermissions,
@@ -62,12 +64,12 @@ const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
       ))}
       <form
         className='flex items-end gap-4'
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
           if (!newPermission) {
             return;
           }
-          await mutation.mutateAsync({
+          mutation.mutate({
             id: role.id,
             name: role.name,
             permissions: [...permissionNames, newPermission],

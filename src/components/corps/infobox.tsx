@@ -44,8 +44,8 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const [nickname, setNickname] = useState('');
 
   const mutation = api.corps.changeNickname.useMutation({
-    onSuccess: () => {
-      utils.corps.get.invalidate({ id });
+    onSuccess: async () => {
+      await utils.corps.get.invalidate({ id });
       router.refresh();
     },
   });
