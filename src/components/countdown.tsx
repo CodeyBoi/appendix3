@@ -64,7 +64,9 @@ const Countdown = ({ end, className }: CountdownProps) => {
     const interval = setInterval(() => {
       setTimeLeft(Math.max(0, end.getTime() - new Date().getTime()));
     }, 100);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [end]);
 
   useEffect(() => {

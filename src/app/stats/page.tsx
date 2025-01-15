@@ -17,7 +17,7 @@ const Statistics = ({
 }: {
   searchParams: { start?: string; end?: string };
 }) => {
-  if (!searchParams?.start) {
+  if (!searchParams.start) {
     const { start, end: _end } = calcOperatingYearInterval(getOperatingYear());
     redirect(`/stats?start=${dayjs(start).format('YYYY-MM-DD')}`);
   }

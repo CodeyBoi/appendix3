@@ -45,7 +45,7 @@ const GigMenuContent = ({ gig }: GigMenuContentProps) => {
     } else if (hasStartTime) {
       const [startHour, startMinute] = gig.start.split(/[:.]/);
       if (!startHour || !startMinute) return '';
-      const isHourEleven = hasStartTime ? parseInt(startHour) === 23 : false;
+      const isHourEleven = parseInt(startHour) === 23;
       const [endHour, endMinute] = isHourEleven
         ? ['23', '59']
         : [(parseInt(startHour) + 1).toString(), startMinute];

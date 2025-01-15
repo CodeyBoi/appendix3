@@ -56,7 +56,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   const { data: corpsii } = api.corps.search.useQuery({});
   const corpsiiOptions = corpsii?.map((c) => ({
     label:
-      (c.number ? '#' + c.number : 'p.e.') +
+      (c.number ? `#${c.number}` : 'p.e.') +
       ' ' +
       c.firstName +
       ' ' +
@@ -76,7 +76,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
     validate: {
       title: (title) => (title ? null : 'Titel måste vara ifylld'),
       type: (type) => (type ? null : 'Typ måste vara ifylld'),
-      date: (date) => (date ? null : 'Datum måste vara ifyllt'),
       points: (points) =>
         points >= 0 && points <= 1 ? null : 'Spelpoäng måste vara 0 eller 1',
       price: (price) => (price >= 0 ? null : 'Pris kan inte vara negativt'),
@@ -137,12 +136,10 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             withAsterisk
             label='Spelningstyp'
             placeholder='Välj typ...'
-            options={
-              gigTypes?.map((type) => ({
-                value: type,
-                label: type,
-              })) ?? []
-            }
+            options={gigTypes.map((type) => ({
+              value: type,
+              label: type,
+            }))}
             {...form.getInputProps('type')}
           />
           <div className='grid grid-cols-2 gap-x-4'>

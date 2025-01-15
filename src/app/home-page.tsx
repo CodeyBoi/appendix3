@@ -18,36 +18,36 @@ const makeGigList = async (currentDate: Date) => {
     api.gig.getMany.query({ startDate: currentDate }),
     api.corps.getSelf.query(),
   ]);
-  const language = corps?.language ?? 'sv';
 
   if (gigs.length === 0) {
     return null;
   }
 
   let lastMonth = -1;
-  const gigsByMonth = gigs.reduce(
-    (acc, gig) => {
-      const month = gig.date.getMonth();
-      const newMonth = month !== lastMonth;
-      lastMonth = month;
-      if (newMonth) {
-        acc.push([]);
-      }
-      acc.at(-1)?.push(gig);
-      return acc;
-    },
-    [] as (Gig & { type: { name: string } } & {
+  const gigsByMonth = gigs.reduce<
+    (Gig & { type: { name: string } } & {
       hiddenFor: { corpsId: string }[];
-    })[][],
-  );
+    })[][]
+  >((acc, gig) => {
+    const month = gig.date.getMonth();
+    const newMonth = month !== lastMonth;
+    lastMonth = month;
+    if (newMonth) {
+      acc.push([]);
+    }
+    acc.at(-1)?.push(gig);
+    return acc;
+  }, []);
 
   const gigList = gigsByMonth.map((gigs) => {
     const gigDate = gigs[0]?.date;
-    const month = gigDate?.toLocaleDateString(language, { month: 'long' });
+    const month = gigDate?.toLocaleDateString(corps.language, {
+      month: 'long',
+    });
     const year = gigDate?.getFullYear();
     return (
       <React.Fragment key={`${month} ${year}`}>
-        <h3>{`${month?.charAt(0)?.toUpperCase()}${month?.slice(1)}`}</h3>
+        <h3>{`${month?.charAt(0).toUpperCase()}${month?.slice(1)}`}</h3>
         {gigs.map((gig) => (
           <GigCard key={gig.id} gig={gig} />
         ))}

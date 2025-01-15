@@ -153,7 +153,9 @@ function SelectSearch(props: SelectSearchProps) {
           (selected === i ? ' bg-red-600/10 dark:bg-red-400/10' : '')
         }
         key={item.value}
-        onClick={() => handleChange(item)}
+        onClick={() => {
+          handleChange(item);
+        }}
       >
         {item.element ?? item.label}
       </button>
@@ -172,7 +174,11 @@ function SelectSearch(props: SelectSearchProps) {
         value={search}
         onChange={handleSearchChange}
         onFocus={handleFocus}
-        onBlur={() => setTimeout(() => setFocused(false), 100)}
+        onBlur={() =>
+          setTimeout(() => {
+            setFocused(false);
+          }, 100)
+        }
       />
       <div className='relative'>
         <div

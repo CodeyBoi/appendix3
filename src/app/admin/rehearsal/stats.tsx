@@ -19,7 +19,7 @@ const RehearsalStatsTable = ({
         {stats.map((stat) => (
           <tr key={stat.corps.id}>
             <td className='pr-1 text-right'>
-              {stat.corps.number ? '#' + stat.corps.number : 'p.e.'}
+              {stat.corps.number ? `# ${stat.corps.number}` : 'p.e.'}
             </td>
             <td className='pr-2'>{stat.corps.displayName}</td>
             <td className='px-2'>{stat.count}</td>

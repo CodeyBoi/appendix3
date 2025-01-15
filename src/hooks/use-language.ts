@@ -10,7 +10,7 @@ const applyLanguage = (language: Language) => {
       html.lang = 'sv';
       html.classList.remove('lang-en');
       html.classList.add('lang-sv');
-    } else if (language === 'en') {
+    } else {
       html.lang = 'en';
       html.classList.remove('lang-sv');
       html.classList.add('lang-en');
@@ -40,7 +40,7 @@ const useLanguage = (initialLanguage?: Language) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedLanguage = localStorage.getItem('language') as Language;
+      const storedLanguage = localStorage.getItem('language') as Language | '';
       if (storedLanguage) {
         setLanguageValue(storedLanguage);
         applyLanguage(storedLanguage);

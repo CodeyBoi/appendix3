@@ -32,7 +32,6 @@ const GigList = async ({ year, tab }: GigListProps) => {
     fetchGigs(year, tab),
     api.corps.getSelf.query(),
   ]);
-  const language = corps?.language ?? 'sv';
 
   if (gigs.length === 0) {
     return (
@@ -57,7 +56,7 @@ const GigList = async ({ year, tab }: GigListProps) => {
           <Fragment key={gig.id}>
             {shouldAddMonth && (
               <h3 className='pt-2'>
-                {gig.date.toLocaleString(language, { month: 'long' })}
+                {gig.date.toLocaleString(corps.language, { month: 'long' })}
               </h3>
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>

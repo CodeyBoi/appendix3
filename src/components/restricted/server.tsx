@@ -12,11 +12,10 @@ const Restricted = async (props: RestrictedProps) => {
     ? props.permissions
     : [props.permissions];
   const userPermissions = await api.permission.getOwnPermissions.query();
-  const hasPermissions =
-    userPermissions && permissions.some((p) => userPermissions.has(p));
+  const hasPermissions = permissions.some((p) => userPermissions.has(p));
 
   if (!hasPermissions) {
-    return <>{props.fallback}</> ?? null;
+    return props.fallback ? <>{props.fallback}</> : null;
   }
 
   return <>{props.children}</>;

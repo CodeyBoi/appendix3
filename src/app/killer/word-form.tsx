@@ -42,7 +42,9 @@ const KillerWordForm = () => {
         <input
           placeholder='Kodord'
           value={word}
-          onChange={(e) => setWord(e.target.value)}
+          onChange={(e) => {
+            setWord(e.target.value);
+          }}
           name='word'
           type='text'
           className='grow rounded border border-gray-300 bg-white p-2 dark:border-gray-700'

@@ -30,10 +30,14 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
   const router = useRouter();
   const [corpsId, setCorpsId] = useState<string | null>(null);
   const addRole = api.corps.addRole.useMutation({
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      router.refresh();
+    },
   });
   const removeRole = api.corps.removeRole.useMutation({
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      router.refresh();
+    },
   });
 
   return (
@@ -79,7 +83,9 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
         <SelectCorps
           label={lang('Lägg till corps', 'Add corps')}
           className='grow'
-          onChange={(p) => setCorpsId(p)}
+          onChange={(p) => {
+            setCorpsId(p);
+          }}
         />
         <Button type='submit'>{lang('Lägg till', 'Add')}</Button>
       </form>

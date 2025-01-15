@@ -24,7 +24,9 @@ const AppProvider = ({
 }: AppProviderProps) => {
   const { toggleColorScheme } = useColorScheme(defaultColorScheme);
   // Allows user to toggle between light and dark mode by pressing `Control + y`
-  useKeyDown('ctrl+y', () => toggleColorScheme());
+  useKeyDown('ctrl+y', () => {
+    toggleColorScheme();
+  });
   useLanguage(initialLanguage);
 
   useSlagverkEasterEgg();

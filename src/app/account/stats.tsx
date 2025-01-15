@@ -45,7 +45,7 @@ const CorpsStats = async ({
     streckAccountQuery,
   ]);
 
-  const corpsStats = stats?.corpsStats.get(stats.corpsIds[0]!);
+  const corpsStats = stats.corpsStats.get(stats.corpsIds[0] ?? '');
   const streckAccountStr = lang(
     'Strecksaldo: ' + streckAccount.balance.toString(),
     'Streck balance: ' + streckAccount.balance.toString(),
@@ -61,7 +61,7 @@ const CorpsStats = async ({
           )}
         </h5>
         <span className='hidden'>
-          {corps?.number ? (
+          {corps.number ? (
             <a className='hover:underline' href='account/streck'>
               {streckAccountStr}
             </a>
@@ -80,19 +80,19 @@ const CorpsStats = async ({
           {corpsStats?.gigsAttended || 0}
           <br />
           {lang('Spelningar: ', 'Gigs: ')}
-          {Math.ceil((corpsStats?.attendence || 0) * 100) + '%'}
+          {`${Math.ceil((corpsStats?.attendence ?? 0) * 100)}%`}
           {orchestraRehearsalAttendance !== 0 && (
             <>
               <br />
               {lang('Orkesterrepor: ', 'Orchestra rehearsals: ')}
-              {Math.ceil(orchestraRehearsalAttendance * 100) + '%'}
+              {`${Math.ceil(orchestraRehearsalAttendance * 100)}%`}
             </>
           )}
           {balletRehearsalAttendance !== 0 && (
             <>
               <br />
               {lang('Balettrepor: ', 'Ballet rehearsals: ')}
-              {Math.ceil(balletRehearsalAttendance * 100) + '%'}
+              {`${Math.ceil(balletRehearsalAttendance * 100)}%`}
             </>
           )}
         </div>

@@ -18,7 +18,7 @@ const AdminStreckPricesForm = ({
   const router = useRouter();
 
   const initialItemText = initialItems
-    .map((item) => item.name + ', ' + item.price)
+    .map((item) => `${item.name}, ${item.price}`)
     .join('\n');
 
   const [itemText, setItemText] = useState(initialItemText);

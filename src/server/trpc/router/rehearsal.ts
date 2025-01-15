@@ -26,10 +26,6 @@ export const rehearsalRouter = router({
         },
       });
 
-      if (!rehearsal) {
-        throw new Error('Rehearsal not found');
-      }
-
       return rehearsal;
     }),
 
@@ -208,19 +204,27 @@ export const rehearsalRouter = router({
         },
       });
       type ExtendedCorps = (typeof corpsii)[number];
-      const corps = corpsii.reduce(
+      const corps = corpsii.reduce<Record<string, ExtendedCorps>>(
         (acc, curr) => {
           acc[curr.id] = curr;
           return acc;
         },
-        {} as Record<string, ExtendedCorps>,
+        {},
       );
       return {
         nonPositiveRehearsals,
-        stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId]!,
-          count: stat._count.rehearsalId,
-        })),
+        stats: stats.map((stat) => {
+          const c = corps[stat.corpsId];
+          if (!c) {
+            throw Error(
+              "Error when collecting corps for orchestra stats. This shouldn't be possible.",
+            );
+          }
+          return {
+            corps: c,
+            count: stat._count.rehearsalId,
+          };
+        }),
       };
     }),
 
@@ -278,19 +282,27 @@ export const rehearsalRouter = router({
         },
       });
       type ExtendedCorps = (typeof corpsii)[number];
-      const corps = corpsii.reduce(
+      const corps = corpsii.reduce<Record<string, ExtendedCorps>>(
         (acc, curr) => {
           acc[curr.id] = curr;
           return acc;
         },
-        {} as Record<string, ExtendedCorps>,
+        {},
       );
       return {
         nonPositiveRehearsals,
-        stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId]!,
-          count: stat._count.rehearsalId,
-        })),
+        stats: stats.map((stat) => {
+          const c = corps[stat.corpsId];
+          if (!c) {
+            throw Error(
+              "Error when collecting corps for ballet stats. This shouldn't be possible.",
+            );
+          }
+          return {
+            corps: c,
+            count: stat._count.rehearsalId,
+          };
+        }),
       };
     }),
 
@@ -424,12 +436,12 @@ export const rehearsalRouter = router({
         return 'Annat';
       };
       const instruments = await ctx.prisma.instrument.findMany({});
-      const instrumentPrecedence = instruments.reduce(
+      const instrumentPrecedence = instruments.reduce<Record<string, number>>(
         (acc, instrument) => {
           acc[instrument.name] = instrument.sectionId || 516;
           return acc;
         },
-        {} as Record<string, number>,
+        {},
       );
       corpsii.sort(
         (a, b) =>
@@ -445,29 +457,28 @@ export const rehearsalRouter = router({
       const corpsIds = new Set(attended.map((e) => e.corpsId));
 
       let lastSectionName = '';
-      const result = corpsii.reduce(
-        (acc, corps) => {
-          const sectionName = corps.instruments[0]?.instrument.section?.name;
-          if (!sectionName) return acc;
-          if (lastSectionName !== sectionName) {
-            acc.push({
-              name: sectionName,
-              corpsii: [],
-            });
-            lastSectionName = sectionName;
-          }
-          const c = {
-            ...corps,
-            attended: corpsIds.has(corps.id),
-          };
-          acc[acc.length - 1]?.corpsii.push(c);
-          return acc;
-        },
-        [] as {
+      const result = corpsii.reduce<
+        {
           name: string;
           corpsii: ((typeof corpsii)[number] & { attended: boolean })[];
-        }[],
-      );
+        }[]
+      >((acc, corps) => {
+        const sectionName = corps.instruments[0]?.instrument.section?.name;
+        if (!sectionName) return acc;
+        if (lastSectionName !== sectionName) {
+          acc.push({
+            name: sectionName,
+            corpsii: [],
+          });
+          lastSectionName = sectionName;
+        }
+        const c = {
+          ...corps,
+          attended: corpsIds.has(corps.id),
+        };
+        acc[acc.length - 1]?.corpsii.push(c);
+        return acc;
+      }, []);
       return {
         corpsiiBySection: result,
         corpsIds,

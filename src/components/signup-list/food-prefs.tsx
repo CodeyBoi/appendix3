@@ -61,20 +61,18 @@ const FoodPrefs = ({
     };
   });
 
-  const csvDownloadLink = dataRows
-    ? `data:text/csv;charset=utf-8,Namn,Vegetarian,Vegan,Gluten,Laktos,Övrigt\n${encodeURIComponent(
-        dataRows
-          ?.map((row) =>
-            row.data
-              // Wrap text in quotes, otherwise it will be split into multiple columns if it contains commas
-              .map((text) => `"${text}"`)
-              .join(','),
-          )
-          .join('\n') ?? '',
-      )}`
-    : '';
+  const csvDownloadLink = `data:text/csv;charset=utf-8,Namn,Vegetarian,Vegan,Gluten,Laktos,Övrigt\n${encodeURIComponent(
+    dataRows
+      .map((row) =>
+        row.data
+          // Wrap text in quotes, otherwise it will be split into multiple columns if it contains commas
+          .map((text) => `"${text}"`)
+          .join(','),
+      )
+      .join('\n'),
+  )}`;
 
-  const rows = dataRows?.map((row) => {
+  const rows = dataRows.map((row) => {
     return (
       <tr
         key={row.corpsId}
@@ -117,20 +115,13 @@ const FoodPrefs = ({
           </tbody>
         </table>
       </div>
-      {dataRows && (
-        <>
-          <div className='h-4' />
-          <a
-            href={csvDownloadLink}
-            download={`Matpreffar ${gigTitle.trim() ?? ''}.csv`}
-          >
-            <Button>
-              <IconDownload />
-              Ladda ner som CSV
-            </Button>
-          </a>
-        </>
-      )}
+      <div className='h-4' />
+      <a href={csvDownloadLink} download={`Matpreffar ${gigTitle.trim()}.csv`}>
+        <Button>
+          <IconDownload />
+          Ladda ner som CSV
+        </Button>
+      </a>
     </div>
   );
 };

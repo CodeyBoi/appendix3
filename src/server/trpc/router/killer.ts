@@ -145,9 +145,10 @@ export const killerRouter = router({
       // Now add all dead participants to the end of the list, sorted by time of death
       for (const p of game.participants
         .filter((p) => p.timeOfDeath)
-        // timeOfDeath cannot be null as we filter out those participants above
-
-        .sort((a, b) => a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime())) {
+        .sort(
+          (a, b) =>
+            (a.timeOfDeath?.getTime() ?? 0) - (b.timeOfDeath?.getTime() ?? 0),
+        )) {
         sortedParticipants.push(p);
       }
 
@@ -272,7 +273,12 @@ export const killerRouter = router({
                 }) as Word,
             );
 
-          const word = gameWords[Math.floor(Math.random() * gameWords.length)]!;
+          const word = gameWords[Math.floor(Math.random() * gameWords.length)];
+          if (!word) {
+            throw Error(
+              "Error when picking random word. This shouldn't be possible.",
+            );
+          }
           usedWords.push(word.sv);
           return ctx.prisma.killerPlayer.update({
             where: {
@@ -361,8 +367,9 @@ export const killerRouter = router({
       // If no corpsId is supplied, register yourself
       const corpsId = input.corpsId ?? ctx.session.user.corps.id;
 
-      const usedWords =
-        game.participants.map((participant) => participant.word) ?? [];
+      const usedWords = game.participants.map(
+        (participant) => participant.word,
+      );
       // const gameWords = WORDS.filter((word) => !usedWords.includes(word.sv));
       const gameWords = game.participants
         .filter(
@@ -377,9 +384,18 @@ export const killerRouter = router({
             }) as Word,
         );
       if (gameWords.length === 0) {
-        gameWords.push(WORDS[0]!);
+        const firstWord = WORDS[0];
+        if (firstWord) {
+          gameWords.push(firstWord);
+        }
       }
-      const word = gameWords[Math.floor(Math.random() * gameWords.length)]!;
+
+      const word = gameWords[Math.floor(Math.random() * gameWords.length)];
+      if (!word) {
+        throw Error(
+          "Error when picking random word. This shouldn't be possible.",
+        );
+      }
 
       const participant = await ctx.prisma.killerPlayer.create({
         data: {
@@ -480,12 +496,12 @@ export const killerRouter = router({
         throw new Error('Corps is not in this game');
       }
 
-      const svWord = killer?.target?.target?.word
+      const svWord = killer.target?.target?.word
         .toLowerCase()
         .replace(/^(p\.e\.)/, '')
         .replace(/^#\d*/, '')
         .trim();
-      const enWord = killer?.target?.target?.wordEnglish
+      const enWord = killer.target?.target?.wordEnglish
         .toLowerCase()
         .replace(/^(p\.e\.)/, '')
         .replace(/^#\d*/, '')

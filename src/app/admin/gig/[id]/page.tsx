@@ -2,7 +2,7 @@ import GigForm from 'components/gig/form';
 import { api } from 'trpc/server';
 
 const AdminGig = async ({ params }: { params: { id: string } }) => {
-  const gigId = params.id ?? 'new';
+  const gigId = params.id;
   const newGig = gigId === 'new';
 
   const gig = await api.gig.getWithId.query({ gigId });

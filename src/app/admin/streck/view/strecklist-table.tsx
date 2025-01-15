@@ -113,7 +113,7 @@ const StreckListTable = async ({
                       <td>
                         <DeleteStreckListButton
                           id={streckList.id}
-                          properRemove={showDelete && showDeleted}
+                          properRemove={showDeleted}
                         />
                       </td>
                     )}

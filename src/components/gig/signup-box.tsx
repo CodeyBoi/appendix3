@@ -68,9 +68,6 @@ const GigSignupBox = ({
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!mainInstrument) {
-      return;
-    }
     if (!signup) {
       setInstrument(mainInstrument.name);
     } else {
@@ -125,7 +122,9 @@ const GigSignupBox = ({
         ) : (
           <SegmentedControl
             defaultValue={signup?.status.value ?? ''}
-            onChange={(v) => handleSignupStatusChange(v.toString())}
+            onChange={(v) => {
+              handleSignupStatusChange(v.toString());
+            }}
             options={SIGNUP_OPTIONS}
           />
         )}

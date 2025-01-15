@@ -184,7 +184,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   );
 
   // Divide the list of corpsii into people who answered yes and people who answered maybe
-  const splitList = signupsSorted?.reduce(
+  const splitList = signupsSorted.reduce(
     (acc, signup) => {
       if (signup.status.value === 'Ja') {
         acc.yesList.push(signup);
@@ -202,9 +202,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
     },
   );
 
-  const yesList = splitList?.yesList;
-  const maybeList = splitList?.maybeList;
-  const noList = splitList?.noList;
+  const yesList = splitList.yesList;
+  const maybeList = splitList.maybeList;
+  const noList = splitList.noList;
 
   const form = useForm({
     initialValues: { corpsId: '' },
@@ -286,20 +286,22 @@ const SignupList = ({ gigId }: SignupListProps) => {
                     corps={signup.corps}
                     attended={signup.attended}
                     showAdminTools={showAdminTools}
-                    setAttendance={(attended) =>
+                    setAttendance={(attended) => {
                       editAttendance.mutate({
                         corpsId: signup.corpsId,
                         gigId,
                         attended,
-                      })
-                    }
+                      });
+                    }}
                     checkbox1={
                       gig?.checkbox1.trim() ? signup.checkbox1 : undefined
                     }
                     checkbox2={
                       gig?.checkbox2.trim() ? signup.checkbox2 : undefined
                     }
-                    handleDelete={() => handleDelete(signup.corpsId)}
+                    handleDelete={() => {
+                      handleDelete(signup.corpsId);
+                    }}
                   />
                 </tr>
               </React.Fragment>
@@ -316,13 +318,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const instrumentCount = useMemo(
     () =>
-      yesList?.reduce(
-        (acc, signup) => {
-          acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      ),
+      yesList.reduce<Record<string, number>>((acc, signup) => {
+        acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
+        return acc;
+      }, {}),
     [yesList],
   );
 
@@ -330,7 +329,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const missingInstrumentsCount = useMemo(() => {
     const output: Record<string, number> = {};
     FULL_SETTING.forEach(([instrument, count]) => {
-      output[instrument] = count - (instrumentCount?.[instrument] ?? 0);
+      output[instrument] = count - (instrumentCount[instrument] ?? 0);
     });
     return Object.entries(output).filter(([_, count]) => count > 0);
   }, [instrumentCount]);
@@ -367,15 +366,15 @@ const SignupList = ({ gigId }: SignupListProps) => {
       </Restricted>
       {showAdminTools && (
         <form
-          onSubmit={form.onSubmit((values) =>
+          onSubmit={form.onSubmit((values) => {
             addSignup.mutate({
               corpsId: values.corpsId,
               gigId,
               status: 'Ja',
               checkbox1: false,
               checkbox2: false,
-            }),
-          )}
+            });
+          })}
         >
           <div className='flex flex-nowrap gap-4'>
             <SelectCorps
@@ -429,7 +428,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
           )}
         </div>
       )}
-      {maybeList && maybeList.length > 0 && (
+      {maybeList.length > 0 && (
         <div>
           {!gigHasHappened && (
             <h3>{lang('Dessa kanske kommer:', 'These might come:')}</h3>
@@ -437,7 +436,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
           {maybeTable}
         </div>
       )}
-      {noList && noList.length > 0 && (
+      {noList.length > 0 && (
         <Restricted permissions='manageAttendance'>
           <div>
             <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>

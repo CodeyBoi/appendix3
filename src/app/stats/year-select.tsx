@@ -22,11 +22,10 @@ const StatsYearSelect = (
   const startParam = searchParams?.get('start');
   const start = startParam ? dayjs(startParam).year() : dayjs().year();
   const [year, setYear] = useState<number>(start);
-  const yearData =
-    operatingYears?.map((y) => ({
-      label: `${y}-${y + 1}`,
-      value: y,
-    })) ?? [];
+  const yearData = operatingYears.map((y) => ({
+    label: `${y}-${y + 1}`,
+    value: y,
+  }));
   const router = useRouter();
   const handleChange = (val: string) => {
     const newYear = parseInt(val);

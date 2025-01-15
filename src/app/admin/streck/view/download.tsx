@@ -163,15 +163,21 @@ const DownloadTransactionsButton = ({
 }: DownloadTransactionsButtonProps) => {
   if (variant === 'default') {
     return (
-      <Button onClick={() => generateTransactionsXLSX(streckLists, filename)}>
+      <Button
+        onClick={() => {
+          generateTransactionsXLSX(streckLists, filename);
+        }}
+      >
         {children}
       </Button>
     );
-  } else if (variant === 'subtle') {
+  } else {
     return (
       <ActionIcon
         variant='subtle'
-        onClick={() => generateTransactionsXLSX(streckLists, filename)}
+        onClick={() => {
+          generateTransactionsXLSX(streckLists, filename);
+        }}
       >
         {children}
       </ActionIcon>

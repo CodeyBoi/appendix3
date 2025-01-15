@@ -14,7 +14,7 @@ export const downloadXLSX = (workbook: Workbook, filename: string) => {
       anchor.click();
       window.URL.revokeObjectURL(url);
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       throw Error(JSON.stringify(e));
     });
 };

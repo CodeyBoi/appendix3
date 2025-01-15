@@ -45,7 +45,9 @@ const Entry = ({
           <td className='px-2'>
             <Checkbox
               defaultChecked={attended}
-              onChange={(event) => setAttendance(event.target.checked)}
+              onChange={(event) => {
+                setAttendance(event.target.checked);
+              }}
             />
           </td>
           <td className='flex place-content-center px-2'>

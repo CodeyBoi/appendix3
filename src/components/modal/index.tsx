@@ -58,7 +58,12 @@ const Modal = ({
           <div className='flex flex-row flex-nowrap gap-8'>
             <h3 className='grow'>{title}</h3>
             {withCloseButton && (
-              <ActionIcon variant='subtle' onClick={() => setOpen(false)}>
+              <ActionIcon
+                variant='subtle'
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
                 <IconX />
               </ActionIcon>
             )}
@@ -74,7 +79,9 @@ const Modal = ({
           'fixed right-0 top-0 z-10 h-screen w-screen bg-black transition-opacity',
           open ? 'opacity-50' : 'pointer-events-none opacity-0',
         )}
-        onClick={() => setOpen(false)}
+        onClick={() => {
+          setOpen(false);
+        }}
       />
     </div>
   );

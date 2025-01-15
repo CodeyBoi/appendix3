@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.strictTypeChecked,
   eslintPluginTailwindCSS.configs['flat/recommended'],
   eslintConfigPrettier,
   {
@@ -23,7 +23,7 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         {
           "argsIgnorePattern": "^_",  // ignore unused variables starting with _
           "varsIgnorePattern": "^_"   // ignore unused variables starting with _
@@ -35,6 +35,12 @@ export default tseslint.config(
           "callees": ["classnames", "clsx", "twMerge", "cx", "cn"],
           "tags": ["tw"]
         }
+      ],
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        {
+          "allowNumber": true,
+        },
       ],
     },
   },

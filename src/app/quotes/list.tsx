@@ -15,11 +15,11 @@ const getDayMessage = (date: Date) => {
   } else if (diffDays === 2) {
     return 'I förrgår';
   } else {
-    return `${otherDate.toLocaleDateString('sv-SE', {
+    return otherDate.toLocaleDateString('sv-SE', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    })}`;
+    });
   }
 };
 

@@ -79,7 +79,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         mainInstrument,
         otherInstruments,
         roles: corps.roles.map((r) => r.name as Permission),
-        language: corps.language ?? 'sv',
+        language: corps.language,
       });
       setLoading(false);
     } else if (creatingCorps) {

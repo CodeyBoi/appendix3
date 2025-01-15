@@ -47,7 +47,7 @@ const AdminStreckFormPage = async ({
   const isMonoList =
     new Set(transactions.map((transaction) => transaction.item)).size === 1;
   const type = isNew
-    ? searchParams.type ?? 'strecklist'
+    ? searchParams.type
     : !isMonoList
     ? 'strecklist'
     : transactions.every((t) => t.pricePer < 0)
@@ -122,12 +122,10 @@ const AdminStreckFormPage = async ({
             'Här inför du kostnader för corps, t.ex. kostnader för corpsaftnar eller Pryl & Prov-prylar.',
             'Here you submit costs for corps, e.g. costs for corpsaftons or Pryl & Prov thingies.',
           )
-        : type === 'deposit'
-        ? lang(
+        : lang(
             'Här inför du intäkter för corps, t.ex. insättningar eller återbäringar för utlägg.',
             'Here you submit earnings for corps, e.g. deposits or refunds for expenses.',
-          )
-        : undefined}
+          )}
       <Suspense
         fallback={
           <Loading

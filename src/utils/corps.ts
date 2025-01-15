@@ -73,7 +73,7 @@ export const fullName = (
 ) =>
   corps === null || corps === undefined
     ? ''
-    : `${corps.firstName.trim() + ' ' + corps.lastName.trim()}`;
+    : corps.firstName.trim() + ' ' + corps.lastName.trim();
 
 interface CorpsSort {
   number: number | null;

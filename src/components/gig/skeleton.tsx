@@ -5,7 +5,7 @@ interface GigSkeletonProps {
 const GigSkeleton = ({ widths = [] }: GigSkeletonProps) => {
   const [titleWidth = 200, typeWidth = 120, locationWidth = 95, textW = 0.6] =
     widths;
-  const textWidth = Math.floor(textW * 100) + '%';
+  const textWidth = `${Math.floor(textW * 100)}%`;
   return (
     <div className='rounded border border-neutral-500/20 shadow-md'>
       <div className='flex animate-pulse flex-col space-y-2 p-4'>

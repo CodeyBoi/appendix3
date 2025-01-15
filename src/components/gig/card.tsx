@@ -27,7 +27,7 @@ interface GigCardProps {
 }
 
 const isGig = (gig: Gig | GigId): gig is Gig => {
-  return (gig as Gig).id !== undefined;
+  return typeof gig !== 'string';
 };
 
 const GigCard = async ({
@@ -42,13 +42,9 @@ const GigCard = async ({
     api.corps.getMainInstrument.query(),
   ]);
 
-  if (!corps) {
-    return <div>Error: No corps found.</div>;
-  }
-
   if (!gig) {
     return (
-      <div>Error: No gig found with props: {`${JSON.stringify(gigProp)}`}.</div>
+      <div>Error: No gig found with props: {JSON.stringify(gigProp)}.</div>
     );
   }
 
@@ -97,7 +93,7 @@ const GigCard = async ({
               <div className='text-xs leading-normal'>
                 <i>{gig.type.name}</i>
                 <br />
-                {!!gig.location && `${gig.location}`}
+                {!!gig.location && gig.location}
                 {!!gig.location && <br />}
                 {gig.price !== 0 && lang('Pris: ', 'Price: ')}
                 {gig.price !== 0 && gig.price.toString()}

@@ -13,14 +13,7 @@ type NextAuthOptionsCallback = (
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    signIn() {
-      const isAllowedToSignIn = true; //! ... determine if user is allowed to sign in?
-      if (isAllowedToSignIn) {
-        return true;
-      } else {
-        return false;
-      }
-    },
+    signIn: () => true,
     redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith('/')) return `${baseUrl}${url}`;

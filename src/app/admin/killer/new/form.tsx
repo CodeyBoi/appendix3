@@ -25,9 +25,7 @@ const AdminKillerForm = () => {
     validate: {
       name: (name) => (name.length > 0 ? null : 'Ange namn'),
       end: (end, values) =>
-        end && end > values.start
-          ? null
-          : 'Slutdatum måste vara efter startdatum',
+        end > values.start ? null : 'Slutdatum måste vara efter startdatum',
     },
     transformValues: (values) => ({
       ...values,

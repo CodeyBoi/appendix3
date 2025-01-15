@@ -51,7 +51,7 @@ export const authRouter = router({
         ctx.res.setHeader(
           'Set-Cookie',
           `${cookiePrefix}next-auth.session-token=${
-            session.sessionToken ?? ''
+            session.sessionToken
           }; Path=/; SameSite=lax; HttpOnly; ${secure ? 'Secure;' : ''}; `,
         );
         return true;

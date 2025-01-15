@@ -41,8 +41,12 @@ const CorpsDisplay = ({
   return (
     <Popover
       position='bottom-right'
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
+      onFocus={() => {
+        setOpen(true);
+      }}
+      onBlur={() => {
+        setOpen(false);
+      }}
       targetClassName='max-w-max'
       target={<div className='hover:underline'>{displayName}</div>}
     >

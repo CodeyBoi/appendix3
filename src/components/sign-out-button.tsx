@@ -11,8 +11,10 @@ const SignOutButton = () => {
 
   const handleSignOut = () => {
     signOut()
-      .then(() => router.push('/'))
-      .catch((e) => {
+      .then(() => {
+        router.push('/');
+      })
+      .catch((e: unknown) => {
         throw Error(JSON.stringify(e));
       });
   };

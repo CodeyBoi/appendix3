@@ -128,7 +128,7 @@ export const streckRouter = router({
       return {
         data,
         items,
-        summary: summary ?? {},
+        summary,
       };
     }),
 

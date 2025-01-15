@@ -149,7 +149,7 @@ export const corpsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const corps = await ctx.prisma.corps.findUnique({
         where: {
-          userId: ctx.session?.user.id || '',
+          userId: ctx.session.user.id || '',
         },
       });
 
@@ -325,7 +325,7 @@ export const corpsRouter = router({
             where: {
               userId: excludeSelf
                 ? {
-                    not: ctx.session?.user.id || undefined,
+                    not: ctx.session.user.id || undefined,
                   }
                 : undefined,
               OR: [
@@ -381,7 +381,7 @@ export const corpsRouter = router({
         where: {
           userId: input.excludeSelf
             ? {
-                not: ctx.session?.user.id || undefined,
+                not: ctx.session.user.id || undefined,
               }
             : undefined,
           id:
@@ -440,7 +440,7 @@ export const corpsRouter = router({
         },
       },
       where: {
-        userId: ctx.session?.user.id,
+        userId: ctx.session.user.id,
       },
     });
     if (!corps) {
@@ -460,7 +460,7 @@ export const corpsRouter = router({
         },
       },
       where: {
-        userId: ctx.session?.user.id,
+        userId: ctx.session.user.id,
       },
     });
     if (!corps) {
@@ -478,7 +478,7 @@ export const corpsRouter = router({
         WHERE attended = true
         AND corpsId = ${corpsId}
       `;
-    return pointsQuery?.[0]?.points ?? 0;
+    return pointsQuery[0]?.points ?? 0;
   }),
 
   setColorScheme: protectedProcedure
@@ -512,16 +512,13 @@ export const corpsRouter = router({
           foodPrefs: true,
         },
       });
-      return corps.reduce(
-        (acc, corps) => {
-          if (!corps.foodPrefs) {
-            return acc;
-          }
-          acc[corps.id] = corps.foodPrefs;
+      return corps.reduce<Record<string, CorpsFoodPrefs>>((acc, corps) => {
+        if (!corps.foodPrefs) {
           return acc;
-        },
-        {} as Record<string, CorpsFoodPrefs>,
-      );
+        }
+        acc[corps.id] = corps.foodPrefs;
+        return acc;
+      }, {});
     }),
 
   getLanguage: protectedProcedure.query(async ({ ctx }) => {

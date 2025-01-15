@@ -253,7 +253,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                   <th className='sticky top-0 bg-white px-1'>Saldo</th>
                   {items.map((item) => (
                     <th
-                      key={`${item.name}`}
+                      key={item.name}
                       className='sticky top-0 w-16 bg-white px-1'
                     >{`${item.name} ${
                       isNaN(item.price) ? '' : `${item.price}p`

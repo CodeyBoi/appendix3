@@ -42,7 +42,6 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
         },
     validate: {
       title: (title) => (title ? null : 'Fyll i titel'),
-      date: (date) => (date ? null : 'Välj datum'),
       typeId: (typeId) => (typeId ? null : 'Välj typ'),
     },
   });

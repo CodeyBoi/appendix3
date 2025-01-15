@@ -15,13 +15,11 @@ interface RehearsalAttendenceProps {
 const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   const utils = api.useUtils();
 
-  const start = dayjs(rehearsal?.date ?? new Date())
+  const start = dayjs(rehearsal.date)
     .subtract(6, 'week')
     .startOf('week')
     .toDate();
-  const end = dayjs(rehearsal?.date ?? new Date())
-    .endOf('week')
-    .toDate();
+  const end = dayjs(rehearsal.date).endOf('week').toDate();
   const [corpsId, setCorpsId] = React.useState('');
 
   const { data: attendence } = api.rehearsal.getAttendedRehearsalList.useQuery({
@@ -77,7 +75,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
         </button>
       </div>
       <div className='flex flex-col space-y-2'>
-        {attendence?.corpsiiBySection?.map((section) => (
+        {attendence?.corpsiiBySection.map((section) => (
           <React.Fragment key={section.name}>
             <h4>{section.name}</h4>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>

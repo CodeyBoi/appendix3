@@ -86,7 +86,9 @@ const Popover = ({
         {open && (
           <div
             className='fixed right-0 top-0 z-10 h-screen w-screen'
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+            }}
           />
         )}
       </div>

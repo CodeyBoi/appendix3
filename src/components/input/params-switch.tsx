@@ -20,7 +20,9 @@ const ParamsSwitch = ({
     <Switch
       {...props}
       checked={value === 'true'}
-      onChange={(v) => setValue(v ? 'true' : '')}
+      onChange={(v) => {
+        setValue(v ? 'true' : '');
+      }}
     />
   );
 };

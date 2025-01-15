@@ -15,7 +15,7 @@ interface RehearsalsProps {
 const RehearsalListTable = ({ rehearsals }: RehearsalsProps) => {
   return (
     <div className='flex flex-col gap-2'>
-      {rehearsals?.map((rehearsal) => (
+      {rehearsals.map((rehearsal) => (
         <Link key={rehearsal.id} href={`/admin/rehearsal/${rehearsal.id}`}>
           <div className='rounded border p-4 shadow-md dark:border-neutral-800'>
             <div className='flex gap-4'>
@@ -25,7 +25,7 @@ const RehearsalListTable = ({ rehearsals }: RehearsalsProps) => {
           </div>
         </Link>
       ))}
-      {rehearsals && rehearsals.length === 0 && (
+      {rehearsals.length === 0 && (
         <div>Inga rep finns registrerade detta år</div>
       )}
     </div>
@@ -41,7 +41,7 @@ const RehearsalList = async ({ year }: { year: string }) => {
     end,
   });
 
-  if (!rehearsals) {
+  if (rehearsals.length === 0) {
     return <h3>Inga rep finns registrerade detta år</h3>;
   }
 
@@ -49,27 +49,27 @@ const RehearsalList = async ({ year }: { year: string }) => {
     orchestra: typeof rehearsals;
     ballet: typeof rehearsals;
   }
-  const splitRehearsals = rehearsals.reduce(
+  const splitRehearsals = rehearsals.reduce<SplitRehearsals>(
     (acc, rehearsal) => {
       if (rehearsal.type === 'Orkesterrepa') {
-        acc.orchestra?.push(rehearsal);
+        acc.orchestra.push(rehearsal);
       } else if (rehearsal.type === 'Balettrepa') {
-        acc.ballet?.push(rehearsal);
+        acc.ballet.push(rehearsal);
       }
       return acc;
     },
-    { orchestra: [], ballet: [] } as SplitRehearsals,
+    { orchestra: [], ballet: [] },
   );
 
   return (
     <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
       <div className='flex flex-col gap-2'>
         <h3>Orkesterrepor</h3>
-        <RehearsalListTable rehearsals={splitRehearsals.orchestra ?? []} />
+        <RehearsalListTable rehearsals={splitRehearsals.orchestra} />
       </div>
       <div className='flex flex-col gap-2'>
         <h3>Balettrepor</h3>
-        <RehearsalListTable rehearsals={splitRehearsals.ballet ?? []} />
+        <RehearsalListTable rehearsals={splitRehearsals.ballet} />
       </div>
     </div>
   );

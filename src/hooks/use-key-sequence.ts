@@ -22,7 +22,9 @@ const useKeySequence = (sequence: string[], callback: () => void) => {
       }
     };
     window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+    };
   }, [sequence, callback, pressedKeys]);
 };
 

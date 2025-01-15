@@ -542,7 +542,7 @@ export const gigRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const corpsId = ctx.session?.user?.corps?.id;
+      const corpsId = ctx.session.user.corps.id;
       if (!corpsId) {
         throw new Error('Not logged in');
       }

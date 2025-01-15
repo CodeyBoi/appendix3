@@ -273,7 +273,11 @@ const DownloadStrecklistButton = ({
   items,
 }: DownloadStrecklistButtonProps) => {
   return (
-    <Button onClick={() => generateStreckList(activeCorps, items)}>
+    <Button
+      onClick={() => {
+        generateStreckList(activeCorps, items);
+      }}
+    >
       <IconDownload />
       Ladda ner tom strecklista
     </Button>

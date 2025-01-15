@@ -42,7 +42,12 @@ const AlertError = ({
         <div className='p-0.5'>{icon}</div>
         <div className='grow font-bold'>{title}</div>
         {withCloseButton && (
-          <button type='button' onClick={() => setShow(false)}>
+          <button
+            type='button'
+            onClick={() => {
+              setShow(false);
+            }}
+          >
             <IconX />
           </button>
         )}

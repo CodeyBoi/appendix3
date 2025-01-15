@@ -105,8 +105,14 @@ const Login = () => {
                     name='email'
                     spellCheck='false'
                     label='Mailadress (eller #)'
-                    onChange={() => error && setError(undefined)}
-                    onSubmit={(e) => setEmail(e.currentTarget.value)}
+                    onChange={() => {
+                      if (error) {
+                        setError(undefined);
+                      }
+                    }}
+                    onSubmit={(e) => {
+                      setEmail(e.currentTarget.value);
+                    }}
                     error={error}
                     errorColor='white'
                   />
