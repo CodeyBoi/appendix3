@@ -15,9 +15,9 @@ const defaultValues = {
   saidByCorpsId: '',
 };
 type FormValues = typeof defaultValues;
-type QuoteFormProps = {
+interface QuoteFormProps {
   quote?: FormValues & { id: string };
-};
+}
 
 const QuoteForm = ({ quote }: QuoteFormProps) => {
   const router = useRouter();

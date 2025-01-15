@@ -6,18 +6,18 @@ import { useState } from 'react';
 
 type NameFormat = 'nickname' | 'number-only' | 'full-name';
 
-type Corps = {
+interface Corps {
   id: string;
   firstName: string;
   lastName: string;
   nickName: string | null;
   number: number | null;
-};
+}
 
-type CorpsDisplayProps = {
+interface CorpsDisplayProps {
   corps: Corps;
   nameFormat?: NameFormat;
-};
+}
 
 const getName = (corps: Corps, nameFormat: NameFormat) => {
   if (nameFormat === 'nickname') {

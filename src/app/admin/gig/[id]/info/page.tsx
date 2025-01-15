@@ -15,7 +15,7 @@ const GigAdminInfo = async ({ params }: { params: { id: string } }) => {
   const corpsIds = signups?.map((signup) => signup.corpsId);
 
   const foodPrefs = await api.corps.getFoodPreferences.query({
-    corpsIds: corpsIds as string[],
+    corpsIds: corpsIds,
   });
 
   return (

@@ -8,7 +8,7 @@ import DownloadTransactionsButton from './download';
 import { numberAndFullName } from 'utils/corps';
 import RestoreStreckListButton from './restore-streck-list';
 
-type StreckListTableProps = {
+interface StreckListTableProps {
   start?: Date;
   end?: Date;
   take?: number;
@@ -17,7 +17,7 @@ type StreckListTableProps = {
   showDelete?: boolean;
   showDownloadAll?: boolean;
   showDeleted?: boolean;
-};
+}
 
 const StreckListTable = async ({
   start,

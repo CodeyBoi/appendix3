@@ -3,10 +3,10 @@ import { router, protectedProcedure, restrictedProcedure } from '../trpc';
 import { z } from 'zod';
 import { numberAndFullName } from 'utils/corps';
 
-type Word = {
+interface Word {
   sv: string;
   en: string;
-};
+}
 
 export const WORDS: Word[] = [
   { sv: 'ananas', en: 'pineapple' },
@@ -146,7 +146,7 @@ export const killerRouter = router({
       for (const p of game.participants
         .filter((p) => p.timeOfDeath)
         // timeOfDeath cannot be null as we filter out those participants above
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         .sort((a, b) => a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime())) {
         sortedParticipants.push(p);
       }
@@ -274,7 +274,7 @@ export const killerRouter = router({
 
           const word = gameWords[
             Math.floor(Math.random() * gameWords.length)
-          ] as Word;
+          ]!;
           usedWords.push(word.sv);
           return ctx.prisma.killerPlayer.update({
             where: {
@@ -379,11 +379,11 @@ export const killerRouter = router({
             }) as Word,
         );
       if (gameWords.length === 0) {
-        gameWords.push(WORDS[0] as Word);
+        gameWords.push(WORDS[0]!);
       }
       const word = gameWords[
         Math.floor(Math.random() * gameWords.length)
-      ] as Word;
+      ]!;
 
       const participant = await ctx.prisma.killerPlayer.create({
         data: {

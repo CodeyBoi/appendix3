@@ -5,10 +5,10 @@ import ActionIcon from 'components/input/action-icon';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type DeleteStreckListButtonProps = {
+interface DeleteStreckListButtonProps {
   id: number;
   properRemove?: boolean;
-};
+}
 
 const DeleteStreckListButton = ({
   id,

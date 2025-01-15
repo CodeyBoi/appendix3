@@ -6,13 +6,13 @@ import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
 import ActionIcon from '../action-icon';
 
-export type DatePickerProps = {
+export interface DatePickerProps {
   value?: Date;
   onChange?: (date: Date) => void;
   label?: string;
   withAsterisk?: boolean;
   placeholder?: string;
-};
+}
 
 const DatePicker = ({
   value,

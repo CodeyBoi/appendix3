@@ -11,9 +11,9 @@ import dayjs from 'dayjs';
 import { lang } from 'utils/language';
 import Restricted from 'components/restricted/server';
 
-type GigMenuContentProps = {
+interface GigMenuContentProps {
   gig: Gig & { type: { name: string } };
-};
+}
 
 const GigMenuContent = ({ gig }: GigMenuContentProps) => {
   const getCalendarLink = (startTime: string, endTime: string) => {

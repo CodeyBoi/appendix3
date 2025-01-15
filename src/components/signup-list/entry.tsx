@@ -2,13 +2,13 @@ import { IconX } from '@tabler/icons-react';
 import CorpsDisplay from 'components/corps/display';
 import Checkbox from 'components/input/checkbox';
 
-type Corps = {
+interface Corps {
   id: string;
   firstName: string;
   lastName: string;
   nickName: string | null;
   number: number | null;
-};
+}
 
 interface SignupEntryProps {
   corps: Corps;

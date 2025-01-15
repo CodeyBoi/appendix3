@@ -2,7 +2,7 @@ import { CorpsFoodPrefs } from '@prisma/client';
 import { IconDownload } from '@tabler/icons-react';
 import Button from 'components/input/button';
 
-type Signup = {
+interface Signup {
   status: {
     value: string;
   };
@@ -14,15 +14,15 @@ type Signup = {
     fullName: string;
     displayName: string;
   };
-};
+}
 
-type FoodPrefsProps = {
+interface FoodPrefsProps {
   gigTitle: string;
   signups: Signup[];
   foodPrefs: Record<string, CorpsFoodPrefs>;
   checkbox1?: string;
   checkbox2?: string;
-};
+}
 
 const DEFAULT_FOOD_PREFS: CorpsFoodPrefs = {
   corpsId: '',

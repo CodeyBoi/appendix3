@@ -6,7 +6,7 @@ import ActionIcon from 'components/input/action-icon';
 import { ReactNode, useState } from 'react';
 import { cn } from 'utils/class-names';
 
-type ModalProps = {
+interface ModalProps {
   target: ReactNode;
   children: ReactNode;
   title?: string;
@@ -14,7 +14,7 @@ type ModalProps = {
   onFocus?: () => void;
   onBlur?: () => void;
   withCloseButton?: boolean;
-};
+}
 
 const Modal = ({
   target,
@@ -50,7 +50,7 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-1/2 z-20 max-w-xl -translate-x-1/2 -translate-y-1/2 transform overflow-y-auto rounded bg-white p-4 transition-opacity',
+          'fixed left-1/2 top-1/2 z-20 max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
       >

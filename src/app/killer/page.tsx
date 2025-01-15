@@ -107,7 +107,7 @@ const KillerPage = async () => {
     .sort(
       (a, b) =>
         // timeOfDeath cannot be null as we filter out those participants above
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime(),
     );
 
@@ -190,7 +190,7 @@ const KillerPage = async () => {
                               participant.corps,
                             )} `}
                             <Time
-                              date={participant.timeOfDeath as Date}
+                              date={participant.timeOfDeath!}
                               options={{
                                 weekday: 'long',
                                 hour: '2-digit',

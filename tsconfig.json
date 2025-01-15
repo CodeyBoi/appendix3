@@ -28,8 +28,9 @@
   },
   "include": [
     "next-env.d.ts",
-    "src",
-    "scripts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

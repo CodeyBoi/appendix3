@@ -3,12 +3,12 @@
 import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { cn } from '../../utils/class-names';
 
-type TabsProps = {
+interface TabsProps {
   options: ({ label: React.ReactNode; value: string } | string)[];
   name?: string;
   defaultTab?: string;
   onTabChange?: (value: string) => void;
-};
+}
 
 const Tabs = ({
   defaultTab,

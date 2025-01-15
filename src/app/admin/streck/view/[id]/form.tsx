@@ -18,14 +18,14 @@ import { lang } from 'utils/language';
 
 export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
 
-type Corps = {
+interface Corps {
   id: string;
   number: number | null;
   firstName: string;
   lastName: string;
-};
+}
 
-type Transaction = {
+interface Transaction {
   corps: Corps;
   item: string;
   pricePer: number;
@@ -33,12 +33,12 @@ type Transaction = {
   totalPrice: number;
   verificationNumber: string | null;
   note: string;
-};
+}
 
-type StreckItem = {
+interface StreckItem {
   name: string;
   price: number;
-};
+}
 
 interface AdminStreckFormProps {
   streckList?: StreckList & { transactions: Transaction[] };

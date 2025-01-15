@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 type Color = 'red' | 'gray';
-type SegmentedControlOption = {
+interface SegmentedControlOption {
   label: React.ReactNode;
   value: string | number;
-};
-type SegmentedControlProps = {
+}
+interface SegmentedControlProps {
   color?: Color;
   value?: string | number;
   defaultValue?: string | number;
@@ -16,7 +16,7 @@ type SegmentedControlProps = {
   options: SegmentedControlOption[];
   disabled?: boolean;
   className?: string;
-};
+}
 
 const colorVariants = {
   gray: {

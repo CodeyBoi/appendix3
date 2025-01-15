@@ -25,7 +25,7 @@ export const authRouter = router({
         where: { token: hashedToken },
       });
 
-      if (!!verifiedtoken) {
+      if (verifiedtoken) {
         await ctx.prisma.verifiedToken.delete({
           where: { token: hashedToken },
         });

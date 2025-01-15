@@ -36,10 +36,10 @@ const years = range(1970, getOperatingYear() + 2)
   .reverse()
   .map((y) => ({ value: y, label: y.toString() }));
 
-type DatePickerDropdownProps = {
+interface DatePickerDropdownProps {
   defaultDate?: Date;
   onDateChange?: (date: Date) => void;
-};
+}
 
 const DatePickerDropdown = ({
   defaultDate,

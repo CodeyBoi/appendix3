@@ -10,18 +10,18 @@ import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 import { ALL_PERMISSIONS, Permission } from 'utils/permission';
 
-type Role = {
+interface Role {
   id: number;
   name: string;
   permissions: {
     id: number;
     name: Permission;
   }[];
-};
+}
 
-type AdminPermissionListProps = {
+interface AdminPermissionListProps {
   role: Role;
-};
+}
 
 const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
   const router = useRouter();

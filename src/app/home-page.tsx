@@ -13,10 +13,7 @@ const WIDTHS = [
   [145, 155, 135, 0.4],
 ];
 
-const makeGigList = async () => {
-  const currentDate = new Date(
-    new Date().toISOString().split('T')[0] ?? '2021-01-01',
-  );
+const makeGigList = async (currentDate: Date) => {
   const [gigs, corps] = await Promise.all([
     api.gig.getMany.query({ startDate: currentDate }),
     api.corps.getSelf.query(),
@@ -61,10 +58,11 @@ const makeGigList = async () => {
   return gigList;
 };
 
-const HomePage = async () => {
-  const currentDate = new Date(
-    new Date().toISOString().split('T')[0] ?? '2021-01-01',
-  );
+interface HomePageProps {
+  currentDate?: Date;
+}
+
+const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
   const [killerGame, killerPlayer, streaks] = await Promise.all([
@@ -81,7 +79,7 @@ const HomePage = async () => {
     killerGame.start > new Date() &&
     !killerPlayer;
 
-  const gigs = await makeGigList();
+  const gigs = await makeGigList(currentDate);
 
   const fire = '🔥'.repeat(Math.floor(streak / 10 + 1));
 

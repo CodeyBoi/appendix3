@@ -141,16 +141,16 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const { data: instruments } = api.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
-  const instrumentPrecedence: { [key: string]: number } = useMemo(
+  const instrumentPrecedence: Record<string, number> = useMemo(
     () =>
       instruments?.reduce((acc, instrument) => {
-        (acc as { [key: string]: number })[instrument.name] = instrument.id;
+        (acc as Record<string, number>)[instrument.name] = instrument.id;
         return acc;
       }, {}) ?? [],
     [instruments],
   );
   // Hack to make sure the conductor is always first
-  instrumentPrecedence['Dirigent'] = -1;
+  instrumentPrecedence.Dirigent = -1;
 
   // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
   const signupsSorted = useMemo(
@@ -294,10 +294,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
                       })
                     }
                     checkbox1={
-                      !!gig?.checkbox1.trim() ? signup.checkbox1 : undefined
+                      gig?.checkbox1.trim() ? signup.checkbox1 : undefined
                     }
                     checkbox2={
-                      !!gig?.checkbox2.trim() ? signup.checkbox2 : undefined
+                      gig?.checkbox2.trim() ? signup.checkbox2 : undefined
                     }
                     handleDelete={() => handleDelete(signup.corpsId)}
                   />

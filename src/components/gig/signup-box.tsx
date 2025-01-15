@@ -10,19 +10,19 @@ import { lang } from 'utils/language';
 import { aprilFoolsInstrumentLabel, isAprilFools } from 'utils/date';
 import Wheel from 'components/wheel';
 
-type Signup = {
+interface Signup {
   status: { value: string };
   instrument: { name: string };
   checkbox1: boolean;
   checkbox2: boolean;
-};
+}
 
-type Instrument = {
+interface Instrument {
   name: string;
   id: number;
-};
+}
 
-type GigSignupBoxProps = {
+interface GigSignupBoxProps {
   corpsId: string;
   gigId: string;
   instruments: Instrument[];
@@ -30,7 +30,7 @@ type GigSignupBoxProps = {
   checkbox1: string;
   checkbox2: string;
   signup?: Signup;
-};
+}
 
 const SIGNUP_OPTIONS = [
   { label: lang('Ja', 'Yes'), value: 'Ja', color: 'green' },

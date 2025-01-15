@@ -8,9 +8,9 @@ import SelectCorps from 'components/select-corps';
 import RehearsalCheckbox from 'components/rehearsal/checkbox';
 import { api } from 'trpc/react';
 
-type RehearsalAttendenceProps = {
+interface RehearsalAttendenceProps {
   rehearsal: Rehearsal;
-};
+}
 
 const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   const utils = api.useUtils();
@@ -77,8 +77,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
         </button>
       </div>
       <div className='flex flex-col space-y-2'>
-        {attendence?.corpsiiBySection &&
-          attendence.corpsiiBySection.map((section) => (
+        {attendence?.corpsiiBySection?.map((section) => (
             <React.Fragment key={section.name}>
               <h4>{section.name}</h4>
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>

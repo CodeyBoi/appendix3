@@ -8,7 +8,7 @@ import ActionIcon from '../action-icon';
 import DatePickerDropdown from '../date-picker/dropdown';
 import TimePickerDropdown from './time-picker-dropdown';
 
-type DateTimePickerProps = {
+interface DateTimePickerProps {
   value?: Date | null;
   onChange?: (date: Date | null) => void;
   label?: string;
@@ -16,7 +16,7 @@ type DateTimePickerProps = {
   placeholder?: string;
   defaultValue?: Date;
   clearable?: boolean;
-};
+}
 
 const DateTimePicker = ({
   value,

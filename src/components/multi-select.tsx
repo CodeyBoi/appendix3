@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import Select, { MultiValue } from 'react-select';
 
-type OptionType = {
+interface OptionType {
   label: string;
   value: string;
-};
+}
 
-type MultiSelectCorpsProps = {
+interface MultiSelectCorpsProps {
   options: OptionType[];
   value?: string[];
   defaultValue?: string[];
@@ -16,7 +16,7 @@ type MultiSelectCorpsProps = {
   className?: string;
   label?: string;
   placeholder?: string;
-};
+}
 
 const MultiSelect = ({
   options,

@@ -9,10 +9,10 @@ import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
-type CorpsInfoboxProps = {
+interface CorpsInfoboxProps {
   id: string;
   open: boolean;
-};
+}
 
 const genOtherInstrumentsString = (instruments: string[]) => {
   instruments = instruments.map((i) => i.toLowerCase());

@@ -10,7 +10,7 @@ import { api } from 'trpc/react';
 import { detailedName } from 'utils/corps';
 import { lang } from 'utils/language';
 
-type Role = {
+interface Role {
   id: number;
   name: string;
   corpsii: {
@@ -20,11 +20,11 @@ type Role = {
     number: number | null;
     nickName: string | null;
   }[];
-};
+}
 
-type AdminRoleHolderListProps = {
+interface AdminRoleHolderListProps {
   role: Role;
-};
+}
 
 const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
   const router = useRouter();

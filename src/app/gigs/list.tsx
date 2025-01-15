@@ -3,10 +3,10 @@ import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 
-type GigListProps = {
+interface GigListProps {
   year: number;
   tab: string;
-};
+}
 
 const fetchGigs = async (year: number, tab: string) => {
   const startDate = new Date(year, 0, 1);

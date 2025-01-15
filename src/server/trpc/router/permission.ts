@@ -3,10 +3,10 @@ import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { ALL_PERMISSIONS, Permission } from 'utils/permission';
 import { corpsOrderBy } from 'utils/corps';
 
-type PermissionEntry = {
+interface PermissionEntry {
   id: number;
   name: Permission;
-};
+}
 
 export const permissionRouter = router({
   getOwnPermissions: protectedProcedure.query(async ({ ctx }) => {

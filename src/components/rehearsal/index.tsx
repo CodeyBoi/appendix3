@@ -4,9 +4,9 @@ import React from 'react';
 import Button from '../input/button';
 import RehearsalAttendence from './attendence';
 
-type RehearsalProps = {
+interface RehearsalProps {
   rehearsal: RehearsalPrisma;
-};
+}
 
 const Rehearsal = ({ rehearsal }: RehearsalProps) => {
   return (

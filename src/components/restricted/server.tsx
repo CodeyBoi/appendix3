@@ -1,11 +1,11 @@
 import { api } from 'trpc/server';
 import { Permission } from 'utils/permission';
 
-type RestrictedProps = {
+interface RestrictedProps {
   permissions: Permission[] | Permission;
   fallback?: React.ReactNode;
   children: React.ReactNode;
-};
+}
 
 const Restricted = async (props: RestrictedProps) => {
   const permissions = Array.isArray(props.permissions)

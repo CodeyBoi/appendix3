@@ -1,6 +1,6 @@
-type GigSkeletonProps = {
+interface GigSkeletonProps {
   widths?: number[];
-};
+}
 
 const GigSkeleton = ({ widths = [] }: GigSkeletonProps) => {
   const [titleWidth = 200, typeWidth = 120, locationWidth = 95, textW = 0.6] =

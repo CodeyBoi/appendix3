@@ -3,14 +3,14 @@ import { api } from 'trpc/server';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 
-type Rehearsal = {
+interface Rehearsal {
   id: string;
   date: Date;
   title: string;
-};
-type RehearsalsProps = {
+}
+interface RehearsalsProps {
   rehearsals: Rehearsal[];
-};
+}
 
 const RehearsalListTable = ({ rehearsals }: RehearsalsProps) => {
   return (
@@ -45,10 +45,10 @@ const RehearsalList = async ({ year }: { year: string }) => {
     return <h3>Inga rep finns registrerade detta år</h3>;
   }
 
-  type SplitRehearsals = {
+  interface SplitRehearsals {
     orchestra: typeof rehearsals;
     ballet: typeof rehearsals;
-  };
+  }
   const splitRehearsals = rehearsals.reduce(
     (acc, rehearsal) => {
       if (rehearsal.type === 'Orkesterrepa') {

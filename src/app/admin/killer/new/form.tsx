@@ -6,11 +6,11 @@ import TextInput from 'components/input/text-input';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type FormValues = {
+interface FormValues {
   name: string;
   start: Date;
   end: Date;
-};
+}
 const initialValues = {
   name: '',
   start: new Date(),

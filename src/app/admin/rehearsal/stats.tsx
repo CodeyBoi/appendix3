@@ -1,13 +1,13 @@
 import { api } from 'trpc/server';
 import { newUTCDate } from 'utils/date';
 
-type RehearsalStatsProps = {
+interface RehearsalStatsProps {
   totalRehearsals: number;
   stats: {
     corps: { id: string; number: number | null; displayName: string };
     count: number;
   }[];
-};
+}
 
 const RehearsalStatsTable = ({
   totalRehearsals,

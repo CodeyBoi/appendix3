@@ -77,10 +77,10 @@ export const streckRouter = router({
     .query(async ({ ctx, input }) => {
       const { start, end, corpsId, streckListId, take, skip = 0 } = input;
 
-      type SummaryItem = {
+      interface SummaryItem {
         amount: number;
         totalPrice: number;
-      };
+      }
 
       const data = await ctx.prisma.streckTransaction.findMany({
         include: {
@@ -227,14 +227,14 @@ export const streckRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      type ActiveCorps = {
+      interface ActiveCorps {
         id: string;
         number: number | null;
         firstName: string;
         lastName: string;
         nickName: string | null;
         balance: number;
-      };
+      }
 
       const {
         additionalCorps = [],

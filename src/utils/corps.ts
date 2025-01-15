@@ -75,11 +75,11 @@ export const fullName = (
     ? ''
     : `${corps.firstName.trim() + ' ' + corps.lastName.trim()}`;
 
-type CorpsSort = {
+interface CorpsSort {
   number: number | null;
   lastName: string;
   firstName: string;
-};
+}
 
 export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
   if (a.number && b.number) {

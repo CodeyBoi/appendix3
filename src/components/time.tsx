@@ -2,10 +2,10 @@
 
 import { lang } from 'utils/language';
 
-type TimeProps = {
+interface TimeProps {
   date: Date;
   options?: Intl.DateTimeFormatOptions;
-};
+}
 
 const Time = ({ date, options }: TimeProps) => {
   const svTime = date.toLocaleDateString('sv', options);

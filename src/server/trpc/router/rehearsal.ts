@@ -218,7 +218,7 @@ export const rehearsalRouter = router({
       return {
         nonPositiveRehearsals,
         stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId] as ExtendedCorps,
+          corps: corps[stat.corpsId]!,
           count: stat._count.rehearsalId,
         })),
       };
@@ -288,7 +288,7 @@ export const rehearsalRouter = router({
       return {
         nonPositiveRehearsals,
         stats: stats.map((stat) => ({
-          corps: corps[stat.corpsId] as ExtendedCorps,
+          corps: corps[stat.corpsId]!,
           count: stat._count.rehearsalId,
         })),
       };

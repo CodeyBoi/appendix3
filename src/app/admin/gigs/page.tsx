@@ -1,7 +1,12 @@
 import { redirect } from 'next/navigation';
 
-const AdminViewGigs = () => {
-  const currentYear = new Date().getFullYear();
+interface AdminViewGigsProps {
+  currentYear?: number;
+}
+
+const AdminViewGigs = ({
+  currentYear = new Date().getFullYear(),
+}: AdminViewGigsProps) => {
   redirect(`/gigs?year=${currentYear}&tab=all`);
 };
 

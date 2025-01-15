@@ -20,17 +20,22 @@ import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import { Permission } from 'utils/permission';
 
-type NavbarLink = {
+interface NavbarLink {
   label: React.ReactNode;
   href: string;
   icon: React.ReactNode;
   permission?: Permission;
-};
-type NavbarLinkGroup = {
+}
+
+interface NavbarLinkGroup {
   title: React.ReactNode;
   value: TabValue;
   links: NavbarLink[];
-};
+}
+
+interface NavbarContentProps {
+  currentDate?: Date;
+}
 
 export type TabValue = 'user' | 'admin';
 
@@ -122,7 +127,9 @@ const toElement = (link: NavbarLink) => (
 
 const killerLabel = { label: 'Killer', href: '/killer', icon: <IconSwords /> };
 
-const NavbarContent = async () => {
+const NavbarContent = async ({
+  currentDate = new Date(),
+}: NavbarContentProps) => {
   const permissions = await api.permission.getOwnPermissions.query();
 
   const adminTabLinks = adminTab.links.filter((link) =>
@@ -143,7 +150,7 @@ const NavbarContent = async () => {
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&
     killerGame.start &&
-    killerGame.start > new Date() &&
+    killerGame.start > currentDate &&
     !killerPlayer;
 
   const userTabElement = (

@@ -1,11 +1,11 @@
 import React from 'react';
 import { api } from 'trpc/server';
 
-type TransactionsSummaryProps = {
+interface TransactionsSummaryProps {
   start?: Date;
   end?: Date;
   take?: number;
-};
+}
 
 const TransactionsSummary = async ({
   start,

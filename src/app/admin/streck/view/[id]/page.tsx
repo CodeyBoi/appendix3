@@ -5,14 +5,14 @@ import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import Tabs from 'components/input/tabs';
 
-type AdminStreckFormPageProps = {
+interface AdminStreckFormPageProps {
   params: {
     id: string;
   };
   searchParams: {
     type: AdminStreckFormType;
   };
-};
+}
 
 const tabOptions = [
   {

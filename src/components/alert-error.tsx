@@ -3,13 +3,13 @@
 import React, { useEffect } from 'react';
 import { IconAlertTriangle, IconX } from '@tabler/icons-react';
 
-export type AlertErrorProps = {
+export interface AlertErrorProps {
   icon?: React.ReactNode;
   title?: string;
   withCloseButton?: boolean;
   msg?: string;
   visible: boolean;
-};
+}
 
 const AlertError = ({
   icon = <IconAlertTriangle />,

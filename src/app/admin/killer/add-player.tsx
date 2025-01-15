@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
-type KillerAddPlayerProps = {
+interface KillerAddPlayerProps {
   corpsId?: string;
   participants?: {
     corps: {
       id: string;
     };
   }[];
-};
+}
 
 const KillerAddPlayer = ({
   corpsId,

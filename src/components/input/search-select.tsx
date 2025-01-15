@@ -5,11 +5,11 @@ import TextInput from './text-input';
 import useKeyDown from 'hooks/use-key-down';
 import { cn } from 'utils/class-names';
 
-export type SelectSearchItem = {
+export interface SelectSearchItem {
   label: string;
   value: string;
   element?: ReactNode;
-};
+}
 
 export type SelectSearchProps = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,

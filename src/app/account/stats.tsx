@@ -2,10 +2,16 @@ import { getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
 import { api } from 'trpc/server';
 
-const CorpsStats = async () => {
-  const operatingYear = getOperatingYear();
+interface CorpsStatsProps {
+  operatingYear?: number;
+  currentDate?: Date;
+}
+
+const CorpsStats = async ({
+  operatingYear = getOperatingYear(),
+  currentDate = new Date(),
+}: CorpsStatsProps) => {
   const start = new Date(operatingYear, 8, 1); // September 1st
-  const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
   // If we're in the same year, we want to show the stats up to today
@@ -39,7 +45,7 @@ const CorpsStats = async () => {
     streckAccountQuery,
   ]);
 
-  const corpsStats = stats?.corpsStats.get(stats.corpsIds[0] as string);
+  const corpsStats = stats?.corpsStats.get(stats.corpsIds[0]!);
   const streckAccountStr = lang(
     'Strecksaldo: ' + streckAccount.balance.toString(),
     'Streck balance: ' + streckAccount.balance.toString(),

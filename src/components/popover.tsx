@@ -27,7 +27,7 @@ const bgColorClasses: Record<BgColor, string> = {
   default: 'bg-white dark:bg-darkBg',
 };
 
-type PopoverProps = {
+interface PopoverProps {
   target: React.ReactNode;
   targetClassName?: string;
   children: React.ReactNode;
@@ -37,7 +37,7 @@ type PopoverProps = {
   center?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
-};
+}
 
 const Popover = ({
   target,
@@ -75,7 +75,7 @@ const Popover = ({
           className={cn(
             'z-20 overflow-y-auto rounded p-1 shadow transition-opacity',
             center
-              ? 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'
+              ? 'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
               : 'absolute ' + positionClasses[position],
             open ? 'opacity-100' : 'pointer-events-none opacity-0',
             bgColorClasses[bgColor],

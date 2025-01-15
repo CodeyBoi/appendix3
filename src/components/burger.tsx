@@ -2,17 +2,17 @@ import { cn } from 'utils/class-names';
 
 type BurgerVariant = 'normal' | 'burger';
 
-type BurgerStyle = {
+interface BurgerStyle {
   top: (active: boolean) => string;
   middle: (active: boolean) => string;
   bottom: (active: boolean) => string;
-};
+}
 
-type BurgerProps = {
+interface BurgerProps {
   active: boolean;
   onClick?: () => void;
   variant?: BurgerVariant;
-};
+}
 
 const styles: Record<BurgerVariant, BurgerStyle> = {
   normal: {

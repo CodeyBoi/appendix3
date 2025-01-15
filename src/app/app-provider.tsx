@@ -9,12 +9,12 @@ import useKeyDown from 'hooks/use-key-down';
 import useLanguage, { Language } from 'hooks/use-language';
 import { useSlagverkEasterEgg } from 'hooks/easter-eggs';
 
-type AppProviderProps = {
+interface AppProviderProps {
   children: ReactElement;
   defaultColorScheme: 'light' | 'dark';
   session: Session | null;
   initialLanguage: Language;
-};
+}
 
 const AppProvider = ({
   children,

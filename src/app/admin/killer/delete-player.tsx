@@ -5,9 +5,9 @@ import ActionIcon from 'components/input/action-icon';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type DeletePlayerProps = {
+interface DeletePlayerProps {
   killerId: number;
-};
+}
 
 const KillerDeletePlayer = ({ killerId }: DeletePlayerProps) => {
   const router = useRouter();

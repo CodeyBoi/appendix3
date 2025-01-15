@@ -18,10 +18,10 @@ const defaultValues = {
   countsPositively: false,
 };
 type FormValues = typeof defaultValues;
-type RehearsalFormProps = {
+interface RehearsalFormProps {
   rehearsal?: Rehearsal;
   onSubmit?: () => void;
-};
+}
 
 const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   const utils = api.useUtils();

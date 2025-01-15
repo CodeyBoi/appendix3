@@ -6,22 +6,22 @@ import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
 import { downloadXLSX } from 'utils/xlsx';
 
-type Item = {
+interface Item {
   name: string;
   price: number;
-};
+}
 
-type ActiveCorps = {
+interface ActiveCorps {
   number: number | null;
   firstName: string;
   lastName: string;
   balance: number;
-};
+}
 
-type DownloadStrecklistButtonProps = {
+interface DownloadStrecklistButtonProps {
   activeCorps: ActiveCorps[];
   items: Item[];
-};
+}
 
 const border: Partial<Borders> = {
   bottom: {

@@ -1,0 +1,41 @@
+import eslint from '@eslint/js';
+import eslintPluginTailwindCSS from 'eslint-plugin-tailwindcss';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  eslintPluginTailwindCSS.configs['flat/recommended'],
+  eslintConfigPrettier,
+  {
+    settings: {
+      tailwindcss: {
+        "callees": ["classnames", "clsx", "twMerge", "cx", "cn"],
+        "tags": ["tw"]
+      },
+    },
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_",  // ignore unused variables starting with _
+          "varsIgnorePattern": "^_"   // ignore unused variables starting with _
+        }
+      ],
+      "tailwindcss/classnames-order": [
+        "warn",
+        {
+          "callees": ["classnames", "clsx", "twMerge", "cx", "cn"],
+          "tags": ["tw"]
+        }
+      ],
+    },
+  },
+);

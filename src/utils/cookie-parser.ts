@@ -1,6 +1,4 @@
-interface ObjectType {
-  [key: string]: string;
-}
+type ObjectType = Record<string, string>;
 
 const cookieParser = (cookieString: string) => {
   if (cookieString === '') return {};

@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { lang } from 'utils/language';
 
-type CountdownProps = {
+interface CountdownProps {
   end: Date;
   className?: string;
-};
+}
 
 const genTimeMsg = (secs: number) => {
   let msg = '';

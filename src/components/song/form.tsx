@@ -15,9 +15,9 @@ const defaultValues = {
   lyrics: '',
 };
 type FormValues = typeof defaultValues;
-type SongFormProps = {
+interface SongFormProps {
   song?: FormValues & { id: string };
-};
+}
 
 const SongForm = ({ song }: SongFormProps) => {
   const router = useRouter();

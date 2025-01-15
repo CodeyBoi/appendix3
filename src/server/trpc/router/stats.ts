@@ -42,7 +42,7 @@ export const statsRouter = router({
         },
       });
 
-      type CorpsStats = {
+      interface CorpsStats {
         id: string;
         number: number | null;
         firstName: string;
@@ -51,7 +51,7 @@ export const statsRouter = router({
         gigsAttended: number;
         positiveGigsAttended: number;
         maxPossibleGigs: number;
-      };
+      }
 
       const corpsStatsQuery = ctx.prisma.$queryRaw<CorpsStats[]>`
         SELECT
@@ -161,7 +161,7 @@ export const statsRouter = router({
           corpsIds: [],
         };
       }
-      type Entry = { corpsId: string; points: number };
+      interface Entry { corpsId: string; points: number }
       const pointsQuery = await ctx.prisma.$queryRaw<Entry[]>`
         SELECT corpsId, SUM(points) AS points
         FROM GigSignup
@@ -193,14 +193,14 @@ export const statsRouter = router({
     .query(async ({ ctx, input }) => {
       const { start, end } = input;
       const corpsId = ctx.session.user.corps.id;
-      type Entry = {
+      interface Entry {
         corpsId: string;
         firstName: string;
         lastName: string;
         number: number | null;
         commonGigs: number;
         similarity: number;
-      };
+      }
       const result = await ctx.prisma.$queryRaw<Entry[]>`
         WITH attendedGigs AS (
           SELECT corpsId, sum(points) AS points
@@ -254,14 +254,14 @@ export const statsRouter = router({
     .query(async ({ ctx, input }) => {
       const ownCorpsId = ctx.session.user.corps.id;
       const { start, end, corpsId = ownCorpsId } = input ?? {};
-      type Entry = {
+      interface Entry {
         month: string;
         points: string;
-      };
-      type MaxGigsEntry = {
+      }
+      interface MaxGigsEntry {
         month: string;
         maxGigs: string;
-      };
+      }
       const monthlyDataQuery = ctx.prisma.$queryRaw<Entry[]>`
         SELECT
           DATE_FORMAT(date, '%Y-%m-01') AS month,
@@ -474,7 +474,7 @@ export const statsRouter = router({
       let currentStreak = 0;
       for (const gig of recent) {
         const signup = gig.signups[0];
-        if (!signup || !signup.attended) {
+        if (!signup?.attended) {
           currentStreak = 0;
           continue;
         }
@@ -488,7 +488,7 @@ export const statsRouter = router({
       let attended = 0;
       for (const gig of recent) {
         const signup = gig.signups[0];
-        if (signup && signup.attended) {
+        if (signup?.attended) {
           attended++;
         }
       }
@@ -531,15 +531,15 @@ export const statsRouter = router({
           number: true,
         },
       })
-    )._max.number as number;
+    )._max.number!;
 
-    type CorpsGigs = {
+    interface CorpsGigs {
       id: string;
       number: number | null;
       firstName: string;
       lastName: string;
       gigsAttended: number;
-    };
+    }
 
     const gigLists = await ctx.prisma.$queryRaw<CorpsGigs[]>`
         SELECT
@@ -739,7 +739,7 @@ export const statsRouter = router({
             const signup = gig.signups.find(
               (signup) => signup.corpsId === corpsId,
             );
-            if (signup && signup.attended) {
+            if (signup?.attended) {
               streaks.set(corpsId, (streaks.get(corpsId) ?? 0) + 1);
             } else {
               if (!gig.countsPositively) {

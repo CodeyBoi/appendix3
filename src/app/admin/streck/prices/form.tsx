@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { api } from 'trpc/react';
 
-type AdminStreckPricesFormProps = {
+interface AdminStreckPricesFormProps {
   initialItems: PrismaStreckItem[];
-};
+}
 
 const AdminStreckPricesForm = ({
   initialItems,
@@ -43,7 +43,7 @@ const AdminStreckPricesForm = ({
             .map((line) => {
               const data = line.split(',');
               return {
-                name: data[0]?.trim() as string,
+                name: data[0]?.trim()!,
                 price: +(data[1] || 0),
               };
             });

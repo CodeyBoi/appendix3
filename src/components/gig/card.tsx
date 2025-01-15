@@ -23,13 +23,17 @@ type Gig = PrismaGig & {
 
 interface GigCardProps {
   gig: Gig | GigId;
+  currentDate?: Date;
 }
 
 const isGig = (gig: Gig | GigId): gig is Gig => {
   return (gig as Gig).id !== undefined;
 };
 
-const GigCard = async ({ gig: gigProp }: GigCardProps) => {
+const GigCard = async ({
+  gig: gigProp,
+  currentDate = new Date(),
+}: GigCardProps) => {
   const [corps, gig, mainInstrument] = await Promise.all([
     api.corps.getSelf.query(),
     isGig(gigProp)
@@ -51,10 +55,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
     corpsId: corps.id,
   });
 
-  const date = new Date();
-  const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
-  const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
-  const gigHasBeen = dayjs(date).isAfter(
+  const isBeforeSignup = gig.signupStart
+    ? currentDate < gig.signupStart
+    : false;
+  const isAfterSignup = gig.signupEnd ? currentDate > gig.signupEnd : false;
+  const gigHasBeen = dayjs(currentDate).isAfter(
     dayjs(gig.date).add(1, 'day').startOf('day'),
   );
 

@@ -13,11 +13,11 @@ import DownloadStrecklistButton from './download';
 import StreckListTable from './view/strecklist-table';
 import ParamsSwitch from 'components/input/params-switch';
 
-type AdminStreckPageProps = {
+interface AdminStreckPageProps {
   searchParams: {
     showDelete: string;
   };
-};
+}
 
 const AdminStreckPage = async ({
   searchParams: { showDelete },

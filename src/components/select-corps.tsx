@@ -38,7 +38,7 @@ const SelectCorps = ({
   // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery(
     {
-      id: defaultValue as string,
+      id: defaultValue!,
     },
     {
       enabled: !!defaultValue,
@@ -60,7 +60,7 @@ const SelectCorps = ({
           .filter(
             (c) =>
               (!initialCorps || initialCorps.id !== c.id) &&
-              (!excludeIds || !excludeIds.includes(c.id)),
+              (!excludeIds?.includes(c.id)),
           )
           .map((c) => ({
             label: detailedName(c),
