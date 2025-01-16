@@ -87,7 +87,6 @@ const KillerPage = async () => {
     api.killer.getOwnPlayerInfo.query(),
     api.gig.getChristmasConcert.query({}),
   ]);
-  const language = corps?.language ?? 'sv';
 
   if (!game) {
     return <h2>{lang('Ingen pågående killer :(', 'No ongoing killer :(')}</h2>;
@@ -107,8 +106,8 @@ const KillerPage = async () => {
     .sort(
       (a, b) =>
         // timeOfDeath cannot be null as we filter out those participants above
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        a.timeOfDeath!.getTime() - b.timeOfDeath!.getTime(),
+
+        (a.timeOfDeath?.getTime() ?? 0) - (b.timeOfDeath?.getTime() ?? 0),
     );
 
   return (
@@ -125,7 +124,7 @@ const KillerPage = async () => {
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col'>
-            {!hasStarted && corps && (
+            {!hasStarted && (
               <div className='flex flex-col items-center'>
                 <Button href='/killer/rules'>
                   <IconInfoCircle />
@@ -180,26 +179,28 @@ const KillerPage = async () => {
                           </td>
                         </tr>
                       )}
-                      {deadParticipants.map((participant) => (
-                        <tr key={participant.id}>
-                          <td className='whitespace-nowrap pr-2 line-through'>
-                            <CorpsDisplay corps={participant.corps} />
-                          </td>
-                          <td className='italic text-red-600'>
-                            {`sa "${participant.word}" och ${getDeathEuphemism(
-                              participant.corps,
-                            )} `}
-                            <Time
-                              date={participant.timeOfDeath as Date}
-                              options={{
-                                weekday: 'long',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                      {deadParticipants.map((participant) =>
+                        participant.timeOfDeath ? (
+                          <tr key={participant.id}>
+                            <td className='whitespace-nowrap pr-2 line-through'>
+                              <CorpsDisplay corps={participant.corps} />
+                            </td>
+                            <td className='italic text-red-600'>
+                              {`sa "${
+                                participant.word
+                              }" och ${getDeathEuphemism(participant.corps)} `}
+                              <Time
+                                date={participant.timeOfDeath}
+                                options={{
+                                  weekday: 'long',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ) : null,
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -292,7 +293,7 @@ const KillerPage = async () => {
                   )}
                   {`${detailedName(
                     player.killedBy?.corps,
-                  )} ${player.timeOfDeath?.toLocaleDateString(language, {
+                  )} ${player.timeOfDeath?.toLocaleDateString(corps.language, {
                     weekday: 'long',
                     hour: '2-digit',
                     minute: '2-digit',

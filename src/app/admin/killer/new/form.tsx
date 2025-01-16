@@ -6,11 +6,11 @@ import TextInput from 'components/input/text-input';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type FormValues = {
+interface FormValues {
   name: string;
   start: Date;
   end: Date;
-};
+}
 const initialValues = {
   name: '',
   start: new Date(),
@@ -25,9 +25,7 @@ const AdminKillerForm = () => {
     validate: {
       name: (name) => (name.length > 0 ? null : 'Ange namn'),
       end: (end, values) =>
-        end && end > values.start
-          ? null
-          : 'Slutdatum måste vara efter startdatum',
+        end > values.start ? null : 'Slutdatum måste vara efter startdatum',
     },
     transformValues: (values) => ({
       ...values,
@@ -41,8 +39,8 @@ const AdminKillerForm = () => {
       router.push('/killer');
     },
   });
-  const handleSubmit = async (values: FormValues) => {
-    await mutation.mutateAsync(values);
+  const handleSubmit = (values: FormValues) => {
+    mutation.mutate(values);
   };
 
   return (

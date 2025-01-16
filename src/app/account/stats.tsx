@@ -2,10 +2,16 @@ import { getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
 import { api } from 'trpc/server';
 
-const CorpsStats = async () => {
-  const operatingYear = getOperatingYear();
+interface CorpsStatsProps {
+  operatingYear?: number;
+  currentDate?: Date;
+}
+
+const CorpsStats = async ({
+  operatingYear = getOperatingYear(),
+  currentDate = new Date(),
+}: CorpsStatsProps) => {
   const start = new Date(operatingYear, 8, 1); // September 1st
-  const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const operatingYearEnd = new Date(operatingYear + 1, 7, 31); // August 31st next year
   // If we're in the same year, we want to show the stats up to today
@@ -39,7 +45,7 @@ const CorpsStats = async () => {
     streckAccountQuery,
   ]);
 
-  const corpsStats = stats?.corpsStats.get(stats.corpsIds[0] as string);
+  const corpsStats = stats.corpsStats.get(stats.corpsIds[0] ?? '');
   const streckAccountStr = lang(
     'Strecksaldo: ' + streckAccount.balance.toString(),
     'Streck balance: ' + streckAccount.balance.toString(),
@@ -55,7 +61,7 @@ const CorpsStats = async () => {
           )}
         </h5>
         <span className='hidden'>
-          {corps?.number ? (
+          {corps.number ? (
             <a className='hover:underline' href='account/streck'>
               {streckAccountStr}
             </a>
@@ -74,19 +80,19 @@ const CorpsStats = async () => {
           {corpsStats?.gigsAttended || 0}
           <br />
           {lang('Spelningar: ', 'Gigs: ')}
-          {Math.ceil((corpsStats?.attendence || 0) * 100) + '%'}
+          {`${Math.ceil((corpsStats?.attendence ?? 0) * 100)}%`}
           {orchestraRehearsalAttendance !== 0 && (
             <>
               <br />
               {lang('Orkesterrepor: ', 'Orchestra rehearsals: ')}
-              {Math.ceil(orchestraRehearsalAttendance * 100) + '%'}
+              {`${Math.ceil(orchestraRehearsalAttendance * 100)}%`}
             </>
           )}
           {balletRehearsalAttendance !== 0 && (
             <>
               <br />
               {lang('Balettrepor: ', 'Ballet rehearsals: ')}
-              {Math.ceil(balletRehearsalAttendance * 100) + '%'}
+              {`${Math.ceil(balletRehearsalAttendance * 100)}%`}
             </>
           )}
         </div>

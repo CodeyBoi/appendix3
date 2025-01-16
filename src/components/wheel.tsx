@@ -4,11 +4,11 @@ import { IconChevronLeft } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
-type WheelProps = {
+interface WheelProps {
   options: { label: React.ReactNode; value: string; color?: string }[];
   onChange?: (value: string) => void;
   value?: string;
-};
+}
 
 const COLORS = [
   '#ff0000',

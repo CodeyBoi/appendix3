@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   title: 'Spelningar',
 };
 
+interface GigsPageProps {
+  currentYear?: number;
+  searchParams: { year: string; tab: string };
+}
+
 const startYear = 2010;
 
 const tabs = [
@@ -22,12 +27,10 @@ const tabs = [
   { value: 'all', label: lang('Alla spelningar', 'All gigs') },
 ];
 
-const GigsPage = async ({
+const GigsPage = ({
   searchParams,
-}: {
-  searchParams: { year: string; tab: string };
-}) => {
-  const currentYear = new Date().getFullYear();
+  currentYear = new Date().getFullYear(),
+}: GigsPageProps) => {
   const { year, tab } = searchParams;
   if (
     !year ||
@@ -41,9 +44,8 @@ const GigsPage = async ({
     redirect(`/gigs?year=${currentYear}&tab=my`);
   }
 
-  const endYear = new Date().getFullYear();
   const years = [] as SelectItem[];
-  for (let i = endYear; i >= startYear; i--) {
+  for (let i = currentYear; i >= startYear; i--) {
     years.push({
       value: i.toString(),
       label: i.toString(),

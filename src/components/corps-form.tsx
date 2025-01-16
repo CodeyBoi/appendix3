@@ -79,34 +79,32 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         mainInstrument,
         otherInstruments,
         roles: corps.roles.map((r) => r.name as Permission),
-        language: corps.language ?? 'sv',
+        language: corps.language,
       });
       setLoading(false);
     } else if (creatingCorps) {
       form.reset();
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
   const mutation = api.corps.upsert.useMutation({
-    onSuccess: () => {
-      utils.corps.get.invalidate({ id: corpsId });
-      utils.corps.getSelf.invalidate();
+    onSuccess: async () => {
+      await utils.corps.get.invalidate({ id: corpsId });
+      await utils.corps.getSelf.invalidate();
       setSubmitting(false);
       form.resetDirty();
       form.resetTouched();
-      // router.push("/admin/corps");
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
     const number = values.number.trim() ? parseInt(values.number.trim()) : null;
     const bNumber = values.bNumber.trim()
       ? parseInt(values.bNumber.trim())
       : null;
-    await mutation.mutateAsync({
+    mutation.mutate({
       ...values,
       number,
       bNumber,

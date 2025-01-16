@@ -7,23 +7,29 @@ import { lang } from 'utils/language';
 
 const KillerWordForm = () => {
   const router = useRouter();
-  const mutation = api.killer.kill.useMutation();
+  const mutation = api.killer.kill.useMutation({
+    onSuccess: (res) => {
+      if (res.success) {
+        setWord('');
+        setError(null);
+        router.refresh();
+      } else {
+        setError(
+          lang(
+            'Ogiltigt kodord, försök igen!',
+            'Invalid code word, try again!',
+          ),
+        );
+      }
+    },
+  });
 
   const [word, setWord] = useState<string>('');
   const [error, setError] = useState<React.ReactNode | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await mutation.mutateAsync({ word });
-    if (res.success) {
-      setWord('');
-      setError(null);
-      router.refresh();
-    } else {
-      setError(
-        lang('Ogiltigt kodord, försök igen!', 'Invalid code word, try again!'),
-      );
-    }
+    mutation.mutate({ word });
   };
 
   return (
@@ -36,7 +42,9 @@ const KillerWordForm = () => {
         <input
           placeholder='Kodord'
           value={word}
-          onChange={(e) => setWord(e.target.value)}
+          onChange={(e) => {
+            setWord(e.target.value);
+          }}
           name='word'
           type='text'
           className='grow rounded border border-gray-300 bg-white p-2 dark:border-gray-700'

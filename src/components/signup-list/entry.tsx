@@ -2,13 +2,13 @@ import { IconX } from '@tabler/icons-react';
 import CorpsDisplay from 'components/corps/display';
 import Checkbox from 'components/input/checkbox';
 
-type Corps = {
+interface Corps {
   id: string;
   firstName: string;
   lastName: string;
   nickName: string | null;
   number: number | null;
-};
+}
 
 interface SignupEntryProps {
   corps: Corps;
@@ -45,7 +45,9 @@ const Entry = ({
           <td className='px-2'>
             <Checkbox
               defaultChecked={attended}
-              onChange={(event) => setAttendance(event.target.checked)}
+              onChange={(event) => {
+                setAttendance(event.target.checked);
+              }}
             />
           </td>
           <td className='flex place-content-center px-2'>

@@ -13,15 +13,15 @@ export const metadata: Metadata = {
 const Account = async () => {
   const corps = await api.corps.getSelf.query();
   const corpsName =
-    corps?.number !== null
-      ? '#' + corps?.number.toString()
-      : 'p.e. ' + corps?.lastName;
+    corps.number !== null
+      ? '#' + corps.number.toString()
+      : 'p.e. ' + corps.lastName;
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
       <h2>
         {lang('Välkommen', 'Welcome')}
-        {`${corps ? ', ' + corpsName : ''}!`}
+        {', ' + corpsName}!
       </h2>
       <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
         <CorpsStats />

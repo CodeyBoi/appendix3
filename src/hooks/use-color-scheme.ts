@@ -15,7 +15,7 @@ const applyScheme = (scheme: ColorScheme) => {
 };
 
 const useColorScheme = (initialColorScheme?: ColorScheme) => {
-  const initColor = (initialColorScheme ?? 'light') as ColorScheme;
+  const initColor = initialColorScheme ?? 'light';
   const [colorScheme, setColorScheme] = useState<ColorScheme>(initColor);
   if (initialColorScheme) {
     applyScheme(initialColorScheme);

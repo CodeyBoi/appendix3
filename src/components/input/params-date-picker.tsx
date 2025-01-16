@@ -29,7 +29,9 @@ const ParamsDatePicker = ({
     <DatePicker
       {...props}
       value={value}
-      onChange={(d) => setDateStr(dayjs(d).format('YYYY-MM-DD'))}
+      onChange={(d) => {
+        setDateStr(dayjs(d).format('YYYY-MM-DD'));
+      }}
     />
   );
 };

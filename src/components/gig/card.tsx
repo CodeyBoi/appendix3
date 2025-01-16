@@ -23,13 +23,17 @@ type Gig = PrismaGig & {
 
 interface GigCardProps {
   gig: Gig | GigId;
+  currentDate?: Date;
 }
 
 const isGig = (gig: Gig | GigId): gig is Gig => {
-  return (gig as Gig).id !== undefined;
+  return typeof gig !== 'string';
 };
 
-const GigCard = async ({ gig: gigProp }: GigCardProps) => {
+const GigCard = async ({
+  gig: gigProp,
+  currentDate = new Date(),
+}: GigCardProps) => {
   const [corps, gig, mainInstrument] = await Promise.all([
     api.corps.getSelf.query(),
     isGig(gigProp)
@@ -38,12 +42,10 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
     api.corps.getMainInstrument.query(),
   ]);
 
-  if (!corps) {
-    return <div>Error: No corps found.</div>;
-  }
-
   if (!gig) {
-    return <div>Error: No gig found with props: {`${{ gig: gigProp }}`}.</div>;
+    return (
+      <div>Error: No gig found with props: {JSON.stringify(gigProp)}.</div>
+    );
   }
 
   const signup = await api.gig.getSignup.query({
@@ -51,10 +53,11 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
     corpsId: corps.id,
   });
 
-  const date = new Date();
-  const isBeforeSignup = gig.signupStart ? date < gig.signupStart : false;
-  const isAfterSignup = gig.signupEnd ? date > gig.signupEnd : false;
-  const gigHasBeen = dayjs(date).isAfter(
+  const isBeforeSignup = gig.signupStart
+    ? currentDate < gig.signupStart
+    : false;
+  const isAfterSignup = gig.signupEnd ? currentDate > gig.signupEnd : false;
+  const gigHasBeen = dayjs(currentDate).isAfter(
     dayjs(gig.date).add(1, 'day').startOf('day'),
   );
 
@@ -90,7 +93,7 @@ const GigCard = async ({ gig: gigProp }: GigCardProps) => {
               <div className='text-xs leading-normal'>
                 <i>{gig.type.name}</i>
                 <br />
-                {!!gig.location && `${gig.location}`}
+                {!!gig.location && gig.location}
                 {!!gig.location && <br />}
                 {gig.price !== 0 && lang('Pris: ', 'Price: ')}
                 {gig.price !== 0 && gig.price.toString()}

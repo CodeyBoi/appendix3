@@ -5,13 +5,13 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { lang } from 'utils/language';
 
-type Song = {
+interface Song {
   id: string;
   title: string;
   author: string;
   melody: string;
   views: number;
-};
+}
 
 type MatchFlag = 'title' | 'author' | 'melody' | 'views';
 

@@ -141,16 +141,16 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const { data: instruments } = api.instrument.getAll.useQuery();
   // An object which maps instrument names to their position in the INSTRUMENTS array
-  const instrumentPrecedence: { [key: string]: number } = useMemo(
+  const instrumentPrecedence: Record<string, number> = useMemo(
     () =>
       instruments?.reduce((acc, instrument) => {
-        (acc as { [key: string]: number })[instrument.name] = instrument.id;
+        (acc as Record<string, number>)[instrument.name] = instrument.id;
         return acc;
       }, {}) ?? [],
     [instruments],
   );
   // Hack to make sure the conductor is always first
-  instrumentPrecedence['Dirigent'] = -1;
+  instrumentPrecedence.Dirigent = -1;
 
   // Sorts the list of corpsii by instrument precedence, then number, then last name, then first name.
   const signupsSorted = useMemo(
@@ -184,7 +184,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   );
 
   // Divide the list of corpsii into people who answered yes and people who answered maybe
-  const splitList = signupsSorted?.reduce(
+  const splitList = signupsSorted.reduce(
     (acc, signup) => {
       if (signup.status.value === 'Ja') {
         acc.yesList.push(signup);
@@ -202,9 +202,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
     },
   );
 
-  const yesList = splitList?.yesList;
-  const maybeList = splitList?.maybeList;
-  const noList = splitList?.noList;
+  const yesList = splitList.yesList;
+  const maybeList = splitList.maybeList;
+  const noList = splitList.noList;
 
   const form = useForm({
     initialValues: { corpsId: '' },
@@ -214,11 +214,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
   });
 
   const addSignup = api.gig.addSignup.useMutation({
-    onMutate: async () => {
+    onMutate: () => {
       form.reset();
     },
-    onSettled: () => {
-      utils.gig.getSignups.invalidate({ gigId });
+    onSettled: async () => {
+      await utils.gig.getSignups.invalidate({ gigId });
     },
   });
 
@@ -233,7 +233,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const handleDelete = (corpsId: string) => {
     if (window.confirm('Är du säker på att du vill ta bort anmälningen?')) {
-      removeSignup.mutateAsync({ corpsId, gigId });
+      removeSignup.mutate({ corpsId, gigId });
     }
   };
 
@@ -286,20 +286,22 @@ const SignupList = ({ gigId }: SignupListProps) => {
                     corps={signup.corps}
                     attended={signup.attended}
                     showAdminTools={showAdminTools}
-                    setAttendance={(attended) =>
+                    setAttendance={(attended) => {
                       editAttendance.mutate({
                         corpsId: signup.corpsId,
                         gigId,
                         attended,
-                      })
-                    }
+                      });
+                    }}
                     checkbox1={
-                      !!gig?.checkbox1.trim() ? signup.checkbox1 : undefined
+                      gig?.checkbox1.trim() ? signup.checkbox1 : undefined
                     }
                     checkbox2={
-                      !!gig?.checkbox2.trim() ? signup.checkbox2 : undefined
+                      gig?.checkbox2.trim() ? signup.checkbox2 : undefined
                     }
-                    handleDelete={() => handleDelete(signup.corpsId)}
+                    handleDelete={() => {
+                      handleDelete(signup.corpsId);
+                    }}
                   />
                 </tr>
               </React.Fragment>
@@ -316,13 +318,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const instrumentCount = useMemo(
     () =>
-      yesList?.reduce(
-        (acc, signup) => {
-          acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      ),
+      yesList.reduce<Record<string, number>>((acc, signup) => {
+        acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
+        return acc;
+      }, {}),
     [yesList],
   );
 
@@ -330,7 +329,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const missingInstrumentsCount = useMemo(() => {
     const output: Record<string, number> = {};
     FULL_SETTING.forEach(([instrument, count]) => {
-      output[instrument] = count - (instrumentCount?.[instrument] ?? 0);
+      output[instrument] = count - (instrumentCount[instrument] ?? 0);
     });
     return Object.entries(output).filter(([_, count]) => count > 0);
   }, [instrumentCount]);
@@ -361,22 +360,21 @@ const SignupList = ({ gigId }: SignupListProps) => {
           checked={editMode}
           onChange={(val) => {
             setEditMode(val);
-            utils.gig.getSignups.invalidate({ gigId });
+            void utils.gig.getSignups.invalidate({ gigId });
           }}
         />
       </Restricted>
       {showAdminTools && (
         <form
-          onSubmit={form.onSubmit(
-            async (values) =>
-              await addSignup.mutateAsync({
-                corpsId: values.corpsId,
-                gigId,
-                status: 'Ja',
-                checkbox1: false,
-                checkbox2: false,
-              }),
-          )}
+          onSubmit={form.onSubmit((values) => {
+            addSignup.mutate({
+              corpsId: values.corpsId,
+              gigId,
+              status: 'Ja',
+              checkbox1: false,
+              checkbox2: false,
+            });
+          })}
         >
           <div className='flex flex-nowrap gap-4'>
             <SelectCorps
@@ -421,7 +419,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
             <div>
               <div className='h-4' />
               {missingInstrumentsMessages.map((msg) => (
-                <React.Fragment key={msg.toString()}>
+                <React.Fragment key={JSON.stringify(msg)}>
                   {msg}
                   <br />
                 </React.Fragment>
@@ -430,7 +428,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
           )}
         </div>
       )}
-      {maybeList && maybeList.length > 0 && (
+      {maybeList.length > 0 && (
         <div>
           {!gigHasHappened && (
             <h3>{lang('Dessa kanske kommer:', 'These might come:')}</h3>
@@ -438,7 +436,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
           {maybeTable}
         </div>
       )}
-      {noList && noList.length > 0 && (
+      {noList.length > 0 && (
         <Restricted permissions='manageAttendance'>
           <div>
             <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>

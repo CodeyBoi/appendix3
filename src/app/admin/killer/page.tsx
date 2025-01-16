@@ -8,7 +8,7 @@ import KillerControl from './control';
 
 const AdminKillerPage = async () => {
   const corps = await api.corps.getSelf.query();
-  if (corps?.id !== 'cld099pna01uxzhvdgs1u95oc') {
+  if (corps.id !== 'cld099pna01uxzhvdgs1u95oc') {
     return <div>Detta får bara Cool-Hannes se :) (get fucked)</div>;
   }
 
@@ -62,7 +62,7 @@ const AdminKillerPage = async () => {
               </tr>
             </thead>
             <tbody>
-              {game?.participants.map((p) => {
+              {game.participants.map((p) => {
                 return (
                   <tr key={p.id}>
                     <td className='px-1'>{p.id}</td>

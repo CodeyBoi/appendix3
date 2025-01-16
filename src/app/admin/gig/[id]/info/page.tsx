@@ -12,10 +12,10 @@ const GigAdminInfo = async ({ params }: { params: { id: string } }) => {
     api.gig.getSignups.query({ gigId }),
   ]);
 
-  const corpsIds = signups?.map((signup) => signup.corpsId);
+  const corpsIds = signups.map((signup) => signup.corpsId);
 
   const foodPrefs = await api.corps.getFoodPreferences.query({
-    corpsIds: corpsIds as string[],
+    corpsIds: corpsIds,
   });
 
   return (

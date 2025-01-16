@@ -11,9 +11,9 @@ import dayjs from 'dayjs';
 import { lang } from 'utils/language';
 import Restricted from 'components/restricted/server';
 
-type GigMenuContentProps = {
+interface GigMenuContentProps {
   gig: Gig & { type: { name: string } };
-};
+}
 
 const GigMenuContent = ({ gig }: GigMenuContentProps) => {
   const getCalendarLink = (startTime: string, endTime: string) => {
@@ -45,7 +45,7 @@ const GigMenuContent = ({ gig }: GigMenuContentProps) => {
     } else if (hasStartTime) {
       const [startHour, startMinute] = gig.start.split(/[:.]/);
       if (!startHour || !startMinute) return '';
-      const isHourEleven = hasStartTime ? parseInt(startHour) === 23 : false;
+      const isHourEleven = parseInt(startHour) === 23;
       const [endHour, endMinute] = isHourEleven
         ? ['23', '59']
         : [(parseInt(startHour) + 1).toString(), startMinute];

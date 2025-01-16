@@ -7,7 +7,7 @@ import {
   router,
 } from '../trpc';
 
-type Gig = {
+interface Gig {
   id: string;
   title: string;
   date: Date;
@@ -19,7 +19,7 @@ type Gig = {
   location: string | null;
   description: string | null;
   englishDescription: string | null;
-};
+}
 
 const sendDiscordAlert = async (gig: Gig) => {
   if (!process.env.DISCORD_WEBHOOK_GIG_URL) {
@@ -542,7 +542,7 @@ export const gigRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const corpsId = ctx.session?.user?.corps?.id;
+      const corpsId = ctx.session.user.corps.id;
       if (!corpsId) {
         throw new Error('Not logged in');
       }

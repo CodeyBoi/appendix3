@@ -6,7 +6,7 @@ import ActionIcon from 'components/input/action-icon';
 import { ReactNode, useState } from 'react';
 import { cn } from 'utils/class-names';
 
-type ModalProps = {
+interface ModalProps {
   target: ReactNode;
   children: ReactNode;
   title?: string;
@@ -14,7 +14,7 @@ type ModalProps = {
   onFocus?: () => void;
   onBlur?: () => void;
   withCloseButton?: boolean;
-};
+}
 
 const Modal = ({
   target,
@@ -50,7 +50,7 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-1/2 z-20 max-w-xl -translate-x-1/2 -translate-y-1/2 transform overflow-y-auto rounded bg-white p-4 transition-opacity',
+          'fixed left-1/2 top-1/2 z-20 max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
       >
@@ -58,7 +58,12 @@ const Modal = ({
           <div className='flex flex-row flex-nowrap gap-8'>
             <h3 className='grow'>{title}</h3>
             {withCloseButton && (
-              <ActionIcon variant='subtle' onClick={() => setOpen(false)}>
+              <ActionIcon
+                variant='subtle'
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
                 <IconX />
               </ActionIcon>
             )}
@@ -74,7 +79,9 @@ const Modal = ({
           'fixed right-0 top-0 z-10 h-screen w-screen bg-black transition-opacity',
           open ? 'opacity-50' : 'pointer-events-none opacity-0',
         )}
-        onClick={() => setOpen(false)}
+        onClick={() => {
+          setOpen(false);
+        }}
       />
     </div>
   );

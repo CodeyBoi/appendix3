@@ -50,7 +50,7 @@ const Song = async ({ song: songProp }: SongProps) => {
         </i>
       )}
       <div className='h-4' />
-      <div className='whitespace-pre-wrap leading-snug'>{`${song.lyrics}`}</div>
+      <div className='whitespace-pre-wrap leading-snug'>{song.lyrics}</div>
       {song.author && (
         <>
           <div className='h-4' />

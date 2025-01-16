@@ -5,9 +5,9 @@ import ActionIcon from 'components/input/action-icon';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type DeletePlayerProps = {
+interface DeletePlayerProps {
   killerId: number;
-};
+}
 
 const KillerDeletePlayer = ({ killerId }: DeletePlayerProps) => {
   const router = useRouter();
@@ -20,9 +20,9 @@ const KillerDeletePlayer = ({ killerId }: DeletePlayerProps) => {
   return (
     <ActionIcon
       variant='subtle'
-      onClick={async () => {
+      onClick={() => {
         if (confirm('Är du säker på att du vill ta bort spelaren?')) {
-          await mutation.mutateAsync({
+          mutation.mutate({
             killerId,
           });
         }

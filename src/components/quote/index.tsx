@@ -21,18 +21,16 @@ const Quote = ({ quote }: QuoteProps) => {
   const { data: corps } = trpc.corps.getSelf.useQuery();
   const corpsId = corps?.id;
   const { lastName, number } = quote.saidBy;
-  const saidByName = `${
-    number !== null ? '#' + number.toString() : 'p.e. ' + lastName
-  }`;
-  const writtenByName = `${
+  const saidByName =
+    number !== null ? '#' + number.toString() : 'p.e. ' + lastName;
+  const writtenByName =
     (quote.writtenBy.number !== null
       ? '#' + quote.writtenBy.number.toString()
       : 'p.e.') +
     ' ' +
     quote.writtenBy.firstName +
     ' ' +
-    quote.writtenBy.lastName
-  }`;
+    quote.writtenBy.lastName;
   const ownQuote =
     corpsId === quote.saidByCorpsId || corpsId === quote.writtenByCorpsId;
   const time = new Date(quote.createdAt).toLocaleString('sv-SE', {
@@ -48,7 +46,7 @@ const Quote = ({ quote }: QuoteProps) => {
           <div className='text-xs font-thin text-gray-500'>{time}</div>
         </div>
         {`${saidByName}: `}
-        <i>{`${quote.quote}`}</i>
+        <i>{quote.quote}</i>
       </div>
       {ownQuote && (
         <Link href={`/quotes/${quote.id}`}>

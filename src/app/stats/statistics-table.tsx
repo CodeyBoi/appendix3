@@ -76,8 +76,8 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const ownPointsMsg =
     totalGigs !== 0
       ? lang(
-          `Du ${isNow ? 'har varit' : 'var'} med på ${
-            ownPoints + (ownPositivePoints > 0 ? '+' + ownPositivePoints : '')
+          `Du ${isNow ? 'har varit' : 'var'} med på ${ownPoints}${
+            ownPositivePoints > 0 ? `+${ownPositivePoints}` : ''
           } spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
             isNow ? 'motsvarar' : 'motsvarade'
           } ${Math.ceil(ownAttendence * 100)}% närvaro.`,

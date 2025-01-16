@@ -1,4 +1,3 @@
-// eslint-disable-next-line unused-imports/no-unused-imports
 import { DefaultSession as _DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {

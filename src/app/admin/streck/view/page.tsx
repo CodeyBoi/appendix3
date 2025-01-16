@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Streck',
 };
 
-const AdminStreckViewPage = async ({
+const AdminStreckViewPage = ({
   searchParams,
 }: {
   searchParams: { start?: string; end?: string };
@@ -41,7 +41,9 @@ const AdminStreckViewPage = async ({
         <ParamsDatePicker paramName='end' label='Till och med' />
       </div>
       <Suspense
-        key={`${start}_${end}`}
+        key={`${dayjs(start).format('YYYYMMDD')}_${dayjs(end).format(
+          'YYYYMMDD',
+        )}`}
         fallback={
           <Loading
             msg={lang('Hämtar strecklistor...', 'Fetching strecklists...')}

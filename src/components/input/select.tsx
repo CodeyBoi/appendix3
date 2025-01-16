@@ -3,10 +3,10 @@
 import { SelectHTMLAttributes, useState } from 'react';
 import { cn } from 'utils/class-names';
 
-export type SelectItem = {
+export interface SelectItem {
   value: string | number;
   label: string;
-};
+}
 
 export type SelectProps = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,

@@ -5,10 +5,10 @@ import ActionIcon from 'components/input/action-icon';
 import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 
-type DeleteStreckListButtonProps = {
+interface DeleteStreckListButtonProps {
   id: number;
   properRemove?: boolean;
-};
+}
 
 const DeleteStreckListButton = ({
   id,
@@ -17,10 +17,10 @@ const DeleteStreckListButton = ({
   const router = useRouter();
   const utils = api.useUtils();
   const options = {
-    onSuccess: () => {
-      utils.streck.getTransactions.invalidate();
-      utils.streck.getStreckList.invalidate({ id });
-      utils.streck.getStreckLists.invalidate();
+    onSuccess: async () => {
+      await utils.streck.getTransactions.invalidate();
+      await utils.streck.getStreckList.invalidate({ id });
+      await utils.streck.getStreckLists.invalidate();
       router.refresh();
     },
   };

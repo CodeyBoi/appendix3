@@ -1,4 +1,5 @@
 // @ts-check
+/* global process */
 import { z } from 'zod';
 
 /**

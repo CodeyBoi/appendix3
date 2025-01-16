@@ -16,7 +16,15 @@ const ParamsTextInput = ({
     paramName,
     defaultValue?.toString(),
   );
-  return <TextInput {...props} value={value} onChange={(v) => setValue(v)} />;
+  return (
+    <TextInput
+      {...props}
+      value={value}
+      onChange={(v) => {
+        setValue(v);
+      }}
+    />
+  );
 };
 
 export default ParamsTextInput;

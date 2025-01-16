@@ -1,10 +1,10 @@
 import { cn } from 'utils/class-names';
 import { useState } from 'react';
 
-type TimePickerDropdownProps = {
+interface TimePickerDropdownProps {
   defaultTime?: Date;
   onChange?: (date: Date) => void;
-};
+}
 
 const TimePickerDropdown = (props: TimePickerDropdownProps) => {
   const { onChange } = props;

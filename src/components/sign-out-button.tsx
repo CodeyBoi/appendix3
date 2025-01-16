@@ -9,9 +9,14 @@ import { lang } from 'utils/language';
 const SignOutButton = () => {
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/');
+  const handleSignOut = () => {
+    signOut()
+      .then(() => {
+        router.push('/');
+      })
+      .catch((e: unknown) => {
+        throw Error(JSON.stringify(e));
+      });
   };
 
   return (

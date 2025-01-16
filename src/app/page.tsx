@@ -1,6 +1,6 @@
 import HomePage from './home-page';
 
-const RootPage = async () => {
+const RootPage = () => {
   return <HomePage />;
 };
 

@@ -17,13 +17,13 @@ const Statistics = ({
 }: {
   searchParams: { start?: string; end?: string };
 }) => {
-  if (!searchParams || !searchParams.start) {
+  if (!searchParams.start) {
     const { start, end: _end } = calcOperatingYearInterval(getOperatingYear());
     redirect(`/stats?start=${dayjs(start).format('YYYY-MM-DD')}`);
   }
 
   const start = new Date(searchParams.start);
-  const end = !!searchParams.end ? new Date(searchParams.end) : undefined;
+  const end = searchParams.end ? new Date(searchParams.end) : undefined;
 
   return (
     <div className='flex max-w-max flex-col gap-2'>
@@ -34,7 +34,9 @@ const Statistics = ({
         </div>
       </div>
       <Suspense
-        key={`${start}_${end}`}
+        key={`${dayjs(start).format('YYYYMMDD')}_${dayjs(end).format(
+          'YYYYMMDD',
+        )}`}
         fallback={
           <Loading
             msg={lang('Hämtar statistik...', 'Fetching statistics...')}

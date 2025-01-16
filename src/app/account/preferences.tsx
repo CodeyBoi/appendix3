@@ -59,19 +59,18 @@ const AccountPreferences = () => {
       email: corps.user.email || undefined,
       mainInstrument,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [corps]);
 
   const mutation = trpc.corps.updateSelf.useMutation({
-    onSuccess: () => {
-      utils.corps.getSelf.invalidate();
+    onSuccess: async () => {
+      await utils.corps.getSelf.invalidate();
       setSubmitting(false);
       form.resetDirty();
     },
   });
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
-    await mutation.mutateAsync(values);
+    mutation.mutate(values);
     form.resetTouched();
   };
 
@@ -118,19 +117,17 @@ const AccountPreferences = () => {
                 }
               }}
             />
-            {language && (
-              <>
-                <h5>{lang('Språk', 'Language')}</h5>
-                <SegmentedControl
-                  options={[
-                    { label: 'Svenska', value: 'sv' },
-                    { label: 'English', value: 'en' },
-                  ]}
-                  value={language}
-                  onChange={(value) => setLanguage(value as Language)}
-                />
-              </>
-            )}
+            <h5>{lang('Språk', 'Language')}</h5>
+            <SegmentedControl
+              options={[
+                { label: 'Svenska', value: 'sv' },
+                { label: 'English', value: 'en' },
+              ]}
+              value={language}
+              onChange={(value) => {
+                setLanguage(value as Language);
+              }}
+            />
           </div>
           <div className='flex w-min flex-col space-y-2'>
             <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>
@@ -148,7 +145,7 @@ const AccountPreferences = () => {
             {instrumentOptions && instrumentOptions.length > 1 && (
               <Select
                 label={lang('Huvudinstrument', 'Main instrument')}
-                options={instrumentOptions ?? []}
+                options={instrumentOptions}
                 {...form.getInputProps('mainInstrument')}
               />
             )}

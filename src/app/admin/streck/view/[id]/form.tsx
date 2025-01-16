@@ -18,14 +18,14 @@ import { lang } from 'utils/language';
 
 export type AdminStreckFormType = 'strecklist' | 'deposit' | 'cost';
 
-type Corps = {
+interface Corps {
   id: string;
   number: number | null;
   firstName: string;
   lastName: string;
-};
+}
 
-type Transaction = {
+interface Transaction {
   corps: Corps;
   item: string;
   pricePer: number;
@@ -33,12 +33,12 @@ type Transaction = {
   totalPrice: number;
   verificationNumber: string | null;
   note: string;
-};
+}
 
-type StreckItem = {
+interface StreckItem {
   name: string;
   price: number;
-};
+}
 
 interface AdminStreckFormProps {
   streckList?: StreckList & { transactions: Transaction[] };
@@ -152,8 +152,8 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     : undefined;
 
   const mutation = api.streck.upsertStreckList.useMutation({
-    onSuccess: ({ id }) => {
-      utils.streck.getTransactions.invalidate();
+    onSuccess: async ({ id }) => {
+      await utils.streck.getTransactions.invalidate();
       // utils.streck.getStreckList.invalidate();
       if (isNew) {
         router.replace(`/admin/streck/view/${id}`);
@@ -242,7 +242,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
           msg={lang('Hämtar strecklista...', 'Fetching strecklist...')}
         />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={() => handleSubmit(onSubmit)}>
           <div className='max-h-[45vh] max-w-max overflow-y-auto md:max-h-[65vh] md:overflow-x-hidden md:pr-4'>
             <table className='relative table text-sm'>
               <thead>
@@ -253,7 +253,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                   <th className='sticky top-0 bg-white px-1'>Saldo</th>
                   {items.map((item) => (
                     <th
-                      key={`${item.name}`}
+                      key={item.name}
                       className='sticky top-0 w-16 bg-white px-1'
                     >{`${item.name} ${
                       isNaN(item.price) ? '' : `${item.price}p`
@@ -344,9 +344,11 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
           <div className='flex max-w-3xl flex-row justify-between gap-2'>
             <Button
               onClick={() => {
-                utils.streck.getTransactions.invalidate();
-                utils.streck.getStreckLists.invalidate();
-                utils.streck.getStreckList.invalidate({ id: streckList?.id });
+                void utils.streck.getTransactions.invalidate();
+                void utils.streck.getStreckLists.invalidate();
+                void utils.streck.getStreckList.invalidate({
+                  id: streckList?.id,
+                });
                 router.back();
                 router.refresh();
               }}
@@ -356,7 +358,6 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
             </Button>
             <Button
               type='submit'
-              onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting || !isDirty || isLoading}
             >
               <IconDeviceFloppy />

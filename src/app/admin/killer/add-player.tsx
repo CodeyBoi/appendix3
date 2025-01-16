@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
-type KillerAddPlayerProps = {
+interface KillerAddPlayerProps {
   corpsId?: string;
   participants?: {
     corps: {
       id: string;
     };
   }[];
-};
+}
 
 const KillerAddPlayer = ({
   corpsId,
@@ -30,7 +30,7 @@ const KillerAddPlayer = ({
   return corpsId ? (
     <Button
       onClick={() => {
-        mutation.mutateAsync({
+        mutation.mutate({
           corpsId,
         });
       }}
@@ -41,7 +41,7 @@ const KillerAddPlayer = ({
   ) : (
     <SelectCorps
       onChange={(id) => {
-        mutation.mutateAsync({
+        mutation.mutate({
           corpsId: id,
         });
       }}

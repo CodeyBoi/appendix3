@@ -87,7 +87,7 @@ const TextInput = ({
           {...props}
           value={value}
           className={cn(
-            'pointer-events-auto h-10 min-w-0 flex-shrink grow cursor-text rounded bg-transparent pb-2 pt-3 font-display dark:text-darkText',
+            'pointer-events-auto h-10 min-w-0 shrink grow cursor-text rounded bg-transparent pb-2 pt-3 font-display dark:text-darkText',
             icon ? ' pl-9 pr-2' : ' px-2',
             props.className,
           )}

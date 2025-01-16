@@ -13,15 +13,8 @@ type NextAuthOptionsCallback = (
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    async signIn() {
-      const isAllowedToSignIn = true; //! ... determine if user is allowed to sign in?
-      if (isAllowedToSignIn) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    async redirect({ url, baseUrl }) {
+    signIn: () => true,
+    redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith('/')) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
@@ -77,16 +70,14 @@ export const authOptionsCallback: NextAuthOptionsCallback = (_req, res) => {
         from: process.env.EMAIL_FROM,
         maxAge: 180 * 24 * 60 * 60, // 180 days
         sendVerificationRequest,
-        async generateVerificationToken() {
+        generateVerificationToken() {
           try {
             const token = GenerateToken();
             res.setHeader('Set-Cookie', `unverifiedToken=${token};Path=/`);
 
             return token;
-            // eslint-disable-next-line
-          } catch (error: any) {
-            console.log(error);
-            throw Error(error);
+          } catch (error) {
+            throw Error(JSON.stringify(error));
           }
         },
       }),
@@ -95,5 +86,7 @@ export const authOptionsCallback: NextAuthOptionsCallback = (_req, res) => {
 };
 
 const defaultExport = (req: NextApiRequest, res: NextApiResponse) =>
+  /* eslint-disable @typescript-eslint/no-unsafe-return */
   NextAuth(req, res, authOptionsCallback(req, res));
+/* eslint-enable @typescript-eslint/no-unsafe-return */
 export default defaultExport;

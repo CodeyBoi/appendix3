@@ -16,7 +16,15 @@ const ParamsSelect = ({
     paramName,
     defaultValue?.toString(),
   );
-  return <Select {...props} value={value} onChange={(v) => setValue(v)} />;
+  return (
+    <Select
+      {...props}
+      value={value}
+      onChange={(v) => {
+        setValue(v);
+      }}
+    />
+  );
 };
 
 export default ParamsSelect;

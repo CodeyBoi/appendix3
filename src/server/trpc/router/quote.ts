@@ -39,7 +39,7 @@ export const quoteRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, limit = 50 } = input ?? {};
+      const { cursor, limit = 50 } = input;
       const items = await ctx.prisma.quote.findMany({
         include: {
           saidBy: {

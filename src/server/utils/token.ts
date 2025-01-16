@@ -7,6 +7,6 @@ export const GenerateToken = () => {
 
 export const HashToken = (token: string) => {
   return createHash('sha256')
-    .update(`${token + process.env.NEXTAUTH_SECRET}`)
+    .update(token + (process.env.NEXTAUTH_SECRET ?? '12345678'))
     .digest('hex');
 };

@@ -26,9 +26,9 @@ export const metadata: Metadata = {
   description: 'Ett internt verktyg för alla corps',
 };
 
-type RootLayoutProps = {
+interface RootLayoutProps {
   children: ReactElement;
-};
+}
 
 const RootLayout = async ({ children }: RootLayoutProps) => {
   const session = await getServerSession(authOptions);

@@ -1,6 +1,6 @@
 import PreliminaryMembers from './preliminary-members';
 
-const PreliminaryMembersPage = async () => {
+const PreliminaryMembersPage = () => {
   return <PreliminaryMembers />;
 };
 

@@ -90,6 +90,10 @@ const encouragements = [
   'Ni har en framtid full av möjligheter tillsammans!',
 ];
 
+interface PersonalStatsProps {
+  operatingYear?: number;
+}
+
 const hash = (str: string) => {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
@@ -104,9 +108,9 @@ const getEncouragement = (corpsId1: string, corpsId2: string) => {
   return encouragements[hash(combinedIndex) % encouragements.length];
 };
 
-const PersonalStats = () => {
-  const operatingYear = getOperatingYear();
-
+const PersonalStats = ({
+  operatingYear = getOperatingYear(),
+}: PersonalStatsProps) => {
   const { data: self } = trpc.corps.getSelf.useQuery();
   const { data: pentagon } = trpc.stats.getPentagon.useQuery();
 
@@ -164,13 +168,10 @@ const PersonalStats = () => {
   const chartData = useMemo(
     () =>
       monthlyStats?.map((item) => ({
-        name:
-          item.month
-            .toLocaleDateString('sv-SE', { month: 'short' })
-            .slice(0, 3)
-            .toUpperCase() +
-          ' ' +
-          item.month.getFullYear(),
+        name: `${item.month
+          .toLocaleDateString('sv-SE', { month: 'short' })
+          .slice(0, 3)
+          .toUpperCase()} ${item.month.getFullYear()}`,
         points: item.points,
         maxGigs: item.maxGigs,
       })),
@@ -178,10 +179,14 @@ const PersonalStats = () => {
   );
 
   const corpsBuddyName = `${
-    corpsBuddy?.number !== null ? '#' + corpsBuddy?.number.toString() : 'p.e. '
+    corpsBuddy && corpsBuddy.number !== null
+      ? '#' + corpsBuddy.number.toString()
+      : 'p.e. '
   } ${corpsBuddy?.firstName} ${corpsBuddy?.lastName}`;
   const corpsEnemyName = `${
-    corpsEnemy?.number !== null ? '#' + corpsEnemy?.number.toString() : 'p.e. '
+    corpsEnemy && corpsEnemy.number !== null
+      ? '#' + corpsEnemy.number.toString()
+      : 'p.e. '
   } ${corpsEnemy?.firstName} ${corpsEnemy?.lastName}`;
 
   const encouragement = getEncouragement(
@@ -205,7 +210,7 @@ const PersonalStats = () => {
       ? 'samma dag'
       : avgSignupDelayDays === 1
       ? 'nästa dag'
-      : 'efter ' + avgSignupDelayDays + ' dagar';
+      : `efter ${avgSignupDelayDays} dagar`;
   const attackText = `Attack är hur snabbt du anmäler dig till nya spelningar. När en spelning dykt upp i blindtarmen är du i snitt på hugget med en anmälan ${attackDaysText}!`;
 
   const strengthText = `Styrka är inte implementerat än lol. Just nu är det bara snittet av de andra fyra. Maila förslag pls.`;

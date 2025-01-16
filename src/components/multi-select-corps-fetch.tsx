@@ -2,10 +2,10 @@ import React from 'react';
 import { api } from 'trpc/server';
 import MultiSelect from './multi-select';
 
-type OptionType = {
+interface OptionType {
   label: string;
   value: string;
-};
+}
 
 const fetchOptions = async (): Promise<OptionType[]> => {
   const corpsii = await api.corps.search.query({});
@@ -20,9 +20,9 @@ const fetchOptions = async (): Promise<OptionType[]> => {
   return options;
 };
 
-type MultiSelectCorpsProps = {
+interface MultiSelectCorpsProps {
   defaultValue?: string[];
-};
+}
 
 const MultiSelectCorpsFetch = async ({
   defaultValue,

@@ -38,7 +38,7 @@ const SelectCorps = ({
   // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery(
     {
-      id: defaultValue as string,
+      id: defaultValue ?? '',
     },
     {
       enabled: !!defaultValue,
@@ -60,7 +60,7 @@ const SelectCorps = ({
           .filter(
             (c) =>
               (!initialCorps || initialCorps.id !== c.id) &&
-              (!excludeIds || !excludeIds.includes(c.id)),
+              !excludeIds?.includes(c.id),
           )
           .map((c) => ({
             label: detailedName(c),
@@ -81,13 +81,13 @@ const SelectCorps = ({
   const nothingFound =
     corpsiiStatus === 'loading' ? 'Hämtar corps...' : 'Inga corps hittades';
 
-  if (defaultValue && !corpsiiData?.find((c) => c.value === defaultValue)) {
+  if (defaultValue && !corpsiiData.find((c) => c.value === defaultValue)) {
     return null;
   }
 
   const selectProps: SelectSearchProps = {
     ...props,
-    options: corpsiiData ?? [],
+    options: corpsiiData,
     label: props.label ?? 'Sök...',
     placeholder:
       queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading'

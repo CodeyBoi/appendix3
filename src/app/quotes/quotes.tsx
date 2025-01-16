@@ -15,7 +15,6 @@ const Quotes = () => {
   const {
     data: quotes,
     hasNextPage,
-    fetchNextPage,
     isFetchingNextPage,
   } = api.quote.infiniteScroll.useInfiniteQuery(
     {},
@@ -31,11 +30,7 @@ const Quotes = () => {
       ))}
       {hasNextPage && (
         <div className='flex justify-center'>
-          <Button
-            className='w-min'
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-          >
+          <Button className='w-min' disabled={isFetchingNextPage}>
             Ladda fler citat
           </Button>
         </div>

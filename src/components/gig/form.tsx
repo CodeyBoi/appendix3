@@ -56,7 +56,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   const { data: corpsii } = api.corps.search.useQuery({});
   const corpsiiOptions = corpsii?.map((c) => ({
     label:
-      (c.number ? '#' + c.number : 'p.e.') +
+      (c.number ? `#${c.number}` : 'p.e.') +
       ' ' +
       c.firstName +
       ' ' +
@@ -76,7 +76,6 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
     validate: {
       title: (title) => (title ? null : 'Titel måste vara ifylld'),
       type: (type) => (type ? null : 'Typ måste vara ifylld'),
-      date: (date) => (date ? null : 'Datum måste vara ifyllt'),
       points: (points) =>
         points >= 0 && points <= 1 ? null : 'Spelpoäng måste vara 0 eller 1',
       price: (price) => (price >= 0 ? null : 'Pris kan inte vara negativt'),
@@ -84,9 +83,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   });
 
   const mutation = trpc.gig.upsert.useMutation({
-    onSuccess: ({ id }) => {
-      utils.gig.getWithId.invalidate({ gigId: id });
-      utils.gig.getMany.invalidate();
+    onSuccess: async ({ id }) => {
+      await utils.gig.getWithId.invalidate({ gigId: id });
+      await utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.back();
       router.refresh();
@@ -94,16 +93,16 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
   });
 
   const removeGig = trpc.gig.remove.useMutation({
-    onSuccess: () => {
-      utils.gig.getWithId.invalidate({ gigId });
-      utils.gig.getMany.invalidate();
+    onSuccess: async () => {
+      await utils.gig.getWithId.invalidate({ gigId });
+      await utils.gig.getMany.invalidate();
       setSubmitting(false);
       router.push('/');
       router.refresh();
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     setSubmitting(true);
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
@@ -113,9 +112,9 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
       hiddenFor: values.isPublic ? [] : values.hiddenFor,
     };
     if (newGig) {
-      await mutation.mutateAsync(data);
+      mutation.mutate(data);
     } else {
-      await mutation.mutateAsync({ ...data, gigId });
+      mutation.mutate({ ...data, gigId });
     }
   };
 
@@ -137,12 +136,10 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             withAsterisk
             label='Spelningstyp'
             placeholder='Välj typ...'
-            options={
-              gigTypes?.map((type) => ({
-                value: type,
-                label: type,
-              })) ?? []
-            }
+            options={gigTypes.map((type) => ({
+              value: type,
+              label: type,
+            }))}
             {...form.getInputProps('type')}
           />
           <div className='grid grid-cols-2 gap-x-4'>

@@ -4,11 +4,11 @@ import FormLoadingOverlay from '../form-loading-overlay';
 import Checkbox from 'components/input/checkbox';
 import { api } from 'trpc/react';
 
-type RehearsalCheckboxProps = {
+interface RehearsalCheckboxProps {
   rehearsal: Rehearsal;
   corps: Corps;
   attended: boolean;
-};
+}
 
 const RehearsalCheckbox = ({
   rehearsal,
@@ -17,8 +17,8 @@ const RehearsalCheckbox = ({
 }: RehearsalCheckboxProps) => {
   const utils = api.useUtils();
   const mutation = api.rehearsal.updateAttendance.useMutation({
-    onSuccess: () => {
-      utils.rehearsal.getAttendence.invalidate({
+    onSuccess: async () => {
+      await utils.rehearsal.getAttendence.invalidate({
         id: rehearsal.id,
         corpsId: corps.id,
       });

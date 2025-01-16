@@ -18,10 +18,10 @@ const defaultValues = {
   countsPositively: false,
 };
 type FormValues = typeof defaultValues;
-type RehearsalFormProps = {
+interface RehearsalFormProps {
   rehearsal?: Rehearsal;
   onSubmit?: () => void;
-};
+}
 
 const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   const utils = api.useUtils();
@@ -42,15 +42,14 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
         },
     validate: {
       title: (title) => (title ? null : 'Fyll i titel'),
-      date: (date) => (date ? null : 'Välj datum'),
       typeId: (typeId) => (typeId ? null : 'Välj typ'),
     },
   });
 
   const mutation = api.rehearsal.upsert.useMutation({
-    onSuccess: ({ id }) => {
-      utils.rehearsal.getWithId.invalidate(id);
-      utils.rehearsal.getMany.invalidate();
+    onSuccess: async ({ id }) => {
+      await utils.rehearsal.getWithId.invalidate(id);
+      await utils.rehearsal.getMany.invalidate();
       onSubmit?.();
       if (newRehearsal) {
         router.push(`/admin/rehearsal/${id}`);
@@ -59,23 +58,23 @@ const RehearsalForm = ({ rehearsal, onSubmit }: RehearsalFormProps) => {
   });
 
   const removeMutation = api.rehearsal.remove.useMutation({
-    onSuccess: () => {
-      utils.rehearsal.getMany.invalidate();
+    onSuccess: async () => {
+      await utils.rehearsal.getMany.invalidate();
       router.replace('/admin/rehearsal');
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     values.date.setMinutes(
       values.date.getMinutes() - values.date.getTimezoneOffset(),
     );
     if (newRehearsal) {
-      await mutation.mutateAsync({
+      mutation.mutate({
         ...values,
         typeId: parseInt(values.typeId),
       });
     } else {
-      await mutation.mutateAsync({
+      mutation.mutate({
         ...values,
         typeId: parseInt(values.typeId),
         id: rehearsal.id,

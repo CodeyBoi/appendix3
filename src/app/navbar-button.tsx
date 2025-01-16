@@ -17,7 +17,9 @@ const NavbarButton = ({ children }: { children: React.ReactNode }) => {
     <>
       <Burger
         active={open}
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setOpen(!open);
+        }}
         variant={isJuly() ? 'burger' : 'normal'}
       />
       <div
@@ -26,7 +28,9 @@ const NavbarButton = ({ children }: { children: React.ReactNode }) => {
           (open ? ' bg-black/50' : ' bg-transparent pointer-events-none')
         }
         style={{ height: 'calc(100vh - 56px)' }}
-        onClick={() => setOpen(false)}
+        onClick={() => {
+          setOpen(false);
+        }}
       />
       <div
         className={

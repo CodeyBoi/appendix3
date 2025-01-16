@@ -8,20 +8,18 @@ import SelectCorps from 'components/select-corps';
 import RehearsalCheckbox from 'components/rehearsal/checkbox';
 import { api } from 'trpc/react';
 
-type RehearsalAttendenceProps = {
+interface RehearsalAttendenceProps {
   rehearsal: Rehearsal;
-};
+}
 
 const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   const utils = api.useUtils();
 
-  const start = dayjs(rehearsal?.date ?? new Date())
+  const start = dayjs(rehearsal.date)
     .subtract(6, 'week')
     .startOf('week')
     .toDate();
-  const end = dayjs(rehearsal?.date ?? new Date())
-    .endOf('week')
-    .toDate();
+  const end = dayjs(rehearsal.date).endOf('week').toDate();
   const [corpsId, setCorpsId] = React.useState('');
 
   const { data: attendence } = api.rehearsal.getAttendedRehearsalList.useQuery({
@@ -32,8 +30,8 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   });
 
   const mutation = api.rehearsal.updateAttendance.useMutation({
-    onSuccess: () => {
-      utils.rehearsal.getAttendedRehearsalList.invalidate({
+    onSuccess: async () => {
+      await utils.rehearsal.getAttendedRehearsalList.invalidate({
         id: rehearsal.id,
         start,
         end,
@@ -77,22 +75,21 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
         </button>
       </div>
       <div className='flex flex-col space-y-2'>
-        {attendence?.corpsiiBySection &&
-          attendence.corpsiiBySection.map((section) => (
-            <React.Fragment key={section.name}>
-              <h4>{section.name}</h4>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
-                {section.corpsii.map((corps) => (
-                  <RehearsalCheckbox
-                    key={corps.id}
-                    rehearsal={rehearsal}
-                    corps={corps}
-                    attended={corps.attended}
-                  />
-                ))}
-              </div>
-            </React.Fragment>
-          ))}
+        {attendence?.corpsiiBySection.map((section) => (
+          <React.Fragment key={section.name}>
+            <h4>{section.name}</h4>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+              {section.corpsii.map((corps) => (
+                <RehearsalCheckbox
+                  key={corps.id}
+                  rehearsal={rehearsal}
+                  corps={corps}
+                  attended={corps.attended}
+                />
+              ))}
+            </div>
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );

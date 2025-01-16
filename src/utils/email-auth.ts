@@ -20,7 +20,9 @@ const sendVerificationRequest = async (
   }
 
   const { host } = new URL(url);
+  /* eslint-disable @typescript-eslint/no-unsafe-argument */
   const transport = createTransport(provider.server);
+  /* eslint-enable @typescript-eslint/no-unsafe-argument */
   const result = await transport.sendMail({
     to: identifier,
     from: `"Blindtarmen" <${provider.from}>`,
@@ -30,7 +32,7 @@ const sendVerificationRequest = async (
   });
   const failed = result.rejected.concat(result.pending).filter(Boolean);
   if (failed.length) {
-    throw new Error(`Email(s) (${failed.join(', ')}) could not be sent`);
+    throw new Error(`Email(s) (${JSON.stringify(failed)}) could not be sent`);
   }
 };
 

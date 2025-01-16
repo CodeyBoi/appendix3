@@ -7,13 +7,13 @@ import { downloadXLSX } from 'utils/xlsx';
 import ActionIcon, { ActionIconVariant } from 'components/input/action-icon';
 import { ReactNode } from 'react';
 
-type Corps = {
+interface Corps {
   number: number | null;
   firstName: string;
   lastName: string;
-};
+}
 
-type Transaction = {
+interface Transaction {
   corps: Corps;
   item: string;
   pricePer: number;
@@ -21,26 +21,26 @@ type Transaction = {
   totalPrice: number;
   verificationNumber: string | null;
   note: string;
-};
+}
 
-type Summary = {
+interface Summary {
   total: number;
   amount: number;
-};
+}
 
-type StreckList = {
+interface StreckList {
   transactions: Transaction[];
   time: Date;
   createdBy: Corps;
   createdAt: Date;
-};
+}
 
-type DownloadTransactionsButtonProps = {
+interface DownloadTransactionsButtonProps {
   children: ReactNode;
   streckLists: StreckList[];
   filename: string;
   variant?: ActionIconVariant;
-};
+}
 
 const headerRow = 1;
 
@@ -163,15 +163,21 @@ const DownloadTransactionsButton = ({
 }: DownloadTransactionsButtonProps) => {
   if (variant === 'default') {
     return (
-      <Button onClick={() => generateTransactionsXLSX(streckLists, filename)}>
+      <Button
+        onClick={() => {
+          generateTransactionsXLSX(streckLists, filename);
+        }}
+      >
         {children}
       </Button>
     );
-  } else if (variant === 'subtle') {
+  } else {
     return (
       <ActionIcon
         variant='subtle'
-        onClick={() => generateTransactionsXLSX(streckLists, filename)}
+        onClick={() => {
+          generateTransactionsXLSX(streckLists, filename);
+        }}
       >
         {children}
       </ActionIcon>

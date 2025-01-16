@@ -21,7 +21,7 @@ export const generateMetadata = async ({
       };
 };
 
-const GigPage = async ({ params }: { params: { id: string } }) => {
+const GigPage = ({ params }: { params: { id: string } }) => {
   const gigId = params.id;
   return (
     <div className='flex max-w-4xl flex-col space-y-4'>

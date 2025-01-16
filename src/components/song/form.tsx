@@ -15,9 +15,9 @@ const defaultValues = {
   lyrics: '',
 };
 type FormValues = typeof defaultValues;
-type SongFormProps = {
+interface SongFormProps {
   song?: FormValues & { id: string };
-};
+}
 
 const SongForm = ({ song }: SongFormProps) => {
   const router = useRouter();
@@ -41,28 +41,28 @@ const SongForm = ({ song }: SongFormProps) => {
   });
 
   const mutation = api.song.upsert.useMutation({
-    onSuccess: ({ id }) => {
+    onSuccess: async ({ id }) => {
       if (song) {
-        utils.song.get.invalidate({ id });
+        await utils.song.get.invalidate({ id });
       }
-      utils.song.getAll.invalidate();
+      await utils.song.getAll.invalidate();
       router.push(`/songs/${id}`);
     },
   });
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
     if (newSong) {
-      await mutation.mutateAsync(values);
+      mutation.mutate(values);
     } else {
-      await mutation.mutateAsync({ ...values, id: song.id });
+      mutation.mutate({ ...values, id: song.id });
     }
   };
 
   const removeMutation = api.song.remove.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       if (song) {
-        utils.song.get.invalidate({ id: song.id });
+        await utils.song.get.invalidate({ id: song.id });
       }
-      utils.song.getAll.invalidate();
+      await utils.song.getAll.invalidate();
       router.push('/songs');
     },
   });
@@ -99,11 +99,11 @@ const SongForm = ({ song }: SongFormProps) => {
                 className='border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
                 color='transparent'
                 compact
-                onClick={async () => {
+                onClick={() => {
                   if (
                     window.confirm('Är du säker på att du vill ta bort sången?')
                   ) {
-                    await removeMutation.mutateAsync({ id: song.id });
+                    removeMutation.mutate({ id: song.id });
                   }
                 }}
               >

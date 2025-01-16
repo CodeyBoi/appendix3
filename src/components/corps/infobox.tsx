@@ -9,20 +9,18 @@ import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { lang } from 'utils/language';
 
-type CorpsInfoboxProps = {
+interface CorpsInfoboxProps {
   id: string;
   open: boolean;
-};
+}
 
 const genOtherInstrumentsString = (instruments: string[]) => {
-  instruments = instruments.map((i) => i.toLowerCase());
-  if (instruments.length === 0) return '';
-  if (instruments.length === 1) return instruments[0];
-  return (
-    instruments.slice(0, instruments.length - 1).join(', ') +
-    ' och ' +
-    instruments[instruments.length - 1]
-  );
+  const instrumentsLower = instruments.map((i) => i.toLowerCase());
+  if (instrumentsLower.length === 0) return '';
+  if (instrumentsLower.length === 1) return instruments[0] ?? '';
+  return `${instrumentsLower.slice(0, instruments.length - 1).join(', ')} och ${
+    instrumentsLower[instruments.length - 1] ?? ''
+  }`;
 };
 
 // A list of "instruments" which should have the prefix "är"
@@ -44,8 +42,8 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const [nickname, setNickname] = useState('');
 
   const mutation = api.corps.changeNickname.useMutation({
-    onSuccess: () => {
-      utils.corps.get.invalidate({ id });
+    onSuccess: async () => {
+      await utils.corps.get.invalidate({ id });
       router.refresh();
     },
   });
@@ -151,7 +149,9 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
                   <input
                     placeholder='Nytt smeknamn'
                     value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
+                    onChange={(e) => {
+                      setNickname(e.target.value);
+                    }}
                     name='nickname'
                     type='text'
                     className='grow rounded border border-gray-300 bg-white p-2 dark:border-gray-700'
@@ -185,7 +185,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
           'Deras längsta spelningsstreak är ',
           'Their longest gig streak is ',
         )}{' '}
-        <span onClick={() => setShowAllStreaks(!showAllStreaks)}>
+        <span
+          onClick={() => {
+            setShowAllStreaks(!showAllStreaks);
+          }}
+        >
           {`${allTimeStreak.maxStreak}🔥`}
         </span>
         {showAllStreaks ? ' (' + allTimeStreak.streaks.join(', ') + ')' : ''}.
