@@ -418,8 +418,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
           {!gigHasHappened && (
             <div>
               <div className='h-4' />
-              {missingInstrumentsMessages.map((msg) => (
-                <React.Fragment key={JSON.stringify(msg)}>
+              {missingInstrumentsMessages.map((msg, i) => (
+                <React.Fragment key={i}>
                   {msg}
                   <br />
                 </React.Fragment>

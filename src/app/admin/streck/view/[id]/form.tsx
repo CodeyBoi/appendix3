@@ -206,6 +206,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
       }
     }
     setErrors(formErrors);
+    console.log('DASDPAWD');
     mutation.mutate({ id: streckList?.id, transactions: data });
   };
 
@@ -242,7 +243,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
           msg={lang('Hämtar strecklista...', 'Fetching strecklist...')}
         />
       ) : (
-        <form onSubmit={() => handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className='max-h-[45vh] max-w-max overflow-y-auto md:max-h-[65vh] md:overflow-x-hidden md:pr-4'>
             <table className='relative table text-sm'>
               <thead>
