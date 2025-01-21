@@ -242,7 +242,7 @@ export const streckRouter = router({
         activeFrom = dayjs(time).subtract(1, 'month').toDate(),
       } = input;
 
-      const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1971-01-01'), 'day');
+      const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1970-01-01'), 'day');
       const dateFilter = {
         gte: dayjs(activeFrom).startOf('day').toDate(),
         lte: dayjs(time).endOf('day').toDate(),
@@ -309,6 +309,7 @@ export const streckRouter = router({
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         LEFT JOIN StreckList ON streckListId = StreckList.id
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+          AND deleted = false
         GROUP BY Corps.id
         ORDER BY
           lastName,
