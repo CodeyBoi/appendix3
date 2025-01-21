@@ -81,9 +81,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       verticalCentered: true,
     },
     headerFooter: {
-      oddHeader: `&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: ${dayjs().format(
-        'YYYY-MM-DD',
-      )}&D\n&RAv:____________`,
+      oddHeader: `&L< 200p -> Din rad blir grå -> Betala in till CPK!!\nNy och vill kunna strecka? -> Betala in till CPK!!&CUtskriven: &D\n&RInförd:____________\nAv:____________`,
       oddFooter: `&LStreck införda t.o.m.: ${dayjs()
         .subtract(1, 'day')
         .format(
@@ -264,7 +262,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     sheet.getCell(rowIndex, lastCol).border = bottomRight;
   }
 
-  const filename = `Tom strecklista ${dayjs().format('YYYY-MM-DD')}.xlsx`;
+  const filename = `Tom strecklista ${dayjs().format('YYYY-MM-DD HH:mm')}.xlsx`;
   downloadXLSX(workbook, filename);
 };
 

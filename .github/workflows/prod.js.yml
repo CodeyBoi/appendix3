@@ -18,8 +18,6 @@ jobs:
         shell: "bash -ieo pipefail {0}"
         run: |
           cd prod
-          nvm install 18
-          nvm use 18
           yarn install
           yarn run build
           pm2 reload prod-service
