@@ -23,7 +23,7 @@ const AdminStreckPage = async ({
   searchParams: { showDelete },
 }: AdminStreckPageProps) => {
   const [activeCorps, items, bleckhornenBalance] = await Promise.all([
-    api.streck.getActiveCorps.query({}),
+    api.streck.getCorpsBalances.query({}),
     api.streck.getItems.query(),
     api.streck.getBleckhornenBalance.query(),
   ]);

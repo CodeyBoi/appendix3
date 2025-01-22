@@ -262,9 +262,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
     sheet.getCell(rowIndex, lastCol).border = bottomRight;
   }
 
-  const filename = `Tom_strecklista_${dayjs().format(
-    'YYYY-MM-DD_HHmmss',
-  )}.xlsx`;
+  const filename = `Tom_strecklista_${dayjs().format('YYYY-MM-DD_HH-mm')}.xlsx`;
   downloadXLSX(workbook, filename);
 };
 

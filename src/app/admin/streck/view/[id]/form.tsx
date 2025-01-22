@@ -88,10 +88,10 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     data: corpsii = [],
     isInitialLoading,
     isFetching,
-  } = api.streck.getActiveCorps.useQuery({
+  } = api.streck.getCorpsBalances.useQuery({
     additionalCorps,
-    time: isNew ? undefined : streckList.time,
     activeFrom,
+    time: isNew ? undefined : streckList.time,
   });
 
   const setFocusedElement = (row?: number, col?: number) => {

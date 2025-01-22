@@ -218,12 +218,14 @@ export const streckRouter = router({
       });
     }),
 
-  getActiveCorps: protectedProcedure
+  getCorpsBalances: protectedProcedure
     .input(
       z.object({
         additionalCorps: z.array(z.string().cuid()).optional(),
+        excludeCorps: z.array(z.string().cuid()).optional(),
         time: z.date().optional(),
         activeFrom: z.date().optional(),
+        activeUntil: z.date().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -238,14 +240,16 @@ export const streckRouter = router({
 
       const {
         additionalCorps = [],
-        time = new Date(),
+        excludeCorps = [],
+        time = dayjs().endOf('day').toDate(),
         activeFrom = dayjs(time).subtract(1, 'month').toDate(),
+        activeUntil = time,
       } = input;
 
       const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1970-01-01'), 'day');
       const dateFilter = {
         gte: dayjs(activeFrom).startOf('day').toDate(),
-        lte: dayjs(time).endOf('day').toDate(),
+        lte: dayjs(activeUntil).endOf('day').toDate(),
       };
       const recentlyActiveCorps = (
         await ctx.prisma.corps.findMany({
@@ -296,6 +300,10 @@ export const streckRouter = router({
         // This is to stop Prisma.join complaining about getting an empty array
         additionalCorps.push('DUMMY VALUE');
       }
+      if (excludeCorps.length === 0) {
+        // This is to stop Prisma.join complaining about getting an empty array
+        excludeCorps.push('DUMMY VALUE');
+      }
 
       const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
         SELECT
@@ -309,6 +317,8 @@ export const streckRouter = router({
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         LEFT JOIN StreckList ON streckListId = StreckList.id
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+          AND Corps.id NOT IN (${Prisma.join(excludeCorps)})
+          AND StreckList.time <= ${time}
           AND deleted = false
         GROUP BY Corps.id
         ORDER BY

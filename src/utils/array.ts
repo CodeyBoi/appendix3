@@ -45,3 +45,15 @@ export const intersection = <T>(a: T[], b: T[]) => {
   }
   return c;
 };
+
+export const getDistinct = <T>(arr: T[]) => {
+  const ret = [];
+  const retSet = new Set();
+  for (const elem of arr) {
+    if (!retSet.has(elem)) {
+      retSet.add(elem);
+      ret.push(elem);
+    }
+  }
+  return ret;
+};
