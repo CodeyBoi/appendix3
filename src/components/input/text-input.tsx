@@ -74,7 +74,7 @@ const TextInput = ({
   };
 
   return (
-    <div className='flex min-w-0 shrink flex-col pt-2'>
+    <div className='flex min-w-0 shrink flex-col'>
       <div
         className={cn(
           'relative flex h-10 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
@@ -88,7 +88,7 @@ const TextInput = ({
           value={value}
           className={cn(
             'pointer-events-auto h-10 min-w-0 shrink grow cursor-text rounded bg-transparent pb-2 pt-3 font-display dark:text-darkText',
-            icon ? ' pl-9 pr-2' : ' px-2',
+            icon ? 'pl-9 pr-2' : ' px-2',
             props.className,
           )}
           onChange={handleChange}

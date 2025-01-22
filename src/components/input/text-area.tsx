@@ -31,17 +31,7 @@ const TextArea = ({
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const handleAutosize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        if (autoSize) {
-          const element = e.currentTarget;
-          element.style.height = 'inherit';
-          element.style.height = `${element.scrollHeight + 8}px`;
-        }
-      };
       onChange?.(e.currentTarget.value);
-      if (autoSize) {
-        handleAutosize(e);
-      }
     },
     [autoSize, onChange],
   );
@@ -63,29 +53,29 @@ const TextArea = ({
   );
 
   const floatingLabel = label;
+  const height = (Math.max(2, value?.split('\n').length ?? 0) + 1) * 24;
 
   return (
     <div className='flex flex-col'>
-      <div className='relative flex '>
+      <div className='relative flex'>
         <textarea
           className={cn(
-            'h-48 grow cursor-text resize-none rounded border bg-transparent pb-1 pt-5 font-display shadow-sm dark:border-neutral-800',
-            rightSection ? ' pl-2 pr-9' : ' px-2',
+            'grow cursor-text resize-none rounded border bg-transparent py-2 font-display shadow-sm dark:border-neutral-800 dark:text-darkText',
+            rightSection ? 'pl-2 pr-9' : 'px-2',
           )}
+          style={{ height: autoSize ? `${height}px` : undefined }}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
           value={value}
           {...props}
         />
-        <div className='pointer-events-none absolute left-0 flex pl-2 pt-3'>
+        <div className='pointer-events-none absolute left-2.5 top-2 flex'>
           {floatingLabel && (
             <label
               className={cn(
-                'flex origin-left cursor-text gap-1 transition-transform duration-100',
-                focused || value !== ''
-                  ? '-translate-y-2.5 scale-75'
-                  : 'text-gray-500',
+                'flex origin-left cursor-text gap-1 bg-white px-1 text-sm text-gray-500 transition-transform duration-100 dark:bg-darkBg',
+                (focused || value !== '') && '-translate-y-4',
               )}
             >
               {label}

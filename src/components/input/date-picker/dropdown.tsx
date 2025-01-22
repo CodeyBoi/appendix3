@@ -37,15 +37,17 @@ const years = range(1970, getOperatingYear() + 2)
   .map((y) => ({ value: y, label: y.toString() }));
 
 interface DatePickerDropdownProps {
-  defaultDate?: Date;
+  defaultDate?: Date | null;
   onDateChange?: (date: Date) => void;
+  today?: Date;
 }
 
 const DatePickerDropdown = ({
-  defaultDate,
+  defaultDate = new Date(),
   onDateChange,
+  today = new Date(),
 }: DatePickerDropdownProps) => {
-  const initialDate = defaultDate ?? new Date();
+  const initialDate = defaultDate ?? today;
   const [year, setYear] = useState(initialDate.getFullYear());
   const [month, setMonth] = useState(initialDate.getMonth());
   const [date, setDate] = useState(
@@ -80,12 +82,18 @@ const DatePickerDropdown = ({
   };
 
   return (
-    <div className='flex w-60 flex-col gap-2 rounded bg-white p-2 dark:bg-darkBg'>
+    <div className='flex h-min w-60 flex-col gap-2 rounded bg-white p-2 dark:bg-darkBg'>
       <div className='flex gap-1'>
-        <div className='flex grow items-baseline gap-2'>
-          <h4 className='select-none whitespace-nowrap text-sm text-red-600 first-letter:capitalize'>
+        <div className='flex grow items-center gap-2'>
+          <ActionIcon variant='subtle' onClick={decreaseMonth}>
+            <IconChevronLeft />
+          </ActionIcon>
+          <h4 className='grow select-none whitespace-nowrap text-sm text-red-600 first-letter:capitalize'>
             {monthName}
           </h4>
+          <ActionIcon variant='subtle' onClick={increaseMonth}>
+            <IconChevronRight />
+          </ActionIcon>
           <Select
             options={years}
             value={year}
@@ -94,12 +102,6 @@ const DatePickerDropdown = ({
             }}
           />
         </div>
-        <ActionIcon variant='subtle' onClick={decreaseMonth}>
-          <IconChevronLeft />
-        </ActionIcon>
-        <ActionIcon variant='subtle' onClick={increaseMonth}>
-          <IconChevronRight />
-        </ActionIcon>
       </div>
       <div className='grid grid-cols-7 gap-2'>
         {['M', 'T', 'O', 'T', 'F', 'L', 'S'].map((day, i) => (
