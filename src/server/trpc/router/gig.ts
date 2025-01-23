@@ -88,10 +88,14 @@ export const gigRouter = router({
       }),
     )
     .query(({ ctx, input }) => {
+      const { startDate, endDate, dateOrder = 'asc' } = input;
       const corpsId = ctx.session?.user?.corps?.id;
       const visibilityFilter =
-        corpsId !== undefined
+        corpsId === undefined
           ? {
+              isPublic: true,
+            }
+          : {
               OR: [
                 {
                   hiddenFor: {
@@ -107,9 +111,6 @@ export const gigRouter = router({
                   },
                 },
               ],
-            }
-          : {
-              isPublic: true,
             };
       return ctx.prisma.gig.findMany({
         include: {
@@ -126,20 +127,20 @@ export const gigRouter = router({
         },
         where: {
           date: {
-            gte: input.startDate,
-            lte: input.endDate,
+            gte: dayjs(startDate).startOf('day').toDate(),
+            lte: dayjs(endDate).endOf('day').toDate(),
           },
           ...visibilityFilter,
         },
         orderBy: [
           {
-            date: input.dateOrder ?? 'asc',
+            date: dateOrder,
           },
           {
-            meetup: input.dateOrder ?? 'asc',
+            meetup: dateOrder,
           },
           {
-            start: input.dateOrder ?? 'asc',
+            start: dateOrder,
           },
         ],
       });

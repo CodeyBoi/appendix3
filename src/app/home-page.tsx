@@ -65,7 +65,8 @@ interface HomePageProps {
 const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [killerGame, killerPlayer, streaks] = await Promise.all([
+  const [gigs, killerGame, killerPlayer, streaks] = await Promise.all([
+    makeGigList(currentDate),
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
     api.stats.getStreak.query({}),
@@ -76,10 +77,8 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&
     killerGame.start &&
-    killerGame.start > new Date() &&
+    killerGame.start > currentDate &&
     !killerPlayer;
-
-  const gigs = await makeGigList(currentDate);
 
   const fire = '🔥'.repeat(Math.floor(streak / 10 + 1));
 
