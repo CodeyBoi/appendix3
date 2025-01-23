@@ -638,4 +638,113 @@ export const corpsRouter = router({
         success: true,
       };
     }),
+
+  getProfile: protectedProcedure
+    .input(
+      z.object({
+        number: z.number().int(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { number } = input;
+      const [corps, gigs, rehearsals, kills, firstGig, firstRehearsal] =
+        await Promise.all([
+          ctx.prisma.corps.findFirst({
+            where: {
+              number,
+            },
+          }),
+          ctx.prisma.gig.aggregate({
+            _sum: {
+              points: true,
+            },
+            where: {
+              signups: {
+                some: {
+                  corps: {
+                    number,
+                  },
+                  attended: true,
+                },
+              },
+            },
+          }),
+          ctx.prisma.rehearsal.count({
+            where: {
+              corpsii: {
+                some: {
+                  corps: {
+                    number,
+                  },
+                },
+              },
+            },
+          }),
+          ctx.prisma.killerPlayer.count({
+            where: {
+              killedBy: {
+                corps: {
+                  number,
+                },
+              },
+            },
+          }),
+          ctx.prisma.gig.findFirst({
+            select: {
+              date: true,
+            },
+            where: {
+              signups: {
+                some: {
+                  corps: {
+                    number,
+                  },
+                  attended: true,
+                },
+              },
+              date: {
+                gt: new Date('1970-01-02'),
+              },
+            },
+            orderBy: {
+              date: 'asc',
+            },
+          }),
+          ctx.prisma.rehearsal.findFirst({
+            select: {
+              date: true,
+            },
+            where: {
+              corpsii: {
+                some: {
+                  corps: {
+                    number,
+                  },
+                },
+              },
+              date: {
+                gt: new Date('1970-01-02'),
+              },
+            },
+          }),
+        ]);
+
+      if (!corps) {
+        return null;
+      }
+
+      const joined =
+        (firstGig?.date.getTime() ?? Number.MAX_VALUE) <
+        (firstRehearsal?.date.getTime() ?? Number.MAX_VALUE)
+          ? firstGig?.date
+          : firstRehearsal?.date;
+
+      return {
+        ...corps,
+        gigs: gigs._sum.points ?? 0,
+        rehearsals,
+        kills,
+        joined,
+      };
+    }),
 });

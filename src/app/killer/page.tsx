@@ -5,7 +5,7 @@ import { detailedName, sortCorps } from 'utils/corps';
 import { hashString } from 'utils/hash';
 import KillerWordForm from './word-form';
 import KillerAddPlayer from 'app/admin/killer/add-player';
-import Countdown from 'components/countdown';
+import TimeDelta from 'components/time-delta';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import { lang } from 'utils/language';
@@ -136,7 +136,11 @@ const KillerPage = async () => {
                 <div className='h-4' />
                 <div className='flex flex-col items-center gap-2 text-center text-2xl font-bold italic text-red-600'>
                   {lang('Killergame börjar om', 'Killergame is starting in')}
-                  <Countdown end={game.start} className='text-4xl' />
+                  <TimeDelta
+                    time={game.start}
+                    className='text-4xl'
+                    refreshOnEnd
+                  />
                   <span className='text-lg'>
                     {isParticipant ? (
                       lang(

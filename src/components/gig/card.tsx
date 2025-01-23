@@ -11,7 +11,7 @@ import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
 import { lang } from 'utils/language';
 import Time from 'components/time';
-import Countdown from 'components/countdown';
+import TimeDelta from 'components/time-delta';
 
 dayjs.locale('sv');
 
@@ -113,11 +113,11 @@ const GigCard = async ({
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
                     {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {Date.now() + 1000 * 60 * 60 > gig.signupEnd.getTime() ? (
+                    {currentDate.getTime() + 1000 * 60 * 60 > gig.signupEnd.getTime() ? (
                       <>
                         {lang('om ', 'in ')}
                         <br />
-                        <Countdown end={gig.signupEnd} />
+                        <TimeDelta time={gig.signupEnd} />
                       </>
                     ) : (
                       <Time
