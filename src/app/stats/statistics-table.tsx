@@ -70,8 +70,8 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
         )
       : '';
 
-  const ownPoints = corpsStats.get(corps.id)?.gigsAttended ?? 0;
   const ownPositivePoints = corpsStats.get(corps.id)?.positiveGigsAttended ?? 0;
+  const ownPoints = corpsStats.get(corps.id)?.gigsAttended ?? 0 - ownPositivePoints;
   const ownAttendence = corpsStats.get(corps.id)?.attendence ?? 0;
   const ownPointsMsg =
     totalGigs !== 0
