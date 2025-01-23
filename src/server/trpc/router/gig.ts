@@ -127,8 +127,10 @@ export const gigRouter = router({
         },
         where: {
           date: {
-            gte: dayjs(startDate).startOf('day').toDate(),
-            lte: dayjs(endDate).endOf('day').toDate(),
+            gte: startDate
+              ? dayjs(startDate).startOf('day').toDate()
+              : undefined,
+            lte: endDate ? dayjs(endDate).endOf('day').toDate() : undefined,
           },
           ...visibilityFilter,
         },
