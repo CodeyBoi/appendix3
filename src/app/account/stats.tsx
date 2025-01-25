@@ -30,14 +30,12 @@ const CorpsStats = async ({
   const streckAccountQuery = api.streck.getOwnStreckAccount.query();
 
   const [
-    corps,
     points,
     stats,
     orchestraRehearsalAttendance,
     balletRehearsalAttendance,
     streckAccount,
   ] = await Promise.all([
-    api.corps.getSelf.query(),
     pointsQuery,
     statsQuery,
     orchestraRehearsalAttendanceQuery,
@@ -60,15 +58,9 @@ const CorpsStats = async ({
             `You have a total of ${points} gig points!`,
           )}
         </h5>
-        <span className='hidden'>
-          {corps.number ? (
-            <a className='hover:underline' href='account/streck'>
-              {streckAccountStr}
-            </a>
-          ) : (
-            <>{streckAccountStr}</>
-          )}
-        </span>
+        <a className='hover:underline' href='account/streck'>
+          {streckAccountStr}
+        </a>
       </div>
       <div className='flex flex-col'>
         <h5>
