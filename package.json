@@ -39,7 +39,8 @@
     "react-select": "^5.7.7",
     "recharts": "^2.9.0",
     "superjson": "1.9.1",
-    "zod": "^3.18.0"
+    "zod": "^3.18.0",
+    "ics": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

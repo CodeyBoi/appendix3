@@ -6,6 +6,9 @@ import {
   restrictedProcedure,
   router,
 } from '../trpc';
+import * as ics from 'ics'
+import { title } from 'process';
+import { start } from 'repl';
 
 interface Gig {
   id: string;
@@ -638,7 +641,7 @@ export const gigRouter = router({
       return gig;
     }),
 
-  exportCalendar: protectedProcedure
+  exportCalendar: publicProcedure
     .input(z.object({ corpsId: z.string().cuid() }))
     .query(async ({ ctx, input }) => {
       // Call this endpoint at `${getUrl()}/gig.exportCalendar?input=${
@@ -648,12 +651,49 @@ export const gigRouter = router({
       // )}`
       // aka (for dev)
       // http://localhost:3000/api/trpc/gig.exportCalendar?input={%22json%22%3A{%22corpsId%22%3A%22<<CORPSID>>%22}}
-      const corpsId = ctx.session.user.corps.id;
+      const corpsId = input.corpsId;
 
       const startDate = dayjs().subtract(2, 'years').startOf('year').toDate();
       const endDate = dayjs().add(1, 'year').endOf('year').toDate();
 
-      const data = 'This is the calendar data'; // Collect calendar data here
+      const data = await ctx.prisma.gig.findMany({
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          date: {
+            gte: startDate
+              ? dayjs(startDate).startOf('day').toDate()
+              : undefined,
+            lte: endDate ? dayjs(endDate).endOf('day').toDate() : undefined,
+          },
+          signups: {
+            none: {
+              corpsId,
+            },
+          },
+        },
+      });
+
+      
+      const new_data = data.map((gig) => (
+        {
+          title: gig.title,
+          start: new Date(gig.date).valueOf(),
+          duration: {hours: 1}
+        }
+      ));
+
+      const { error, value } = ics.createEvents(new_data)
+      
+      if (error) {
+        console.log(error)
+        return
+      }
 
       const filename = `Spelningskalender_${startDate.getFullYear()}-${endDate.getFullYear()}.ics`;
       ctx.res.setHeader('Content-Type', 'text/calendar');
@@ -661,7 +701,7 @@ export const gigRouter = router({
         'Content-Disposition',
         `attachment; filename=${filename}`,
       );
-      ctx.res.send(data);
+      ctx.res.send(value);
       return {
         success: true,
       };
