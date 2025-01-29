@@ -42,7 +42,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
       // infers the `session` as non-nullable
       session: {
         ...ctx.session,
-        user: { ...ctx.session.user, corps },
+        user: { ...user, corps },
       },
     },
   });
@@ -105,7 +105,7 @@ const withPermissions = (permissions: Permission[] | Permission) =>
         // infers the `session` as non-nullable
         session: {
           ...ctx.session,
-          user: { ...ctx.session.user, corps, permissions: permissionsSet },
+          user: { ...user, corps, permissions: permissionsSet },
         },
       },
     });

@@ -88,10 +88,10 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
     data: corpsii = [],
     isInitialLoading,
     isFetching,
-  } = api.streck.getActiveCorps.useQuery({
+  } = api.streck.getCorpsBalances.useQuery({
     additionalCorps,
-    time: isNew ? undefined : streckList.time,
     activeFrom,
+    time: isNew ? undefined : streckList.time,
   });
 
   const setFocusedElement = (row?: number, col?: number) => {
@@ -206,7 +206,6 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
       }
     }
     setErrors(formErrors);
-    console.log('DASDPAWD');
     mutation.mutate({ id: streckList?.id, transactions: data });
   };
 
@@ -347,7 +346,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
               onClick={() => {
                 void utils.streck.getTransactions.invalidate();
                 void utils.streck.getStreckLists.invalidate();
-                void utils.streck.getStreckList.invalidate({
+                void utils.streck.get.invalidate({
                   id: streckList?.id,
                 });
                 router.back();

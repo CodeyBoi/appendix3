@@ -89,22 +89,6 @@ const generateTransactionsXLSX = (
 ) => {
   const workbook = new ExcelJS.Workbook();
   workbook.created = new Date();
-  const summarySheet = workbook.addWorksheet('Sammanfattning', {
-    pageSetup: {
-      paperSize: 9,
-      orientation: 'portrait',
-      printTitlesRow: `${headerRow}:${headerRow}`,
-    },
-  });
-
-  const header = summarySheet.getRow(headerRow);
-  header.values = ['Artikel', 'Antal', 'Totalpris'];
-  header.font = {
-    name: 'Arial',
-    bold: true,
-  };
-  summarySheet.getColumn(1).width = 19;
-
   const items: string[] = [];
   const summaries = streckLists.reduce((acc, streckList) => {
     for (const transaction of streckList.transactions) {
@@ -120,14 +104,6 @@ const generateTransactionsXLSX = (
     return acc;
   }, new Map<string, Summary>());
   items.sort((a, b) => a.localeCompare(b, 'sv'));
-
-  for (const item of items) {
-    const summary = summaries.get(item);
-    if (!summary) {
-      continue;
-    }
-    summarySheet.addRow([item, summary.amount, summary.total]);
-  }
 
   let lastName = null;
   let currentSheet = null;
@@ -150,6 +126,30 @@ const generateTransactionsXLSX = (
       ]);
     }
     lastName = name;
+  }
+
+  const summarySheet = workbook.addWorksheet('Sammanfattning', {
+    pageSetup: {
+      paperSize: 9,
+      orientation: 'portrait',
+      printTitlesRow: `${headerRow}:${headerRow}`,
+    },
+  });
+
+  const header = summarySheet.getRow(headerRow);
+  header.values = ['Artikel', 'Antal', 'Totalpris'];
+  header.font = {
+    name: 'Arial',
+    bold: true,
+  };
+  summarySheet.getColumn(1).width = 19;
+
+  for (const item of items) {
+    const summary = summaries.get(item);
+    if (!summary) {
+      continue;
+    }
+    summarySheet.addRow([item, summary.amount, summary.total]);
   }
 
   downloadXLSX(workbook, filename);

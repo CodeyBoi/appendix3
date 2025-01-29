@@ -7,6 +7,8 @@ import DeleteStreckListButton from './delete-streck-list';
 import DownloadTransactionsButton from './download';
 import { numberAndFullName } from 'utils/corps';
 import RestoreStreckListButton from './restore-streck-list';
+import { lang } from 'utils/language';
+import { getUrl } from 'trpc/shared';
 
 interface StreckListTableProps {
   start?: Date;
@@ -62,20 +64,27 @@ const StreckListTable = async ({
           </thead>
           <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
             {streckLists.map((streckList) => {
+              const listType =
+                new Set(streckList.transactions.map((t) => t.item)).size !== 1
+                  ? 'strecklist'
+                  : streckList.transactions.every((t) => t.pricePer < 0)
+                  ? 'cost'
+                  : streckList.transactions.every((t) => t.pricePer > 0)
+                  ? 'deposit'
+                  : 'unknown';
               return (
                 <tr
                   key={streckList.id}
                   className='divide-x divide-solid whitespace-nowrap dark:divide-neutral-800'
                 >
                   <td className='px-2'>
-                    {new Set(streckList.transactions.map((t) => t.item))
-                      .size !== 1
-                      ? 'Strecklista'
-                      : streckList.transactions.every((t) => t.pricePer < 0)
-                      ? 'Kostnad'
-                      : streckList.transactions.every((t) => t.pricePer > 0)
-                      ? 'Intäkt'
-                      : 'Blandat'}
+                    {listType === 'strecklist'
+                      ? lang('Strecklista', 'Strecklist')
+                      : listType === 'cost'
+                      ? lang('Kostnad', 'Cost')
+                      : listType === 'deposit'
+                      ? lang('Intäkt', 'Income')
+                      : lang('Blandat', 'Mixed')}
                   </td>
                   <td className='px-2'>
                     {dayjs(streckList.time).format(dateFormat)}
@@ -94,15 +103,26 @@ const StreckListTable = async ({
                       </ActionIcon>
                     </td>
                     <td>
-                      <DownloadTransactionsButton
-                        variant='subtle'
-                        streckLists={[streckList]}
-                        filename={`Transaktioner ${dayjs(
-                          streckList.time,
-                        ).format('YYYY-MM-DD')}.xlsx`}
-                      >
-                        <IconDownload />
-                      </DownloadTransactionsButton>
+                      {listType === 'strecklist' ? (
+                        <ActionIcon
+                          href={`${getUrl()}/streck.exportStreckList?input=${encodeURIComponent(
+                            JSON.stringify({ json: { id: streckList.id } }),
+                          )}`}
+                          variant='subtle'
+                        >
+                          <IconDownload />
+                        </ActionIcon>
+                      ) : (
+                        <DownloadTransactionsButton
+                          variant='subtle'
+                          streckLists={[streckList]}
+                          filename={`Transaktioner ${dayjs(
+                            streckList.time,
+                          ).format('YYYY-MM-DD_HH-mm')}.xlsx`}
+                        >
+                          <IconDownload />
+                        </DownloadTransactionsButton>
+                      )}
                     </td>
                     {showDeleted && (
                       <td>

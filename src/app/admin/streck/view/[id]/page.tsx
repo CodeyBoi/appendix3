@@ -37,7 +37,7 @@ const AdminStreckFormPage = async ({
 
   const streckList = isNew
     ? undefined
-    : await api.streck.getStreckList.query({ id: +id });
+    : await api.streck.get.query({ id: +id });
   const transactions = streckList?.transactions ?? [];
 
   // If transactions has exactly one type of item, this is a one-time
