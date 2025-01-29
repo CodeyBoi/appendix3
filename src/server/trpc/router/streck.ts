@@ -572,9 +572,9 @@ export const streckRouter = router({
           ref: 'D3:E10000',
           rules: [
             {
-              priority: 1,
+              priority: 2,
               type: 'expression',
-              formulae: ['AND(0<=D3,D3<200)'],
+              formulae: ['AND(0<=D3,D3<200,NOT(ISBLANK(D3)))'],
               style: {
                 fill: {
                   type: 'pattern',
@@ -589,9 +589,9 @@ export const streckRouter = router({
               },
             },
             {
-              priority: 2,
+              priority: 3,
               type: 'expression',
-              formulae: ['D3<0'],
+              formulae: ['AND(D3<0,NOT(ISBLANK(D3)))'],
               style: {
                 fill: {
                   type: 'pattern',
