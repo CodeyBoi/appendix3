@@ -15,7 +15,7 @@ const RestoreStreckListButton = ({ id }: RestoreStreckListButtonProps) => {
   const options = {
     onSuccess: async () => {
       await utils.streck.getTransactions.invalidate();
-      await utils.streck.getStreckList.invalidate({ id });
+      await utils.streck.get.invalidate({ id });
       await utils.streck.getStreckLists.invalidate();
       router.refresh();
     },

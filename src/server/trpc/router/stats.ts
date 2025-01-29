@@ -121,18 +121,22 @@ export const statsRouter = router({
       //   >(),
       // );
 
-      const corpsStats = toMap(res[2], 'id', (corps) => {
-        const fullName = `${corps.firstName} ${corps.lastName}`;
-        return {
-          ...corps,
-          fullName,
-          displayName: corps.nickName ?? fullName,
-          attendence:
-            corps.maxPossibleGigs === 0
-              ? 1.0
-              : corps.gigsAttended / corps.maxPossibleGigs,
-        };
-      });
+      const corpsStats = toMap(
+        res[2],
+        (s) => s.id,
+        (corps) => {
+          const fullName = `${corps.firstName} ${corps.lastName}`;
+          return {
+            ...corps,
+            fullName,
+            displayName: corps.nickName ?? fullName,
+            attendence:
+              corps.maxPossibleGigs === 0
+                ? 1.0
+                : corps.gigsAttended / corps.maxPossibleGigs,
+          };
+        },
+      );
 
       corpsIds.sort(
         (a, b) =>
@@ -676,9 +680,9 @@ export const statsRouter = router({
   }),
 
   getStreak: protectedProcedure
-    .input(z.object({ getAll: z.boolean().optional() }))
+    .input(z.object({ getAll: z.boolean().optional() }).optional())
     .query(async ({ ctx, input }) => {
-      const { getAll = false } = input;
+      const { getAll = false } = input ?? {};
 
       const recentGigs = await ctx.prisma.gig.findMany({
         where: {

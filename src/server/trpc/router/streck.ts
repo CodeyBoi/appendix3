@@ -2,8 +2,147 @@ import { z } from 'zod';
 import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
-import { initObject, sum } from 'utils/array';
+import { initObject, sum, toMap } from 'utils/array';
 import { sortCorpsByName } from 'utils/corps';
+import ExcelJS from 'exceljs';
+import { Context } from '../context';
+
+interface ActiveCorps {
+  id: string;
+  number: number | null;
+  firstName: string;
+  lastName: string;
+  nickName: string | null;
+  balance: number;
+}
+
+const getStreckList = async (ctx: Context, id: number) => {
+  const res = await ctx.prisma.streckList.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      transactions: {
+        include: {
+          corps: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  return res;
+};
+
+const GetBalancesInput = z.object({
+  additionalCorps: z.array(z.string().cuid()).optional(),
+  excludeCorps: z.array(z.string().cuid()).optional(),
+  time: z.date().optional(),
+  activeFrom: z.date().optional(),
+  activeUntil: z.date().optional(),
+});
+
+const getBalances = async (
+  ctx: Context,
+  input: z.infer<typeof GetBalancesInput>,
+) => {
+  const {
+    additionalCorps = [],
+    excludeCorps = [],
+    time = dayjs().endOf('day').toDate(),
+    activeFrom = dayjs(time).subtract(1, 'month').toDate(),
+    activeUntil = time,
+  } = input;
+
+  const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1970-01-01'), 'day');
+  const dateFilter = {
+    gte: dayjs(activeFrom).startOf('day').toDate(),
+    lte: dayjs(activeUntil).endOf('day').toDate(),
+  };
+  const recentlyActiveCorps = (
+    await ctx.prisma.corps.findMany({
+      select: {
+        id: true,
+      },
+      distinct: ['id'],
+      where: shouldGetAll
+        ? undefined
+        : {
+            OR: [
+              {
+                streckTransactions: {
+                  some: {
+                    streckList: {
+                      time: dateFilter,
+                    },
+                  },
+                },
+              },
+              {
+                rehearsals: {
+                  some: {
+                    rehearsal: {
+                      date: dateFilter,
+                    },
+                  },
+                },
+              },
+              {
+                gigSignups: {
+                  some: {
+                    attended: true,
+                    gig: {
+                      date: dateFilter,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+    })
+  ).map((e) => e.id);
+
+  additionalCorps.push(...recentlyActiveCorps);
+
+  if (additionalCorps.length === 0) {
+    // This is to stop Prisma.join complaining about getting an empty array
+    additionalCorps.push('DUMMY VALUE');
+  }
+  if (excludeCorps.length === 0) {
+    // This is to stop Prisma.join complaining about getting an empty array
+    excludeCorps.push('DUMMY VALUE');
+  }
+
+  const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
+        SELECT
+          Corps.id as id,
+          number,
+          firstName,
+          lastName,
+          nickName,
+          SUM(COALESCE(amount * pricePer, 0)) AS balance
+        FROM Corps
+        LEFT JOIN StreckTransaction ON Corps.id = corpsId
+        LEFT JOIN StreckList ON streckListId = StreckList.id
+        WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+          AND Corps.id NOT IN (${Prisma.join(excludeCorps)})
+          AND StreckList.time <= ${time}
+          AND deleted = false
+        GROUP BY Corps.id
+        ORDER BY
+          lastName,
+          firstName,
+          ISNULL(number),
+          number;
+      `;
+
+  return activeCorps.sort(sortCorpsByName);
+};
 
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure.query(async ({ ctx }) => {
@@ -218,108 +357,9 @@ export const streckRouter = router({
       });
     }),
 
-  getActiveCorps: protectedProcedure
-    .input(
-      z.object({
-        additionalCorps: z.array(z.string().cuid()).optional(),
-        time: z.date().optional(),
-        activeFrom: z.date().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      interface ActiveCorps {
-        id: string;
-        number: number | null;
-        firstName: string;
-        lastName: string;
-        nickName: string | null;
-        balance: number;
-      }
-
-      const {
-        additionalCorps = [],
-        time = new Date(),
-        activeFrom = dayjs(time).subtract(1, 'month').toDate(),
-      } = input;
-
-      const shouldGetAll = dayjs(activeFrom).isSame(dayjs('1970-01-01'), 'day');
-      const dateFilter = {
-        gte: dayjs(activeFrom).startOf('day').toDate(),
-        lte: dayjs(time).endOf('day').toDate(),
-      };
-      const recentlyActiveCorps = (
-        await ctx.prisma.corps.findMany({
-          select: {
-            id: true,
-          },
-          distinct: ['id'],
-          where: shouldGetAll
-            ? undefined
-            : {
-                OR: [
-                  {
-                    streckTransactions: {
-                      some: {
-                        streckList: {
-                          time: dateFilter,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    rehearsals: {
-                      some: {
-                        rehearsal: {
-                          date: dateFilter,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    gigSignups: {
-                      some: {
-                        attended: true,
-                        gig: {
-                          date: dateFilter,
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-        })
-      ).map((e) => e.id);
-
-      additionalCorps.push(...recentlyActiveCorps);
-
-      if (additionalCorps.length === 0) {
-        // This is to stop Prisma.join complaining about getting an empty array
-        additionalCorps.push('DUMMY VALUE');
-      }
-
-      const activeCorps = await ctx.prisma.$queryRaw<ActiveCorps[]>`
-        SELECT
-          Corps.id as id,
-          number,
-          firstName,
-          lastName,
-          nickName,
-          SUM(COALESCE(amount * pricePer, 0)) AS balance
-        FROM Corps
-        LEFT JOIN StreckTransaction ON Corps.id = corpsId
-        LEFT JOIN StreckList ON streckListId = StreckList.id
-        WHERE Corps.id IN (${Prisma.join(additionalCorps)})
-          AND deleted = false
-        GROUP BY Corps.id
-        ORDER BY
-          lastName,
-          firstName,
-          ISNULL(number),
-          number;
-      `;
-
-      return activeCorps.sort(sortCorpsByName);
-    }),
+  getCorpsBalances: protectedProcedure
+    .input(GetBalancesInput)
+    .query(async ({ ctx, input }) => getBalances(ctx, input)),
 
   setPrices: restrictedProcedure('manageStreck')
     .input(
@@ -358,7 +398,7 @@ export const streckRouter = router({
     };
   }),
 
-  getStreckList: restrictedProcedure('manageStreck')
+  get: restrictedProcedure('manageStreck')
     .input(
       z.object({
         id: z.number().int(),
@@ -366,18 +406,7 @@ export const streckRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const res = await ctx.prisma.streckList.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          transactions: {
-            include: {
-              corps: true,
-            },
-          },
-        },
-      });
+      const res = await getStreckList(ctx, id);
       return res;
     }),
 
@@ -473,5 +502,182 @@ export const streckRouter = router({
       return ctx.prisma.streckList.delete({
         where: { id },
       });
+    }),
+
+  exportStreckList: restrictedProcedure('manageStreck')
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const sumRow = 1;
+      const headerRow = 2;
+      const { id } = input;
+
+      const streckList = await getStreckList(ctx, id);
+      if (!streckList) {
+        throw Error(`No strecklist exists with id: ${id}`);
+      }
+
+      const corpsBalances = await getBalances(ctx, { time: streckList.time });
+
+      const passiveCorpsBalances = await getBalances(ctx, {
+        activeFrom: new Date('2024-01-01'), // Strecklistan started existing at blindtarmen 2024-12-16
+        excludeCorps: corpsBalances.map((c) => c.id),
+      });
+
+      const items = streckList.transactions
+        .reduce<{ name: string; pricePer: number }[]>((acc, transaction) => {
+          if (!acc.find((i) => i.name === transaction.item)) {
+            acc.push({
+              name: transaction.item,
+              pricePer: -transaction.pricePer,
+            });
+          }
+          return acc;
+        }, [])
+        .sort((a, b) => a.name.localeCompare(b.name, 'sv'));
+
+      const workbook = new ExcelJS.Workbook();
+
+      const addSheet = (name: string, columns: string[]) => {
+        const sheet = workbook.addWorksheet(name, {
+          pageSetup: {
+            paperSize: 9,
+            orientation: 'portrait',
+            printTitlesRow: `${sumRow}:${headerRow}`,
+          },
+          views: [
+            {
+              state: 'frozen',
+              ySplit: 2,
+              xSplit: 5,
+            },
+          ],
+        });
+        sheet.getRow(headerRow).values = columns;
+        sheet.getColumn(1).width = 5;
+        sheet.getColumn(2).width = 15;
+        sheet.getColumn(3).width = 19;
+
+        sheet.getRow(headerRow).alignment = {
+          wrapText: true,
+          horizontal: 'left',
+          vertical: 'bottom',
+        };
+        sheet.getRow(headerRow).height = 60;
+
+        sheet.addConditionalFormatting({
+          ref: 'D3:E10000',
+          rules: [
+            {
+              priority: 1,
+              type: 'expression',
+              formulae: ['AND(0<=D3,D3<200)'],
+              style: {
+                fill: {
+                  type: 'pattern',
+                  pattern: 'solid',
+                  bgColor: {
+                    argb: 'ffdeebf7',
+                  },
+                  fgColor: {
+                    argb: 'ff4472c4',
+                  },
+                },
+              },
+            },
+            {
+              priority: 2,
+              type: 'expression',
+              formulae: ['D3<0'],
+              style: {
+                fill: {
+                  type: 'pattern',
+                  pattern: 'solid',
+                  bgColor: {
+                    argb: 'ffffcccc',
+                  },
+                  fgColor: {
+                    argb: 'ff990000',
+                  },
+                },
+              },
+            },
+          ],
+        });
+
+        return sheet;
+      };
+
+      const activeSheet = addSheet('Aktiva', [
+        'Nr',
+        'Förnamn',
+        'Efternamn',
+        'Nytt saldo',
+        'Gammalt saldo',
+        ...items.map((item) => `${item.name} ${item.pricePer}p`),
+      ]);
+      const corpsTransactions = toMap(
+        streckList.transactions,
+        (t) => `${t.corps.id}:${t.item}`,
+        (t) => t.amount,
+      );
+      for (const corps of corpsBalances) {
+        const previousBalance =
+          +corps.balance +
+          sum(
+            items.map(
+              (item) =>
+                (corpsTransactions.get(`${corps.id}:${item.name}`) ?? 0) *
+                item.pricePer,
+            ),
+          );
+        const amounts = items.map(
+          (item) =>
+            corpsTransactions.get(`${corps.id}:${item.name}`)?.toString() ?? '',
+        );
+        activeSheet.addRow([
+          corps.number?.toString() ?? '',
+          corps.firstName,
+          corps.lastName,
+          +corps.balance,
+          +previousBalance,
+          ...amounts,
+        ]);
+      }
+
+      const passiveSheet = addSheet('Passiva', [
+        'Nr',
+        'Förnamn',
+        'Efternamn',
+        'Saldo',
+      ]);
+      for (const corps of passiveCorpsBalances) {
+        passiveSheet.addRow([
+          corps.number?.toString() ?? '',
+          corps.firstName,
+          corps.lastName,
+          +corps.balance,
+        ]);
+      }
+
+      const filename = `Strecklista_${dayjs(streckList.time)
+        .locale('sv')
+        .format('YYYY-MM-DD_HH-mm')}.xlsx`;
+      const data = await workbook.xlsx.writeBuffer();
+      ctx.res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      ctx.res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${filename}`,
+      );
+      ctx.res.send(data);
+      return {
+        success: true,
+      };
     }),
 });
