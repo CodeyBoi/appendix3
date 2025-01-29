@@ -637,4 +637,33 @@ export const gigRouter = router({
       });
       return gig;
     }),
+
+  exportCalendar: protectedProcedure
+    .input(z.object({ corpsId: z.string().cuid() }))
+    .query(async ({ ctx, input }) => {
+      // Call this endpoint at `${getUrl()}/gig.exportCalendar?input=${
+      //   encodeURIComponent(JSON.stringify({
+      //     json: { corpsId },
+      //   })
+      // )}`
+      // aka (for dev)
+      // http://localhost:3000/api/trpc/gig.exportCalendar?input={%22json%22%3A{%22corpsId%22%3A%22<<CORPSID>>%22}}
+      const corpsId = ctx.session.user.corps.id;
+
+      const startDate = dayjs().subtract(2, 'years').startOf('year').toDate();
+      const endDate = dayjs().add(1, 'year').endOf('year').toDate();
+
+      const data = 'This is the calendar data'; // Collect calendar data here
+
+      const filename = `Spelningskalender_${startDate.getFullYear()}-${endDate.getFullYear()}.ics`;
+      ctx.res.setHeader('Content-Type', 'text/calendar');
+      ctx.res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${filename}`,
+      );
+      ctx.res.send(data);
+      return {
+        success: true,
+      };
+    }),
 });
