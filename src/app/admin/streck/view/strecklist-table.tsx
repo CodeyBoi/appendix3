@@ -8,7 +8,6 @@ import DownloadTransactionsButton from './download';
 import { numberAndFullName } from 'utils/corps';
 import RestoreStreckListButton from './restore-streck-list';
 import { lang } from 'utils/language';
-import { getUrl } from 'trpc/shared';
 
 interface StreckListTableProps {
   start?: Date;
@@ -105,7 +104,7 @@ const StreckListTable = async ({
                     <td>
                       {listType === 'strecklist' ? (
                         <ActionIcon
-                          href={`${getUrl()}/streck.exportStreckList?input=${encodeURIComponent(
+                          href={`/api/trpc/streck.exportStreckList?input=${encodeURIComponent(
                             JSON.stringify({ json: { id: streckList.id } }),
                           )}`}
                           variant='subtle'
