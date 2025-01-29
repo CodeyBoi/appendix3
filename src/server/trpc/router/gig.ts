@@ -672,21 +672,66 @@ export const gigRouter = router({
             lte: endDate ? dayjs(endDate).endOf('day').toDate() : undefined,
           },
           signups: {
-            none: {
-              corpsId,
-            },
-          },
+            signupStatusId: 1,
+            corpsId: corpsId,
+          }
         },
+        orderBy: [
+          {
+            date: 'asc',
+          },
+          {
+            meetup: 'asc',
+          },
+          {
+            start: 'asc',
+          },
+        ],
       });
-
-      
-      const new_data = data.map((gig) => (
-        {
-          title: gig.title,
-          start: new Date(gig.date).valueOf(),
-          duration: {hours: 1}
+    
+      const generateCalendarArray = (gig): ics.EventAttributes => {
+        const [year, month, day] = dayjs(gig.date).format('YYYY:MM:DD').split(':').map((input:string)=> {return parseInt(input)});
+        if (!(gig.meetup.includes(':') || gig.meetup.includes('.'))) return {start: [1970, 1, 1], duration: {minutes:1}};
+        const [meetupHour, meetupMinute] = gig.meetup.split(/[:.]/).map((input:string)=> {return parseInt(input)});
+        if (isNaN(meetupHour) || isNaN(meetupMinute)) return {start: [1970, 1, 1], duration: {minutes:1}};
+        const meetup:number[] = [year, month, day, meetupHour, meetupMinute];
+    
+        const hasEndTime =
+          !!gig.end && (gig.end.includes(':') || gig.end.includes('.'));
+        const hasStartTime =
+          !!gig.start && (gig.start.includes(':') || gig.start.includes('.'));
+    
+        if (hasEndTime) {
+          const [endHour, endMinute] = gig.end.split(/[:.]/).map((input:string)=> {return parseInt(input)});
+          if (isNaN(endHour) || isNaN(endMinute)) return {start: [1970, 1, 1], duration: {minutes:1}};
+          const end = [year, month, day, endHour, endMinute];
+          return {
+            title: gig.title,
+            start: meetup,
+            end: end,
+            description: gig.description,
+            location: gig.location
+          };
+        } else if (hasStartTime) {
+          const [startHour, startMinute] = gig.start.split(/[:.]/).map((input:string)=> {return parseInt(input)});
+          if (isNaN(startHour) || isNaN(startMinute)) return {start: [1970, 1, 1], duration: {minutes:1}};
+          const isHourEleven = parseInt(startHour) === 23;
+          const end = isHourEleven
+            ? [year, month, day, 23, startMinute]
+            : [year, month, day, startHour+1, startMinute];
+          return {
+            title: gig.title,
+            start: meetup,
+            end: end,
+            description: gig.description,
+            location: gig.location
+          };
         }
-      ));
+        return {start: [1970, 1, 1], duration: {minutes:1}};
+      };
+
+
+      const new_data = data.map(generateCalendarArray);
 
       const { error, value } = ics.createEvents(new_data)
       
