@@ -672,9 +672,15 @@ export const gigRouter = router({
             lte: endDate ? dayjs(endDate).endOf('day').toDate() : undefined,
           },
           signups: {
-            signupStatusId: 1,
-            corpsId: corpsId,
-          }
+            some: {
+              corpsId,
+              status: {
+                value: {
+                  in: ['Ja', 'Kanske'],
+                },
+              },
+            },
+          },
         },
         orderBy: [
           {
@@ -688,8 +694,8 @@ export const gigRouter = router({
           },
         ],
       });
-    
-      const generateCalendarArray = (gig): ics.EventAttributes => {
+
+      const new_data = data.map((gig): ics.EventAttributes => {
         const [year, month, day] = dayjs(gig.date).format('YYYY:MM:DD').split(':').map((input:string)=> {return parseInt(input)});
         if (!(gig.meetup.includes(':') || gig.meetup.includes('.'))) return {start: [1970, 1, 1], duration: {minutes:1}};
         const [meetupHour, meetupMinute] = gig.meetup.split(/[:.]/).map((input:string)=> {return parseInt(input)});
@@ -728,10 +734,7 @@ export const gigRouter = router({
           };
         }
         return {start: [1970, 1, 1], duration: {minutes:1}};
-      };
-
-
-      const new_data = data.map(generateCalendarArray);
+      });
 
       const { error, value } = ics.createEvents(new_data)
       
