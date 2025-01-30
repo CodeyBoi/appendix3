@@ -6,6 +6,8 @@ import {
   restrictedProcedure,
   router,
 } from '../trpc';
+import * as ics from 'ics';
+import { getGigCalenderDates } from 'utils/date';
 
 interface Gig {
   id: string;
@@ -636,5 +638,89 @@ export const gigRouter = router({
         },
       });
       return gig;
+    }),
+
+  exportCalendar: publicProcedure
+    .input(z.object({ corpsId: z.string().cuid() }))
+    .query(async ({ ctx, input }) => {
+      // Call this endpoint at `${getUrl()}/gig.exportCalendar?input=${
+      //   encodeURIComponent(JSON.stringify({
+      //     json: { corpsId },
+      //   })
+      // )}`
+      // aka (for dev)
+      // http://localhost:3000/api/trpc/gig.exportCalendar?input={%22json%22%3A{%22corpsId%22%3A%22<<CORPSID>>%22}}
+      const corpsId = input.corpsId;
+
+      const startDate = dayjs().subtract(2, 'years').startOf('year').toDate();
+      const endDate = dayjs().add(1, 'year').endOf('year').toDate();
+
+      const gigs = await ctx.prisma.gig.findMany({
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        where: {
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+          signups: {
+            some: {
+              corpsId,
+              status: {
+                value: {
+                  in: ['Ja', 'Kanske'],
+                },
+              },
+            },
+          },
+        },
+        orderBy: [
+          {
+            date: 'asc',
+          },
+          {
+            meetup: 'asc',
+          },
+          {
+            start: 'asc',
+          },
+        ],
+      });
+
+      const { error, value } = ics.createEvents(gigs
+        .flatMap((gig) => {
+          const gigTime = getGigCalenderDates(gig);
+          if (!gigTime) {
+            return []
+          }
+          return [{
+            title: gig.title,
+            start: gigTime.start.getTime(),
+            end: gigTime.end.getTime(),
+            description: gig.description,
+            location: gig.location,
+          }];
+        }));
+
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const filename = `Spelningskalender_${startDate.getFullYear()}-${endDate.getFullYear()}.ics`;
+      ctx.res.setHeader('Content-Type', 'text/calendar');
+      ctx.res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${filename}`,
+      );
+      ctx.res.send(value);
+      return {
+        success: true,
+      };
     }),
 });
