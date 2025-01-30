@@ -655,7 +655,7 @@ export const gigRouter = router({
       const startDate = dayjs().subtract(2, 'years').startOf('year').toDate();
       const endDate = dayjs().add(1, 'year').endOf('year').toDate();
 
-      const data = await ctx.prisma.gig.findMany({
+      const gigs = await ctx.prisma.gig.findMany({
         include: {
           type: {
             select: {
@@ -665,10 +665,8 @@ export const gigRouter = router({
         },
         where: {
           date: {
-            gte: startDate
-              ? dayjs(startDate).startOf('day').toDate()
-              : undefined,
-            lte: endDate ? dayjs(endDate).endOf('day').toDate() : undefined,
+            gte: startDate,
+            lte: endDate,
           },
           signups: {
             some: {
@@ -694,24 +692,20 @@ export const gigRouter = router({
         ],
       });
 
-      const new_data = data
-        // .filter((gig) => {
-        //   getGigCalenderDates(gig) != undefined;
-        // })
-        .map((gig): ics.EventAttributes => {
-          const gigtime = getGigCalenderDates(gig);
-          const start = gigtime?.start;
-          const end = gigtime?.end;
-          return {
+      const { error, value } = ics.createEvents(gigs
+        .flatMap((gig) => {
+          const gigTime = getGigCalenderDates(gig);
+          if (!gigTime) {
+            return []
+          }
+          return [{
             title: gig.title,
-            start: start?.valueOf(),
-            end: end?.valueOf(),
+            start: gigTime.start.getTime(),
+            end: gigTime.end.getTime(),
             description: gig.description,
             location: gig.location,
-          };
-        });
-
-      const { error, value } = ics.createEvents(new_data);
+          }];
+        }));
 
       if (error) {
         console.log(error);
