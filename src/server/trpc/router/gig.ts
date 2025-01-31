@@ -692,20 +692,23 @@ export const gigRouter = router({
         ],
       });
 
-      const { error, value } = ics.createEvents(gigs
-        .flatMap((gig) => {
+      const { error, value } = ics.createEvents(
+        gigs.flatMap((gig) => {
           const gigTime = getGigCalenderDates(gig);
           if (!gigTime) {
-            return []
+            return [];
           }
-          return [{
-            title: gig.title,
-            start: gigTime.start.getTime(),
-            end: gigTime.end.getTime(),
-            description: gig.description,
-            location: gig.location,
-          }];
-        }));
+          return [
+            {
+              title: gig.title,
+              start: gigTime.start.getTime(),
+              end: gigTime.end.getTime(),
+              description: gig.description,
+              location: gig.location,
+            },
+          ];
+        }),
+      );
 
       if (error) {
         console.log(error);

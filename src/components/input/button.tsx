@@ -2,7 +2,7 @@ import Link from 'next/link';
 import React, { ButtonHTMLAttributes } from 'react';
 import { cn } from 'utils/class-names';
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   color?: Color;
   href?: string;
   compact?: boolean;

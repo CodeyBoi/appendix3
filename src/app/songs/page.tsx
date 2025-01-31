@@ -6,6 +6,7 @@ import ParamsTextInput from 'components/input/params-text-input';
 import { IconSearch, IconMusicPlus } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import { lang } from 'utils/language';
+import Tooltip from 'components/tooltip';
 
 export const metadata: Metadata = {
   title: 'Sångboken',
@@ -23,9 +24,11 @@ const SongsLayout = () => {
               paramName='search'
             />
           </div>
-          <ActionIcon href='/admin/songs/new' variant='subtle'>
-            <IconMusicPlus />
-          </ActionIcon>
+          <Tooltip position='bottom' text={lang('Skapa sång', 'Create song')}>
+            <ActionIcon href='/admin/songs/new' variant='subtle'>
+              <IconMusicPlus />
+            </ActionIcon>
+          </Tooltip>
         </div>
       </div>
       <div className='mt-8'>
