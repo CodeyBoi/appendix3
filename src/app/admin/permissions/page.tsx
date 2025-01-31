@@ -1,5 +1,6 @@
 import { IconEdit } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
+import Tooltip from 'components/tooltip';
 import { api } from 'trpc/server';
 import { detailedName } from 'utils/corps';
 import { lang } from 'utils/language';
@@ -17,12 +18,16 @@ const AdminPermissionsPage = async () => {
             <div key={role.id}>
               <div className='flex gap-4'>
                 <h4>{role.name}</h4>
-                <ActionIcon
-                  href={`/admin/permissions/edit/${role.id}`}
-                  variant='subtle'
+                <Tooltip
+                  text={lang('Ändra behörighetsroll', 'Edit permission role')}
                 >
-                  <IconEdit />
-                </ActionIcon>
+                  <ActionIcon
+                    href={`/admin/permissions/edit/${role.id}`}
+                    variant='subtle'
+                  >
+                    <IconEdit />
+                  </ActionIcon>
+                </Tooltip>
               </div>
               <ul className='list-disc pl-8'>
                 {role.corpsii.map((corps) => (

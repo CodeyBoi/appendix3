@@ -8,6 +8,7 @@ import DownloadTransactionsButton from './download';
 import { numberAndFullName } from 'utils/corps';
 import RestoreStreckListButton from './restore-streck-list';
 import { lang } from 'utils/language';
+import Tooltip from 'components/tooltip';
 
 interface StreckListTableProps {
   start?: Date;
@@ -45,7 +46,7 @@ const StreckListTable = async ({
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='overflow-x-auto overflow-y-hidden'>
+      <div className='overflow-x-auto overflow-y-hidden pt-4'>
         <table className='table text-sm'>
           <thead>
             <tr className='text-left'>
@@ -94,46 +95,61 @@ const StreckListTable = async ({
                   <td className='px-2 text-right'>{streckList.totalChange}</td>
                   <Restricted permissions='manageStreck'>
                     <td>
-                      <ActionIcon
-                        href={`/admin/streck/view/${streckList.id}`}
-                        variant='subtle'
-                      >
-                        <IconPencil />
-                      </ActionIcon>
+                      <Tooltip text={lang('Uppdatera', 'Edit')}>
+                        <ActionIcon
+                          href={`/admin/streck/view/${streckList.id}`}
+                          variant='subtle'
+                        >
+                          <IconPencil />
+                        </ActionIcon>
+                      </Tooltip>
                     </td>
                     <td>
-                      {listType === 'strecklist' ? (
-                        <ActionIcon
-                          href={`/api/trpc/streck.exportStreckList?input=${encodeURIComponent(
-                            JSON.stringify({ json: { id: streckList.id } }),
-                          )}`}
-                          variant='subtle'
-                        >
-                          <IconDownload />
-                        </ActionIcon>
-                      ) : (
-                        <DownloadTransactionsButton
-                          variant='subtle'
-                          streckLists={[streckList]}
-                          filename={`Transaktioner ${dayjs(
-                            streckList.time,
-                          ).format('YYYY-MM-DD_HH-mm')}.xlsx`}
-                        >
-                          <IconDownload />
-                        </DownloadTransactionsButton>
-                      )}
+                      <Tooltip
+                        text={lang('Exportera som XLSX', 'Export as XLSX')}
+                      >
+                        {listType === 'strecklist' ? (
+                          <ActionIcon
+                            href={`/api/trpc/streck.exportStreckList?input=${encodeURIComponent(
+                              JSON.stringify({ json: { id: streckList.id } }),
+                            )}`}
+                            variant='subtle'
+                          >
+                            <IconDownload />
+                          </ActionIcon>
+                        ) : (
+                          <DownloadTransactionsButton
+                            variant='subtle'
+                            streckLists={[streckList]}
+                            filename={`Transaktioner ${dayjs(
+                              streckList.time,
+                            ).format('YYYY-MM-DD_HH-mm')}.xlsx`}
+                          >
+                            <IconDownload />
+                          </DownloadTransactionsButton>
+                        )}
+                      </Tooltip>
                     </td>
                     {showDeleted && (
                       <td>
-                        <RestoreStreckListButton id={streckList.id} />
+                        <Tooltip text={lang('Återställ', 'Restore')}>
+                          <RestoreStreckListButton id={streckList.id} />
+                        </Tooltip>
                       </td>
                     )}
                     {showDelete && (
                       <td>
-                        <DeleteStreckListButton
-                          id={streckList.id}
-                          properRemove={showDeleted}
-                        />
+                        <Tooltip
+                          text={lang(
+                            showDeleted ? 'Ta bort permanent' : 'Ta bort',
+                            showDeleted ? 'Remove permanently' : 'Remove',
+                          )}
+                        >
+                          <DeleteStreckListButton
+                            id={streckList.id}
+                            properRemove={showDeleted}
+                          />
+                        </Tooltip>
                       </td>
                     )}
                   </Restricted>
