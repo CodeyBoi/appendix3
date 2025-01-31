@@ -14,6 +14,8 @@ import { lang } from 'utils/language';
 import useLanguage, { Language } from 'hooks/use-language';
 import SegmentedControl from 'components/input/segmented-control';
 import { isAprilFools } from 'utils/date';
+import CopyToClipboard from 'components/input/copy-to-clipboard';
+import { IconCalendarShare } from '@tabler/icons-react';
 
 const initialValues = {
   nickName: '',
@@ -88,7 +90,7 @@ const AccountPreferences = () => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={submitting || corpsLoading}>
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-col space-y-2'>
+          <div className='flex flex-col gap-4'>
             <h3>{lang('Allmänt', 'General')}</h3>
             <Switch
               label={
@@ -129,7 +131,7 @@ const AccountPreferences = () => {
               }}
             />
           </div>
-          <div className='flex w-min flex-col space-y-2'>
+          <div className='flex w-min flex-col gap-4'>
             <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>
             {!corps?.number && (
               <TextInput
@@ -149,8 +151,12 @@ const AccountPreferences = () => {
                 {...form.getInputProps('mainInstrument')}
               />
             )}
+            <CopyToClipboard text='PUT CALENDAR LINK HERE'>
+              <IconCalendarShare />
+              {lang('Exportera kalenderlänk', 'Export calendar link')}
+            </CopyToClipboard>
           </div>
-          <div className='flex flex-col space-y-2 pl-2'>
+          <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>
             <Switch
               label='Vegetarian'
