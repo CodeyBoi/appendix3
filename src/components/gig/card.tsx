@@ -89,7 +89,7 @@ const GigCard = async ({
         <div className='flex flex-col justify-between lg:flex-row'>
           <Link className='grow' href={`/gig/${gig.id}`}>
             <div className='flex grow cursor-pointer items-center space-x-4'>
-              <Datebox date={dayjs(gig.date)} />
+              <Datebox date={gig.date} />
               <div className='text-xs leading-normal'>
                 <i>{gig.type.name}</i>
                 <br />
