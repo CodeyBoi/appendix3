@@ -9,12 +9,14 @@ import React, { useEffect, useState } from 'react';
 import { range, sum } from 'utils/array';
 import { lang } from 'utils/language';
 
-type Upgrade =
-  | 'pr'
-  | 'board'
-  | 'probationaryStudent'
-  | 'timeMachine'
-  | 'riotGig';
+const upgradeTypes = [
+  'pr',
+  'board',
+  'probationaryStudent',
+  'timeMachine',
+  'riotGig',
+] as const;
+type Upgrade = typeof upgradeTypes[number];
 
 interface GameData {
   upgradeLevels: Record<Upgrade, number>;
@@ -44,7 +46,7 @@ const gigTypes = [
   'Party-marsch-spelning!',
 ] as const;
 
-const baseDaylength = 3000;
+const baseDaylength = 2000;
 
 const baseUpgradeCosts: Record<Upgrade, number> = {
   pr: 10,
@@ -72,14 +74,16 @@ const generateGigAttributes = () => {
   };
 };
 
-const gigProbability = (upgradeLevels: Record<Upgrade, number>) =>
+const getGigProbability = (upgradeLevels: Record<Upgrade, number>) =>
   0.3 + upgradeLevels.board * 0.05;
-const gigsPerDay = (upgradeLevels: Record<Upgrade, number>) =>
+const getGigsPerDay = (upgradeLevels: Record<Upgrade, number>) =>
   1 + upgradeLevels.pr;
-const gameSpeed = (upgradeLevels: Record<Upgrade, number>) =>
+const getGameSpeed = (upgradeLevels: Record<Upgrade, number>) =>
   1 + upgradeLevels.timeMachine * 0.05;
-const pointsPerGig = (upgradeLevels: Record<Upgrade, number>) =>
+const getPointsPerGig = (upgradeLevels: Record<Upgrade, number>) =>
   1 + upgradeLevels.riotGig;
+
+const getUpgradeCost = (upgradeLevels: Record<Upgrade, number>, u: Upgrade) => Math.floor(baseUpgradeCosts[u] * (2 ** upgradeLevels[u]))
 
 const CorpsClicker = ({
   startDate = new Date(),
@@ -92,10 +96,22 @@ const CorpsClicker = ({
 
   const [upgradeLevels, setUpgradeLevels] = useState(gameData.upgradeLevels);
 
+  const upgrade = (u: Upgrade) => {
+    const cost = getUpgradeCost(upgradeLevels, u);
+    if (points < cost) {
+      return;
+    }
+    setUpgradeLevels((prev) => {
+      prev[u] = prev[u] + 1;
+      return prev;
+    })
+    setPoints(p => p - cost);
+  }
+
   const gameLoop = () => {
     const numberOfNewGigs = sum(
-      range(gigsPerDay(upgradeLevels)).map(() =>
-        Math.random() < gigProbability(upgradeLevels) ? 1 : 0,
+      range(getGigsPerDay(upgradeLevels)).map(() =>
+        Math.random() < getGigProbability(upgradeLevels) ? 1 : 0,
       ),
     );
     const newGigs: Gig[] = [];
@@ -112,13 +128,14 @@ const CorpsClicker = ({
       newGigs,
       daysPassed,
       totalGigCount,
+      upgradeLevels
     });
 
     setPoints(
       (p) =>
         p +
         gigs.filter((gig) => daysPassed === gig.onDay && gig.signedUp).length *
-          pointsPerGig(upgradeLevels),
+          getPointsPerGig(upgradeLevels),
     );
     setGigs((prev) =>
       prev
@@ -143,7 +160,7 @@ const CorpsClicker = ({
       () => {
         gameLoop();
       },
-      baseDaylength / gameSpeed(upgradeLevels),
+      baseDaylength / getGameSpeed(upgradeLevels),
     );
     return () => {
       clearInterval(interval);
@@ -163,7 +180,13 @@ const CorpsClicker = ({
           .locale('sv')
           .format('dddd, DD MMMM YYYY')}
       </h5>
-      <div className='flex flex-col gap-2'>ADD UPGRADE BUTTONS</div>
+      <div className='flex flex-col gap-2'>
+        {upgradeTypes.map((u) => (
+          <Button key={u} disabled={points < getUpgradeCost(upgradeLevels, u)} onClick={() => upgrade(u)}>
+            Uppgradera{' '}{u}{' '}för{' '}{getUpgradeCost(upgradeLevels, u)}
+          </Button>
+        ))}
+      </div>
       {gigs.map((gig) => (
         <div
           key={gig.id}
