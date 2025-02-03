@@ -88,6 +88,9 @@ const AccountPreferences = () => {
   }));
 
   const gigIcsLink = `${getUrl()}/gig.exportCalendar?input=${encodeURI(`{"json":{"corpsId":"${corps?.id}"}}`)}`;
+  const calandarButtonHoverText = language === 'sv'
+    ? 'Du kan använda valfri kalenderapp för att följa länken.\nGoogla på "how to subscribe to ics link <app>" för mer information'
+    : 'You can use your prefered calendar app to subrcribe to the link.\nGoogle "how to subscribe to ics link <app>" for more information'
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -154,10 +157,12 @@ const AccountPreferences = () => {
                 {...form.getInputProps('mainInstrument')}
               />
             )}
-            <CopyToClipboard text={gigIcsLink}>
-              <IconCalendarShare />
-              {lang('Exportera kalenderlänk', 'Export calendar link')}
-            </CopyToClipboard>
+            <div title={calandarButtonHoverText}>
+              <CopyToClipboard text={gigIcsLink}>
+                <IconCalendarShare />
+                {lang('Exportera kalenderlänk', 'Export calendar link')}
+              </CopyToClipboard>
+            </div>
           </div>
           <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>
