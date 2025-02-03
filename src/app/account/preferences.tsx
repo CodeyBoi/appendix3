@@ -16,6 +16,7 @@ import SegmentedControl from 'components/input/segmented-control';
 import { isAprilFools } from 'utils/date';
 import CopyToClipboard from 'components/input/copy-to-clipboard';
 import { IconCalendarShare } from '@tabler/icons-react';
+import { getUrl } from 'trpc/shared';
 
 const initialValues = {
   nickName: '',
@@ -86,6 +87,8 @@ const AccountPreferences = () => {
     label: i.instrument.name,
   }));
 
+  const gigIcsLink = `${getUrl()}/gig.exportCalendar?input=${encodeURI(`{"json":{"corpsId":"${corps?.id}"}}`)}`;
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={submitting || corpsLoading}>
@@ -151,7 +154,7 @@ const AccountPreferences = () => {
                 {...form.getInputProps('mainInstrument')}
               />
             )}
-            <CopyToClipboard text='PUT CALENDAR LINK HERE'>
+            <CopyToClipboard text={gigIcsLink}>
               <IconCalendarShare />
               {lang('Exportera kalenderlänk', 'Export calendar link')}
             </CopyToClipboard>
