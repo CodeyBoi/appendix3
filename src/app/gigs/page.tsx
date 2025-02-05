@@ -10,6 +10,7 @@ import ParamsSelect from 'components/input/params-select';
 import { SelectItem } from 'components/input/select';
 import { lang } from 'utils/language';
 import Restricted from 'components/restricted/server';
+import ExportCalendar from './export-calendar';
 
 export const metadata: Metadata = {
   title: 'Spelningar',
@@ -63,13 +64,14 @@ const GigsPage = ({
             paramName='year'
             defaultValue={year}
           />
-          <Restricted permissions='manageGigs'>
-            <Button href='/admin/gig/new'>
-              <IconPlus />
-              {lang('Skapa spelning', 'Create gig')}
-            </Button>
-          </Restricted>
+          <ExportCalendar />
         </div>
+        <Restricted permissions='manageGigs'>
+          <Button href='/admin/gig/new'>
+            <IconPlus />
+            {lang('Skapa spelning', 'Create gig')}
+          </Button>
+        </Restricted>
         <h5 className='text-sm font-light italic'>
           {lang('* = positiv spelning', '* = positive gig')}
         </h5>

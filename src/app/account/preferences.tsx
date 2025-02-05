@@ -88,7 +88,7 @@ const AccountPreferences = () => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={submitting || corpsLoading}>
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-col space-y-2'>
+          <div className='flex flex-col gap-4'>
             <h3>{lang('Allmänt', 'General')}</h3>
             <Switch
               label={
@@ -129,7 +129,7 @@ const AccountPreferences = () => {
               }}
             />
           </div>
-          <div className='flex w-min flex-col space-y-2'>
+          <div className='flex w-min flex-col gap-4'>
             <h3>{lang('Corpsiga uppgifter', 'Corps member info')}</h3>
             {!corps?.number && (
               <TextInput
@@ -150,7 +150,7 @@ const AccountPreferences = () => {
               />
             )}
           </div>
-          <div className='flex flex-col space-y-2 pl-2'>
+          <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>
             <Switch
               label='Vegetarian'

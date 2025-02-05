@@ -643,18 +643,9 @@ export const gigRouter = router({
   exportCalendar: publicProcedure
     .input(z.object({ corpsId: z.string().cuid() }))
     .query(async ({ ctx, input }) => {
-      // Call this endpoint at `${getUrl()}/gig.exportCalendar?input=${
-      //   encodeURIComponent(JSON.stringify({
-      //     json: { corpsId },
-      //   })
-      // )}`
-      // aka (for dev)
-      // http://localhost:3000/api/trpc/gig.exportCalendar?input={%22json%22%3A{%22corpsId%22%3A%22<<CORPSID>>%22}}
-      const corpsId = input.corpsId;
+      const { corpsId } = input;
 
-      const startDate = dayjs().subtract(2, 'years').startOf('year').toDate();
-      const endDate = dayjs().add(1, 'year').endOf('year').toDate();
-
+      const today = dayjs().startOf('day').toDate();
       const gigs = await ctx.prisma.gig.findMany({
         include: {
           type: {
@@ -664,24 +655,33 @@ export const gigRouter = router({
           },
         },
         where: {
-          date: {
-            gte: startDate,
-            lte: endDate,
-          },
-          signups: {
-            some: {
-              corpsId,
-              status: {
-                value: {
-                  in: ['Ja', 'Kanske'],
+          OR: [
+            {
+              signups: {
+                some: {
+                  corpsId,
+                  attended: true,
                 },
               },
             },
-          },
+            {
+              date: {
+                gte: today,
+              },
+              signups: {
+                none: {
+                  corpsId,
+                  status: {
+                    value: 'Nej',
+                  },
+                },
+              },
+            },
+          ],
         },
         orderBy: [
           {
-            date: 'asc',
+            date: 'desc',
           },
           {
             meetup: 'asc',
@@ -690,7 +690,17 @@ export const gigRouter = router({
             start: 'asc',
           },
         ],
+        take: 1000,
       });
+      const corps = await ctx.prisma.corps.findUnique({
+        where: {
+          id: corpsId,
+        },
+        select: {
+          language: true,
+        },
+      });
+      const usesEnglish = corps?.language == 'en';
 
       const { error, value } = ics.createEvents(
         gigs.flatMap((gig) => {
@@ -703,8 +713,13 @@ export const gigRouter = router({
               title: gig.title,
               start: gigTime.start.getTime(),
               end: gigTime.end.getTime(),
-              description: gig.description,
+              description:
+                usesEnglish && gig.englishDescription != ''
+                  ? gig.englishDescription
+                  : gig.description,
               location: gig.location,
+              uid: gig.id + '@Bleckhornen',
+              categories: [gig.type.name],
             },
           ];
         }),
@@ -715,7 +730,7 @@ export const gigRouter = router({
         return;
       }
 
-      const filename = `Spelningskalender_${startDate.getFullYear()}-${endDate.getFullYear()}.ics`;
+      const filename = `Spelningskalender.ics`;
       ctx.res.setHeader('Content-Type', 'text/calendar');
       ctx.res.setHeader(
         'Content-Disposition',
