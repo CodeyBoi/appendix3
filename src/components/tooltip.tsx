@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { cn } from 'utils/class-names';
 
-type Position = 'top' | 'right' | 'bottom' | 'left';
+export type Position = 'top' | 'right' | 'bottom' | 'left';
 
 interface TooltipProps {
   children: ReactNode;
@@ -22,11 +22,11 @@ const Tooltip = ({ children, text, position = 'top' }: TooltipProps) => {
       {children}
       <div
         className={cn(
-          'pointer-events-none absolute z-20 whitespace-nowrap rounded border bg-white px-2 py-1 text-sm font-thin opacity-0 shadow-md transition-opacity duration-100 group-hover:opacity-100 dark:border-neutral-800 dark:bg-darkBg',
+          'pointer-events-none absolute z-20 min-w-full max-w-full rounded border bg-white px-2 py-1 text-sm font-thin opacity-0 shadow-md transition-opacity duration-100 group-hover:opacity-100 dark:border-neutral-800 dark:bg-darkBg lg:w-max lg:max-w-none',
           classes[position],
         )}
       >
-        {text}
+        <span className='inline-block w-full break-words'>{text}</span>
       </div>
     </div>
   );

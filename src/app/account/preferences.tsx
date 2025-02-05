@@ -14,12 +14,6 @@ import { lang } from 'utils/language';
 import useLanguage, { Language } from 'hooks/use-language';
 import SegmentedControl from 'components/input/segmented-control';
 import { isAprilFools } from 'utils/date';
-import CopyToClipboard from 'components/input/copy-to-clipboard';
-import { IconCalendarShare, IconClipboardCopy } from '@tabler/icons-react';
-import { getUrl } from 'trpc/shared';
-import Popover from 'components/popover';
-import ActionIcon from 'components/input/action-icon';
-
 
 const initialValues = {
   nickName: '',
@@ -90,11 +84,6 @@ const AccountPreferences = () => {
     label: i.instrument.name,
   }));
 
-  const gigIcsLink = `${getUrl()}/gig.exportCalendar?input=${encodeURIComponent(JSON.stringify({ json: { corpsId: corps?.id } }))}`;
-  const calandarButtonHoverText = language === 'sv'
-    ? 'Du kan använda valfri kalenderapp för att följa länken.\nGoogla på "how to subscribe to ics link <app>" för mer information'
-    : 'You can use your prefered calendar app to subrcribe to the link.\nGoogle "how to subscribe to ics link <app>" for more information'
-
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <FormLoadingOverlay visible={submitting || corpsLoading}>
@@ -160,23 +149,6 @@ const AccountPreferences = () => {
                 {...form.getInputProps('mainInstrument')}
               />
             )}
-            <Popover
-              position='left-bottom'
-              target={
-                <ActionIcon variant='subtle'>
-                  <IconCalendarShare />
-                  {lang('Exportera kalenderlänk', 'Export calendar link')}
-                </ActionIcon>
-              }
-            >
-              <CopyToClipboard text={gigIcsLink}>
-                <IconClipboardCopy></IconClipboardCopy>
-                {lang('Copiera kalenderlänk', 'Copy calendar link')}
-              </CopyToClipboard>
-              <br></br>
-              {calandarButtonHoverText}
-            </Popover>
-
           </div>
           <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>
