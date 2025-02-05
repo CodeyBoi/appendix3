@@ -31,7 +31,7 @@ const CopyToClipboard = ({
   );
 
   return hasClicked ? (
-    <Tooltip text={lang('Kopierat till urklipp!', 'Copied to clipboard!')}>
+    <Tooltip text={lang('Kopierad till urklipp!', 'Copied to clipboard!')}>
       {buttonElement}
     </Tooltip>
   ) : (

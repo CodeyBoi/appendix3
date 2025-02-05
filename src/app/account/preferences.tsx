@@ -87,7 +87,7 @@ const AccountPreferences = () => {
     label: i.instrument.name,
   }));
 
-  const gigIcsLink = `${getUrl()}/gig.exportCalendar?input=${encodeURI(`{"json":{"corpsId":"${corps?.id}"}}`)}`;
+  const gigIcsLink = `${getUrl()}/gig.exportCalendar?input=${encodeURIComponent(JSON.stringify({ json: { corpsId: corps?.id } }))}`;
   const calandarButtonHoverText = language === 'sv'
     ? 'Du kan använda valfri kalenderapp för att följa länken.\nGoogla på "how to subscribe to ics link <app>" för mer information'
     : 'You can use your prefered calendar app to subrcribe to the link.\nGoogle "how to subscribe to ics link <app>" for more information'
