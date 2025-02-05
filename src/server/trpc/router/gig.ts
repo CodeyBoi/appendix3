@@ -692,6 +692,15 @@ export const gigRouter = router({
         ],
         take: 1000,
       });
+      const corps = await ctx.prisma.corps.findUnique({
+        where: {
+          id: corpsId,
+        },
+        select: {
+          language: true,
+        },
+      });
+      const usesEnglish = corps?.language == 'en';
 
       const { error, value } = ics.createEvents(
         gigs.flatMap((gig) => {
@@ -704,8 +713,13 @@ export const gigRouter = router({
               title: gig.title,
               start: gigTime.start.getTime(),
               end: gigTime.end.getTime(),
-              description: gig.description,
+              description:
+                usesEnglish && gig.englishDescription != ''
+                  ? gig.englishDescription
+                  : gig.description,
               location: gig.location,
+              uid: gig.id+"@Bleckhornen",
+              categories: [gig.type.name]
             },
           ];
         }),
