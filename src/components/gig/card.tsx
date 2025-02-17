@@ -66,6 +66,24 @@ const GigCard = async ({
     id: i.instrument.id,
   }));
 
+  const SIGNUP_OPTION_YES = {
+    label: lang('Ja', 'Yes'),
+    value: 'Ja',
+    color: 'green',
+  };
+  const SIGNUP_OPTION_NO = {
+    label: lang('Nej', 'No'),
+    value: 'Nej',
+    color: 'var(--corps-red)',
+  };
+  const SIGNUP_OPTION_MAYBE = {
+    label: lang('Kanske', 'Maybe'),
+    value: 'Kanske',
+    color: 'orange',
+  };
+
+  const allowMaybe = !gig.signupEnd && [2, 3, 4].includes(gig.typeId);
+
   return (
     <div className='rounded border shadow-md dark:border-neutral-800'>
       <div className='flex flex-col space-y-2 p-4'>
@@ -141,6 +159,15 @@ const GigCard = async ({
                   checkbox1={gig.checkbox1}
                   checkbox2={gig.checkbox2}
                   signup={signup ?? undefined}
+                  signupOptions={
+                    allowMaybe
+                      ? [
+                          SIGNUP_OPTION_YES,
+                          SIGNUP_OPTION_NO,
+                          SIGNUP_OPTION_MAYBE,
+                        ]
+                      : [SIGNUP_OPTION_YES, SIGNUP_OPTION_NO]
+                  }
                 />
               </>
             )}
