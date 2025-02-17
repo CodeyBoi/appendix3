@@ -141,6 +141,7 @@ const GigCard = async ({
                   checkbox1={gig.checkbox1}
                   checkbox2={gig.checkbox2}
                   signup={signup ?? undefined}
+                  signupEndExsists={!!gig.signupEnd}
                 />
               </>
             )}
