@@ -30,6 +30,7 @@ interface GigSignupBoxProps {
   checkbox1: string;
   checkbox2: string;
   signup?: Signup;
+  signupEndExsists?: boolean;
 }
 
 const SIGNUP_OPTIONS = [
@@ -46,6 +47,7 @@ const GigSignupBox = ({
   checkbox1,
   checkbox2,
   signup,
+  signupEndExsists,
 }: GigSignupBoxProps) => {
   const utils = trpc.useUtils();
 
@@ -56,6 +58,11 @@ const GigSignupBox = ({
       setSubmitting(false);
     },
   });
+
+  const signupOptionsInstance = SIGNUP_OPTIONS.slice(
+    0,
+    signupEndExsists ? -1 : SIGNUP_OPTIONS.length,
+  );
 
   const [instrument, setInstrument] = useState('');
   const [status, setStatus] = useState(signup?.status.value ?? '');
@@ -115,7 +122,7 @@ const GigSignupBox = ({
       <div className='flex flex-col gap-2'>
         {isAprilFools() ? (
           <Wheel
-            options={SIGNUP_OPTIONS}
+            options={signupOptionsInstance}
             onChange={handleSignupStatusChange}
             value={status}
           />
@@ -125,7 +132,7 @@ const GigSignupBox = ({
             onChange={(v) => {
               handleSignupStatusChange(v.toString());
             }}
-            options={SIGNUP_OPTIONS}
+            options={signupOptionsInstance}
           />
         )}
         {checkbox1 && (
