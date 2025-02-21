@@ -6,7 +6,6 @@ import SegmentedControl from 'components/input/segmented-control';
 import Checkbox from 'components/input/checkbox';
 import Select from 'components/input/select';
 import FormLoadingOverlay from 'components/form-loading-overlay';
-import { lang } from 'utils/language';
 import { aprilFoolsInstrumentLabel, isAprilFools } from 'utils/date';
 import Wheel from 'components/wheel';
 
@@ -30,14 +29,12 @@ interface GigSignupBoxProps {
   checkbox1: string;
   checkbox2: string;
   signup?: Signup;
-  signupEndExsists?: boolean;
+  signupOptions: {
+    label: React.JSX.Element;
+    value: string;
+    color: string;
+  }[];
 }
-
-const SIGNUP_OPTIONS = [
-  { label: lang('Ja', 'Yes'), value: 'Ja', color: 'green' },
-  { label: lang('Nej', 'No'), value: 'Nej', color: 'var(--corps-red)' },
-  { label: lang('Kanske', 'Maybe'), value: 'Kanske', color: 'orange' },
-];
 
 const GigSignupBox = ({
   corpsId,
@@ -47,7 +44,7 @@ const GigSignupBox = ({
   checkbox1,
   checkbox2,
   signup,
-  signupEndExsists,
+  signupOptions,
 }: GigSignupBoxProps) => {
   const utils = trpc.useUtils();
 
@@ -58,11 +55,6 @@ const GigSignupBox = ({
       setSubmitting(false);
     },
   });
-
-  const signupOptionsInstance = SIGNUP_OPTIONS.slice(
-    0,
-    signupEndExsists ? -1 : SIGNUP_OPTIONS.length,
-  );
 
   const [instrument, setInstrument] = useState('');
   const [status, setStatus] = useState(signup?.status.value ?? '');
@@ -122,7 +114,7 @@ const GigSignupBox = ({
       <div className='flex flex-col gap-2'>
         {isAprilFools() ? (
           <Wheel
-            options={signupOptionsInstance}
+            options={signupOptions}
             onChange={handleSignupStatusChange}
             value={status}
           />
@@ -132,7 +124,7 @@ const GigSignupBox = ({
             onChange={(v) => {
               handleSignupStatusChange(v.toString());
             }}
-            options={signupOptionsInstance}
+            options={signupOptions}
           />
         )}
         {checkbox1 && (
