@@ -73,7 +73,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
   const ownPositivePoints = corpsStats.get(corps.id)?.positiveGigsAttended ?? 0;
   const ownPoints =
     (corpsStats.get(corps.id)?.gigsAttended ?? 0) - ownPositivePoints;
-  const ownAttendence = corpsStats.get(corps.id)?.attendence ?? 0;
+  const ownAttendance = corpsStats.get(corps.id)?.attendance ?? 0;
   const ownPointsMsg =
     totalGigs !== 0
       ? lang(
@@ -81,11 +81,11 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
             ownPositivePoints > 0 ? `+${ownPositivePoints}` : ''
           } spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
             isNow ? 'motsvarar' : 'motsvarade'
-          } ${Math.ceil(ownAttendence * 100)}% närvaro.`,
+          } ${Math.ceil(ownAttendance * 100)}% närvaro.`,
           `You ${isNow ? 'have been to' : 'were at'} ${ownPoints} gig${
             ownPoints === 1 ? '' : 's'
           }, which ${isNow ? 'corresponds' : 'corresponded'} to ${Math.ceil(
-            ownAttendence * 100,
+            ownAttendance * 100,
           )}% attendance.`,
         )
       : '';
@@ -108,7 +108,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
               <th className='text-left'>Corps</th>
               <th className='px-1 text-center'>{lang('Poäng', 'Points')}</th>
               <th className='px-1 text-center'>
-                {lang('Närvaro', 'Attendence')}
+                {lang('Närvaro', 'Attendance')}
               </th>
             </tr>
           </thead>
@@ -133,7 +133,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                     </td>
                     <td className='text-center'>{points}</td>
                     <td className='text-center'>
-                      {`${Math.ceil(stat.attendence * 100)}%`}
+                      {`${Math.ceil(stat.attendance * 100)}%`}
                     </td>
                   </tr>
                 </React.Fragment>

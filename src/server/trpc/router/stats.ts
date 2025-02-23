@@ -97,29 +97,6 @@ export const statsRouter = router({
       const totalGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsIds = res[2].map((corps) => corps.id);
-      // const corpsStats = res[2].reduce(
-      //   (acc, corps) => {
-      //     const fullName = `${corps.firstName} ${corps.lastName}`;
-      //     acc.set(corps.id, {
-      //       ...corps,
-      //       fullName,
-      //       displayName: corps.nickName ?? fullName,
-      //       attendence:
-      //         corps.maxPossibleGigs === 0
-      //           ? 1.0
-      //           : corps.gigsAttended / corps.maxPossibleGigs,
-      //     });
-      //     return acc;
-      //   },
-      //   new Map<
-      //     string,
-      //     CorpsStats & {
-      //       attendence: number;
-      //       fullName: string;
-      //       displayName: string;
-      //     }
-      //   >(),
-      // );
 
       const corpsStats = toMap(
         res[2],
@@ -130,7 +107,7 @@ export const statsRouter = router({
             ...corps,
             fullName,
             displayName: corps.nickName ?? fullName,
-            attendence:
+            attendance:
               corps.maxPossibleGigs === 0
                 ? 1.0
                 : corps.gigsAttended / corps.maxPossibleGigs,
@@ -140,8 +117,8 @@ export const statsRouter = router({
 
       corpsIds.sort(
         (a, b) =>
-          (corpsStats.get(b)?.attendence ?? 0) -
-          (corpsStats.get(a)?.attendence ?? 0),
+          (corpsStats.get(b)?.attendance ?? 0) -
+          (corpsStats.get(a)?.attendance ?? 0),
       );
 
       const ret = {

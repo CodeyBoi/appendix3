@@ -72,7 +72,7 @@ const CorpsStats = async ({
           {corpsStats?.gigsAttended || 0}
           <br />
           {lang('Spelningar: ', 'Gigs: ')}
-          {`${Math.ceil((corpsStats?.attendence ?? 0) * 100)}%`}
+          {`${Math.ceil((corpsStats?.attendance ?? 0) * 100)}%`}
           {orchestraRehearsalAttendance !== 0 && (
             <>
               <br />

@@ -8,11 +8,11 @@ import SelectCorps from 'components/select-corps';
 import RehearsalCheckbox from 'components/rehearsal/checkbox';
 import { api } from 'trpc/react';
 
-interface RehearsalAttendenceProps {
+interface RehearsalAttendanceProps {
   rehearsal: Rehearsal;
 }
 
-const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
+const RehearsalAttendance = ({ rehearsal }: RehearsalAttendanceProps) => {
   const utils = api.useUtils();
 
   const start = dayjs(rehearsal.date)
@@ -22,7 +22,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   const end = dayjs(rehearsal.date).endOf('week').toDate();
   const [corpsId, setCorpsId] = React.useState('');
 
-  const { data: attendence } = api.rehearsal.getAttendedRehearsalList.useQuery({
+  const { data: attendance } = api.rehearsal.getAttendedRehearsalList.useQuery({
     id: rehearsal.id,
     start,
     end,
@@ -40,7 +40,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
     },
   });
 
-  const selectedAlreadyAttendedCorps = attendence?.corpsIds.has(corpsId);
+  const selectedAlreadyAttendedCorps = attendance?.corpsIds.has(corpsId);
 
   return (
     <div className='flex flex-col space-y-2'>
@@ -75,7 +75,7 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
         </button>
       </div>
       <div className='flex flex-col space-y-2'>
-        {attendence?.corpsiiBySection.map((section) => (
+        {attendance?.corpsiiBySection.map((section) => (
           <React.Fragment key={section.name}>
             <h4>{section.name}</h4>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
@@ -95,4 +95,4 @@ const RehearsalAttendence = ({ rehearsal }: RehearsalAttendenceProps) => {
   );
 };
 
-export default RehearsalAttendence;
+export default RehearsalAttendance;

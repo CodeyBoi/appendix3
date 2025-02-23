@@ -101,7 +101,7 @@ export const rehearsalRouter = router({
       return rehearsal;
     }),
 
-  getAttendence: restrictedProcedure('manageRehearsals')
+  getAttendance: restrictedProcedure('manageRehearsals')
     .input(
       z.object({
         corpsId: z.string().cuid('Invalid CUID'),
