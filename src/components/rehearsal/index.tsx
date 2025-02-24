@@ -2,7 +2,7 @@ import { Rehearsal as RehearsalPrisma } from '@prisma/client';
 import { IconEdit } from '@tabler/icons-react';
 import React from 'react';
 import Button from '../input/button';
-import RehearsalAttendence from './attendence';
+import RehearsalAttendance from './attendance';
 
 interface RehearsalProps {
   rehearsal: RehearsalPrisma;
@@ -18,7 +18,7 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
         <IconEdit />
         Redigera
       </Button>
-      <RehearsalAttendence rehearsal={rehearsal} />
+      <RehearsalAttendance rehearsal={rehearsal} />
     </div>
   );
 };
