@@ -129,10 +129,10 @@ const getBalances = async (
         FROM Corps
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         LEFT JOIN StreckList ON streckListId = StreckList.id
-        WHERE Corps.id IN (${Prisma.join(additionalCorps)})
-          AND Corps.id NOT IN (${Prisma.join(excludeCorps)})
           AND StreckList.time <= ${time}
           AND deleted = false
+        WHERE Corps.id IN (${Prisma.join(additionalCorps)})
+          AND Corps.id NOT IN (${Prisma.join(excludeCorps)})
         GROUP BY Corps.id
         ORDER BY
           lastName,
