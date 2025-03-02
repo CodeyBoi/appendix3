@@ -65,11 +65,12 @@ interface HomePageProps {
 const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [gigs, killerGame, killerPlayer, streaks] = await Promise.all([
+  const [gigs, killerGame, killerPlayer, streaks, streckAccount] = await Promise.all([
     makeGigList(currentDate),
     api.killer.gameExists.query(),
     api.killer.getOwnPlayerInfo.query(),
     api.stats.getStreak.query({}),
+    api.streck.getOwnStreckAccount.query(),
   ]);
 
   const streak = streaks.streaks.get(streaks.corpsIds[0] ?? '') ?? 0;
@@ -105,6 +106,20 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
           {lang('Anmäl dig till Killergame! ⬆️', 'Sign up for Killergame! ⬆️')}
         </div>
       )}
+      {streckAccount.balance <= 0 && (
+        <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md' style={{ maxWidth: 500 }}>
+          {lang(`Vet din mamma om att ditt strecksaldo är negativt?`, `Does your mother know your streck balance is negative?`)}<br></br>
+          {lang(`Betala genast in så det inte är det. Ytterligare streck från dig innan du gör det kommer kosta extra.`,
+            `Imidietly settle your debt. Further streck from you before that will cost extra`)}
+          {lang(`Betala till bankgiro 669-8567 eller swisha till 123-388 68 76.`,
+            `Pay to bankgiro 669-8567 or swish to 123-388 68 76`)}<br></br>
+        </div>
+      )}
+      {
+        <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md' style={{ maxWidth: 500 }}>
+          {lang(`Ditt saldo är ${streckAccount.balance.toString()}kr`, `Your balance is ${streckAccount.balance.toString()}SEK`)}
+        </div>
+      }
       {streak >= 3 && (
         <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
           {fire}
