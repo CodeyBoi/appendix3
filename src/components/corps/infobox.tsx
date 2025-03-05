@@ -17,10 +17,10 @@ interface CorpsInfoboxProps {
 const genOtherInstrumentsString = (instruments: string[]) => {
   const instrumentsLower = instruments.map((i) => i.toLowerCase());
   if (instrumentsLower.length === 0) return '';
-  if (instrumentsLower.length === 1) return instruments[0] ?? '';
-  return `${instrumentsLower.slice(0, instruments.length - 1).join(', ')} och ${
-    instrumentsLower[instruments.length - 1] ?? ''
-  }`;
+  if (instrumentsLower.length === 1) return instrumentsLower[0] ?? '';
+  return `${instrumentsLower
+    .slice(0, instrumentsLower.length - 1)
+    .join(', ')} och ${instrumentsLower[instrumentsLower.length - 1] ?? ''}`;
 };
 
 // A list of "instruments" which should have the prefix "är"
