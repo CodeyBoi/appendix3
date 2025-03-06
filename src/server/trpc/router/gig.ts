@@ -718,8 +718,8 @@ export const gigRouter = router({
                   ? gig.englishDescription
                   : gig.description,
               location: gig.location,
-              uid: gig.id+"@Bleckhornen",
-              categories: [gig.type.name]
+              uid: gig.id + '@Bleckhornen',
+              categories: [gig.type.name],
             },
           ];
         }),
