@@ -15,6 +15,7 @@ const initialValues = {
   firstName: '',
   lastName: '',
   nickName: '',
+  pronouns: '',
   number: '',
   bNumber: '',
   email: '',
@@ -73,6 +74,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         firstName: corps.firstName,
         lastName: corps.lastName,
         nickName: corps.nickName ?? '',
+        pronouns: corps.pronouns ?? '',
         number: corps.number?.toString() || '',
         bNumber: corps.bNumber?.toString() || '',
         email: corps.user.email ?? '',
@@ -130,6 +132,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             />
           </div>
           <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
+          <TextInput label='Pronomen' {...form.getInputProps('pronouns')} />
           <div className='flex gap-4'>
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />

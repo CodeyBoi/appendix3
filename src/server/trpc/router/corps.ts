@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 import { corpsOrderByNumberDesc } from 'utils/corps';
 import { intersection } from 'utils/array';
+import { emptyToNull } from 'server/utils/transforms';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -136,7 +137,8 @@ export const corpsRouter = router({
   updateSelf: protectedProcedure
     .input(
       z.object({
-        nickName: z.string(),
+        nickName: z.string().transform(emptyToNull),
+        pronouns: z.string().transform(emptyToNull),
         email: z.string(),
         vegetarian: z.boolean(),
         vegan: z.boolean(),
@@ -147,34 +149,45 @@ export const corpsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const {
+        nickName,
+        pronouns,
+        email,
+        vegetarian,
+        vegan,
+        glutenFree,
+        lactoseFree,
+        otherFoodPrefs,
+        mainInstrument,
+      } = input;
       const corps = await ctx.prisma.corps.findUnique({
         where: {
           userId: ctx.session.user.id || '',
         },
       });
 
-      if (corps === null) {
+      if (!corps) {
         throw new Error('Not logged in');
       }
 
       const foodPrefs = {
-        vegetarian: input.vegetarian,
-        vegan: input.vegan,
-        glutenFree: input.glutenFree,
-        lactoseFree: input.lactoseFree,
-        other: input.otherFoodPrefs,
+        vegetarian,
+        vegan,
+        glutenFree,
+        lactoseFree,
+        other: otherFoodPrefs,
       };
 
       // Update main instrument (set all to false, then set main instrument to true)
-      if (input.mainInstrument) {
+      if (mainInstrument) {
         const instruments = await ctx.prisma.instrument.findMany({});
-        const mainInstrument = instruments.find(
-          (instrument) => instrument.name === input.mainInstrument,
+        const corpsMainInstrument = instruments.find(
+          (instrument) => instrument.name === mainInstrument,
         );
-        if (!mainInstrument) {
+        if (!corpsMainInstrument) {
           throw new Error('Invalid instrument');
         }
-        const mainInstrumentId = mainInstrument.id;
+        const mainInstrumentId = corpsMainInstrument.id;
         await ctx.prisma.corpsInstrument.updateMany({
           where: {
             corpsId: corps.id,
@@ -201,11 +214,11 @@ export const corpsRouter = router({
           id: corps.id,
         },
         data: {
-          nickName:
-            input.nickName.trim().length > 0 ? input.nickName.trim() : null,
+          nickName,
+          pronouns,
           user: {
             update: {
-              email: input.email.trim(),
+              email: email.trim(),
             },
           },
           foodPrefs: {
@@ -225,6 +238,7 @@ export const corpsRouter = router({
         firstName: z.string(),
         lastName: z.string(),
         nickName: z.string(),
+        pronouns: z.string(),
         number: z.number().nullable(),
         bNumber: z.number().nullable(),
         email: z.string(),
@@ -244,6 +258,8 @@ export const corpsRouter = router({
         lastName: input.lastName.trim(),
         nickName:
           input.nickName.trim().length > 0 ? input.nickName.trim() : null,
+        pronouns:
+          input.pronouns.trim().length > 0 ? input.pronouns.trim() : null,
         number: input.number,
         bNumber: input.bNumber,
         instruments: {

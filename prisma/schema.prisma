@@ -71,6 +71,7 @@ model Corps {
   firstName   String
   lastName    String
   nickName    String?
+  pronouns    String?
   isActive    Boolean  @default(true)
   userId      String   @unique
   colorScheme String   @default("light")

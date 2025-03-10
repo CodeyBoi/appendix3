@@ -17,6 +17,7 @@ import { isAprilFools } from 'utils/date';
 
 const initialValues = {
   nickName: '',
+  pronouns: '',
   vegetarian: false,
   vegan: false,
   glutenFree: false,
@@ -51,6 +52,7 @@ const AccountPreferences = () => {
       ?.instrument.name;
     form.setValues({
       nickName: corps.nickName ?? '',
+      pronouns: corps.pronouns ?? '',
       vegetarian: corps.foodPrefs?.vegetarian ?? false,
       vegan: corps.foodPrefs?.vegan ?? false,
       glutenFree: corps.foodPrefs?.glutenFree ?? false,
@@ -149,6 +151,10 @@ const AccountPreferences = () => {
                 {...form.getInputProps('mainInstrument')}
               />
             )}
+            <TextInput
+              label={lang('Pronomen', 'Pronouns')}
+              {...form.getInputProps('pronouns')}
+            />
           </div>
           <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>

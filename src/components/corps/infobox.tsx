@@ -63,6 +63,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     instruments,
     fullName,
     nickName,
+    pronouns,
     number,
     points,
     firstGigDate,
@@ -167,9 +168,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
             </Modal>
           )}
         </div>
-        {nickName && (
+        {(nickName || pronouns) && (
           <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>
-            {'a.k.a. ' + nickName}
+            {nickName}
+            {' • '}
+            {pronouns}
           </div>
         )}
       </div>
