@@ -65,12 +65,14 @@ interface HomePageProps {
 const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
-  const [gigs, killerGame, killerPlayer, streaks] = await Promise.all([
-    makeGigList(currentDate),
-    api.killer.gameExists.query(),
-    api.killer.getOwnPlayerInfo.query(),
-    api.stats.getStreak.query({}),
-  ]);
+  const [gigs, killerGame, killerPlayer, streaks, streckAccount] =
+    await Promise.all([
+      makeGigList(currentDate),
+      api.killer.gameExists.query(),
+      api.killer.getOwnPlayerInfo.query(),
+      api.stats.getStreak.query({}),
+      api.streck.getOwnStreckAccount.query(),
+    ]);
 
   const streak = streaks.streaks.get(streaks.corpsIds[0] ?? '') ?? 0;
 
@@ -105,7 +107,23 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
           {lang('Anmäl dig till Killergame! ⬆️', 'Sign up for Killergame! ⬆️')}
         </div>
       )}
-      {streak >= 3 && (
+      {streckAccount.balance < 0 && (
+        <h5 className='top-20 z-20 max-w-4xl rounded-lg bg-yellow p-4 text-center text-yellow-800 shadow-md'>
+          {lang(
+            `Vet din mamma om att ditt strecksaldo är negativt (${streckAccount.balance.toString()}p)? `,
+            `Does your mother know your streck balance is negative (${streckAccount.balance.toString()}p)? `,
+          )}
+          {lang(
+            `Ytterligare streck innan du gör en inbetalning kommer debiteras extra. `,
+            `Further streck before settling your debt will be charged extra. `,
+          )}
+          {lang(
+            `Betala till bankgiro 669-8567 eller swisha till 123-388 68 76.`,
+            `Pay to bankgiro 669-8567 or swish to 123-388 68 76`,
+          )}
+        </h5>
+      )}
+      {streak >= 3 && streckAccount.balance >= 0 && (
         <div className='rounded-lg border bg-red-600 p-3 text-center text-lg text-white shadow-md'>
           {fire}
           {lang(

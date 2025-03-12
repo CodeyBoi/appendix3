@@ -7,13 +7,14 @@ import { ReactNode, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 interface ModalProps {
-  target: ReactNode;
+  target?: ReactNode;
   children: ReactNode;
   title?: string;
   className?: string;
   onFocus?: () => void;
   onBlur?: () => void;
   withCloseButton?: boolean;
+  startsOpen?: boolean;
 }
 
 const Modal = ({
@@ -24,8 +25,9 @@ const Modal = ({
   onFocus,
   onBlur,
   withCloseButton = false,
+  startsOpen = false,
 }: ModalProps) => {
-  const [open, setOpenValue] = useState(false);
+  const [open, setOpenValue] = useState(startsOpen);
 
   const setOpen = (value: boolean) => {
     if (onFocus && value && !open) {
@@ -55,7 +57,7 @@ const Modal = ({
         )}
       >
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-row flex-nowrap gap-8'>
+          <div className='flex flex-row flex-nowrap items-baseline gap-8'>
             <h3 className='grow'>{title}</h3>
             {withCloseButton && (
               <ActionIcon
