@@ -45,3 +45,6 @@ export const intersection = <T>(a: T[], b: T[]) => {
   }
   return c;
 };
+
+export const filterNone = <T>(list: (T | null | undefined)[]): T[] =>
+  list.flatMap((e) => (e !== null && e !== undefined ? [e] : []));
