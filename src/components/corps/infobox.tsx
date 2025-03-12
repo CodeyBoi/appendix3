@@ -7,6 +7,7 @@ import Modal from 'components/modal';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
+import { filterNone } from 'utils/array';
 import { lang } from 'utils/language';
 
 interface CorpsInfoboxProps {
@@ -39,7 +40,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   );
 
   const [showAllStreaks, setShowAllStreaks] = useState(false);
-  const [nickname, setNickname] = useState('');
+  const [newNickName, setNewNickName] = useState('');
 
   const mutation = api.corps.changeNickname.useMutation({
     onSuccess: async () => {
@@ -59,6 +60,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       />
     );
   }
+
   const {
     instruments,
     fullName,
@@ -123,7 +125,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     e.preventDefault();
     mutation.mutate({
       corpsId: id,
-      nickname,
+      nickname: newNickName,
     });
   };
 
@@ -149,9 +151,9 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
                 <div className='flex w-full gap-2'>
                   <input
                     placeholder='Nytt smeknamn'
-                    value={nickname}
+                    value={newNickName}
                     onChange={(e) => {
-                      setNickname(e.target.value);
+                      setNewNickName(e.target.value);
                     }}
                     name='nickname'
                     type='text'
@@ -170,13 +172,10 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
         </div>
         {(nickName || pronouns) && (
           <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>
-            {nickName}
-            {' • '}
-            {pronouns}
+            {filterNone([nickName, pronouns]).join(' • ')}
           </div>
         )}
       </div>
-
       <div className='italic'>
         {lang('Spelpoäng: ', 'Gig points: ')}
         {points}
