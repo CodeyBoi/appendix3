@@ -108,7 +108,7 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
         </div>
       )}
       {streckAccount.balance < 0 && (
-        <h5 className='top-20 z-20 max-w-4xl rounded-lg bg-yellow-500 p-4 text-center text-white shadow-md'>
+        <h5 className='top-20 z-20 max-w-4xl rounded-lg bg-yellow p-4 text-center text-yellow-800 shadow-md'>
           {lang(
             `Vet din mamma om att ditt strecksaldo är negativt (${streckAccount.balance.toString()}p)? `,
             `Does your mother know your streck balance is negative (${streckAccount.balance.toString()}p)? `,
