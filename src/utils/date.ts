@@ -44,7 +44,7 @@ const aprilFoolsInstruments: Record<string, string> = {
   trombon: 'Dragbanjo',
   eufonium: 'Fånig banjo',
   tuba: 'Låg banjo',
-  slagverk: 'Ihålig banjo',
+  slagverk: 'Banjo',
   balett: 'Snurrig banjo',
   dirigent: 'Banjo på vift',
   annat: 'Banjo på avvägar',
