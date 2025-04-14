@@ -69,9 +69,9 @@ const getSwedenHourOffset = (date: Date) => {
   // Set time to middle of day to handle -12 to +12
   d.setUTCHours(12);
   const hourLocale = parseInt(
-    d.toLocaleString(undefined, {
-      hour: 'numeric',
+    d.toLocaleString('sv-SE', {
       timeZone: 'Europe/Stockholm',
+      hour: 'numeric',
     }),
   );
   return hourLocale - d.getUTCHours();
