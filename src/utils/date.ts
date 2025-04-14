@@ -64,8 +64,16 @@ export const isChristmas = () => new Date().getMonth() === 11;
 
 export const isJuly = () => new Date().getMonth() === 6;
 
+const getHourOffset = (locale: Intl.LocalesArgument, date: Date) => {
+  const d = new Date(date);
+  // Set time to middle of day to handle -12 to +12
+  d.setUTCHours(12);
+  const hourLocale = parseInt(d.toLocaleString(locale, { hour: 'numeric' }));
+  return hourLocale - d.getUTCHours();
+};
+
 const parseGigTime = (date: Date, time: string) => {
-  // `time` is a string describing a time of day in UTC+1
+  // `time` is a string describing a time of day in Swedish time
   // Only consider the first two characters (incase `time` is '21:15ish')
   const [hour = NaN, minute = NaN] = time
     .split(/[:.]/)
@@ -74,7 +82,7 @@ const parseGigTime = (date: Date, time: string) => {
     return undefined;
   }
   const dateTime = new Date(date);
-  dateTime.setUTCHours(hour - 1, minute);
+  dateTime.setUTCHours(hour - getHourOffset('sv-SE', dateTime), minute);
   return dateTime;
 };
 
