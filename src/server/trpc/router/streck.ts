@@ -663,6 +663,51 @@ export const streckRouter = router({
         ]);
       }
 
+      interface Summary {
+        total: number;
+        amount: number;
+      }
+
+      const summarySheet = workbook.addWorksheet('Sammanfattning', {
+        pageSetup: {
+          paperSize: 9,
+          orientation: 'portrait',
+          printTitlesRow: `${headerRow}:${headerRow}`,
+        },
+      });
+
+      const summaryHeader = summarySheet.getRow(headerRow);
+      summaryHeader.values = ['Artikel', 'Styckpris', 'Antal', 'Totalpris'];
+      summaryHeader.font = {
+        name: 'Arial',
+        bold: true,
+      };
+      summarySheet.getColumn(1).width = 19;
+      summarySheet.getColumn(2).width = 11;
+      summarySheet.getColumn(4).width = 11;
+
+      const summaries = streckList.transactions.reduce((acc, transaction) => {
+        const prev = acc.get(transaction.item);
+        acc.set(transaction.item, {
+          total: (prev?.total ?? 0) + transaction.totalPrice,
+          amount: (prev?.amount ?? 0) + transaction.amount,
+        });
+        return acc;
+      }, new Map<string, Summary>());
+
+      for (const item of items) {
+        const summary = summaries.get(item.name);
+        if (!summary) {
+          continue;
+        }
+        summarySheet.addRow([
+          item.name,
+          item.pricePer,
+          summary.amount,
+          -summary.total,
+        ]);
+      }
+
       const filename = `Strecklista_${dayjs(streckList.time)
         .locale('sv')
         .format('YYYY-MM-DD_HH-mm')}.xlsx`;
