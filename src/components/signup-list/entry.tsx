@@ -8,6 +8,7 @@ interface Corps {
   lastName: string;
   nickName: string | null;
   number: number | null;
+  bNumber: number | null;
 }
 
 interface SignupEntryProps {
