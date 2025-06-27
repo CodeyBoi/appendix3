@@ -10,6 +10,7 @@ import { Context } from '../context';
 interface ActiveCorps {
   id: string;
   number: number | null;
+  bNumber: number | null;
   firstName: string;
   lastName: string;
   nickName: string | null;
@@ -122,6 +123,7 @@ const getBalances = async (
         SELECT
           Corps.id as id,
           number,
+          bNumber,
           firstName,
           lastName,
           nickName,
@@ -138,7 +140,9 @@ const getBalances = async (
           lastName,
           firstName,
           ISNULL(number),
-          number;
+          number
+          ISNULL(bNumber),
+          bNumber;
       `;
 
   return activeCorps.sort(sortCorpsByName);
