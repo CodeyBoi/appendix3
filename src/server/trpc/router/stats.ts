@@ -87,6 +87,7 @@ export const statsRouter = router({
         ORDER BY
           gigsAttended DESC,
           ISNULL(number), number,
+          ISNULL(bNumber), bNumber,
           lastName,
           firstName;
       `;
