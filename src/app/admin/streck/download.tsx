@@ -135,7 +135,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
       corps.number
         ? corps.number.toString() + ' '
         : corps.bNumber
-        ? corps.bNumber.toString() + ' '
+        ? 'b' + corps.bNumber.toString() + ' '
         : '',
       corps.firstName.trim(),
       corps.lastName.trim(),
