@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { filterNone } from 'utils/array';
+import { displayName } from 'utils/corps';
 import { lang } from 'utils/language';
 
 interface CorpsInfoboxProps {
@@ -63,7 +64,6 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
 
   const {
     instruments,
-    fullName,
     nickName,
     pronouns,
     number,
@@ -114,8 +114,8 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
-  const numberAndFullName = `${number ? `#${number}` : 'p.e.'} ${fullName}`;
-  const displayName =
+  const numberAndFullName = displayName(corps);
+  const corpsName =
     numberAndFullName.length > 25
       ? numberAndFullName.slice(0, 25) +
         numberAndFullName.slice(25).replace(' ', '\n')
@@ -133,7 +133,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     <div className='flex w-min flex-col p-2 text-left text-sm'>
       <div className='text-lg font-bold'>
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
-          {displayName}
+          {corpsName}
           {!!number && self.id !== id && (
             <Modal
               title='Byt smeknamn'
