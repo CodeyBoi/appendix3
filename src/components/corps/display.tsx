@@ -26,8 +26,8 @@ const getName = (corps: Corps, nameFormat: NameFormat) => {
     return displayName(corps);
   } else if (nameFormat === 'number-only') {
     return corps.number === null && corps.bNumber === null
-      ? corps.lastName.trim()
-      : '';
+      ? 'p.e. ' + corps.lastName.trim()
+      : displayNumber(corps);
   } else {
     return fullName(corps);
   }
@@ -38,10 +38,6 @@ const CorpsDisplay = ({
   nameFormat = 'nickname',
 }: CorpsDisplayProps) => {
   const [open, setOpen] = useState(false);
-  const displayName = `${displayNumber(corps)} ${getName(
-    corps,
-    nameFormat,
-  )}`.trim();
   return (
     <Popover
       position='bottom-right'
@@ -52,7 +48,11 @@ const CorpsDisplay = ({
         setOpen(false);
       }}
       targetClassName='max-w-max'
-      target={<div className='hover:underline'>{displayName}</div>}
+      target={
+        <div className='hover:underline'>
+          {getName(corps, nameFormat).trim()}
+        </div>
+      }
     >
       <CorpsInfobox id={corps.id} open={open} />
     </Popover>
