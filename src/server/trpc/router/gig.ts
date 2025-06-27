@@ -294,6 +294,7 @@ export const gigRouter = router({
               fullName: true,
               displayName: true,
               number: true,
+              bNumber: true,
             },
           },
           status: {

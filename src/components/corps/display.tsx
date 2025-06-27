@@ -3,6 +3,7 @@
 import Popover from 'components/popover';
 import CorpsInfobox from './infobox';
 import { useState } from 'react';
+import { displayName, displayNumber, fullName } from 'utils/corps';
 
 type NameFormat = 'nickname' | 'number-only' | 'full-name';
 
@@ -12,6 +13,7 @@ interface Corps {
   lastName: string;
   nickName: string | null;
   number: number | null;
+  bNumber: number | null;
 }
 
 interface CorpsDisplayProps {
@@ -21,13 +23,13 @@ interface CorpsDisplayProps {
 
 const getName = (corps: Corps, nameFormat: NameFormat) => {
   if (nameFormat === 'nickname') {
-    return corps.nickName
-      ? corps.nickName.trim()
-      : `${corps.firstName.trim()} ${corps.lastName.trim()}`;
+    return displayName(corps);
   } else if (nameFormat === 'number-only') {
-    return corps.number === null ? corps.lastName.trim() : '';
+    return corps.number === null && corps.bNumber === null
+      ? corps.lastName.trim()
+      : '';
   } else {
-    return `${corps.firstName.trim()} ${corps.lastName.trim()}`;
+    return fullName(corps);
   }
 };
 
@@ -36,8 +38,10 @@ const CorpsDisplay = ({
   nameFormat = 'nickname',
 }: CorpsDisplayProps) => {
   const [open, setOpen] = useState(false);
-  const numberStr = corps.number ? `#${corps.number}` : 'p.e.';
-  const displayName = `${numberStr} ${getName(corps, nameFormat)}`.trim();
+  const displayName = `${displayNumber(corps)} ${getName(
+    corps,
+    nameFormat,
+  )}`.trim();
   return (
     <Popover
       position='bottom-right'

@@ -7,6 +7,7 @@ export const displayName = (
         lastName: string;
         nickName: string | null;
         number: number | null;
+        bNumber: number | null;
       }
     | null
     | undefined,
@@ -24,6 +25,7 @@ export const detailedName = (
         lastName: string;
         nickName: string | null;
         number: number | null;
+        bNumber: number | null;
       }
     | null
     | undefined,
@@ -38,6 +40,7 @@ export const displayNumber = (
   corps:
     | {
         number: number | null;
+        bNumber: number | null;
       }
     | null
     | undefined,
@@ -46,6 +49,8 @@ export const displayNumber = (
     ? ''
     : corps.number
     ? `#${corps.number}`
+    : corps.bNumber
+    ? `b${corps.bNumber}`
     : 'p.e.';
 
 export const numberAndFullName = (
@@ -54,6 +59,7 @@ export const numberAndFullName = (
         firstName: string;
         lastName: string;
         number: number | null;
+        bNumber: number | null;
       }
     | null
     | undefined,
@@ -77,6 +83,7 @@ export const fullName = (
 
 interface CorpsSort {
   number: number | null;
+  bNumber: number | null;
   lastName: string;
   firstName: string;
 }
@@ -106,6 +113,10 @@ export const sortCorpsByName = (a: CorpsSort, b: CorpsSort) => {
     return -1;
   } else if (!a.number && b.number) {
     return 1;
+  } else if (a.bNumber && !b.bNumber) {
+    return -1;
+  } else if (!a.bNumber && b.bNumber) {
+    return 1;
   }
   return (a.number ?? 0x516) - (b.number ?? 0x516);
 };
@@ -113,6 +124,10 @@ export const sortCorpsByName = (a: CorpsSort, b: CorpsSort) => {
 export const corpsOrderBy = [
   {
     number: {
+      sort: 'asc',
+      nulls: 'last',
+    },
+    bNumber: {
       sort: 'asc',
       nulls: 'last',
     },
@@ -129,6 +144,10 @@ export const corpsOrderByNumberDesc = [
   {
     number: {
       // Numbers are sorted descending, so that more recent corps members are at the top
+      sort: 'desc',
+      nulls: 'last',
+    },
+    bNumber: {
       sort: 'desc',
       nulls: 'last',
     },

@@ -13,6 +13,7 @@ interface Item {
 
 interface ActiveCorps {
   number: number | null;
+  bNumber: number | null;
   firstName: string;
   lastName: string;
   balance: number;
@@ -131,7 +132,11 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
   for (const corps of activeCorps) {
     const row = sheet.getRow(rowIndex);
     row.values = [
-      corps.number ? corps.number.toString() + ' ' : '',
+      corps.number
+        ? corps.number.toString() + ' '
+        : corps.bNumber
+        ? corps.bNumber.toString() + ' '
+        : '',
       corps.firstName.trim(),
       corps.lastName.trim(),
       corps.balance,

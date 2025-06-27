@@ -172,6 +172,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
             return (a.corps.number || Infinity) - (b.corps.number || Infinity);
           }
 
+          // Compare ballet numbers
+          if (a.corps.bNumber || b.corps.bNumber) {
+            return (a.corps.bNumber || Infinity) - (b.corps.bNumber || Infinity);
+          }
+
           // Compare last name
           if (a.corps.lastName !== b.corps.lastName) {
             return a.corps.lastName.localeCompare(b.corps.lastName, 'sv');
