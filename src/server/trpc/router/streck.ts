@@ -140,7 +140,7 @@ const getBalances = async (
           lastName,
           firstName,
           ISNULL(number),
-          number
+          number,
           ISNULL(bNumber),
           bNumber;
       `;
