@@ -127,6 +127,8 @@ export const corpsOrderBy = [
       sort: 'asc',
       nulls: 'last',
     },
+  },
+  {
     bNumber: {
       sort: 'asc',
       nulls: 'last',
@@ -147,6 +149,8 @@ export const corpsOrderByNumberDesc = [
       sort: 'desc',
       nulls: 'last',
     },
+  },
+  {
     bNumber: {
       sort: 'desc',
       nulls: 'last',
