@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { filterNone } from 'utils/array';
-import { displayName } from 'utils/corps';
+import { numberAndFullName } from 'utils/corps';
 import { lang } from 'utils/language';
 
 interface CorpsInfoboxProps {
@@ -114,12 +114,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
-  const numberAndFullName = displayName(corps);
+  const corpsNameTemp = numberAndFullName(corps);
   const corpsName =
-    numberAndFullName.length > 25
-      ? numberAndFullName.slice(0, 25) +
-        numberAndFullName.slice(25).replace(' ', '\n')
-      : numberAndFullName;
+    corpsNameTemp.length > 25
+      ? corpsNameTemp.slice(0, 25) + corpsNameTemp.slice(25).replace(' ', '\n')
+      : corpsNameTemp;
 
   const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
