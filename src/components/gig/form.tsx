@@ -55,9 +55,12 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
 
   const router = useRouter();
 
+  // Only fetch corps if user presses the button or if hiddenFor is populated
+  // to prevent having to fetch all corps every time. The fetch is about 30KB
+  // (as of 2025)
   const [hideFor, setHideFor] = useState((gig?.hiddenFor.length ?? 0) !== 0);
-
   const { data: corpsii } = api.corps.search.useQuery({}, { enabled: hideFor });
+
   const corpsiiOptions = corpsii?.map((c) => ({
     label: detailedName(c),
     value: c.id,
