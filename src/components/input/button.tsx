@@ -9,12 +9,13 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   fullWidth?: boolean;
 };
 
-type Color = 'red' | 'transparent' | 'navbutton';
+type Color = 'red' | 'transparent' | 'navbutton' | 'no-fill';
 
 const colorClasses: Record<Color, string> = {
   red: 'bg-red-600 hover:bg-red-700 text-white',
   transparent: 'bg-transparent text-gray-700 dark:text-gray-300',
   navbutton: 'bg-transparent text-white',
+  'no-fill': 'border-2 border-red-600 text-red-600',
 };
 
 const Button = ({
