@@ -21,12 +21,41 @@ interface Gig {
   location: string | null;
   description: string | null;
   englishDescription: string | null;
+  hiddenFor: {
+    corpsId: string;
+  }[];
 }
 
-const sendDiscordAlert = async (gig: Gig) => {
-  if (!process.env.DISCORD_WEBHOOK_GIG_URL) {
+const sendDiscordAlert = async (msg: string) => {
+  // Prevent dev builds from sending alerts
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Sending Discord alert:\n${msg}`);
+    return;
+  } else if (!process.env.DISCORD_WEBHOOK_GIG_URL) {
     return;
   }
+  await fetch(process.env.DISCORD_WEBHOOK_GIG_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      content: msg,
+    }),
+  });
+};
+
+const sendNewGigAlert = async (gig: Gig) => {
+  // Don't send alert if gig is hidden for someone
+  if (gig.hiddenFor.length !== 0) {
+    return;
+  }
+
+  // Don't send alert if gig has already happened
+  else if (gig.date.getTime() + 1000 * 60 * 60 * 24 <= new Date().getTime()) {
+    return;
+  }
+
   const info = [];
   info.push(`# ${gig.title}`.trim());
   info.push(
@@ -47,15 +76,57 @@ const sendDiscordAlert = async (gig: Gig) => {
     info.push('');
   }
   info.push(`[Anmälan!](<${process.env.NEXTAUTH_URL}/gig/${gig.id}>)`);
-  await fetch(process.env.DISCORD_WEBHOOK_GIG_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      content: info.join('\n'),
-    }),
-  });
+  await sendDiscordAlert(info.join('\n'));
+};
+
+const sendChangedGigMeetupAlert = async (newGig: Gig, oldGig: Gig) => {
+  // Don't send alert if gig is hidden for someone
+  if (newGig.hiddenFor.length !== 0) {
+    return;
+  }
+
+  // Don't send alert if time hasn't changed
+  else if (oldGig.meetup?.trim() === newGig.meetup?.trim()) {
+    return;
+  }
+
+  const info = [];
+
+  const isDateChanged = oldGig.date !== newGig.date;
+
+  const displayTime = (gig: Gig, lang: 'sv' | 'en') => {
+    if (!gig.meetup) {
+      return lang === 'en' ? 'undecided' : 'obestämd';
+    }
+    return (
+      gig.meetup.trim() +
+      (isDateChanged
+        ? ' ' +
+          gig.date.toLocaleDateString(
+            lang,
+            lang === 'en'
+              ? { month: 'long', day: 'numeric' }
+              : { day: 'numeric', month: 'long' },
+          )
+        : '')
+    );
+  };
+
+  info.push(`# Tidsändring för ${oldGig.title.trim()}`);
+  info.push(
+    `*Samlingstiden för ${oldGig.title.trim()} har flyttats från ${displayTime(
+      oldGig,
+      'sv',
+    )} till ${displayTime(newGig, 'sv')}.*`,
+  );
+  info.push(``);
+  info.push(
+    `*The gathering time for ${oldGig.title.trim()} has been moved from ${displayTime(
+      oldGig,
+      'en',
+    )} to ${displayTime(newGig, 'en')}.*`,
+  );
+  await sendDiscordAlert(info.join('\n'));
 };
 
 export const gigRouter = router({
@@ -200,6 +271,18 @@ export const gigRouter = router({
         where: {
           id: gigId ?? '',
         },
+        include: {
+          type: {
+            select: {
+              name: true,
+            },
+          },
+          hiddenFor: {
+            select: {
+              corpsId: true,
+            },
+          },
+        },
       });
 
       if (existingGig !== null) {
@@ -207,8 +290,21 @@ export const gigRouter = router({
           where: {
             id: gigId ?? '',
           },
+          include: {
+            type: {
+              select: {
+                name: true,
+              },
+            },
+            hiddenFor: {
+              select: {
+                corpsId: true,
+              },
+            },
+          },
           data,
         });
+        await sendChangedGigMeetupAlert(gig, existingGig);
         return gig;
       }
 
@@ -219,18 +315,15 @@ export const gigRouter = router({
               name: true,
             },
           },
+          hiddenFor: {
+            select: {
+              corpsId: true,
+            },
+          },
         },
         data,
       });
-
-      // Send discord alert if new gig on production server
-      if (
-        process.env.DISCORD_WEBHOOK_GIG_URL &&
-        gig.date.getTime() + 1000 * 60 * 60 * 24 > new Date().getTime()
-      ) {
-        await sendDiscordAlert(gig);
-      }
-
+      await sendNewGigAlert(gig);
       return gig;
     }),
 
