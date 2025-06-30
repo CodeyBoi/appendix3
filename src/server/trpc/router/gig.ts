@@ -89,7 +89,7 @@ export const gigRouter = router({
         dateOrder: z.enum(['asc', 'desc']).optional(),
       }),
     )
-    .query(({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       const { startDate, endDate, dateOrder = 'asc' } = input;
       const corpsId = ctx.session?.user?.corps?.id;
       const visibilityFilter =
@@ -109,12 +109,12 @@ export const gigRouter = router({
                 {
                   // Stops hiding gig if it's in the past
                   date: {
-                    gt: dayjs().startOf('day').toDate(),
+                    lt: dayjs().startOf('day').toDate(),
                   },
                 },
               ],
             };
-      return ctx.prisma.gig.findMany({
+      const res = await ctx.prisma.gig.findMany({
         include: {
           type: {
             select: {
@@ -148,6 +148,7 @@ export const gigRouter = router({
           },
         ],
       });
+      return res;
     }),
 
   upsert: restrictedProcedure('manageGigs')

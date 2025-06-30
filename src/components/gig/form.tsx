@@ -15,6 +15,10 @@ import NumberInput from 'components/input/number-input';
 import Checkbox from 'components/input/checkbox';
 import DatePicker from 'components/input/date-picker';
 import DateTimePicker from 'components/input/datetime-picker';
+import { api } from 'trpc/react';
+import MultiSelect from 'components/multi-select';
+import { lang } from 'utils/language';
+import { detailedName } from 'utils/corps';
 
 interface GigFormProps {
   gig?: Gig & { type: { name: string } } & { hiddenFor: { corpsId: string }[] };
@@ -51,17 +55,16 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
 
   const router = useRouter();
 
-  // const { data: corpsii } = api.corps.search.useQuery({});
-  // const corpsiiOptions = corpsii?.map((c) => ({
-  //   label:
-  //     (c.number ? `#${c.number}` : 'p.e.') +
-  //     ' ' +
-  //     c.firstName +
-  //     ' ' +
-  //     (c.nickName ? '"' + c.nickName + '" ' : '') +
-  //     c.lastName,
-  //   value: c.id,
-  // }));
+  // Only fetch corps if user presses the button or if hiddenFor is populated
+  // to prevent having to fetch all corps every time. The fetch is about 30KB
+  // (as of 2025)
+  const [hideFor, setHideFor] = useState((gig?.hiddenFor.length ?? 0) !== 0);
+  const { data: corpsii } = api.corps.search.useQuery({}, { enabled: hideFor });
+
+  const corpsiiOptions = corpsii?.map((c) => ({
+    label: detailedName(c),
+    value: c.id,
+  }));
 
   const form = useForm<FormValues>({
     initialValues: newGig
@@ -220,18 +223,31 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             description='Lämna tom för att inte visa kryssruta'
             {...form.getInputProps('checkbox2')}
           />
-          {/*
-            <div className='col-span-1 flex flex-col focus-visible:ring-red-600 md:col-span-2'>
-              <div>Dölj spelning</div>
-              <MultiSelect
-                placeholder='Välj corps...'
-                className='outline-none focus-visible:outline-none'
-                options={corpsiiOptions ?? []}
-                defaultValue={form.values.hiddenFor}
-                {...form.getInputProps('hiddenFor')}
-              />
-            </div>
-          */}
+          <div className='col-span-1 flex flex-col focus-visible:ring-red-600 md:col-span-2'>
+            {hideFor ? (
+              <>
+                <div>{lang('Dölj spelning för', 'Hide gig from')}</div>
+                <MultiSelect
+                  placeholder='Välj corps...'
+                  className='outline-none focus-visible:outline-none'
+                  options={corpsiiOptions ?? []}
+                  defaultValue={form.values.hiddenFor}
+                  {...form.getInputProps('hiddenFor')}
+                />
+              </>
+            ) : (
+              <Button
+                color='no-fill'
+                compact
+                fullWidth
+                onClick={() => {
+                  setHideFor(!hideFor);
+                }}
+              >
+                {lang('Dölj spelning för corps...', 'Hide gig from corps...')}{' '}
+              </Button>
+            )}
+          </div>
           <div className='flex space-x-4 whitespace-nowrap'>
             <Checkbox
               label='Allmän spelning?'
