@@ -77,7 +77,7 @@ const TextInput = ({
     <div className='flex min-w-0 shrink flex-col'>
       <div
         className={cn(
-          'relative flex h-10 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
+          'relative mt-2 flex h-10 items-center rounded border bg-transparent shadow-sm dark:border-neutral-800',
           error && errorStyle,
         )}
       >
