@@ -56,7 +56,7 @@ const TextArea = ({
   const height = (Math.max(2, value?.split('\n').length ?? 0) + 1) * 24;
 
   return (
-    <div className='flex flex-col'>
+    <div className='mt-2 flex flex-col'>
       <div className='relative flex'>
         <textarea
           className={cn(

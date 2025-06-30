@@ -60,7 +60,7 @@ const Select = ({
   return (
     <div
       className={cn(
-        'relative flex flex-col',
+        'relative mt-2 flex flex-col',
         disabled && 'pointer-events-none opacity-50',
         className,
       )}
