@@ -82,11 +82,11 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
           } spelning${ownPoints === 1 ? '' : 'ar'}, vilket ${
             isNow ? 'motsvarar' : 'motsvarade'
           } ${Math.ceil(ownAttendance * 100)}% närvaro.`,
-          `You ${isNow ? 'have been to' : 'were at'} ${ownPoints} gig${
-            ownPoints === 1 ? '' : 's'
-          }, which ${isNow ? 'corresponds' : 'corresponded'} to ${Math.ceil(
-            ownAttendance * 100,
-          )}% attendance.`,
+          `You ${isNow ? 'have been to' : 'were at'} ${ownPoints}${
+            ownPositivePoints > 0 ? `+${ownPositivePoints}` : ''
+          } gig${ownPoints === 1 ? '' : 's'}, which ${
+            isNow ? 'corresponds' : 'corresponded'
+          } to ${Math.ceil(ownAttendance * 100)}% attendance.`,
         )
       : '';
 
