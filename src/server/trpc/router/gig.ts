@@ -92,7 +92,7 @@ const sendChangedGigMeetupAlert = async (newGig: Gig, oldGig: Gig) => {
 
   const info = [];
 
-  const isDateChanged = oldGig.date !== newGig.date;
+  const isDateChanged = oldGig.date.getTime() !== newGig.date.getTime();
 
   const displayTime = (gig: Gig, lang: 'sv' | 'en') => {
     if (!gig.meetup) {
@@ -101,7 +101,7 @@ const sendChangedGigMeetupAlert = async (newGig: Gig, oldGig: Gig) => {
     return (
       gig.meetup.trim() +
       (isDateChanged
-        ? ' ' +
+        ? (lang === 'sv' ? ' den ' : ' ') +
           gig.date.toLocaleDateString(
             lang,
             lang === 'en'
@@ -114,17 +114,17 @@ const sendChangedGigMeetupAlert = async (newGig: Gig, oldGig: Gig) => {
 
   info.push(`# Tidsändring för ${oldGig.title.trim()}`);
   info.push(
-    `*Samlingstiden för ${oldGig.title.trim()} har flyttats från ${displayTime(
+    `Samlingstiden för ${oldGig.title.trim()} har flyttats från ${displayTime(
       oldGig,
       'sv',
-    )} till ${displayTime(newGig, 'sv')}.*`,
+    )} till ${displayTime(newGig, 'sv')}.`,
   );
   info.push(``);
   info.push(
-    `*The gathering time for ${oldGig.title.trim()} has been moved from ${displayTime(
+    `The gathering time for ${oldGig.title.trim()} has been moved from ${displayTime(
       oldGig,
       'en',
-    )} to ${displayTime(newGig, 'en')}.*`,
+    )} to ${displayTime(newGig, 'en')}.`,
   );
   await sendDiscordAlert(info.join('\n'));
 };
