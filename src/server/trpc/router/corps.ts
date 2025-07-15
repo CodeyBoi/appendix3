@@ -329,10 +329,11 @@ export const corpsRouter = router({
       z.object({
         search: z.string().optional(),
         excludeSelf: z.boolean().optional(),
+        take: z.number().int().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { search = '', excludeSelf = false } = input;
+      const { search = '', excludeSelf = false, take = 50 } = input;
       const number = parseInt(search);
       const searchTerms = search.split(' ').filter((term) => !!term.trim());
       const matchingIds = await ctx.prisma.$transaction(
@@ -370,9 +371,7 @@ export const corpsRouter = router({
                   instruments: {
                     some: {
                       instrument: {
-                        name: {
-                          contains: s,
-                        },
+                        name: s,
                       },
                     },
                   },
@@ -428,6 +427,7 @@ export const corpsRouter = router({
           },
         },
         orderBy: corpsOrderByNumberDesc,
+        take: search.length < 5 ? take : undefined,
       });
       return corpsii.map((corps) => ({
         id: corps.id,

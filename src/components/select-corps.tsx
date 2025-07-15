@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { trpc } from 'utils/trpc';
 import SelectSearch, { SelectSearchProps } from './input/search-select';
 import { detailedName } from 'utils/corps';
-
-const MIN_SEARCH_LENGTH = 2;
 
 type SelectCorpsProps = Omit<SelectSearchProps, 'options'> & {
   excludeSelf?: boolean;
@@ -20,20 +18,13 @@ const SelectCorps = ({
   filter = () => true,
   ...props
 }: SelectCorpsProps) => {
-  const [queryValue, setQueryValue] = React.useState('');
-  const [searchValue, setSearchValue] = React.useState(
-    defaultSearchValue ?? '',
-  );
+  const [searchValue, setSearchValue] = useState(defaultSearchValue ?? '');
 
-  const { data: corpsii, status: corpsiiStatus } = trpc.corps.search.useQuery(
-    {
-      search: queryValue,
-      excludeSelf: props.excludeSelf,
-    },
-    {
-      enabled: queryValue.length >= MIN_SEARCH_LENGTH,
-    },
-  );
+  const { data: corpsii, status: corpsiiStatus } = trpc.corps.search.useQuery({
+    search: searchValue,
+    excludeSelf: props.excludeSelf,
+    take: 20,
+  });
 
   // Here we fetch a corps if `defaultValue` is set
   const { data: initialCorps } = trpc.corps.get.useQuery(
@@ -71,13 +62,6 @@ const SelectCorps = ({
     return data;
   }, [corpsii, initialCorps, excludeIds]);
 
-  const onSearchChange = (value: string) => {
-    setSearchValue(value);
-    if (value.length >= MIN_SEARCH_LENGTH) {
-      setQueryValue(value);
-    }
-  };
-
   const nothingFound =
     corpsiiStatus === 'loading' ? 'Hämtar corps...' : 'Inga corps hittades';
 
@@ -90,16 +74,11 @@ const SelectCorps = ({
     options: corpsiiData,
     label: props.label ?? 'Sök...',
     placeholder:
-      queryValue.length >= MIN_SEARCH_LENGTH && corpsiiStatus === 'loading'
-        ? 'Hämtar corps...'
-        : props.placeholder,
-    nothingFound:
-      searchValue.length < MIN_SEARCH_LENGTH
-        ? 'Sök på namn, smeknamn, nummer eller sektion...'
-        : nothingFound,
+      corpsiiStatus === 'loading' ? 'Hämtar corps...' : props.placeholder,
+    nothingFound,
     filter,
     searchValue,
-    onSearchChange,
+    onSearchChange: setSearchValue,
   };
 
   return <SelectSearch {...selectProps} />;
