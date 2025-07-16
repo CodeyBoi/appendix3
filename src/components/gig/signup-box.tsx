@@ -177,7 +177,9 @@ const GigSignupBox = ({
             <Select
               label='Instrument'
               value={instrument}
-              onChange={handleInstrumentChange}
+              onChange={(ev) => {
+                handleInstrumentChange(ev.currentTarget.value);
+              }}
               options={instruments.map((instrument) => ({
                 label: instrument.name,
                 value: instrument.name,

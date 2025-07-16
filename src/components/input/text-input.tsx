@@ -8,11 +8,10 @@ export type TextInputVariant = 'default' | 'login';
 
 export type TextInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  'onChange' | 'defaultValue' | 'value'
+  'defaultValue' | 'value'
 > & {
   label?: React.ReactNode;
   withAsterisk?: boolean;
-  onChange?: (value: string) => void;
   icon?: React.ReactNode;
   description?: string;
   variant?: TextInputVariant;
@@ -45,7 +44,6 @@ const TextInput = ({
   const [value, setValue] = useState('');
   if (defaultValue && value === '') {
     setValue(defaultValue);
-    onChange?.(defaultValue);
   }
 
   useEffect(() => {
@@ -60,7 +58,7 @@ const TextInput = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.currentTarget.value);
-    onChange?.(e.currentTarget.value);
+    onChange?.(e);
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {

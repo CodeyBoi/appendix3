@@ -20,8 +20,8 @@ const ParamsTextInput = ({
     <TextInput
       {...props}
       value={value}
-      onChange={(v) => {
-        setValue(v);
+      onChange={(ev) => {
+        setValue(ev.currentTarget.value);
       }}
     />
   );

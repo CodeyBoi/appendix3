@@ -172,7 +172,7 @@ function SelectSearch(props: SelectSearchProps) {
         label={label}
         icon={icon}
         value={search}
-        onChange={handleSearchChange}
+        onChange={(ev) => { handleSearchChange(ev.currentTarget.value); }}
         onFocus={handleFocus}
         onBlur={() =>
           setTimeout(() => {

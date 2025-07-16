@@ -5,10 +5,9 @@ import { cn } from 'utils/class-names';
 
 type TextAreaProps = Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'onChange' | 'defaultValue' | 'value' | 'placeholder'
+  'defaultValue' | 'value' | 'placeholder'
 > & {
   label?: React.ReactNode;
-  onChange?: (value: string) => void;
   withAsterisk?: boolean;
   autoSize?: boolean;
   rightSection?: React.ReactNode;
@@ -31,7 +30,7 @@ const TextArea = ({
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange?.(e.currentTarget.value);
+      onChange?.(e);
     },
     [autoSize, onChange],
   );

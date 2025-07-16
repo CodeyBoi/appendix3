@@ -44,7 +44,7 @@ const StatsYearSelect = (
   return (
     <Select
       {...props}
-      onChange={handleChange}
+      onChange={(ev) => { handleChange(ev.currentTarget.value); }}
       value={year}
       options={yearData}
     />

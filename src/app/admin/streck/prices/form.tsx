@@ -34,7 +34,10 @@ const AdminStreckPricesForm = ({
   return (
     <div className='flex max-w-md flex-col gap-4'>
       <h3>Ändra streckpriser</h3>
-      <TextArea value={itemText} onChange={setItemText} />
+      <TextArea
+        value={itemText}
+        onChange={(ev) => { setItemText(ev.currentTarget.value); }}
+      />
       <Button
         onClick={() => {
           const items = itemText

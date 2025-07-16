@@ -88,7 +88,7 @@ const AdminPermissionList = ({ role }: AdminPermissionListProps) => {
             value: p,
           }))}
           onChange={(p) => {
-            setNewPermission(p as Permission);
+            setNewPermission(p.currentTarget.value as Permission);
           }}
         />
         <Button type='submit'>{lang('Lägg till', 'Add')}</Button>

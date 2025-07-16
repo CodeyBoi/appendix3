@@ -3,12 +3,8 @@
 import { InputHTMLAttributes } from 'react';
 import { cn } from 'utils/class-names';
 
-type NumberInputProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  'onChange'
-> & {
+type NumberInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  onChange?: (n: number) => void;
   withAsterisk?: boolean;
   error?: string;
 };
@@ -41,7 +37,7 @@ const NumberInput = ({
           'min-w-0 shrink grow cursor-text rounded border bg-transparent p-2 font-display dark:border-neutral-800 dark:text-gray-300',
           error && errorStyle,
         )}
-        onChange={(e) => onChange?.(Number(e.currentTarget.value))}
+        onChange={(e) => onChange?.(e)}
         {...props}
       />
     </div>

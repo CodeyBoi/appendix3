@@ -217,7 +217,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
         {type === 'cost' && (
           <TextInput
             label={lang('Vad är det för kostnad?', 'What is the cost for?')}
-            onChange={setItemName}
+            onChange={(ev) => { setItemName(ev.currentTarget.value); }}
             value={itemName}
           />
         )}

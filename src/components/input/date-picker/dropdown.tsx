@@ -97,8 +97,8 @@ const DatePickerDropdown = ({
           <Select
             options={years}
             value={year}
-            onChange={(y) => {
-              setYear(parseInt(y));
+            onChange={(ev) => {
+              setYear(parseInt(ev.currentTarget.value));
             }}
           />
         </div>

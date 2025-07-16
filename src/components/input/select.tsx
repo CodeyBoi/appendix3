@@ -8,13 +8,9 @@ export interface SelectItem {
   label: string;
 }
 
-export type SelectProps = Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  'onChange'
-> & {
+export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   options: SelectItem[];
   label?: React.ReactNode;
-  onChange?: (value: string) => void;
   withAsterisk?: boolean;
   error?: string;
 };
@@ -37,7 +33,7 @@ const Select = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelected(e.currentTarget.value);
-    onChange?.(e.currentTarget.value);
+    onChange?.(e);
   };
 
   const optionElements = [];
