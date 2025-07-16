@@ -75,10 +75,10 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           hiddenFor: gig.hiddenFor.map((c) => c.corpsId),
         },
     validate: {
-      title: (title) => (title ? null : 'Titel måste vara ifylld'),
-      type: (type) => (type ? null : 'Typ måste vara ifylld'),
+      title: (title) => (title ? null : 'Fyll i titel'),
+      type: (type) => (type ? null : 'Fyll i typ'),
       points: (points) =>
-        points >= 0 && points <= 1 ? null : 'Spelpoäng måste vara 0 eller 1',
+        points >= 0 && points <= 1 ? null : 'Kan vara 0 eller 1',
       price: (price) => (price >= 0 ? null : 'Pris kan inte vara negativt'),
     },
   });
