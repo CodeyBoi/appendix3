@@ -1,7 +1,15 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export const useSearchParamsState = (name: string, defaultValue?: string) => {
+type RefreshMethod = 'replace' | 'push'
+
+interface SearchParamsStateOptions {
+  defaultValue?: string;
+  refreshMethod?: RefreshMethod;
+}
+
+export const useSearchParamsState = (name: string, opts?: SearchParamsStateOptions) => {
+  const { defaultValue, refreshMethod} = opts ?? {};
   const [value, setValue] = useState<string>(defaultValue ?? '');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -22,7 +30,13 @@ export const useSearchParamsState = (name: string, defaultValue?: string) => {
     } else {
       newSearchParams.set(name, newValue);
     }
-    router.replace(`${pathname}?${newSearchParams.toString()}`);
+    const url = `${pathname}?${newSearchParams.toString()}`
+    if (refreshMethod === 'replace') {
+    router.replace(url);
+      
+    } else {
+      router.push(url)
+    }
     setValue(newValue);
   };
 

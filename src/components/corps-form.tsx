@@ -1,6 +1,5 @@
 'use client';
 
-import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import Select from 'components/input/select';
@@ -9,7 +8,31 @@ import TextInput from 'components/input/text-input';
 import MultiSelect from './multi-select';
 import { Language } from 'hooks/use-language';
 import { api } from 'trpc/react';
-import { Permission } from 'utils/permission';
+import { ALL_PERMISSIONS, Permission } from 'utils/permission';
+import { Resolver, SubmitHandler } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Corps as PrismaCorps } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import { ErrorMessage } from '@hookform/error-message';
+import { useForm } from 'utils/form';
+import { stringToNullableNumber } from 'utils/zod';
+
+const nullableNumber = z.string().transform((val) => val === '' ? null : val).nullable().refine((val) => val === null || !isNaN(Number(val)), 'Ogiltigt nummer 23123').transform((val) => val === null ? null : Number(val)).pipe(z.int("asdaskldajd").nullable());
+
+export const CorpsFormSchema = z.object({
+  firstName: z.string().min(1, 'Fyll i förnamn').trim(),
+  lastName: z.string().min(1, 'Fyll i efternamn').trim(),
+  nickName: z.string().trim(),
+  pronouns: z.string().trim(),
+  number: nullableNumber,
+  bNumber: nullableNumber,
+  email: z.string().trim(),
+  mainInstrument: z.string().trim(),
+  otherInstruments: z.array(z.string().trim()),
+  roles: z.array(z.string().trim()),
+  language: z.enum(['sv', 'en']).default('sv'),
+});
 
 const initialValues = {
   firstName: '',
@@ -21,7 +44,6 @@ const initialValues = {
   email: '',
   mainInstrument: '',
   otherInstruments: [] as string[],
-  roles: [] as Permission[],
   language: 'sv',
 };
 type FormValues = typeof initialValues;
@@ -30,144 +52,90 @@ const isNumber = (value: string) => {
   return /^\d*$/.test(value);
 };
 
-interface AdminCorpsProps {
-  corpsId: string;
+type Corps = PrismaCorps & {
+  email: string;
+  mainInstrument: string;
+  otherInstruments: string[];
 }
 
-const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
+interface AdminCorpsProps {
+  corps?: Corps;
+  instruments: string[];
+}
+
+const CorpsForm = ({ corps, instruments }: AdminCorpsProps) => {
+  const router = useRouter();
   const utils = api.useUtils();
-  const creatingCorps = corpsId === 'new';
-  const [loading, setLoading] = useState(!creatingCorps);
+  const creatingCorps = !corps;
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: instruments } = api.instrument.getAll.useQuery();
-  const { data: corps, isLoading: corpsLoading } = api.corps.get.useQuery({
-    id: corpsId,
-  });
-  const { data: roles } = api.permission.getRoles.useQuery();
-
-  const form = useForm<FormValues>({
-    initialValues,
-    validate: {
-      firstName: (value) => (value.length > 0 ? null : 'Fyll i förnamn'),
-      lastName: (value) => (value.length > 0 ? null : 'Fyll i efternamn'),
-      number: (value) => (isNumber(value) ? null : 'Ogitligt nummer'),
-      bNumber: (value) => (isNumber(value) ? null : 'Ogitligt balettnummer'),
-      email: (value) =>
-        /^\S+@\S+$/.test(value) ? null : 'Ogiltig emailadress',
-      mainInstrument: (value) => (value ? null : 'Välj ett huvudinstrument'),
-      otherInstruments: (value, values) =>
-        value.includes(values.mainInstrument)
-          ? 'Huvudinstrument kan inte väljas som övrigt instrument'
-          : null,
-    },
-  });
-
-  useEffect(() => {
-    if (corps) {
-      const mainInstrument = corps.instruments.find((i) => i.isMainInstrument)
-        ?.instrument.name;
-      const otherInstruments = corps.instruments
-        .filter((i) => !i.isMainInstrument)
-        .map((i) => i.instrument.name);
-      form.setValues({
-        firstName: corps.firstName,
-        lastName: corps.lastName,
-        nickName: corps.nickName ?? '',
-        pronouns: corps.pronouns ?? '',
-        number: corps.number?.toString() || '',
-        bNumber: corps.bNumber?.toString() || '',
-        email: corps.user.email ?? '',
-        mainInstrument,
-        otherInstruments,
-        roles: corps.roles.map((r) => r.name as Permission),
-        language: corps.language,
-      });
-      setLoading(false);
-    } else if (creatingCorps) {
-      form.reset();
-      setLoading(false);
-    }
-  }, [corps]);
+  const { handleSubmit, register, formState: {errors, isDirty, isSubmitting}, } =
+    useForm({ resolver: zodResolver(CorpsFormSchema) });
 
   const mutation = api.corps.upsert.useMutation({
-    onSuccess: async () => {
-      await utils.corps.get.invalidate({ id: corpsId });
+    onSuccess: async ({ id }) => {
+      await utils.corps.get.invalidate({ id });
       await utils.corps.getSelf.invalidate();
-      setSubmitting(false);
-      form.resetDirty();
-      form.resetTouched();
+      // router.back();
     },
   });
 
-  const handleSubmit = (values: FormValues) => {
-    setSubmitting(true);
-    const number = values.number.trim() ? parseInt(values.number.trim()) : null;
-    const bNumber = values.bNumber.trim()
-      ? parseInt(values.bNumber.trim())
-      : null;
-    mutation.mutate({
-      ...values,
-      number,
-      bNumber,
-      id: creatingCorps ? undefined : corpsId,
-      language: values.language as Language,
-    });
-  };
+  console.log({errors})
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
-      <FormLoadingOverlay visible={loading || submitting || corpsLoading}>
+    <form onSubmit={handleSubmit((values) => {
+      console.log(values)
+    }, (values) => console.log(values))}>
+      <FormLoadingOverlay visible={submitting}>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <div className='flex gap-4'>
             <TextInput
               withAsterisk
               label='Förnamn'
-              {...form.getInputProps('firstName')}
+              defaultValue={corps?.firstName}
+              {...register('firstName', { required: 'Fyll i föddsdsdrnamn' })}
             />
             <TextInput
               withAsterisk
               label='Efternamn'
-              {...form.getInputProps('lastName')}
+              defaultValue={corps?.lastName}
+              {...register('lastName')}
             />
           </div>
-          <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
-          <TextInput label='Pronomen' {...form.getInputProps('pronouns')} />
+          <TextInput label='Smeknamn' defaultValue={corps?.nickName ?? undefined} {...register('nickName')} />
+          <TextInput label='Pronomen' defaultValue={corps?.pronouns ?? undefined} {...register('pronouns')} />
           <div className='flex gap-4'>
-            <TextInput label='Nummer' {...form.getInputProps('number')} />
-            <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
+            <TextInput
+              label='Nummer'
+              defaultValue={corps?.number?.toString() ?? undefined}
+              {...register('number')}
+            />
+            <TextInput
+              label='Balettnr.'
+              defaultValue={corps?.bNumber?.toString() ?? undefined}
+              {...register('bNumber')}
+            />
           </div>
           <span className='self-end'>
-            <TextInput
-              withAsterisk
-              label='Email'
-              {...form.getInputProps('email')}
-            />
+            <TextInput withAsterisk label='Email' defaultValue={corps?.email} {...register('email')} />
           </span>
           <Select
             label='Huvudinstrument'
             placeholder='Välj instrument...'
             options={
-              instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
+              instruments?.map((instr) => ({ value: instr, label: instr })) ?? []
             }
             withAsterisk
-            {...form.getInputProps('mainInstrument')}
+            defaultValue={corps?.mainInstrument}
+            {...register('mainInstrument', { required: 'Välj huvudinstrument' })}
           />
           <MultiSelect
-            label='Övriga instrument'
-            placeholder='Välj instrument...'
+            placeholder='Övriga instrument...'
             options={
-              instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
+              instruments?.map((instr) => ({ value: instr, label: instr})) ?? []
             }
-            {...form.getInputProps('otherInstruments')}
-          />
-          <MultiSelect
-            label='Behörighetsroller'
-            placeholder='Välj behörighet...'
-            options={
-              roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
-            }
-            {...form.getInputProps('roles')}
+            defaultValue={corps?.otherInstruments}
+            {...register('otherInstruments')}
           />
           <Select
             label='Språk'
@@ -176,14 +144,14 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
               { value: 'en', label: 'English' },
             ]}
             withAsterisk
-            {...form.getInputProps('language')}
+            {...register('language')}
           />
         </div>
       </FormLoadingOverlay>
       <div className='flex justify-end p-2'>
         <Button
           className='bg-red-600'
-          disabled={!form.isTouched() || submitting || !form.isValid()}
+          disabled={!isDirty || isSubmitting}
           type='submit'
         >
           {creatingCorps ? 'Skapa corpsmedlem' : 'Spara ändringar'}

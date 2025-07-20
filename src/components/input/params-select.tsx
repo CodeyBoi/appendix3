@@ -14,7 +14,7 @@ const ParamsSelect = ({
 }: ParamsSelectProps) => {
   const [value, setValue] = useSearchParamsState(
     paramName,
-    defaultValue?.toString(),
+    { defaultValue: defaultValue?.toString() }
   );
   return (
     <Select

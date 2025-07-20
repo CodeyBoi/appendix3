@@ -5,6 +5,20 @@ import { corpsOrderByNumberDesc } from 'utils/corps';
 import { intersection } from 'utils/array';
 import { emptyToNull } from 'server/utils/transforms';
 
+export const CorpsFormSchema = z.object({
+  firstName: z.string().min(1, 'Fyll i förnamn').trim(),
+  lastName: z.string().min(1, 'Fyll i efternamn').trim(),
+  nickName: z.string().trim(),
+  pronouns: z.string().trim(),
+  number: z.coerce.number().int().nullable(),
+  bNumber: z.coerce.number().int().nullable(),
+  email: z.string().trim(),
+  mainInstrument: z.string().trim(),
+  otherInstruments: z.array(z.string().trim()),
+  roles: z.array(z.string().trim()),
+  language: z.enum(['sv', 'en']).default('sv'),
+});
+
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.corps.findUniqueOrThrow({
