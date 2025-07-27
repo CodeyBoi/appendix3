@@ -3,6 +3,7 @@ import { Point } from './tetris';
 
 export interface PieceProps {
   shape: Shape;
+  position: Point;
   rotation?: Rotation;
 }
 
@@ -55,9 +56,9 @@ const tileOffsets: Record<Shape, ShapeTileOffsets> = {
 
 const translationsI: Record<Rotation, Point> = {
   up: [0, 0],
-  right: [1, 1],
+  right: [0, 1],
   down: [1, 1],
-  left: [0, 0],
+  left: [1, 0],
 };
 
 const colors: Record<Shape, string> = {
@@ -72,12 +73,12 @@ const colors: Record<Shape, string> = {
 
 const rotationFuncs: Record<Rotation, (p: Point) => Point> = {
   up: (p) => p,
-  right: ([row, col]) => [-col, row],
+  right: ([row, col]) => [col, -row],
   down: ([row, col]) => [-row, -col],
-  left: ([row, col]) => [col, -row],
+  left: ([row, col]) => [-col, row],
 };
 
-const getTileOffsets = (shape: Shape, rotation: Rotation) => {
+const _getTileOffsets = (shape: Shape, rotation: Rotation) => {
   const offsets = tileOffsets[shape].concat([[0, 0]]);
 
   // Rotation has no effect on shape `O`
@@ -97,14 +98,23 @@ const getTileOffsets = (shape: Shape, rotation: Rotation) => {
   return rotated;
 };
 
-const Piece = ({ shape, rotation = 'up' }: PieceProps) => {
-  const offsets = getTileOffsets(shape, rotation);
+export const getPieceOffsets = (piece: PieceProps) =>
+  _getTileOffsets(piece.shape, piece.rotation ?? 'up').map(([row, col]) => [
+    row + piece.position[0],
+    col + piece.position[1],
+  ]);
+
+const Piece = ({ shape, rotation = 'up', position }: PieceProps) => {
+  const offsets = _getTileOffsets(shape, rotation);
   return (
     <div className='relative'>
       {offsets.map(([row, col]) => (
         <div
-          className={cn('absolute h-8 w-8 border border-black', colors[shape])}
-          style={{ marginTop: `${row * 32}px`, marginLeft: `${col * 32}px` }}
+          className={cn('absolute h-8 w-8 border border-white', colors[shape])}
+          style={{
+            marginTop: `${(position[0] + row) * 32}px`,
+            marginLeft: `${(position[1] + col) * 32}px`,
+          }}
         />
       ))}
     </div>

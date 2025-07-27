@@ -1,14 +1,26 @@
-import React from 'react';
-import Piece, { PieceProps } from './piece';
-import { Point } from './tetris';
+import React, { ReactNode } from 'react';
+import { cn } from 'utils/class-names';
 
 interface BoardProps {
-  piece: PieceProps & { position: Point };
-  board: boolean[][];
+  board: ReactNode[][];
 }
 
-const Board = ({ piece, board }: BoardProps) => {
-  return <div>{<Piece {...piece} />}</div>;
+const Board = ({ board }: BoardProps) => {
+  return (
+    <div>
+      <table className='table'>
+        <tbody className='divide-y divide-solid dark:divide-neutral-700'>
+          {board.map((row) => (
+            <tr className='divide-x divide-solid dark:divide-neutral-700'>
+              {row.map((tile) => (
+                <td className={cn('h-8 w-8', tile && 'bg-red-600')}></td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export default Board;

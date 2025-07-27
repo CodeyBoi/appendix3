@@ -2,13 +2,14 @@ import { useEffect } from 'react';
 import { getKeyCode } from 'utils/key';
 
 const useKeyDown = (
-  key: string,
+  key: string | string[],
   callback: (() => void) | ((arg0: KeyboardEvent) => void),
 ) => {
+  const keys = (!Array.isArray(key) ? [key] : key).map((k) => k.toLowerCase());
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const keyCode = getKeyCode(event);
-      if (keyCode.toLowerCase() === key.toLowerCase()) {
+      const keyCode = getKeyCode(event).toLowerCase();
+      if (keys.includes(keyCode)) {
         callback(event);
       }
     };
