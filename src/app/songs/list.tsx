@@ -1,11 +1,12 @@
 'use client';
 
-import React, { Fragment, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { lang } from 'utils/language';
+import React, { Fragment, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import SongListEntry from './entry';
+import { api } from 'trpc/react';
+import { IconPin } from '@tabler/icons-react';
 
-interface Song {
+export interface Song {
   id: string;
   title: string;
   author: string;
@@ -13,11 +14,16 @@ interface Song {
   views: number;
 }
 
-type MatchFlag = 'title' | 'author' | 'melody' | 'views';
+interface SongListProps {
+  songs: Song[];
+  pinnedSongs: Song[];
+}
+
+export type MatchFlag = 'title' | 'author' | 'melody' | 'views';
 
 const filterSongs = (songs: Song[], search: string) => {
   if (search === '')
-    return songs.map((song) => ({ ...song, matches: ['title'] }));
+    return songs.map((song) => ({ ...song, matches: ['title' as MatchFlag] }));
   const searchLower = search.toLowerCase();
   return songs.flatMap((song) => {
     const matches: MatchFlag[] = [];
@@ -48,65 +54,64 @@ const filterSongs = (songs: Song[], search: string) => {
 
 const genSongList = (songs: ReturnType<typeof filterSongs>) => {
   let prevTitleLetter: string | undefined;
-  return (
-    <div className='flex flex-col divide-y divide-solid text-base dark:divide-neutral-700'>
-      {songs.map(({ id, title, author, melody, matches, views }) => {
-        const titleLetter = title[0]?.toUpperCase() ?? '';
-        let shouldAddLetter = false;
-        if (titleLetter !== prevTitleLetter) {
-          prevTitleLetter = titleLetter;
-          shouldAddLetter = true;
-        }
-        return (
-          <Fragment key={id}>
-            {shouldAddLetter && <h5 className='py-2 pl-3'>{titleLetter}</h5>}
-            <Link href={`/songs/${id}`}>
-              <div className='flex cursor-pointer items-center gap-2 py-2 pl-6 hover:bg-red-300/10'>
-                <div className='grow'>{title}</div>
-                <div
-                  className={
-                    'text-xs text-neutral-500' +
-                    (author && matches.includes('author') ? '' : ' hidden')
-                  }
-                >
-                  {lang('Skriven av: ', 'Written by: ')}
-                  {author}
-                </div>
-                <div
-                  className={
-                    'text-xs text-neutral-500' +
-                    (melody && matches.includes('melody') ? '' : ' hidden')
-                  }
-                >
-                  {lang('Melodi: ', 'Melody: ')}
-                  {melody}
-                </div>
-                <div
-                  className={
-                    'text-xs text-neutral-500' +
-                    (matches.includes('views') ? '' : ' hidden')
-                  }
-                >
-                  {lang('Visningar: ', 'Views: ')}
-                  {views.toString()}
-                </div>
-              </div>
-            </Link>
-          </Fragment>
-        );
-      })}
-    </div>
-  );
+  return songs.map(({ matches, ...song }) => {
+    const titleLetter = song.title[0]?.toUpperCase() ?? '';
+    let shouldAddLetter = false;
+    if (titleLetter !== prevTitleLetter) {
+      prevTitleLetter = titleLetter;
+      shouldAddLetter = true;
+    }
+    return (
+      <Fragment key={song.id}>
+        {shouldAddLetter && <h5 className='py-2 pl-3'>{titleLetter}</h5>}
+        <SongListEntry song={song} matches={matches} />
+      </Fragment>
+    );
+  });
 };
 
-const SongList = ({ songs }: { songs: Song[] }) => {
+const SongList = ({ songs, pinnedSongs: pinnedSongsProp }: SongListProps) => {
+  const router = useRouter();
+
+  const { data: pinnedSongs, refetch: refetchPinnedSongs } =
+    api.song.getPinned.useQuery(undefined, { initialData: pinnedSongsProp });
+
+  useEffect(() => {
+    for (const song of pinnedSongs) {
+      router.prefetch(`/songs/${song.id}`);
+    }
+  }, [pinnedSongs]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void refetchPinnedSongs();
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   const searchParams = useSearchParams();
   const search = searchParams?.get('search') ?? '';
   const songList = useMemo(
     () => genSongList(filterSongs(songs, search)),
     [songs, search],
   );
-  return songList;
+  return (
+    <div className='flex flex-col divide-y divide-solid text-base dark:divide-neutral-700'>
+      {pinnedSongs.length > 0 && (
+        <>
+          <div className='py-2 pl-3'>
+            <IconPin />
+          </div>
+          {pinnedSongs.map((song) => (
+            <SongListEntry key={song.id} song={song} />
+          ))}
+        </>
+      )}
+      {songList}
+    </div>
+  );
 };
 
 export default SongList;

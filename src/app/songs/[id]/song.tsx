@@ -1,9 +1,10 @@
 import type { Song } from '@prisma/client';
-import { IconPencil } from '@tabler/icons-react';
+import { IconDotsVertical } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
-import Link from 'next/link';
+import Popover from 'components/popover';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
+import SongMenuContent from './menu';
 
 interface SongProps {
   song: Song | string;
@@ -37,11 +38,16 @@ const Song = async ({ song: songProp }: SongProps) => {
         <div className='grow'>
           <h3>{song.title}</h3>
         </div>
-        <Link href={`/admin/songs/${song.id}`}>
-          <ActionIcon variant='subtle'>
-            <IconPencil />
-          </ActionIcon>
-        </Link>
+        <Popover
+          position='left-bottom'
+          target={
+            <ActionIcon variant='subtle'>
+              <IconDotsVertical />
+            </ActionIcon>
+          }
+        >
+          <SongMenuContent id={song.id} />
+        </Popover>
       </div>
       {song.melody && (
         <i>
