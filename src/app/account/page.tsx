@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import { numberAndFullName } from 'utils/corps';
+import { displayNumber } from 'utils/corps';
 
 const AccountPreferences = dynamic(() => import('app/account/preferences'));
 const CorpsStats = dynamic(() => import('app/account/stats'));
@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 
 const Account = async () => {
   const corps = await api.corps.getSelf.query();
-  const corpsName = numberAndFullName(corps);
+  const corpsName =
+    corps.number === null && corps.bNumber === null
+      ? 'p.e. ' + corps.lastName.trim()
+      : displayNumber(corps);
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
