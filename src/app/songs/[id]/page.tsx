@@ -1,7 +1,7 @@
-import Song from 'components/song';
-import SongSkeleton from 'components/song/skeleton';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
+import Song from './song';
+import SongSkeleton from './skeleton';
 
 export const generateMetadata = async ({
   params,

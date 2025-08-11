@@ -1,4 +1,4 @@
-import SongForm from 'components/song/form';
+import SongForm from 'app/songs/[id]/form';
 import React from 'react';
 import { api } from 'trpc/server';
 

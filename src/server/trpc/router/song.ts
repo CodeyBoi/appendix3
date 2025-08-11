@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import dayjs from 'dayjs';
 
 export const songRouter = router({
   get: protectedProcedure
@@ -72,7 +73,7 @@ export const songRouter = router({
   }),
 
   increaseViewCount: protectedProcedure
-    .input(z.object({ id: z.string().cuid() }))
+    .input(z.object({ id: z.cuid() }))
     .mutation(async ({ input, ctx }) => {
       const { id = '' } = input;
       const res = await ctx.prisma.song.update({
@@ -85,6 +86,74 @@ export const songRouter = router({
       });
       return res;
     }),
+
+  pin: protectedProcedure
+    .input(z.object({ id: z.cuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id = '' } = input;
+      const createdById = ctx.session.user.corps.id;
+
+      // Check song exists
+      const song = await ctx.prisma.song.findFirst({
+        select: {
+          id: true,
+        },
+        where: {
+          id,
+        },
+      });
+
+      if (!song) {
+        throw new Error(`Tried to pin song with non-existing id: ${id}`);
+      }
+
+      // Song should be pinned for 3 minutes
+      const endsAt = dayjs().add(3, 'minutes').toDate();
+
+      const res = await ctx.prisma.pinnedSong.create({
+        data: {
+          endsAt,
+          song: {
+            connect: {
+              id,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: createdById,
+            },
+          },
+        },
+      });
+      return res;
+    }),
+
+  getPinned: protectedProcedure.query(async ({ ctx }) => {
+    const now = new Date();
+    const songs = await ctx.prisma.song.findMany({
+      where: {
+        pins: {
+          some: {
+            endsAt: {
+              gte: now,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        melody: true,
+        author: true,
+        views: true,
+      },
+      orderBy: {
+        title: 'asc',
+      },
+    });
+    songs.sort((a, b) => a.title.localeCompare(b.title, 'sv'));
+    return songs;
+  }),
 
   // infiniteScroll: protectedProcedure
   //   .input(
