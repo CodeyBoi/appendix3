@@ -73,7 +73,7 @@ export const songRouter = router({
   }),
 
   increaseViewCount: protectedProcedure
-    .input(z.object({ id: z.cuid() }))
+    .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ input, ctx }) => {
       const { id = '' } = input;
       const res = await ctx.prisma.song.update({
@@ -88,7 +88,7 @@ export const songRouter = router({
     }),
 
   pin: protectedProcedure
-    .input(z.object({ id: z.cuid() }))
+    .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ input, ctx }) => {
       const { id = '' } = input;
       const createdById = ctx.session.user.corps.id;
