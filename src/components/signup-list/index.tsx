@@ -174,7 +174,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
           // Compare ballet numbers
           if (a.corps.bNumber || b.corps.bNumber) {
-            return (a.corps.bNumber || Infinity) - (b.corps.bNumber || Infinity);
+            return (
+              (a.corps.bNumber || Infinity) - (b.corps.bNumber || Infinity)
+            );
           }
 
           // Compare last name
@@ -246,7 +248,19 @@ const SignupList = ({ gigId }: SignupListProps) => {
    *  Travelers beware.
    */
 
-  const signupsToTable = (signups: typeof signupsSorted) => {
+  const instrumentCount = useMemo(
+    () =>
+      yesList.reduce<Record<string, number>>((acc, signup) => {
+        acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
+        return acc;
+      }, {}),
+    [yesList],
+  );
+
+  const signupsToTable = (
+    signups: typeof signupsSorted,
+    displayAmount: boolean = false,
+  ) => {
     if (signups.length === 0) {
       return;
     }
@@ -272,6 +286,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
           {signups.map((signup) => {
             const addNewline = signup.instrument.name !== lastInstrument;
             lastInstrument = signup.instrument.name;
+            const fullSettingAmount =
+              FULL_SETTING.find(
+                ([instrument, _]) => instrument === signup.instrument.name,
+              )?.[1] ?? 0;
             return (
               <React.Fragment key={signup.corpsId}>
                 {addNewline && (
@@ -281,7 +299,12 @@ const SignupList = ({ gigId }: SignupListProps) => {
                         {toPlural(
                           aprilFoolsInstrumentLabel(signup.instrument.name),
                           language,
-                        )}
+                        ) +
+                          (displayAmount && fullSettingAmount > 0
+                            ? ` (${
+                                instrumentCount[signup.instrument.name] ?? 0
+                              }/${fullSettingAmount})`
+                            : '')}
                       </h6>
                     </td>
                   </tr>
@@ -317,45 +340,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
     );
   };
 
-  const yesTable = signupsToTable(yesList);
+  const yesTable = signupsToTable(yesList, true);
   const maybeTable = signupsToTable(maybeList);
   const noTable = signupsToTable(noList);
-
-  const instrumentCount = useMemo(
-    () =>
-      yesList.reduce<Record<string, number>>((acc, signup) => {
-        acc[signup.instrument.name] = (acc[signup.instrument.name] ?? 0) + 1;
-        return acc;
-      }, {}),
-    [yesList],
-  );
-
-  // Get a count of how many people are missing for each instrument
-  const missingInstrumentsCount = useMemo(() => {
-    const output: Record<string, number> = {};
-    FULL_SETTING.forEach(([instrument, count]) => {
-      output[instrument] = count - (instrumentCount[instrument] ?? 0);
-    });
-    return Object.entries(output).filter(([_, count]) => count > 0);
-  }, [instrumentCount]);
-
-  const missingInstrumentsMessages = useMemo(() => {
-    if (missingInstrumentsCount.length === 0) {
-      return [lang('Spelningen har full sättning!', 'Full setting!')];
-    }
-    const genMessage = ([instrument, count]: [string, number]) =>
-      `${count} ${
-        count > 1 ? toPlural(instrument, language) : instrument.toLowerCase()
-      }`;
-    const message = missingInstrumentsCount.map(genMessage);
-    return [
-      lang(
-        'Följande instrument saknas för full sättning:',
-        'Missing instruments for full setting:',
-      ),
-      ...message,
-    ];
-  }, [missingInstrumentsCount, language]);
 
   return (
     <div className='space-y-2'>
@@ -411,32 +398,28 @@ const SignupList = ({ gigId }: SignupListProps) => {
           ) : (
             <>
               <h3>
+                {lang('Dessa', 'These')}
+                {` ${yesList.length} `}
                 {gigHasHappened
                   ? showAdminTools
-                    ? lang('Dessa var anmälda:', 'These were signed up:')
-                    : lang('Dessa var med:', 'These were there:')
-                  : lang('Dessa är anmälda:', 'These are signed up:')}
+                    ? lang('var anmälda:', 'were signed up:')
+                    : lang('var med:', 'were there:')
+                  : lang('är anmälda:', 'are signed up:')}
               </h3>
+              <h3>{}</h3>
               {yesTable}
             </>
-          )}
-          {!gigHasHappened && (
-            <div>
-              <div className='h-4' />
-              {missingInstrumentsMessages.map((msg, i) => (
-                <React.Fragment key={i}>
-                  {msg}
-                  <br />
-                </React.Fragment>
-              ))}
-            </div>
           )}
         </div>
       )}
       {maybeList.length > 0 && (
         <div>
           {!gigHasHappened && (
-            <h3>{lang('Dessa kanske kommer:', 'These might come:')}</h3>
+            <h3>
+              {lang('Dessa', 'These')}
+              {` ${maybeList.length} `}
+              {lang('kanske kommer:', 'might come:')}
+            </h3>
           )}
           {maybeTable}
         </div>
@@ -444,7 +427,11 @@ const SignupList = ({ gigId }: SignupListProps) => {
       {noList.length > 0 && (
         <Restricted permissions='manageAttendance'>
           <div>
-            <h3>{lang('Dessa kommer inte:', 'These are not coming:')}</h3>
+            <h3>
+              {lang('Dessa', 'These')}
+              {` ${noList.length} `}
+              {lang('kommer inte:', 'are not coming:')}
+            </h3>
             {noTable}
           </div>
         </Restricted>
