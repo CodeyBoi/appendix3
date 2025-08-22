@@ -1,6 +1,6 @@
 import { cn } from 'utils/class-names';
 
-type BurgerVariant = 'normal' | 'burger';
+type BurgerVariant = 'normal' | 'burger' | 'pride';
 
 interface BurgerStyle {
   top: (active: boolean) => string;
@@ -50,6 +50,20 @@ const styles: Record<BurgerVariant, BurgerStyle> = {
           : 'rounded-b-sm border-t-2 border-t-green-600 bg-amber-300',
       ),
   },
+  pride: {
+    top: (active) =>
+      cn(
+        'h-1 w-6 rounded-full border-0 bg-white transition-all',
+        active && 'translate-y-1.5 rotate-45 rounded-full border-0 bg-white',
+      ),
+    middle: (active) =>
+      cn('h-1 w-6 rounded-full bg-white transition-all', active && 'opacity-0'),
+    bottom: (active) =>
+      cn(
+        'h-1 w-6 rounded-full border-0 bg-white transition-all',
+        active && '-translate-y-1.5 -rotate-45',
+      ),
+  }
 };
 
 const Burger = ({ active, onClick, variant = 'normal' }: BurgerProps) => {
