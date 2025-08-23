@@ -10,8 +10,9 @@ import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import DownloadStrecklistButton from './download';
-import StreckListTable from './view/strecklist-table';
+import StreckListTable from './edit/strecklist-table';
 import ParamsSwitch from 'components/input/params-switch';
+import Restricted from 'components/restricted/server';
 
 interface AdminStreckPageProps {
   searchParams: {
@@ -36,10 +37,12 @@ const AdminStreckPage = async ({
         <div className='flex grow flex-col gap-2'>
           <div className='flex flex-nowrap gap-4'>
             <h3>{lang('Senaste transaktioner', 'Latest transactions')}</h3>
-            <ParamsSwitch
-              paramName='showDelete'
-              label={lang('Visa Ta bort-knapp', 'Show Delete button')}
-            />
+            <Restricted permissions='manageStreck'>
+              <ParamsSwitch
+                paramName='showDelete'
+                label={lang('Visa Ta bort-knapp', 'Show Delete button')}
+              />
+            </Restricted>
           </div>
           <div>
             <Suspense
@@ -57,22 +60,28 @@ const AdminStreckPage = async ({
           </div>
         </div>
         <div className='flex flex-col gap-2'>
-          <Button href='streck/view'>
+          <Button href='streck/edit'>
             <IconSearch />
             {lang('Se transaktioner...', 'See transactions...')}
           </Button>
-          <Button href='streck/view/new'>
-            <IconTablePlus />
-            {lang('Ny transaktion...', 'New transaktion...')}
-          </Button>
-          <Button href='/admin/streck/prices'>
-            <IconCoins />
-            {lang('Ändra priser...', 'Change prices...')}
-          </Button>
-          <Button href='/admin/streck/view/deleted'>
-            <IconTrash />
-            {lang('Se borttagna listor...', 'View deleted lists...')}
-          </Button>
+          <Restricted permissions='manageStreck'>
+            <Button href='streck/edit/new'>
+              <IconTablePlus />
+              {lang('Ny transaktion...', 'New transaktion...')}
+            </Button>
+          </Restricted>
+          <Restricted permissions='manageStreck'>
+            <Button href='/admin/streck/prices'>
+              <IconCoins />
+              {lang('Ändra priser...', 'Change prices...')}
+            </Button>
+          </Restricted>
+          <Restricted permissions='manageStreck'>
+            <Button href='/admin/streck/edit/deleted'>
+              <IconTrash />
+              {lang('Se borttagna listor...', 'View deleted lists...')}
+            </Button>
+          </Restricted>
           <DownloadStrecklistButton activeCorps={activeCorps} items={items} />
         </div>
       </div>

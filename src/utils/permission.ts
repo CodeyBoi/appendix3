@@ -10,5 +10,6 @@ export const ALL_PERMISSIONS = [
   'manageSections',
   'viewFoodPrefs',
   'manageStreck',
+  'viewStreck',
 ] as const;
 export type Permission = (typeof ALL_PERMISSIONS)[number];

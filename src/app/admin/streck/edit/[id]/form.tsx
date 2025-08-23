@@ -156,7 +156,7 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
       await utils.streck.getTransactions.invalidate();
       // utils.streck.getStreckList.invalidate();
       if (isNew) {
-        router.replace(`/admin/streck/view/${id}`);
+        router.replace(`/admin/streck/edit/${id}`);
       }
       reset(undefined, { keepDirty: false, keepValues: true });
     },
