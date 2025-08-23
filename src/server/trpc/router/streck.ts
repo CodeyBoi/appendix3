@@ -31,6 +31,7 @@ const getStreckList = async (ctx: Context, id: number) => {
               firstName: true,
               lastName: true,
               number: true,
+              bNumber: true,
             },
           },
         },
@@ -148,6 +149,51 @@ const getBalances = async (
   return activeCorps.sort(sortCorpsByName);
 };
 
+type StreckList = NonNullable<Awaited<ReturnType<typeof getStreckList>>>;
+
+export const toStreckListMatrix = (
+  transactions: StreckList['transactions'],
+) => {
+  const listType = transactions.some((t) => t.amount !== 1)
+    ? 'strecklist'
+    : transactions.every((t) => t.pricePer < 0)
+    ? 'cost'
+    : 'deposit';
+
+  const getValue = (transaction: { amount: number; pricePer: number }) => {
+    switch (listType) {
+      case 'strecklist':
+        return transaction.amount;
+      case 'cost':
+        return -transaction.pricePer;
+
+      case 'deposit':
+        return transaction.pricePer;
+    }
+  };
+
+  const items = Array.from(new Set(transactions.map((t) => t.item)).values());
+
+  const corpsTransactions = transactions.reduce((acc, transaction) => {
+    const corpsId = transaction.corps.id;
+    const mapValue = acc.get(corpsId) ?? {
+      corps: transaction.corps,
+      amounts: new Map<string, number>(),
+    };
+    mapValue.amounts.set(transaction.item, getValue(transaction));
+    acc.set(corpsId, mapValue);
+    return acc;
+  }, new Map<string, { corps: (typeof transactions)[number]['corps']; amounts: Map<string, number> }>());
+
+  const corpsii = Array.from(corpsTransactions.values());
+  corpsii.sort((a, b) => sortCorpsByName(a.corps, b.corps));
+
+  return {
+    corpsii,
+    items,
+  };
+};
+
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure.query(async ({ ctx }) => {
     const corpsId = ctx.session.user.corps.id;
@@ -206,7 +252,7 @@ export const streckRouter = router({
     };
   }),
 
-  getTransactions: restrictedProcedure('manageStreck')
+  getTransactions: restrictedProcedure('viewStreck')
     .input(
       z.object({
         start: z.date().optional(),
@@ -402,7 +448,7 @@ export const streckRouter = router({
     };
   }),
 
-  get: restrictedProcedure('manageStreck')
+  get: restrictedProcedure('viewStreck')
     .input(
       z.object({
         id: z.number().int(),
@@ -414,7 +460,7 @@ export const streckRouter = router({
       return res;
     }),
 
-  getStreckLists: restrictedProcedure('manageStreck')
+  getStreckLists: restrictedProcedure('viewStreck')
     .input(
       z.object({
         start: z.date().optional(),
@@ -508,7 +554,7 @@ export const streckRouter = router({
       });
     }),
 
-  exportStreckList: restrictedProcedure('manageStreck')
+  exportStreckList: restrictedProcedure('viewStreck')
     .input(
       z.object({
         id: z.number().int(),

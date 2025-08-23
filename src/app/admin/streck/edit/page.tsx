@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Streck',
 };
 
-const AdminStreckViewPage = ({
+const AdminStreckEditPage = ({
   searchParams,
 }: {
   searchParams: { start?: string; end?: string };
@@ -59,4 +59,4 @@ const AdminStreckViewPage = ({
   );
 };
 
-export default AdminStreckViewPage;
+export default AdminStreckEditPage;

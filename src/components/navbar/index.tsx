@@ -101,7 +101,7 @@ const adminTab: NavbarLinkGroup = {
       label: lang('Strecklistor', 'Streck Lists'),
       href: '/admin/streck',
       icon: <IconClipboardList />,
-      permission: 'manageStreck',
+      permission: 'viewStreck',
     },
     {
       label: 'Killer',
