@@ -4,11 +4,12 @@ import Popover from 'components/popover';
 import DatePickerDropdown from './dropdown';
 import dayjs from 'dayjs';
 import { IconCalendar } from '@tabler/icons-react';
+import { ReactNode } from 'react';
 
 export interface DatePickerProps {
   value?: Date;
   onChange?: (date: Date) => void;
-  label?: string;
+  label?: string | ReactNode;
   withAsterisk?: boolean;
   placeholder?: string;
 }

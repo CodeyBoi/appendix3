@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import TransactionsSummary from './transactions-summary';
-import StreckListTable from './strecklist-table';
+import StreckListTable from '../strecklist-table';
 
 export const metadata: Metadata = {
   title: 'Streck',

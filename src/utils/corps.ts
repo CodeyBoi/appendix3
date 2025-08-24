@@ -95,6 +95,12 @@ export const sortCorps = (a: CorpsSort, b: CorpsSort) => {
     return -1;
   } else if (!a.number && b.number) {
     return 1;
+  } else if (a.bNumber && b.bNumber) {
+    return a.bNumber - b.bNumber;
+  } else if (a.bNumber && !b.bNumber) {
+    return -1;
+  } else if (!a.bNumber && b.bNumber) {
+    return 1;
   } else if (a.lastName !== b.lastName) {
     return a.lastName.localeCompare(b.lastName, 'sv');
   }
