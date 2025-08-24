@@ -3,14 +3,15 @@ import {
   IconSearch,
   IconTablePlus,
   IconTrash,
+  IconUser,
 } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import React, { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import DownloadStrecklistButton from './download';
-import StreckListTable from './edit/strecklist-table';
+import DownloadStrecklistButton from './download-empty';
+import StreckListTable from './strecklist-table';
 import ParamsSwitch from 'components/input/params-switch';
 import Restricted from 'components/restricted/server';
 
@@ -60,9 +61,13 @@ const AdminStreckPage = async ({
           </div>
         </div>
         <div className='flex flex-col gap-2'>
-          <Button href='streck/edit'>
+          <Button href='streck/accounts'>
+            <IconUser />
+            {lang('Se streckkonton...', 'View streck accounts...')}
+          </Button>
+          <Button href='streck/view'>
             <IconSearch />
-            {lang('Se transaktioner...', 'See transactions...')}
+            {lang('Se transaktioner...', 'View transactions...')}
           </Button>
           <Restricted permissions='manageStreck'>
             <Button href='streck/edit/new'>

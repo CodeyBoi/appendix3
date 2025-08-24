@@ -194,63 +194,82 @@ export const toStreckListMatrix = (
   };
 };
 
+const getStreckAccount = async ({
+  ctx,
+  corpsId,
+}: {
+  ctx: Context;
+  corpsId: string;
+}) => {
+  const streckLists = await ctx.prisma.streckList.findMany({
+    include: {
+      transactions: {
+        where: {
+          corpsId,
+          streckList: {
+            deleted: false,
+          },
+        },
+      },
+    },
+    where: {
+      transactions: {
+        some: {
+          corpsId,
+          streckList: {
+            deleted: false,
+          },
+        },
+      },
+    },
+    orderBy: {
+      time: 'asc',
+    },
+  });
+
+  let balance = 0;
+  const transactionsWithBalance = streckLists.flatMap((streckList) => {
+    const firstTransaction = streckList.transactions[0];
+    if (!firstTransaction) {
+      return [];
+    }
+    const item =
+      new Set(streckList.transactions.map((t) => t.item)).size !== 1
+        ? 'Strecklista'
+        : firstTransaction.note.trim() || firstTransaction.item;
+    const totalPrice = sum(streckList.transactions.map((t) => t.totalPrice));
+    balance += totalPrice;
+    return [
+      {
+        id: streckList.id,
+        item,
+        totalPrice,
+        time: streckList.time,
+        balance,
+      },
+    ];
+  });
+
+  return {
+    balance,
+    transactions: transactionsWithBalance.reverse(),
+  };
+};
+
 export const streckRouter = router({
   getOwnStreckAccount: protectedProcedure.query(async ({ ctx }) => {
     const corpsId = ctx.session.user.corps.id;
-    const streckLists = await ctx.prisma.streckList.findMany({
-      include: {
-        transactions: {
-          where: {
-            corpsId,
-            streckList: {
-              deleted: false,
-            },
-          },
-        },
-      },
-      where: {
-        transactions: {
-          some: {
-            corpsId,
-            streckList: {
-              deleted: false,
-            },
-          },
-        },
-      },
-      orderBy: {
-        time: 'asc',
-      },
-    });
-
-    let balance = 0;
-    const transactionsWithBalance = streckLists.flatMap((streckList) => {
-      const firstTransaction = streckList.transactions[0];
-      if (!firstTransaction) {
-        return [];
-      }
-      const item =
-        new Set(streckList.transactions.map((t) => t.item)).size !== 1
-          ? 'Strecklista'
-          : firstTransaction.note.trim() || firstTransaction.item;
-      const totalPrice = sum(streckList.transactions.map((t) => t.totalPrice));
-      balance += totalPrice;
-      return [
-        {
-          id: streckList.id,
-          item,
-          totalPrice,
-          time: streckList.time,
-          balance,
-        },
-      ];
-    });
-
-    return {
-      balance,
-      transactions: transactionsWithBalance.reverse(),
-    };
+    const res = await getStreckAccount({ ctx, corpsId });
+    return res;
   }),
+
+  getStreckAccount: restrictedProcedure('viewStreck')
+    .input(z.object({ corpsId: z.string().cuid() }))
+    .query(async ({ ctx, input }) => {
+      const { corpsId } = input;
+      const res = await getStreckAccount({ ctx, corpsId });
+      return res;
+    }),
 
   getTransactions: restrictedProcedure('viewStreck')
     .input(
