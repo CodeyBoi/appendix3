@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import StreckListTable from '../strecklist-table';
+import StreckListTable from '../../strecklist-table';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
 
