@@ -3,6 +3,7 @@
 import { IconMailShare } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import Restricted from 'components/restricted/client';
+import Link from 'next/link';
 import { useState } from 'react';
 import { sortCorps, sortCorpsByName } from 'utils/corps';
 import { lang } from 'utils/language';
@@ -66,7 +67,7 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
       <thead>
         <tr className='divide-x divide-solid border-b text-left dark:divide-neutral-800'>
           <th
-            className='select-none px-1 text-center hover:cursor-pointer'
+            className='select-none px-1 text-center hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('number');
             }}
@@ -74,7 +75,7 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             #{sortBy === 'number' && orderIcon}
           </th>
           <th
-            className='select-none px-1 hover:cursor-pointer'
+            className='select-none px-1 hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('firstName');
             }}
@@ -83,7 +84,7 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             {sortBy === 'firstName' && orderIcon}
           </th>
           <th
-            className='select-none px-1 hover:cursor-pointer'
+            className='select-none px-1 hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('lastName');
             }}
@@ -92,7 +93,7 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             {sortBy === 'lastName' && orderIcon}
           </th>
           <th
-            className='select-none px-1 hover:cursor-pointer'
+            className='select-none px-1 hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('balance');
             }}
@@ -101,7 +102,6 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             {sortBy === 'balance' && orderIcon}
           </th>
           <Restricted permissions='manageStreck'>
-            <th className='px-1' />
             <th className='px-1' />
           </Restricted>
         </tr>
@@ -123,7 +123,14 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             <td className='px-1 md:whitespace-nowrap'>
               {corps.lastName.trim()}
             </td>
-            <td className='px-1 text-right'>{corps.balance.toString()}</td>
+            <td className='px-1 text-right'>
+              <Link
+                className='hover:cursor-pointer hover:underline'
+                href={`accounts/${corps.id}`}
+              >
+                {corps.balance.toString()}
+              </Link>
+            </td>
             <Restricted permissions='manageStreck'>
               <td>
                 <ActionIcon variant='subtle'>

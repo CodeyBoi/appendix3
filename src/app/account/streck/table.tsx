@@ -2,14 +2,23 @@ import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import dayjs from 'dayjs';
+import { Language } from 'hooks/use-language';
 
-const OwnTransactionsTable = async () => {
-  const [account, corps] = await Promise.all([
-    api.streck.getOwnStreckAccount.query(),
-    api.corps.getSelf.query(),
-  ]);
+type StreckAccount = NonNullable<
+  Awaited<ReturnType<typeof api.streck.getStreckAccount.query>>
+>;
+type Transaction = StreckAccount['transactions'][number];
 
-  if (account.transactions.length === 0) {
+interface TransactionsTableProps {
+  locale?: Language;
+  transactions: Transaction[];
+}
+
+const TransactionsTable = ({
+  locale = 'sv',
+  transactions,
+}: TransactionsTableProps) => {
+  if (transactions.length === 0) {
     return (
       <h3 className='italic'>{lang('Här var det tomt...', 'How empty..')}</h3>
     );
@@ -18,7 +27,7 @@ const OwnTransactionsTable = async () => {
   let lastMonth: number;
   return (
     <div className='flex max-w-sm flex-col divide-y divide-solid dark:divide-neutral-800'>
-      {account.transactions.map((transaction) => {
+      {transactions.map((transaction) => {
         const month = transaction.time.getMonth();
         const shouldAddMonth = lastMonth !== month;
         lastMonth = month;
@@ -26,7 +35,7 @@ const OwnTransactionsTable = async () => {
           <Fragment key={transaction.id}>
             {shouldAddMonth && (
               <h3 className='pt-2 capitalize'>
-                {transaction.time.toLocaleString(corps.language, {
+                {transaction.time.toLocaleString(locale, {
                   month: 'long',
                   year: 'numeric',
                 })}
@@ -59,4 +68,4 @@ const OwnTransactionsTable = async () => {
   );
 };
 
-export default OwnTransactionsTable;
+export default TransactionsTable;
