@@ -256,6 +256,16 @@ const SignupList = ({ gigId }: SignupListProps) => {
       }, {}),
     [yesList],
   );
+  
+  // instruments that should have players but currently have 0
+  const unmannedInstruments = useMemo(
+    () =>
+      FULL_SETTING.filter(([instrument, fullCount]) => {
+        const actual = instrumentCount[instrument] ?? 0;
+        return fullCount > 0 && actual === 0;
+      }),
+    [instrumentCount],
+  );
 
   const signupsToTable = (
     signups: typeof signupsSorted,
@@ -408,6 +418,31 @@ const SignupList = ({ gigId }: SignupListProps) => {
               </h3>
               <h3>{}</h3>
               {yesTable}
+              
+
+              {unmannedInstruments.length > 0 && (
+                <div className="mt-2">
+                  {/*
+                  <h4 className="text-sm font-semibold">
+                    {lang(
+                      'Helt obemannade instrument:',
+                      'Completely unmanned instruments:'
+                    )}
+                  </h4>
+                  */}
+                  <div className="space-y-2">
+                    {unmannedInstruments.map(([instrument, fullCount]) => (
+                      <p
+                        key={instrument}
+                        className="text-sm capitalize font-bold pl-0 m-0"
+                      >
+                        {toPlural(aprilFoolsInstrumentLabel(instrument), language)}{" "}
+                        <span className="font-normal">(0/{fullCount})</span>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
