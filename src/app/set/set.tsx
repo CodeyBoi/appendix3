@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import SetCard from './card';
-import { shuffle } from 'utils/array';
+import { filterNone, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
+import { lang } from 'utils/language';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -23,7 +24,6 @@ export interface Card {
 
 interface SetGameProps {
   initialCards?: Card[];
-  auto?: boolean;
 }
 
 const NO_OF_CARDS = 12;
@@ -70,7 +70,7 @@ const findSet = (cards: Card[]) => {
   return undefined;
 };
 
-const SetGame = ({ initialCards = [], auto = false }: SetGameProps) => {
+const SetGame = ({ initialCards = [] }: SetGameProps) => {
   const [deck, setDeck] = useState(generateDeck());
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [selected, setSelected] = useState<number[]>([]);
@@ -134,23 +134,14 @@ const SetGame = ({ initialCards = [], auto = false }: SetGameProps) => {
     if (isSet(a, b, c)) {
       console.log('Found set! ' + JSON.stringify({ a, b, c }));
       const newDeck = deck.slice();
-      const newCards = cards.slice();
+      const newCards: (Card | undefined)[] = cards.slice();
 
-      if (newDeck.length < 3) {
-        for (const card of generateDeck()) {
-          newDeck.push(card);
-        }
-      }
-
-      // TODO: Only draw cards up to 12
+      // TODO: Only draw cards up to max
       for (const index of selected) {
-        const drawnCard = newDeck.pop();
-        if (drawnCard) {
-          newCards[index] = drawnCard;
-        }
+        newCards[index] = newDeck.pop();
       }
       setDeck(newDeck);
-      setCards(newCards);
+      setCards(filterNone(newCards));
       console.log(
         `Sets found: ${points + 1}\nCards in deck: ${newDeck.length}`,
       );
@@ -161,10 +152,7 @@ const SetGame = ({ initialCards = [], auto = false }: SetGameProps) => {
     setSelected([]);
   }, [selected]);
 
-  useKeyDown('A', () => {
-    if (!auto) {
-      return;
-    }
+  useKeyDown('I', () => {
     const foundSet = findSet(cards);
     if (foundSet) {
       console.log(`Found set: ${foundSet.join(', ')}`);
@@ -175,11 +163,16 @@ const SetGame = ({ initialCards = [], auto = false }: SetGameProps) => {
   });
 
   return (
-    <div className='flex flex-col items-center gap-2'>
-      <h3>{`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(
-        2,
-        '0',
-      )}`}</h3>
+    <div className='flex max-w-xl flex-col items-center gap-2'>
+      <div className='flex w-full justify-between'>
+        <h3>
+          {points} {lang('poäng', 'points')}
+        </h3>
+        <h3>{`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(
+          2,
+          '0',
+        )}`}</h3>
+      </div>
       <div className='grid max-w-max grid-cols-4 gap-2'>
         {cards.map((card, i) => (
           <div
