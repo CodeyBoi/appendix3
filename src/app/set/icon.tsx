@@ -1,21 +1,20 @@
-import { Color, Fill, Shape } from "./card";
+import { Color } from './card';
+import { Card } from './set';
 
-type Point = [number, number];
+const colors: Record<Color, string> = {
+  blue: 'text-blue-600',
+  red: 'text-red-600',
+  yellow: 'text-yellow-600',
+};
 
-export interface SetIconProps {
-  shape: Shape;
-  color: Color;
-  fill: Fill;
-}
+export type SetIconProps = Omit<Card, 'amount'>;
 
-const Icon = ({shape, color, fill}: SetIconProps) => {
+const SetIcon = ({ shape, color, fill }: SetIconProps) => {
   return (
-    <div>
-      {color}<br />
-      {fill}<br />
-      {shape}
+    <div className={colors[color]}>
+      {fill} {shape}
     </div>
-  )
-}
+  );
+};
 
-export default Icon
+export default SetIcon;
