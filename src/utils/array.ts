@@ -1,10 +1,11 @@
 export const range = (startOrStop: number, stop?: number, step = 1) => {
   const [begin, end] =
     stop !== undefined ? [startOrStop, stop] : [0, startOrStop];
-  return Array.from(
-    { length: Math.ceil((end - begin) / step) },
-    (_value, index) => begin + index * step,
-  );
+  const nums = [];
+  for (let i = begin; i < end; i += step) {
+    nums.push(i);
+  }
+  return nums;
 };
 
 export const initObject = <K extends string | number | symbol, V>(
@@ -48,3 +49,18 @@ export const intersection = <T>(a: T[], b: T[]) => {
 
 export const filterNone = <T>(list: (T | null | undefined)[]): T[] =>
   list.flatMap((e) => (e !== null && e !== undefined ? [e] : []));
+
+export const shuffle = <T>(list: T[]) => {
+  for (let i = list.length - 1; i > 0; i--) {
+    const idx = Math.floor(Math.random() * (i + 1));
+    const temp = list[i];
+    list[i] = list[idx] as T;
+    list[idx] = temp as T;
+  }
+};
+
+export const toShuffled = <T>(list: readonly T[]) => {
+  const copied = Array.from(list);
+  shuffle(copied);
+  return copied;
+};
