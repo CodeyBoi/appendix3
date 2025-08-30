@@ -17,15 +17,15 @@ const fillColors: Record<Color, string> = {
 
 const viewWidth = 100;
 const viewHeight = 200;
-const strokeWidth = 6;
+const strokeWidth = 9;
 
 const getShapePath = (shape: Shape) => {
   switch (shape) {
     case 'oval': {
-      const r = viewWidth / 2 - strokeWidth;
-      return `M ${-r} ${r + strokeWidth / 2} a ${r} ${r} 0 1 0 ${r * 2} 0 l 0 ${
-        -viewHeight / 2 - strokeWidth
-      } a ${r} ${r} 0 1 0 ${-r * 2} 0 z`;
+      const r = viewWidth / 2 - strokeWidth - 3;
+      return `M ${-r} ${r + strokeWidth / 2 + 12} a ${r} ${r} 0 1 0 ${
+        r * 2
+      } 0 l 0 ${-viewHeight / 2 - strokeWidth} a ${r} ${r} 0 1 0 ${-r * 2} 0 z`;
     }
 
     case 'diamond': {
@@ -43,7 +43,7 @@ const getShapePath = (shape: Shape) => {
           return val;
         }
 
-        const scale = 112 / 136;
+        const scale = 100 / 136;
         // const move = isX ? -viewWidth / 2 : -viewHeight /2;
 
         const newVal = Math.round(v * scale * 100) / 100;
@@ -59,7 +59,7 @@ const getShapePath = (shape: Shape) => {
 const SetIcon = ({ shape, color, fill }: SetIconProps) => {
   return (
     <svg
-      className='h-full w-10'
+      className='w-1/3'
       viewBox={`${-viewWidth / 2} ${
         -viewHeight / 2
       } ${viewWidth} ${viewHeight}`}

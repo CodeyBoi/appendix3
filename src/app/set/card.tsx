@@ -21,7 +21,7 @@ const SetCard = ({
   return (
     <div
       className={cn(
-        'flex h-28 w-40 justify-center gap-2 rounded border p-2 shadow-md',
+        'flex aspect-[1.4] w-full justify-center gap-1 rounded border p-2 shadow-md md:p-4',
         selected && 'bg-red-600/30',
       )}
     >
