@@ -6,7 +6,7 @@ import { filterNone, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
 import { lang } from 'utils/language';
 import Timer from 'components/timer';
-import Button from 'components/input/button';
+import { cn } from 'utils/class-names';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -72,6 +72,12 @@ const findSet = (cards: Card[]) => {
   return undefined;
 };
 
+const strokeColors: Record<Color, string> = {
+  blue: 'stroke-blue-600',
+  red: 'stroke-red-600',
+  yellow: 'stroke-yellow-600',
+};
+
 const SetGame = ({ initialCards = [] }: SetGameProps) => {
   const [deck, setDeck] = useState(generateDeck());
   const [cards, setCards] = useState<Card[]>(initialCards);
@@ -103,7 +109,6 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     }
     setSelected(newSelected);
   };
-
 
   // Initial game actions
   useEffect(() => {
@@ -159,17 +164,6 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     setSelected([]);
   }, [selected]);
 
-  const checkIfSetExists = () => {
-    const foundSet = findSet(cards);
-    if (foundSet) {
-      console.log('WRONG! Set exists at ' + foundSet.join(', '));
-      setPoints(points - 1);
-    } else {
-      console.log('Correct, no set exists! Drawing an extra card...');
-      drawCards(1);
-    }
-  }
-
   useKeyDown('I', () => {
     const foundSet = findSet(cards);
     if (foundSet) {
@@ -180,64 +174,61 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     }
   });
 
+  const isFinished = cards.length < 12;
+
   return (
-    <div className='flex max-w-xl flex-col items-center gap-2'>
-      <div className='flex w-full justify-around'>
-        <h3>
-          {points} {lang('poäng', 'points')}
-        </h3>
-        <h3><Timer /></h3>
+    <>
+      <svg>
+        <defs>
+          {COLORS.map((color) => (
+            <pattern
+              key={`set-stripes-${color}`}
+              className={strokeColors[color]}
+              id={`set-stripes-${color}`}
+              width={9}
+              height={9}
+              patternUnits='userSpaceOnUse'
+            >
+              <line x1='0' y1='0' x2='9' y2='0' strokeWidth={2.5} />
+            </pattern>
+          ))}
+        </defs>
+      </svg>
+      <div className='flex max-w-xl flex-col items-center gap-2'>
+        <div
+          className={cn(
+            'flex w-full justify-around',
+            isFinished && 'flex-col items-center',
+          )}
+        >
+          <h3>
+            {points} {lang('poäng', 'points')}
+          </h3>
+          <h3>
+            {isFinished &&
+              lang(
+                'Du tog dig igenom hela leken på ',
+                'You got through the whole deck in ',
+              )}
+            <Timer stopped={cards.length < NO_OF_CARDS} />
+            {isFinished && '!'}
+          </h3>
+        </div>
+        <div className='grid max-w-max grid-cols-3 gap-2'>
+          {cards.map((card, i) => (
+            <div
+              key={JSON.stringify(card)}
+              className='hover:cursor-pointer'
+              onClick={() => {
+                handleClick(i);
+              }}
+            >
+              <SetCard selected={selected.includes(i)} {...card} />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className='grid max-w-max grid-cols-3 gap-2'>
-        {cards.map((card, i) => (
-          <div
-            key={JSON.stringify(card)}
-            className='hover:cursor-pointer'
-            onClick={() => {
-              handleClick(i);
-            }}
-          >
-            <SetCard selected={selected.includes(i)} {...card} />
-          </div>
-        ))}
-      </div>
-      <Button onClick={checkIfSetExists}>
-        {lang('Det finns inget set!', 'No set exists!')}
-      </Button>
-    <pre className='whitespace-pre-wrap font-mono leading-none'>
-      {`
-           *█
-           ██*
-          █**█=
-         ██  ██
-        ██*  :██
-       *██    *█*
-      :██      *█*
-      ██        *█-
-     ██          █%
-    ██=          .██
-   *█*            +██
-  =██              *█*
-  █%                ██-
- ██                  ██
-██                    *%
-*█*                   ██
- *█*                 ██
-  ██:               ██
-   ██              ██:
-   =██            *█*
-    *█*          +██
-     *█+         █%
-      ██.       ██
-       ██      ██.
-       -██    ██*
-        *█*  *█*
-         ██. ██
-          █**█
-           ██.
-           ** `}
-      </pre>
-    </div>
+    </>
   );
 };
 
