@@ -51,7 +51,8 @@ const isSet = (a: Card, b: Card, c: Card) =>
     isValid(a[key], b[key], c[key]),
   );
 
-const findSet = (cards: Card[]) => {
+const findSets = (cards: Card[]) => {
+  const sets = [];
   for (let ai = 0; ai < cards.length; ai++) {
     for (let bi = 0; bi < cards.length; bi++) {
       for (let ci = 0; ci < cards.length; ci++) {
@@ -64,12 +65,12 @@ const findSet = (cards: Card[]) => {
         const c = cards[ci] as Card;
 
         if (isSet(a, b, c)) {
-          return [ai, bi, ci];
+          sets.push([ai, bi, ci]);
         }
       }
     }
   }
-  return undefined;
+  return sets;
 };
 
 const strokeColors: Record<Color, string> = {
@@ -140,7 +141,7 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
       }
 
       // Redraw a card if no set exists
-      while (newDeck.length > 0 && !findSet(filterNone(newCards))) {
+      while (newDeck.length > 0 && !findSets(filterNone(newCards))[0]) {
         const firstSelected = selected[0];
         if (!firstSelected) {
           // This should not be possible, as `selected` should have length 3
@@ -165,12 +166,42 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
   }, [selected]);
 
   useKeyDown('I', () => {
-    const foundSet = findSet(cards);
+    const foundSets = findSets(cards);
+    const foundSet = foundSets[0];
     if (foundSet) {
-      console.log(`Found set: ${foundSet.join(', ')}`);
+      console.log(
+        `Found sets: ${foundSets
+          .map((set) => `{ ${set.join(', ')} }`)
+          .join(', ')}`,
+      );
       setSelected(foundSet);
     } else {
       console.log("Couldn't find set for board!");
+    }
+  });
+
+  useKeyDown('O', () => {
+    const foundSets = findSets(cards).filter((set) =>
+      selected.every((cardIndex) => set.includes(cardIndex)),
+    );
+    const foundSet = foundSets[0];
+    if (foundSet) {
+      console.log(
+        `Found sets: ${foundSets
+          .map((set) => `{ ${set.join(', ')} }`)
+          .join(', ')}`,
+      );
+      console.log(`Using set: { ${foundSet.join(', ')} }`);
+      const cardIndex = foundSet.find((ci) => !selected.includes(ci));
+      if (!cardIndex) {
+        console.log('Something went wrong when adding new card to selected!');
+        return;
+      }
+      setSelected([...selected, cardIndex]);
+    } else {
+      console.log(
+        `Couldn't find set containing { ${selected.join(', ')} } for board!`,
+      );
     }
   });
 
@@ -178,7 +209,7 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
 
   return (
     <>
-      <svg>
+      <svg width={0} height={0}>
         <defs>
           {COLORS.map((color) => (
             <pattern
