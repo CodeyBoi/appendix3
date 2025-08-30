@@ -1,5 +1,5 @@
 import { range } from 'utils/array';
-import SetIcon from './icon';
+import SetIcon from './set-icon';
 import { Amount, Card } from './set';
 import { cn } from 'utils/class-names';
 
