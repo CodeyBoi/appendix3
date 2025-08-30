@@ -1,5 +1,6 @@
 import React from 'react';
 import { api } from 'trpc/server';
+import { lang } from 'utils/language';
 
 interface TransactionsSummaryProps {
   start?: Date;
@@ -18,33 +19,38 @@ const TransactionsSummary = async ({
     take,
   });
 
+  let sum = 0;
+
+  const summary = transactions.items.map((item) => {
+    const summary = transactions.summary[item];
+    if (!summary) {
+      return null;
+    }
+    sum += summary.totalPrice;
+    return (
+      <tr key={item} className='divide-x divide-solid dark:divide-neutral-800'>
+        <td className='px-2'>{item}</td>
+        <td className='px-2 text-right'>{summary.amount}</td>
+        <td className='px-2 text-right'>{summary.totalPrice}</td>
+      </tr>
+    );
+  });
+
   return (
-    <div>
+    <div className='flex max-w-min flex-col gap-2'>
+      <h5>
+        {lang('Summa:', 'Sum:')} {sum}
+      </h5>
       <table className='table text-sm'>
         <thead>
           <tr className='text-left'>
-            <th className='px-1'>Artikel</th>
-            <th className='px-1'>Antal</th>
-            <th className='px-1'>Totalpris</th>
+            <th className='px-1'>{lang('Artikel', 'Item')}</th>
+            <th className='px-1'>{lang('Antal', 'Amount')}</th>
+            <th className='px-1'>{lang('Totalpris', 'Total price')}</th>
           </tr>
         </thead>
         <tbody className='gap-1 divide-y divide-solid dark:divide-neutral-800'>
-          {transactions.items.map((item) => {
-            const summary = transactions.summary[item];
-            if (!summary) {
-              return null;
-            }
-            return (
-              <tr
-                key={item}
-                className='divide-x divide-solid dark:divide-neutral-800'
-              >
-                <td className='px-2'>{item}</td>
-                <td className='px-2 text-right'>{summary.amount}</td>
-                <td className='px-2 text-right'>{summary.totalPrice}</td>
-              </tr>
-            );
-          })}
+          {summary}
         </tbody>
       </table>
     </div>
