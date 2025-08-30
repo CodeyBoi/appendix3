@@ -60,7 +60,7 @@ const userTab: NavbarLinkGroup = {
       icon: <IconSpeakerphone />,
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
-    { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
+    { label: lang('Om Bleckhornen', 'About Bleckhornen'), href: '/links', icon: <IconLink /> },
   ],
 };
 const adminTab: NavbarLinkGroup = {
