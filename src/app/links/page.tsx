@@ -25,6 +25,25 @@ const Links = () => {
           <li>
             <a
               className='cursor-pointer text-red-600 underline'
+              href='https://discord.gg/2wZafpfqR3'
+            >
+              {lang(
+                'Bleckhornens discordserver',
+                'The Bleckhorn Discord Server',
+              )}
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
+              href='https://www.wiki.bleckhornen.org/'
+            >
+              {lang('Bleckhornswikin', 'The Bleckhorn Wiki')}
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
               href='https://drive.google.com/drive/folders/1QKYIwB0Y__9KivRJ4pWNvaOjZxdZWfub'
             >
               {lang('Notdriven', 'The Note Drive')}
@@ -41,28 +60,28 @@ const Links = () => {
           <li>
             <a
               className='cursor-pointer text-red-600 underline'
-              href='https://www.wiki.bleckhornen.org/'
-            >
-              {lang('Bleckhornswikin', 'The Bleckhorn Wiki')}
-            </a>
-          </li>
-          <li>
-            <a
-              className='cursor-pointer text-red-600 underline'
-              href='https://www.facebook.com/groups/342920649132131'
-            >
-              Facebook-Tarmen
-            </a>
-          </li>
-          <li>
-            <a
-              className='cursor-pointer text-red-600 underline'
-              href='https://discord.gg/2wZafpfqR3'
+              href='https://drive.google.com/drive/folders/1GXzWK13on-br6qBDIu_8lqFct9EBgDbn'
             >
               {lang(
-                'Bleckhornens discordserver',
-                'The Bleckhorn Discord Server',
+                'Riktlinjer för utskott',
+                'Guidelines for Committees (in Swedish)',
               )}
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
+              href='https://drive.google.com/file/d/1Ys9mJ7oK23z7QLwZIxODuD1K1FR6TtLQ/view?usp=drivesdk'
+            >
+              {lang('Bleckhornens stadgar', "Bleckhornen's Statutes")}
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
+              href='https://drive.google.com/file/d/1Z-wKqmOke8Rxa1rVY48PeGBvRnyC5yb3/view?usp=drivesdk'
+            >
+              {lang('Policy för likabehandling', 'Equality Policy')}
             </a>
           </li>
           <li>
@@ -76,7 +95,15 @@ const Links = () => {
           <li>
             <a
               className='cursor-pointer text-red-600 underline'
-              href='https://www.youtube.com/watch?v=a3Z7zEc7AXQ'
+              href='https://www.facebook.com/groups/342920649132131'
+            >
+              Facebook-Tarmen
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
+              href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
             >
               {lang(
                 'Nakenbilder av Arvid Tarmén',
