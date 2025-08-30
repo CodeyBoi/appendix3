@@ -52,10 +52,10 @@ const isSet = (a: Card, b: Card, c: Card) =>
   );
 
 const findSets = (cards: Card[]) => {
-  const sets = [];
+  const sets = new Set<number[]>();
   for (let ai = 0; ai < cards.length; ai++) {
-    for (let bi = 0; bi < cards.length; bi++) {
-      for (let ci = 0; ci < cards.length; ci++) {
+    for (let bi = ai + 1; bi < cards.length; bi++) {
+      for (let ci = bi + 1; ci < cards.length; ci++) {
         if (ai === bi || bi === ci || ci === ai) {
           continue;
         }
@@ -65,12 +65,12 @@ const findSets = (cards: Card[]) => {
         const c = cards[ci] as Card;
 
         if (isSet(a, b, c)) {
-          sets.push([ai, bi, ci]);
+          sets.add([ai, bi, ci]);
         }
       }
     }
   }
-  return sets;
+  return Array.from(sets.values());
 };
 
 const strokeColors: Record<Color, string> = {
@@ -193,7 +193,7 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
       );
       console.log(`Using set: { ${foundSet.join(', ')} }`);
       const cardIndex = foundSet.find((ci) => !selected.includes(ci));
-      if (!cardIndex) {
+      if (cardIndex === undefined) {
         console.log('Something went wrong when adding new card to selected!');
         return;
       }
