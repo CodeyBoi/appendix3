@@ -2,13 +2,33 @@ import { Metadata } from 'next';
 import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
-  title: 'Länkar',
+  title: 'Om Bleckhornen',
 };
 
 const Links = () => {
   return (
     <div>
-      <h1>{lang('Länkar', 'Links')}</h1>
+      <h1>{lang('Om Bleckhornen', 'About Bleckhornen')}</h1>
+      <div className='text-lg'>
+        {
+          lang('Bleckhornen drivs av styrelsen som delegerar delar av det dagliga arbete till utskotten.', 'english')
+        }
+        <br></br>
+        {lang('Du hittar det mesta om bleckhornen på ',
+          'You can find most info about bleckhornen on the '
+        )}
+        <a
+          className='cursor-pointer text-red-600 underline'
+          href='https://drive.google.com/drive/folders/1AxgOsgqm1xmALCatZjNkRGoFh6PrOSl2'
+        >
+          {lang(
+            'driven',
+            'drive',
+          )}
+        </a>
+      </div>
+      <br></br>
+      <h3>{lang('Fler använbara länkar', 'More usefull links')}</h3>
       <div className='text-lg'>
         <ul className='list-disc pl-4'>
           <li>
