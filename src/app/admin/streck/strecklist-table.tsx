@@ -73,11 +73,11 @@ const StreckListTable = async ({
                   : streckList.transactions.every((t) => t.pricePer > 0)
                   ? 'deposit'
                   : 'unknown';
+              const link = `/admin/streck/view/${streckList.id}`;
               return (
-                <Link
-                  href={`/admin/streck/view/${streckList.id}`}
+                <div
                   key={streckList.id}
-                  className='table-row divide-x divide-y divide-solid whitespace-nowrap hover:bg-red-300/5 dark:divide-neutral-800'
+                  className='table-row divide-x divide-y divide-solid whitespace-nowrap hover:cursor-pointer hover:bg-red-300/5 dark:divide-neutral-800'
                 >
                   <div className='table-cell border-t px-2 align-middle dark:border-neutral-800'>
                     {listType === 'strecklist'
@@ -88,15 +88,18 @@ const StreckListTable = async ({
                       ? lang('Intäkt', 'Income')
                       : lang('Blandat', 'Mixed')}
                   </div>
-                  <div className='table-cell px-2 align-middle'>
+                  <Link href={link} className='table-cell px-2 align-middle'>
                     {dayjs(streckList.time).format(dateFormat)}
-                  </div>
-                  <div className='table-cell px-2 align-middle'>
+                  </Link>
+                  <Link href={link} className='table-cell px-2 align-middle'>
                     {numberAndFullName(streckList.createdBy)}
-                  </div>
-                  <div className='table-cell px-2 text-right align-middle'>
+                  </Link>
+                  <Link
+                    href={link}
+                    className='table-cell px-2 text-right align-middle'
+                  >
                     {streckList.totalChange}
-                  </div>
+                  </Link>
                   <Restricted permissions='manageStreck'>
                     <div className='table-cell'>
                       <Tooltip text={lang('Uppdatera', 'Edit')}>
@@ -159,7 +162,7 @@ const StreckListTable = async ({
                       </div>
                     )}
                   </Restricted>
-                </Link>
+                </div>
               );
             })}
           </div>
