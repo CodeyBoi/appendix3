@@ -344,6 +344,34 @@ const SignupList = ({ gigId }: SignupListProps) => {
   const maybeTable = signupsToTable(maybeList);
   const noTable = signupsToTable(noList);
 
+  // Get a count of how many people are missing for each instrument
+  const missingInstrumentsCount = useMemo(() => {
+    const output: Record<string, number> = {};
+    FULL_SETTING.forEach(([instrument, count]) => {
+      output[instrument] = count - (instrumentCount[instrument] ?? 0);
+    });
+    return Object.entries(output).filter(([_, count]) => count > 0);
+  }, [instrumentCount]);
+
+  const missingInstrumentsMessages = useMemo(() => {
+    if (missingInstrumentsCount.length === 0) {
+      return [];
+    }
+    const genMessage = ([instrument, count]: [string, number]) =>
+      `${count} ${
+        count > 1 ? toPlural(instrument, language) : instrument.toLowerCase()
+      }`;
+    return missingInstrumentsCount.map(genMessage);
+  }, [missingInstrumentsCount, language]);
+
+  const missingInstrumentTitle =
+    missingInstrumentsMessages.length === 0
+      ? lang('Spelningen har full sättning!', 'Full setting!')
+      : lang(
+          'För full sättning krävs:',
+          'Missing instruments for full setting:',
+        );
+
   return (
     <div className='space-y-2'>
       <Restricted permissions='manageAttendance'>
@@ -406,9 +434,19 @@ const SignupList = ({ gigId }: SignupListProps) => {
                     : lang('var med:', 'were there:')
                   : lang('är anmälda:', 'are signed up:')}
               </h3>
-              <h3>{}</h3>
               {yesTable}
             </>
+          )}
+          {!gigHasHappened && (
+            <div className='flex flex-col text-sm'>
+              <div className='h-4' />
+              <h6>{missingInstrumentTitle}</h6>
+              <ul className='list-disc pl-6'>
+                {missingInstrumentsMessages.map((msg) => (
+                  <li key={msg}>{msg}</li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       )}
