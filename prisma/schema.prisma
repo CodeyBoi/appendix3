@@ -375,3 +375,7 @@ model Nickname {
   for       Corps @relation("GivenNicknames", fields: [forId], references: [id], onDelete: Cascade)
   createdBy Corps @relation("CreatedNicknames", fields: [createdById], references: [id], onDelete: Cascade)
 }
+
+model SetHighscore {
+  id Int @id @default(autoincrement())
+}
