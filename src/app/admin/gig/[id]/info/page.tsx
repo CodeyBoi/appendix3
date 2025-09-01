@@ -2,7 +2,7 @@ import GigSkeleton from 'components/gig/skeleton';
 import { api } from 'trpc/server';
 import { Suspense } from 'react';
 import GigCard from 'components/gig/card';
-import FoodPrefs from 'components/signup-list/food-prefs';
+import FoodPrefs from './food-prefs';
 
 const GigAdminInfo = async ({ params }: { params: { id: string } }) => {
   const gigId = params.id;

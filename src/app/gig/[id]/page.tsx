@@ -1,6 +1,6 @@
 import Loading from 'components/loading';
 import GigCard from 'components/gig/card';
-import SignupList from 'components/signup-list';
+import SignupList from './signup-list';
 import { Suspense } from 'react';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
