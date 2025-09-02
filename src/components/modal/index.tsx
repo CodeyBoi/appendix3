@@ -9,7 +9,7 @@ import { cn } from 'utils/class-names';
 interface ModalProps {
   target?: ReactNode;
   children: ReactNode;
-  title?: string;
+  title?: ReactNode;
   className?: string;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -52,7 +52,7 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-1/2 z-20 max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity',
+          'fixed left-1/2 top-1/2 z-20 max-h-[80vh] min-w-[556px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
       >

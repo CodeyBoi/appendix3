@@ -8,6 +8,10 @@ import { lang } from 'utils/language';
 import Timer from 'components/timer';
 import { cn } from 'utils/class-names';
 import { api } from 'trpc/react';
+import Modal from 'components/modal';
+import ActionIcon from 'components/input/action-icon';
+import { IconInfoCircle } from '@tabler/icons-react';
+import SetRules from './rules';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -267,28 +271,26 @@ const SetGame = () => {
       </svg>
       <div className=''>
         <div className='flex max-w-xl flex-col items-center gap-2'>
-          <div
-            className={cn(
-              'flex w-full justify-around',
-              isFinished && 'flex-col items-center',
-            )}
-          >
-            <h3>
-              {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
-              {lang('poäng', 'points')}
-            </h3>
-            <h3 className='text-center'>
-              {isFinished &&
-                lang(
-                  'Du tog dig igenom hela leken på ',
-                  'You got through the whole deck in ',
-                )}
-              <Timer stopped={isFinished} />
-              {isFinished &&
-                usedCheats &&
-                lang(' (men du fuskade)', ' (but you cheated)')}
-              {isFinished && '!'}
-            </h3>
+          <div className='flex w-full justify-around gap-2'>
+            <div className='flex grow'>
+              <h3 className='pl-4'>
+                {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
+                {lang('poäng', 'points')}
+              </h3>
+            </div>
+            <Modal
+              title={lang('Regler för Set', 'Rules for Set')}
+              withCloseButton
+              target={
+                <ActionIcon>
+                  <IconInfoCircle />
+                </ActionIcon>
+              }
+            >
+              <div className='p-4'>
+                <SetRules />
+              </div>
+            </Modal>
           </div>
           <div className='grid max-w-max grid-cols-3 gap-2'>
             {board.map((card, i) => (
@@ -303,6 +305,20 @@ const SetGame = () => {
               </div>
             ))}
           </div>
+          <h3 className='text-center'>
+            {isFinished &&
+              lang(
+                'Du tog dig igenom hela leken på ',
+                'You got through the whole deck in ',
+              )}
+            <span className={cn(!isFinished && 'hidden')}>
+              <Timer stopped={isFinished} />
+            </span>
+            {isFinished &&
+              usedCheats &&
+              lang(' (men du fuskade)', ' (but you cheated)')}
+            {isFinished && '!'}
+          </h3>
         </div>
       </div>
     </>
