@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import SetCard from './card';
-import { filterNone, shuffle } from 'utils/array';
+import { range, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
 import { lang } from 'utils/language';
 import Timer from 'components/timer';
 import { cn } from 'utils/class-names';
+import { api } from 'trpc/react';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -72,6 +73,58 @@ const findSets = (cards: Card[]) => {
   return Array.from(sets.values());
 };
 
+const redrawCards = (
+  initialBoard: Card[],
+  initialDeck: Card[],
+  redrawIndexes: number[],
+) => {
+  const board = initialBoard.slice();
+  const deck = initialDeck.slice();
+
+  for (const index of redrawIndexes) {
+    const drawnCard = deck.pop();
+    if (!drawnCard) {
+      return { board, deck };
+    }
+    board[index] = drawnCard;
+  }
+
+  if (findSets(board).length > 0) {
+    return { board, deck };
+  }
+
+  // Redraw a card if no set exists
+  for (let deckIndex = 0; deckIndex < deck.length; deckIndex++) {
+    for (const boardIndex of redrawIndexes) {
+      const deckCard = deck[deckIndex];
+      const boardCard = board[boardIndex];
+      if (!deckCard) {
+        throw new Error(
+          'This should be unreachable as we check boundaries in the while condition',
+        );
+      } else if (!boardCard) {
+        throw new Error(
+          'This should be unreachable as we populate the indexes in the previous while block',
+        );
+      }
+
+      // Swap the two cards
+      deck[deckIndex] = boardCard;
+      board[boardIndex] = deckCard;
+
+      if (findSets(board).length > 0) {
+        return { board, deck };
+      }
+
+      // Swap the two cards back
+      deck[deckIndex] = deckCard;
+      board[boardIndex] = boardCard;
+    }
+  }
+
+  return { board, deck };
+};
+
 const strokeColors: Record<Color, string> = {
   blue: 'stroke-blue-600',
   red: 'stroke-red-600',
@@ -79,11 +132,32 @@ const strokeColors: Record<Color, string> = {
 };
 
 const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
-  const [deck, setDeck] = useState(propDeck.slice(0, -NO_OF_CARDS));
-  const [cards, setCards] = useState<Card[]>(propDeck.slice(-NO_OF_CARDS));
+  const { board: initialBoard, deck: initialDeck } = redrawCards(
+    [],
+    propDeck,
+    range(NO_OF_CARDS),
+  );
+
+  const [deck, setDeck] = useState(initialDeck);
+  const [board, setBoard] = useState(initialBoard);
   const [selected, setSelected] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
   const [usedCheats, setUsedCheats] = useState(false);
+  const [sessionId, setSessionId] = useState<number | undefined>();
+
+  const isFinished = deck.length === 0;
+
+  const startSession = api.games.startSetSession.useMutation({
+    onSuccess: ({ id }) => {
+      setSessionId(id);
+    },
+  });
+  const endSession = api.games.endSetSession.useMutation();
+
+  // Start game session when component mounted
+  useEffect(() => {
+    startSession.mutate();
+  }, []);
 
   const handleClick = (index: number) => {
     const newSelected = selected.slice();
@@ -100,7 +174,7 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
     if (selected.length !== 3) {
       return;
     }
-    const [a, b, c] = selected.map((index) => cards[index]);
+    const [a, b, c] = selected.map((index) => board[index]);
     if (!a || !b || !c) {
       console.log(
         'error when picking out cards: ' + JSON.stringify({ a, b, c }),
@@ -109,41 +183,29 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
     }
 
     if (isSet(a, b, c)) {
-      const newDeck = deck.slice();
-      const newCards: (Card | undefined)[] = cards.slice();
+      const { board: newBoard, deck: newDeck } = redrawCards(
+        board,
+        deck,
+        selected,
+      );
 
-      // TODO: Only draw cards up to max
-      for (const index of selected) {
-        newCards[index] = newDeck.pop();
-      }
-
-      // Redraw a card if no set exists
-      let redrawIndex = 0;
-      while (
-        redrawIndex < newDeck.length &&
-        !findSets(filterNone(newCards))[0]
-      ) {
-        const firstSelected = selected[0];
-        if (!firstSelected) {
-          // This should not be possible, as `selected` should have length 3
-          break;
-        }
-        const temp = newDeck[redrawIndex];
-        newDeck[redrawIndex] = newCards[firstSelected] as Card;
-        newCards[firstSelected] = temp;
-        redrawIndex++;
-      }
-
+      setBoard(newBoard);
       setDeck(newDeck);
-      setCards(filterNone(newCards));
       setPoints(points + 1);
     }
     setSelected([]);
   }, [selected]);
 
+  // End game session if game has been won
+  useEffect(() => {
+    if (deck.length === 0 && !usedCheats && sessionId !== undefined) {
+      endSession.mutate({ id: sessionId });
+    }
+  }, [deck]);
+
   useKeyDown('I', () => {
     setUsedCheats(true);
-    const foundSets = findSets(cards);
+    const foundSets = findSets(board);
     const foundSet = foundSets[0];
     if (foundSet) {
       console.log(
@@ -159,7 +221,7 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
 
   useKeyDown('O', () => {
     setUsedCheats(true);
-    const foundSets = findSets(cards).filter((set) =>
+    const foundSets = findSets(board).filter((set) =>
       selected.every((cardIndex) => set.includes(cardIndex)),
     );
     const foundSet = foundSets[0];
@@ -182,8 +244,6 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
       );
     }
   });
-
-  const isFinished = deck.length === 0;
 
   return (
     <>
@@ -212,7 +272,7 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
             )}
           >
             <h3>
-              {points} {lang('poäng', 'points')}
+              {points}/{NO_OF_CARDS} {lang('poäng', 'points')}
             </h3>
             <h3>
               {isFinished &&
@@ -228,7 +288,7 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
             </h3>
           </div>
           <div className='grid max-w-max grid-cols-3 gap-2'>
-            {cards.map((card, i) => (
+            {board.map((card, i) => (
               <div
                 key={JSON.stringify(card)}
                 className='hover:cursor-pointer'

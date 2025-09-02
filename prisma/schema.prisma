@@ -97,6 +97,7 @@ model Corps {
   createdStreckLists StreckList[]
   givenNicknames     Nickname[]          @relation("GivenNicknames")
   createdNicknames   Nickname[]          @relation("CreatedNicknames")
+  setSessions        SetSession[]
 }
 
 model Role {
@@ -376,12 +377,12 @@ model Nickname {
   createdBy Corps @relation("CreatedNicknames", fields: [createdById], references: [id], onDelete: Cascade)
 }
 
-model SetHighscore {
+model SetSession {
   id Int @id @default(autoincrement())
   corpsId String
-  startedAt DateTime
+  startedAt DateTime @default(now())
   endedAt DateTime?
-  duration Int?
+  durationInMillis Int?
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 }
