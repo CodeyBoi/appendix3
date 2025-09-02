@@ -202,7 +202,7 @@ const SetGame = () => {
   }, [deck]);
 
   useKeyDown('I', () => {
-    setUsedCheats(false);
+    setUsedCheats(true);
     const foundSets = findSets(board);
     const foundSet = foundSets[0];
     if (foundSet) {
