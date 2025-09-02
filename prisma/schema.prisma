@@ -378,4 +378,10 @@ model Nickname {
 
 model SetHighscore {
   id Int @id @default(autoincrement())
+  corpsId String
+  startedAt DateTime
+  endedAt DateTime?
+  duration Int?
+
+  corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
 }
