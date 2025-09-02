@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import SetCard from './card';
-import { range, shuffle } from 'utils/array';
+import { filterNone, range, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
 import { lang } from 'utils/language';
 import Timer from 'components/timer';
@@ -23,10 +23,6 @@ export interface Card {
   shape: Shape;
   color: Color;
   fill: Fill;
-}
-
-interface SetGameProps {
-  deck?: Card[];
 }
 
 const NO_OF_CARDS = 12;
@@ -78,19 +74,15 @@ const redrawCards = (
   initialDeck: Card[],
   redrawIndexes: number[],
 ) => {
-  const board = initialBoard.slice();
+  const board: (Card | undefined)[] = initialBoard.slice();
   const deck = initialDeck.slice();
 
   for (const index of redrawIndexes) {
-    const drawnCard = deck.pop();
-    if (!drawnCard) {
-      return { board, deck };
-    }
-    board[index] = drawnCard;
+    board[index] = deck.pop();
   }
 
-  if (findSets(board).length > 0) {
-    return { board, deck };
+  if (findSets(filterNone(board)).length > 0) {
+    return { board: filterNone(board), deck };
   }
 
   // Redraw a card if no set exists
@@ -112,8 +104,8 @@ const redrawCards = (
       deck[deckIndex] = boardCard;
       board[boardIndex] = deckCard;
 
-      if (findSets(board).length > 0) {
-        return { board, deck };
+      if (findSets(filterNone(board)).length > 0) {
+        return { board: filterNone(board), deck };
       }
 
       // Swap the two cards back
@@ -122,7 +114,7 @@ const redrawCards = (
     }
   }
 
-  return { board, deck };
+  return { board: filterNone(board), deck };
 };
 
 const strokeColors: Record<Color, string> = {
@@ -131,15 +123,9 @@ const strokeColors: Record<Color, string> = {
   yellow: 'stroke-yellow-600',
 };
 
-const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
-  const { board: initialBoard, deck: initialDeck } = redrawCards(
-    [],
-    propDeck,
-    range(NO_OF_CARDS),
-  );
-
-  const [deck, setDeck] = useState(initialDeck);
-  const [board, setBoard] = useState(initialBoard);
+const SetGame = () => {
+  const [deck, setDeck] = useState<Card[]>([]);
+  const [board, setBoard] = useState<Card[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
   const [usedCheats, setUsedCheats] = useState(false);
@@ -156,6 +142,13 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
 
   // Start game session when component mounted
   useEffect(() => {
+    const { board: initialBoard, deck: initialDeck } = redrawCards(
+      [],
+      generateDeck(),
+      range(NO_OF_CARDS),
+    );
+    setBoard(initialBoard);
+    setDeck(initialDeck);
     startSession.mutate();
   }, []);
 
@@ -198,13 +191,18 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
 
   // End game session if game has been won
   useEffect(() => {
-    if (deck.length === 0 && !usedCheats && sessionId !== undefined) {
+    if (
+      deck.length === 0 &&
+      board.length === NO_OF_CARDS &&
+      !usedCheats &&
+      sessionId !== undefined
+    ) {
       endSession.mutate({ id: sessionId });
     }
   }, [deck]);
 
   useKeyDown('I', () => {
-    setUsedCheats(true);
+    setUsedCheats(false);
     const foundSets = findSets(board);
     const foundSet = foundSets[0];
     if (foundSet) {
@@ -245,6 +243,10 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
     }
   });
 
+  if (board.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <svg width={0} height={0}>
@@ -272,9 +274,10 @@ const SetGame = ({ deck: propDeck = generateDeck() }: SetGameProps) => {
             )}
           >
             <h3>
-              {points}/{NO_OF_CARDS} {lang('poäng', 'points')}
+              {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
+              {lang('poäng', 'points')}
             </h3>
-            <h3>
+            <h3 className='text-center'>
               {isFinished &&
                 lang(
                   'Du tog dig igenom hela leken på ',
