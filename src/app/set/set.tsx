@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import SetCard from './card';
-import { filterNone, shuffle } from 'utils/array';
+import { filterNone, range, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
 import { lang } from 'utils/language';
 import Timer from 'components/timer';
 import { cn } from 'utils/class-names';
+import { api } from 'trpc/react';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -24,23 +25,18 @@ export interface Card {
   fill: Fill;
 }
 
-interface SetGameProps {
-  initialCards?: Card[];
-}
-
 const NO_OF_CARDS = 12;
 
+const DEFAULT_DECK = SHAPES.flatMap((shape) =>
+  COLORS.flatMap((color) =>
+    FILLS.flatMap((fill) =>
+      AMOUNTS.map((amount) => ({ shape, color, fill, amount })),
+    ),
+  ),
+);
+
 const generateDeck = () => {
-  const deck: Card[] = [];
-  for (const shape of SHAPES) {
-    for (const color of COLORS) {
-      for (const fill of FILLS) {
-        for (const amount of AMOUNTS) {
-          deck.push({ shape, color, fill, amount });
-        }
-      }
-    }
-  }
+  const deck = DEFAULT_DECK.slice();
   return shuffle(deck);
 };
 
@@ -73,32 +69,88 @@ const findSets = (cards: Card[]) => {
   return Array.from(sets.values());
 };
 
+const redrawCards = (
+  initialBoard: Card[],
+  initialDeck: Card[],
+  redrawIndexes: number[],
+) => {
+  const board: (Card | undefined)[] = initialBoard.slice();
+  const deck = initialDeck.slice();
+
+  for (const index of redrawIndexes) {
+    board[index] = deck.pop();
+  }
+
+  if (findSets(filterNone(board)).length > 0) {
+    return { board: filterNone(board), deck };
+  }
+
+  // Redraw a card if no set exists
+  for (let deckIndex = 0; deckIndex < deck.length; deckIndex++) {
+    for (const boardIndex of redrawIndexes) {
+      const deckCard = deck[deckIndex];
+      const boardCard = board[boardIndex];
+      if (!deckCard) {
+        throw new Error(
+          'This should be unreachable as we check boundaries in the while condition',
+        );
+      } else if (!boardCard) {
+        throw new Error(
+          'This should be unreachable as we populate the indexes in the previous while block',
+        );
+      }
+
+      // Swap the two cards
+      deck[deckIndex] = boardCard;
+      board[boardIndex] = deckCard;
+
+      if (findSets(filterNone(board)).length > 0) {
+        return { board: filterNone(board), deck };
+      }
+
+      // Swap the two cards back
+      deck[deckIndex] = deckCard;
+      board[boardIndex] = boardCard;
+    }
+  }
+
+  return { board: filterNone(board), deck };
+};
+
 const strokeColors: Record<Color, string> = {
   blue: 'stroke-blue-600',
   red: 'stroke-red-600',
   yellow: 'stroke-yellow-600',
 };
 
-const SetGame = ({ initialCards = [] }: SetGameProps) => {
-  const [deck, setDeck] = useState(generateDeck());
-  const [cards, setCards] = useState<Card[]>(initialCards);
+const SetGame = () => {
+  const [deck, setDeck] = useState<Card[]>([]);
+  const [board, setBoard] = useState<Card[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
+  const [usedCheats, setUsedCheats] = useState(false);
+  const [sessionId, setSessionId] = useState<number | undefined>();
 
-  const drawCards = (amount: number) => {
-    const newDeck = deck.slice();
-    const newCards = cards.slice();
+  const isFinished = deck.length === 0;
 
-    for (let i = 0; i < amount; i++) {
-      const card = newDeck.pop();
-      if (card) {
-        newCards.push(card);
-      }
-    }
+  const startSession = api.games.startSetSession.useMutation({
+    onSuccess: ({ id }) => {
+      setSessionId(id);
+    },
+  });
+  const endSession = api.games.endSetSession.useMutation();
 
-    setDeck(newDeck);
-    setCards(newCards);
-  };
+  // Start game session when component mounted
+  useEffect(() => {
+    const { board: initialBoard, deck: initialDeck } = redrawCards(
+      [],
+      generateDeck(),
+      range(NO_OF_CARDS),
+    );
+    setBoard(initialBoard);
+    setDeck(initialDeck);
+    startSession.mutate();
+  }, []);
 
   const handleClick = (index: number) => {
     const newSelected = selected.slice();
@@ -111,18 +163,11 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     setSelected(newSelected);
   };
 
-  // Initial game actions
-  useEffect(() => {
-    if (cards.length < NO_OF_CARDS) {
-      drawCards(NO_OF_CARDS - cards.length);
-    }
-  }, []);
-
   useEffect(() => {
     if (selected.length !== 3) {
       return;
     }
-    const [a, b, c] = selected.map((index) => cards[index]);
+    const [a, b, c] = selected.map((index) => board[index]);
     if (!a || !b || !c) {
       console.log(
         'error when picking out cards: ' + JSON.stringify({ a, b, c }),
@@ -131,42 +176,34 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     }
 
     if (isSet(a, b, c)) {
-      console.log('Found set! ' + JSON.stringify({ a, b, c }));
-      const newDeck = deck.slice();
-      const newCards: (Card | undefined)[] = cards.slice();
-
-      // TODO: Only draw cards up to max
-      for (const index of selected) {
-        newCards[index] = newDeck.pop();
-      }
-
-      // Redraw a card if no set exists
-      while (newDeck.length > 0 && !findSets(filterNone(newCards))[0]) {
-        const firstSelected = selected[0];
-        if (!firstSelected) {
-          // This should not be possible, as `selected` should have length 3
-          break;
-        }
-        const randomIndex = Math.floor(Math.random() * newDeck.length);
-        const temp = newDeck[randomIndex];
-        newDeck[randomIndex] = newCards[firstSelected] as Card;
-        newCards[firstSelected] = temp;
-      }
-
-      setDeck(newDeck);
-      setCards(filterNone(newCards));
-      console.log(
-        `Sets found: ${points + 1}\nCards in deck: ${newDeck.length}`,
+      const { board: newBoard, deck: newDeck } = redrawCards(
+        board,
+        deck,
+        selected,
       );
+
+      setBoard(newBoard);
+      setDeck(newDeck);
       setPoints(points + 1);
-    } else {
-      console.log('This is NOT a set! ' + JSON.stringify({ a, b, c }));
     }
     setSelected([]);
   }, [selected]);
 
+  // End game session if game has been won
+  useEffect(() => {
+    if (
+      deck.length === 0 &&
+      board.length === NO_OF_CARDS &&
+      !usedCheats &&
+      sessionId !== undefined
+    ) {
+      endSession.mutate({ id: sessionId });
+    }
+  }, [deck]);
+
   useKeyDown('I', () => {
-    const foundSets = findSets(cards);
+    setUsedCheats(false);
+    const foundSets = findSets(board);
     const foundSet = foundSets[0];
     if (foundSet) {
       console.log(
@@ -181,7 +218,8 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
   });
 
   useKeyDown('O', () => {
-    const foundSets = findSets(cards).filter((set) =>
+    setUsedCheats(true);
+    const foundSets = findSets(board).filter((set) =>
       selected.every((cardIndex) => set.includes(cardIndex)),
     );
     const foundSet = foundSets[0];
@@ -205,7 +243,9 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
     }
   });
 
-  const isFinished = cards.length < 12;
+  if (board.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -225,38 +265,44 @@ const SetGame = ({ initialCards = [] }: SetGameProps) => {
           ))}
         </defs>
       </svg>
-      <div className='flex max-w-xl flex-col items-center gap-2'>
-        <div
-          className={cn(
-            'flex w-full justify-around',
-            isFinished && 'flex-col items-center',
-          )}
-        >
-          <h3>
-            {points} {lang('poäng', 'points')}
-          </h3>
-          <h3>
-            {isFinished &&
-              lang(
-                'Du tog dig igenom hela leken på ',
-                'You got through the whole deck in ',
-              )}
-            <Timer stopped={cards.length < NO_OF_CARDS} />
-            {isFinished && '!'}
-          </h3>
-        </div>
-        <div className='grid max-w-max grid-cols-3 gap-2'>
-          {cards.map((card, i) => (
-            <div
-              key={JSON.stringify(card)}
-              className='hover:cursor-pointer'
-              onClick={() => {
-                handleClick(i);
-              }}
-            >
-              <SetCard selected={selected.includes(i)} {...card} />
-            </div>
-          ))}
+      <div className=''>
+        <div className='flex max-w-xl flex-col items-center gap-2'>
+          <div
+            className={cn(
+              'flex w-full justify-around',
+              isFinished && 'flex-col items-center',
+            )}
+          >
+            <h3>
+              {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
+              {lang('poäng', 'points')}
+            </h3>
+            <h3 className='text-center'>
+              {isFinished &&
+                lang(
+                  'Du tog dig igenom hela leken på ',
+                  'You got through the whole deck in ',
+                )}
+              <Timer stopped={isFinished} />
+              {isFinished &&
+                usedCheats &&
+                lang(' (men du fuskade)', ' (but you cheated)')}
+              {isFinished && '!'}
+            </h3>
+          </div>
+          <div className='grid max-w-max grid-cols-3 gap-2'>
+            {board.map((card, i) => (
+              <div
+                key={JSON.stringify(card)}
+                className='hover:cursor-pointer'
+                onClick={() => {
+                  handleClick(i);
+                }}
+              >
+                <SetCard selected={selected.includes(i)} {...card} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </>
