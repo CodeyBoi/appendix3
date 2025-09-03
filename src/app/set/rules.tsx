@@ -8,26 +8,26 @@ const SetRules = () => {
         'Spelets mål är att för varje samling av 12 kort hitta ett Set bestående av tre kort. Varje kort har fyra olika egenskaper, som kan variera enligt följande:',
         'The goal of the game is for each collection of 12 cards find a Set consisting of three cards. Each card has four different properties, which can vary as follows:',
       )}
-      <div className='grid grid-cols-4 gap-2'>
-        <div className='flex w-28 flex-col gap-1'>
+      <div className='grid max-w-md grid-cols-4 gap-2'>
+        <div className='flex flex-col gap-1'>
           <h4>{lang('Form', 'Shape')}</h4>
           <SetCard shape='oval' color='red' fill='solid' amount='one' />
           <SetCard shape='wave' color='red' fill='solid' amount='one' />
           <SetCard shape='diamond' color='red' fill='solid' amount='one' />
         </div>
-        <div className='flex w-28 flex-col gap-1'>
+        <div className='flex flex-col gap-1'>
           <h4>{lang('Färg', 'Color')}</h4>
           <SetCard shape='oval' color='red' fill='solid' amount='one' />
           <SetCard shape='oval' color='blue' fill='solid' amount='one' />
           <SetCard shape='oval' color='yellow' fill='solid' amount='one' />
         </div>
-        <div className='flex w-28 flex-col gap-1'>
+        <div className='flex flex-col gap-1'>
           <h4>{lang('Antal', 'Amount')}</h4>
           <SetCard shape='wave' color='blue' fill='solid' amount='one' />
           <SetCard shape='wave' color='blue' fill='solid' amount='two' />
           <SetCard shape='wave' color='blue' fill='solid' amount='three' />
         </div>
-        <div className='flex w-28 flex-col gap-1'>
+        <div className='flex flex-col gap-1'>
           <h4>{lang('Fyllnad', 'Fill')}</h4>
           <SetCard shape='diamond' color='yellow' fill='solid' amount='one' />
           <SetCard shape='diamond' color='yellow' fill='striped' amount='one' />
