@@ -52,7 +52,7 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-1/2 z-20 max-h-[80vh] min-w-[556px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity',
+          'fixed left-1/2 top-1/2 z-20 max-h-[80vh] min-w-[90vw] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity md:min-w-[556px]',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
       >

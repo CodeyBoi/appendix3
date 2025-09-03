@@ -5,13 +5,13 @@ import SetCard from './card';
 import { filterNone, range, shuffle } from 'utils/array';
 import useKeyDown from 'hooks/use-key-down';
 import { lang } from 'utils/language';
-import Timer from 'components/timer';
-import { cn } from 'utils/class-names';
 import { api } from 'trpc/react';
 import Modal from 'components/modal';
 import ActionIcon from 'components/input/action-icon';
 import { IconInfoCircle } from '@tabler/icons-react';
 import SetRules from './rules';
+import { trpc } from 'utils/trpc';
+import Loading from 'components/loading';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -128,21 +128,31 @@ const strokeColors: Record<Color, string> = {
 };
 
 const SetGame = () => {
+  const utils = trpc.useUtils();
+
   const [deck, setDeck] = useState<Card[]>([]);
   const [board, setBoard] = useState<Card[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
   const [usedCheats, setUsedCheats] = useState(false);
   const [sessionId, setSessionId] = useState<number | undefined>();
-
-  const isFinished = deck.length === 0;
+  const [timeTaken, setTimeTaken] = useState<number | undefined>();
 
   const startSession = api.games.startSetSession.useMutation({
     onSuccess: ({ id }) => {
       setSessionId(id);
     },
   });
-  const endSession = api.games.endSetSession.useMutation();
+  const endSession = api.games.endSetSession.useMutation({
+    onSuccess: ({ durationInMillis }) => {
+      if (durationInMillis) {
+        setTimeTaken(durationInMillis);
+      }
+      void utils.games.getSetHighscores.invalidate();
+    },
+  });
+
+  const isFinished = deck.length === 0;
 
   // Start game session when component mounted
   useEffect(() => {
@@ -248,7 +258,7 @@ const SetGame = () => {
   });
 
   if (board.length === 0) {
-    return null;
+    return <Loading msg={lang('Skapar kortlek...', 'Creating deck...')} />;
   }
 
   return (
@@ -269,57 +279,58 @@ const SetGame = () => {
           ))}
         </defs>
       </svg>
-      <div className=''>
-        <div className='flex max-w-xl flex-col items-center gap-2'>
-          <div className='flex w-full justify-around gap-2'>
-            <div className='flex grow'>
-              <h3 className='pl-4'>
-                {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
-                {lang('poäng', 'points')}
-              </h3>
+      <div className='flex max-w-xl flex-col items-center gap-2'>
+        <div className='flex w-full justify-around gap-2'>
+          <div className='flex grow'>
+            <h3 className='pl-4'>
+              {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
+              {lang('poäng', 'points')}
+            </h3>
+          </div>
+          <Modal
+            title={lang('Regler för Set', 'Rules for Set')}
+            withCloseButton
+            target={
+              <ActionIcon>
+                <IconInfoCircle />
+              </ActionIcon>
+            }
+          >
+            <div className='p-4'>
+              <SetRules />
             </div>
-            <Modal
-              title={lang('Regler för Set', 'Rules for Set')}
-              withCloseButton
-              target={
-                <ActionIcon>
-                  <IconInfoCircle />
-                </ActionIcon>
-              }
+          </Modal>
+        </div>
+        <div className='grid max-w-max grid-cols-3 gap-2'>
+          {board.map((card, i) => (
+            <div
+              key={JSON.stringify(card)}
+              className='hover:cursor-pointer'
+              onClick={() => {
+                handleClick(i);
+              }}
             >
-              <div className='p-4'>
-                <SetRules />
-              </div>
-            </Modal>
-          </div>
-          <div className='grid max-w-max grid-cols-3 gap-2'>
-            {board.map((card, i) => (
-              <div
-                key={JSON.stringify(card)}
-                className='hover:cursor-pointer'
-                onClick={() => {
-                  handleClick(i);
-                }}
-              >
-                <SetCard selected={selected.includes(i)} {...card} />
-              </div>
-            ))}
-          </div>
-          <h3 className='text-center'>
-            {isFinished &&
-              lang(
+              <SetCard selected={selected.includes(i)} {...card} />
+            </div>
+          ))}
+        </div>
+        <h3 className='text-center'>
+          {isFinished && timeTaken && (
+            <>
+              {lang(
                 'Du tog dig igenom hela leken på ',
                 'You got through the whole deck in ',
               )}
-            <span className={cn(!isFinished && 'hidden')}>
-              <Timer stopped={isFinished} />
-            </span>
-            {isFinished &&
-              usedCheats &&
-              lang(' (men du fuskade)', ' (but you cheated)')}
-            {isFinished && '!'}
-          </h3>
-        </div>
+              <span>
+                {Math.floor(timeTaken / 60 / 1000)}:
+                {String(Math.floor(timeTaken / 1000) % 60).padStart(2, '0')}.
+                {String(timeTaken % 1000).padStart(3, '0')}
+              </span>
+              !
+            </>
+          )}
+          {isFinished && usedCheats && lang('Fuskis.', 'Cheater.')}
+        </h3>
       </div>
     </>
   );
