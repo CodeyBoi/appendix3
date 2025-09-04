@@ -12,6 +12,7 @@ import { IconInfoCircle } from '@tabler/icons-react';
 import SetRules from './rules';
 import { trpc } from 'utils/trpc';
 import Loading from 'components/loading';
+import Button from 'components/input/button';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -29,7 +30,8 @@ export interface Card {
   fill: Fill;
 }
 
-const NO_OF_CARDS = 12;
+const DEFAULT_BOARD_SIZE = 12;
+const DEFAULT_SET_SIZE = 3;
 
 const DEFAULT_DECK = SHAPES.flatMap((shape) =>
   COLORS.flatMap((color) =>
@@ -44,12 +46,21 @@ const generateDeck = () => {
   return shuffle(deck);
 };
 
-const isValid = (a: string, b: string, c: string) =>
-  (a !== b && b !== c && c !== a) || (a === b && b === c);
-const isSet = (a: Card, b: Card, c: Card) =>
-  (Object.keys(a) as Array<keyof Card>).every((key) =>
-    isValid(a[key], b[key], c[key]),
+const isValid = ([first, ...rest]: string[]) =>
+  new Set([first, ...rest]).size === [first, ...rest].length ||
+  rest.every((val) => val === first);
+
+const isSet = (cards: Card[]) => {
+  const first = cards[0];
+
+  if (!first) {
+    return true;
+  }
+
+  return (Object.keys(first) as Array<keyof Card>).every((key) =>
+    isValid(cards.map((card) => card[key])),
   );
+};
 
 const findSets = (cards: Card[]) => {
   const sets = new Set<number[]>();
@@ -64,7 +75,7 @@ const findSets = (cards: Card[]) => {
         const b = cards[bi] as Card;
         const c = cards[ci] as Card;
 
-        if (isSet(a, b, c)) {
+        if (isSet([a, b, c])) {
           sets.add([ai, bi, ci]);
         }
       }
@@ -127,12 +138,21 @@ const strokeColors: Record<Color, string> = {
   yellow: 'stroke-yellow-600',
 };
 
-const SetGame = () => {
+interface SetGameProps {
+  boardSize?: number;
+  setSize?: number;
+}
+
+const SetGame = ({
+  boardSize = DEFAULT_BOARD_SIZE,
+  setSize = DEFAULT_SET_SIZE,
+}: SetGameProps) => {
   const utils = trpc.useUtils();
 
   const [deck, setDeck] = useState<Card[]>([]);
   const [board, setBoard] = useState<Card[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [highlighted, setHighlighted] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
   const [usedCheats, setUsedCheats] = useState(false);
   const [sessionId, setSessionId] = useState<number | undefined>();
@@ -154,18 +174,6 @@ const SetGame = () => {
 
   const isFinished = deck.length === 0;
 
-  // Start game session when component mounted
-  useEffect(() => {
-    const { board: initialBoard, deck: initialDeck } = redrawCards(
-      [],
-      generateDeck(),
-      range(NO_OF_CARDS),
-    );
-    setBoard(initialBoard);
-    setDeck(initialDeck);
-    startSession.mutate();
-  }, []);
-
   const handleClick = (index: number) => {
     const newSelected = selected.slice();
     const foundIndex = newSelected.findIndex((v) => v === index);
@@ -177,19 +185,36 @@ const SetGame = () => {
     setSelected(newSelected);
   };
 
+  const shuffleBoard = () => {
+    const selectedCards = selected.map((index) => board[index] as Card);
+    const shuffledBoard = shuffle(board.slice());
+    setSelected(selectedCards.map((card) => shuffledBoard.indexOf(card)));
+    setBoard(shuffledBoard);
+  };
+
+  // Start game session when component mounted
   useEffect(() => {
-    if (selected.length !== 3) {
+    const { board: initialBoard, deck: initialDeck } = redrawCards(
+      [],
+      generateDeck(),
+      range(boardSize),
+    );
+    setBoard(initialBoard);
+    setDeck(initialDeck);
+    startSession.mutate();
+  }, []);
+
+  useEffect(() => {
+    if (selected.length !== setSize) {
       return;
     }
-    const [a, b, c] = selected.map((index) => board[index]);
-    if (!a || !b || !c) {
-      console.log(
-        'error when picking out cards: ' + JSON.stringify({ a, b, c }),
-      );
+    const cards = filterNone(selected.map((index) => board[index]));
+    if (cards.length !== setSize) {
+      console.log('error when picking out cards: ' + JSON.stringify(cards));
       return;
     }
 
-    if (isSet(a, b, c)) {
+    if (isSet(cards)) {
       const { board: newBoard, deck: newDeck } = redrawCards(
         board,
         deck,
@@ -199,6 +224,7 @@ const SetGame = () => {
       setBoard(newBoard);
       setDeck(newDeck);
       setPoints(points + 1);
+      setHighlighted([]);
     }
     setSelected([]);
   }, [selected]);
@@ -207,7 +233,7 @@ const SetGame = () => {
   useEffect(() => {
     if (
       deck.length === 0 &&
-      board.length === NO_OF_CARDS &&
+      board.length === boardSize &&
       !usedCheats &&
       sessionId !== undefined
     ) {
@@ -217,6 +243,10 @@ const SetGame = () => {
 
   useKeyDown('I', () => {
     setUsedCheats(true);
+    if (highlighted.length > 0) {
+      setHighlighted([]);
+      return;
+    }
     const foundSets = findSets(board);
     const foundSet = foundSets[0];
     if (foundSet) {
@@ -225,7 +255,7 @@ const SetGame = () => {
           .map((set) => `{ ${set.join(', ')} }`)
           .join(', ')}`,
       );
-      setSelected(foundSet);
+      setHighlighted(foundSet);
     } else {
       console.log("Couldn't find set for board!");
     }
@@ -283,7 +313,7 @@ const SetGame = () => {
         <div className='flex w-full justify-around gap-2'>
           <div className='flex grow'>
             <h3 className='pl-4'>
-              {points}/{(DEFAULT_DECK.length - 12) / 3}{' '}
+              {points}/{(DEFAULT_DECK.length - boardSize) / setSize}{' '}
               {lang('poäng', 'points')}
             </h3>
           </div>
@@ -310,9 +340,19 @@ const SetGame = () => {
                 handleClick(i);
               }}
             >
-              <SetCard selected={selected.includes(i)} {...card} />
+              <SetCard
+                selected={selected.includes(i)}
+                highlighted={highlighted.includes(i)}
+                {...card}
+              />
             </div>
           ))}
+        </div>
+        <div className='flex justify-around gap-2'>
+          <Button onClick={shuffleBoard}>{lang('Blanda', 'Shuffle')}</Button>
+          <Button onClick={() => { setSelected([]); }}>
+            {lang('Rensa val', 'Clear selected')}
+          </Button>
         </div>
         <h3 className='text-center'>
           {isFinished && timeTaken && (

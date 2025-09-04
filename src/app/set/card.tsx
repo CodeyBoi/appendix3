@@ -9,7 +9,7 @@ const amounts: Record<Amount, number> = {
   three: 3,
 };
 
-type SetCardProps = Card & { selected?: boolean };
+type SetCardProps = Card & { selected?: boolean, highlighted?: boolean };
 
 const SetCard = ({
   shape,
@@ -17,11 +17,13 @@ const SetCard = ({
   fill,
   amount,
   selected = false,
+  highlighted = false,
 }: SetCardProps) => {
   return (
     <div
       className={cn(
         'flex aspect-[1.4] w-full justify-center gap-1 rounded border p-2 shadow-md md:p-4',
+        highlighted && 'bg-yellow-600/30',
         selected && 'bg-red-600/30',
       )}
     >
