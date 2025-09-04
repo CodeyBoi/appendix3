@@ -5,14 +5,14 @@ export type SetIconProps = Omit<Card, 'amount'>;
 
 const strokeColors: Record<Color, string> = {
   blue: 'stroke-blue-600',
-  red: 'stroke-red-500',
-  yellow: 'stroke-yellow-600',
+  red: 'stroke-red-700',
+  yellow: 'stroke-yellow-500',
 };
 
 const fillColors: Record<Color, string> = {
   blue: 'fill-blue-600',
-  red: 'fill-red-600',
-  yellow: 'fill-yellow-600',
+  red: 'fill-red-700',
+  yellow: 'fill-yellow-500',
 };
 
 const viewWidth = 100;
