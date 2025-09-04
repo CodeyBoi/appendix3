@@ -44,12 +44,20 @@ const generateDeck = () => {
   return shuffle(deck);
 };
 
-const isValid = (a: string, b: string, c: string) =>
-  (a !== b && b !== c && c !== a) || (a === b && b === c);
-const isSet = (a: Card, b: Card, c: Card) =>
-  (Object.keys(a) as Array<keyof Card>).every((key) =>
-    isValid(a[key], b[key], c[key]),
+const isValid = ([first, ...rest]: string[]) =>
+  new Set([first, ...rest]).size === [first, ...rest].length || rest.every((val) => val === first);
+
+const isSet = (cards: Card[]) => {
+  const first = cards[0];
+
+  if (!first) {
+    return true;
+  }
+
+  return (Object.keys(first) as Array<keyof Card>).every((key) =>
+    isValid(cards.map((card) => card[key])),
   );
+}
 
 const findSets = (cards: Card[]) => {
   const sets = new Set<number[]>();
@@ -64,7 +72,7 @@ const findSets = (cards: Card[]) => {
         const b = cards[bi] as Card;
         const c = cards[ci] as Card;
 
-        if (isSet(a, b, c)) {
+        if (isSet([a, b, c])) {
           sets.add([ai, bi, ci]);
         }
       }
@@ -133,6 +141,7 @@ const SetGame = () => {
   const [deck, setDeck] = useState<Card[]>([]);
   const [board, setBoard] = useState<Card[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [highlighted, setHighlighted] = useState<number[]>([]);
   const [points, setPoints] = useState(0);
   const [usedCheats, setUsedCheats] = useState(false);
   const [sessionId, setSessionId] = useState<number | undefined>();
@@ -189,7 +198,7 @@ const SetGame = () => {
       return;
     }
 
-    if (isSet(a, b, c)) {
+    if (isSet([a, b, c])) {
       const { board: newBoard, deck: newDeck } = redrawCards(
         board,
         deck,
@@ -310,7 +319,7 @@ const SetGame = () => {
                 handleClick(i);
               }}
             >
-              <SetCard selected={selected.includes(i)} {...card} />
+              <SetCard selected={selected.includes(i)} highlighted={highlighted.includes(i)} {...card} />
             </div>
           ))}
         </div>
