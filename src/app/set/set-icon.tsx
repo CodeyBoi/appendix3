@@ -5,7 +5,7 @@ export type SetIconProps = Omit<Card, 'amount'>;
 
 const strokeColors: Record<Color, string> = {
   blue: 'stroke-blue-600',
-  red: 'stroke-red-600',
+  red: 'stroke-red-500',
   yellow: 'stroke-yellow-600',
 };
 
