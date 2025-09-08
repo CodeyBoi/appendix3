@@ -4,6 +4,7 @@ import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 import { corpsOrderByNumberDesc } from 'utils/corps';
 import { intersection } from 'utils/array';
 import { emptyToNull } from 'server/utils/transforms';
+import { mailNewUser } from './mail';
 
 export const corpsRouter = router({
   getSelf: protectedProcedure.query(async ({ ctx }) => {
@@ -296,7 +297,7 @@ export const corpsRouter = router({
         });
       }
 
-      return ctx.prisma.corps.upsert({
+      const res = await ctx.prisma.corps.upsert({
         where: {
           id: input.id ?? '',
         },
@@ -322,6 +323,13 @@ export const corpsRouter = router({
           },
         },
       });
+
+      // Send mail to new user
+      if (!input.id) {
+        await mailNewUser(input.email, input.language);
+      }
+
+      return res;
     }),
 
   search: protectedProcedure
