@@ -8,11 +8,15 @@ import { lang } from 'utils/language';
 import { api } from 'trpc/react';
 import Modal from 'components/modal';
 import ActionIcon from 'components/input/action-icon';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { IconInfoCircle, IconSettings } from '@tabler/icons-react';
 import SetRules from './rules';
 import { trpc } from 'utils/trpc';
 import Loading from 'components/loading';
 import Button from 'components/input/button';
+import Popover from 'components/popover';
+import Checkbox from 'components/input/checkbox';
+import ParamsSwitch from 'components/input/params-switch';
+import Timer from 'components/timer';
 
 const SHAPES = ['wave', 'oval', 'diamond'] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -141,11 +145,17 @@ const strokeColors: Record<Color, string> = {
 interface SetGameProps {
   boardSize?: number;
   setSize?: number;
+  searchParams?: {
+    timer?: boolean;
+  };
 }
 
 const SetGame = ({
   boardSize = DEFAULT_BOARD_SIZE,
   setSize = DEFAULT_SET_SIZE,
+  searchParams: {
+    timer: showTimer = false,
+  } = {},
 }: SetGameProps) => {
   const utils = trpc.useUtils();
 
@@ -317,6 +327,7 @@ const SetGame = ({
               {lang('poäng', 'points')}
             </h3>
           </div>
+        
           <Modal
             title={lang('Regler för Set', 'Rules for Set')}
             withCloseButton
@@ -330,6 +341,9 @@ const SetGame = ({
               <SetRules />
             </div>
           </Modal>
+          <Popover target={<ActionIcon><IconSettings /></ActionIcon>} position='bottom-left'>
+            <ParamsSwitch paramName='timer' defaultChecked={showTimer} />
+          </Popover>
         </div>
         <div className='grid max-w-max grid-cols-3 gap-2'>
           {board.map((card, i) => (

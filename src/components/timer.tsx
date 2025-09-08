@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react';
 
 interface TimerProps {
   stopped?: boolean;
+  start?: number;
 }
 
-const Timer = ({ stopped = false }: TimerProps) => {
+const Timer = ({ stopped = false, start = new Date().getTime() }: TimerProps) => {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const timeout = setInterval(() => {
+      const millis = new Date().getTime() - start;
       if (stopped) {
         return;
       }
-      setSeconds(seconds + 1);
-    }, 1000);
+      setSeconds(millis / 1000); 
+    }, 100);
     return () => {
-      clearTimeout(timeout);
+      clearInterval(timeout);
     };
   }, [seconds, stopped]);
 
