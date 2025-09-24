@@ -161,7 +161,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         )
         .sort((a, b) => {
           // Compare instrument precedence
-          if (a.instrument !== b.instrument) {
+          if (a.instrument.name !== b.instrument.name) {
             const aPrio = instrumentPrecedence[a.instrument.name] ?? Infinity;
             const bPrio = instrumentPrecedence[b.instrument.name] ?? Infinity;
             return aPrio - bPrio;
