@@ -92,7 +92,7 @@ const adminTab: NavbarLinkGroup = {
       permission: 'managePermissions',
     },
     {
-      label: lang('Sektioner', 'Sections'),
+      label: lang('Stämledare', 'Section Leaders'),
       href: '/admin/section',
       icon: <IconMicrophone2 />,
       permission: 'manageSections',

@@ -41,55 +41,72 @@ const AdminRoleHolderList = ({ role }: AdminRoleHolderListProps) => {
     },
   });
 
+  const isSectionLeaderRole = role.name === 'Stämledare';
+
   return (
     <div className='flex max-w-md flex-col'>
       {role.corpsii.map((corps) => (
         <div key={corps.id}>
           <div className='flex gap-4'>
             <h5 className='grow'>{detailedName(corps)}</h5>
-            <ActionIcon
-              variant='subtle'
-              onClick={() => {
-                if (
-                  !confirm(
-                    'Är du säker på att du vill ta bort behörighetsroll från corps?',
-                  )
-                ) {
-                  return;
-                }
-                removeRole.mutate({
-                  corpsId: corps.id,
-                  roleId: role.id,
-                });
-              }}
-            >
-              <IconTrash />
-            </ActionIcon>
+            {!isSectionLeaderRole && (
+              <ActionIcon
+                variant='subtle'
+                onClick={() => {
+                  if (
+                    !confirm(
+                      'Är du säker på att du vill ta bort behörighetsroll från corps?',
+                    )
+                  ) {
+                    return;
+                  }
+                  removeRole.mutate({
+                    corpsId: corps.id,
+                    roleId: role.id,
+                  });
+                }}
+              >
+                <IconTrash />
+              </ActionIcon>
+            )}
           </div>
         </div>
       ))}
-      <form
-        className='flex items-end gap-4'
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!corpsId) {
-            return;
-          }
-          addRole.mutate({
-            corpsId,
-            roleId: role.id,
-          });
-        }}
-      >
-        <SelectCorps
-          label={lang('Lägg till corps', 'Add corps')}
-          className='grow'
-          onChange={(p) => {
-            setCorpsId(p);
+      {isSectionLeaderRole && (
+        <>
+          <div className='h-4' />
+          <h6 className='italic'>
+            {lang(
+              'Denna listan är synkad med listan i "Stämledare"-fliken under "Admin". Om du vill ändra vilka som är stämledare, gör det där.',
+              'This list is synced with the list at "Section Leaders" under "Admin". If you want to change who are section leaders, do that there.',
+            )}
+          </h6>
+        </>
+      )}
+      {!isSectionLeaderRole && (
+        <form
+          className='flex items-end gap-4'
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!corpsId) {
+              return;
+            }
+            addRole.mutate({
+              corpsId,
+              roleId: role.id,
+            });
           }}
-        />
-        <Button type='submit'>{lang('Lägg till', 'Add')}</Button>
-      </form>
+        >
+          <SelectCorps
+            label={lang('Lägg till corps', 'Add corps')}
+            className='grow'
+            onChange={(p) => {
+              setCorpsId(p);
+            }}
+          />
+          <Button type='submit'>{lang('Lägg till', 'Add')}</Button>
+        </form>
+      )}
     </div>
   );
 };
