@@ -776,71 +776,109 @@ export const statsRouter = router({
     .input(z.object({ corpsId: z.string().cuid() }))
     .query(async ({ ctx, input }) => {
       const { corpsId } = input;
-      const take = 400;
 
-      const getGigs = (skip: number) =>
-        ctx.prisma.gig.findMany({
-          where: {
-            signups: {
-              some: {
-                attended: true,
-              },
-            },
-            points: {
-              gt: 0,
-            },
-            date: {
-              gt: new Date('1970-01-01'),
-            },
+      const where = {
+        points: {
+          gt: 0,
+        },
+        signups: {
+          some: {
+            corpsId,
+            attended: true,
           },
-          select: {
-            points: true,
-            countsPositively: true,
-            signups: {
-              where: {
-                corpsId,
-              },
-              select: {
-                attended: true,
-              },
-            },
+        },
+      };
+      const [firstGig, lastGig] = await Promise.all([
+        ctx.prisma.gig.findFirst({
+          where,
+          orderBy: {
+            date: 'asc',
           },
+        }),
+
+        ctx.prisma.gig.findFirst({
+          where,
           orderBy: {
             date: 'desc',
           },
-          take,
-          skip,
-        });
+        }),
+      ]);
 
-      let skipIndex = 0;
+      if (!firstGig || !lastGig) {
+        return {
+          maxStreak: 0,
+          streaks: [],
+        };
+      }
+
+      const missedGigs = await ctx.prisma.gig.count({
+        where: {
+          date: {
+            gt: lastGig.date,
+          },
+          signups: {
+            some: {
+              attended: true,
+            },
+          },
+        },
+      });
+
+      const gigs = await ctx.prisma.gig.findMany({
+        where: {
+          signups: {
+            some: {
+              attended: true,
+            },
+          },
+          points: {
+            gt: 0,
+          },
+          date: {
+            gte: firstGig.date,
+            lte: lastGig.date,
+          },
+        },
+        select: {
+          date: true,
+          points: true,
+          countsPositively: true,
+          signups: {
+            where: {
+              corpsId,
+            },
+            select: {
+              attended: true,
+            },
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+      });
+
       let currentStreak = 0;
       let currentAntiStreak = 0;
       const streaks: number[] = [];
-      for (;;) {
-        const gigs = await getGigs(skipIndex);
-        if (gigs.length === 0) {
-          break;
-        }
-        for (const gig of gigs) {
-          const attended = gig.signups[0]?.attended ?? false;
-          if (attended) {
-            if (currentAntiStreak > 0) {
-              streaks.push(-currentAntiStreak);
-            }
-            currentStreak += gig.points;
-            currentAntiStreak = 0;
-          } else if (!gig.countsPositively) {
-            if (currentStreak > 0) {
-              streaks.push(currentStreak);
-            }
-            currentAntiStreak += gig.points;
-            currentStreak = 0;
+      for (const gig of gigs) {
+        const attended = gig.signups[0]?.attended ?? false;
+        if (attended) {
+          if (currentAntiStreak > 0) {
+            streaks.push(-currentAntiStreak);
           }
+          currentStreak += gig.points;
+          currentAntiStreak = 0;
+        } else if (!gig.countsPositively) {
+          if (currentStreak > 0) {
+            streaks.push(currentStreak);
+          }
+          currentAntiStreak += gig.points;
+          currentStreak = 0;
         }
-        skipIndex += take;
       }
+      streaks.push(-missedGigs);
       return {
-        maxStreak: Math.max(...streaks),
+        maxStreak: Math.max(0, ...streaks),
         streaks,
       };
     }),
