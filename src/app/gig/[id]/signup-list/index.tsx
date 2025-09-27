@@ -463,7 +463,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
         </div>
       )}
       {noList.length > 0 && (
-        <Restricted permissions='manageAttendance'>
+        <Restricted permissions='viewAttendance'>
           <div>
             <h3>
               {lang('Dessa', 'These')}
