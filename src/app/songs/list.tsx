@@ -85,7 +85,7 @@ const SongList = ({ songs, pinnedSongs: pinnedSongsProp }: SongListProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       void refetchPinnedSongs();
-    }, 5000);
+    }, 500);
     return () => {
       clearInterval(interval);
     };

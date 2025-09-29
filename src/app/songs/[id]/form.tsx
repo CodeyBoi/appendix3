@@ -46,7 +46,7 @@ const SongForm = ({ song }: SongFormProps) => {
         await utils.song.get.invalidate({ id });
       }
       await utils.song.getAll.invalidate();
-      router.push(`/songs/${id}`);
+      router.back();
     },
   });
   const handleSubmit = (values: FormValues) => {
