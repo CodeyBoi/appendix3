@@ -813,6 +813,10 @@ export const statsRouter = router({
 
       const missedGigs = await ctx.prisma.gig.count({
         where: {
+          points: {
+            gt: 0,
+          },
+          countsPositively: false,
           date: {
             gt: lastGig.date,
           },
@@ -859,7 +863,7 @@ export const statsRouter = router({
 
       let currentStreak = 0;
       let currentAntiStreak = 0;
-      const streaks: number[] = [];
+      const streaks = missedGigs > 0 ? [-missedGigs] : [];
       for (const gig of gigs) {
         const attended = gig.signups[0]?.attended ?? false;
         if (attended) {
@@ -876,7 +880,10 @@ export const statsRouter = router({
           currentStreak = 0;
         }
       }
-      streaks.push(-missedGigs);
+      if (currentStreak > 0) {
+        streaks.push(currentStreak);
+      }
+
       return {
         maxStreak: Math.max(0, ...streaks),
         streaks,
