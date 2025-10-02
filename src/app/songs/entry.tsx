@@ -9,11 +9,11 @@ interface SongListEntryProps {
 }
 
 const SongListEntry = ({
-  song: { id, title, author, melody, views },
+  song: { title, author, melody, views },
   matches = ['title'],
 }: SongListEntryProps) => {
   return (
-    <Link href={`/songs/${id}`}>
+    <Link href={`/songs/${encodeURIComponent(title.replaceAll(' ', '_'))}`}>
       <div className='flex cursor-pointer items-center gap-2 py-2 pl-6 hover:bg-red-300/10'>
         <div className='grow'>{title}</div>
         <div

@@ -35,7 +35,13 @@ const SongForm = ({ song }: SongFormProps) => {
           lyrics: song.lyrics,
         },
     validate: {
-      title: (title) => (title ? null : 'Fyll i titel'),
+      title: (title) => {
+        if (!title.trim()) {
+          return 'Fyll i titel';
+        } else if (title.includes('_')) {
+          return 'Titel får ej innehålla "_"';
+        }
+      },
       lyrics: (lyrics) => (lyrics ? null : 'Fyll i text'),
     },
   });
