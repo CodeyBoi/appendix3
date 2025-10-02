@@ -7,7 +7,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "format": "git add --intent-to-add src/ && prettier --write $(git diff --name-only src/)",
-    "formatall": "prettier --write src/",
+    "formatall": "prettier --write --log-level error src/",
     "lint": "git add --intent-to-add src/ && eslint $(git diff --name-only src/)",
     "lint:fix": "git add --intent-to-add src/ && eslint --fix $(git diff --name-only src/)",
     "lintall": "eslint src/",

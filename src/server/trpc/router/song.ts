@@ -2,16 +2,23 @@ import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 import dayjs from 'dayjs';
 
+const decodeSongTitle = (encodedTitle: string) =>
+  decodeURIComponent(encodedTitle).replaceAll('_', ' ');
+
 export const songRouter = router({
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      return await ctx.prisma.song.findUnique({
-        where: {
-          id,
-        },
-      });
+      const [byId, byTitle] = await Promise.all([
+        ctx.prisma.song.findUnique({
+          where: {
+            id,
+          },
+        }),
+        ctx.prisma.song.findUnique({ where: { title: decodeSongTitle(id) } }),
+      ]);
+      return byId ?? byTitle;
     }),
 
   upsert: protectedProcedure
@@ -28,9 +35,9 @@ export const songRouter = router({
       const { id, title, author, melody, lyrics } = input;
       const ownCorpsId = ctx.session.user.corps.id;
       const data = {
-        title,
-        author,
-        melody,
+        title: title.trim(),
+        author: author.trim(),
+        melody: melody.trim(),
         lyrics,
       };
       return await ctx.prisma.song.upsert({

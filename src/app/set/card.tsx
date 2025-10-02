@@ -9,7 +9,7 @@ const amounts: Record<Amount, number> = {
   three: 3,
 };
 
-type SetCardProps = Card & { selected?: boolean, highlighted?: boolean };
+type SetCardProps = Card & { selected?: boolean; highlighted?: boolean };
 
 const SetCard = ({
   shape,

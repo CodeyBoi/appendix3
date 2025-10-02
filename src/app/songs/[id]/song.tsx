@@ -39,6 +39,7 @@ const Song = async ({ song: songProp }: SongProps) => {
           <h3>{song.title}</h3>
         </div>
         <Popover
+          closeOnClick
           position='left-bottom'
           target={
             <ActionIcon variant='subtle'>
@@ -46,7 +47,12 @@ const Song = async ({ song: songProp }: SongProps) => {
             </ActionIcon>
           }
         >
-          <SongMenuContent id={song.id} />
+          <SongMenuContent
+            id={song.id}
+            link={`${process.env.NEXTAUTH_URL}/songs/${encodeURIComponent(
+              song.title.replaceAll(' ', '_'),
+            )}`}
+          />
         </Popover>
       </div>
       {song.melody && (

@@ -37,6 +37,7 @@ interface PopoverProps {
   center?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  closeOnClick?: boolean;
 }
 
 const Popover = ({
@@ -48,6 +49,7 @@ const Popover = ({
   center = false,
   onFocus,
   onBlur,
+  closeOnClick = false,
 }: PopoverProps) => {
   const [open, setOpenValue] = useState(false);
 
@@ -80,6 +82,11 @@ const Popover = ({
             open ? 'opacity-100' : 'pointer-events-none opacity-0',
             bgColorClasses[bgColor],
           )}
+          onClick={() => {
+            if (closeOnClick) {
+              setOpen(false);
+            }
+          }}
         >
           {dropdown}
         </div>

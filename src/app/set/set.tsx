@@ -350,7 +350,11 @@ const SetGame = ({
         </div>
         <div className='flex justify-around gap-2'>
           <Button onClick={shuffleBoard}>{lang('Blanda', 'Shuffle')}</Button>
-          <Button onClick={() => { setSelected([]); }}>
+          <Button
+            onClick={() => {
+              setSelected([]);
+            }}
+          >
             {lang('Rensa val', 'Clear selected')}
           </Button>
         </div>
