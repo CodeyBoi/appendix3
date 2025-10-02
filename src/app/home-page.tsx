@@ -4,7 +4,6 @@ import GigCard from 'components/gig/card';
 import GigSkeleton from 'components/gig/skeleton';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
-import { isChristmas } from 'utils/date';
 
 const WIDTHS = [
   [200, 120, 95, 0.6],
@@ -133,14 +132,12 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
           {fire}
         </div>
       )}
-      <h2 className='text-2xl md:text-4xl'>
-        {lang('Kommande spelningar', 'Upcoming gigs')}
-        {isChristmas() ? '🎄' : ''}
-      </h2>
       <Suspense
         fallback={
           <>
-            <h3 className='first-letter:uppercase'>{month}</h3>
+            <h3 className='max-h-max max-w-max rounded bg-gray-500/20 text-gray-500/0 first-letter:uppercase'>
+              {month}
+            </h3>
             <GigSkeleton widths={WIDTHS[0]} />
             <GigSkeleton widths={WIDTHS[1]} />
             <GigSkeleton widths={WIDTHS[2]} />
