@@ -13,7 +13,9 @@ repos:
         name: Fix Formatting Issues
         language: system
         entry: bun formatall
+        files: src/.*
       - id: eslint-fix
         name: Fix Linting Issues
         language: system
         entry: bun lintall:fix
+        files: src/.*
