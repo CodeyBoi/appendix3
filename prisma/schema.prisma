@@ -255,7 +255,7 @@ model RehearsalType {
 model Song {
   id               String  @id @default(cuid())
   title            String  @unique
-  author           String
+  author           String  @db.Text
   melody           String
   lyrics           String  @default("") @db.Text
   createdByCorpsId String?

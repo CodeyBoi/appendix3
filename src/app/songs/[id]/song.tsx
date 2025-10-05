@@ -62,7 +62,14 @@ const Song = async ({ song: songProp }: SongProps) => {
         </i>
       )}
       <div className='h-4' />
-      <div className='whitespace-pre-wrap leading-snug'>{song.lyrics}</div>
+      {song.title === 'Värnamomarathon' ? (
+        <div
+          className='whitespace-pre-wrap leading-snug'
+          dangerouslySetInnerHTML={{ __html: song.lyrics }}
+        />
+      ) : (
+        <div className='whitespace-pre-wrap leading-snug'>{song.lyrics}</div>
+      )}
       {song.author && (
         <>
           <div className='h-4' />

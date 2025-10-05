@@ -1,9 +1,59 @@
 import { z } from 'zod';
 import { protectedProcedure, restrictedProcedure, router } from '../trpc';
 import dayjs from 'dayjs';
+import { Context } from '../context';
 
 const decodeSongTitle = (encodedTitle: string) =>
   decodeURIComponent(encodedTitle).replaceAll('_', ' ');
+
+const varnamoMarathon = {
+  author: '',
+  melody: 'Värnamovisan',
+  title: 'Värnamomarathon',
+  views: 516,
+};
+
+const generateVarnamoMarathon = async (ctx: Context) => {
+  const varnamoSongs = await ctx.prisma.song.findMany({
+    where: {
+      melody: {
+        startsWith: 'Värnamovisan',
+      },
+      title: {
+        not: varnamoMarathon.title,
+      },
+    },
+    orderBy: {
+      title: 'asc',
+    },
+  });
+
+  const authors = Array.from(
+    new Set(
+      varnamoSongs.flatMap((s) =>
+        s.author
+          .trim()
+          .replaceAll('&', ',')
+          .replaceAll('och', ',')
+          .replaceAll('Inte', '')
+          .split(/\s*,\s*/)
+          .map((author) => author.trim()),
+      ),
+    ),
+  )
+    .sort()
+    .join(', ');
+  console.log(authors);
+  const song = {
+    ...varnamoMarathon,
+    author: authors,
+    lyrics: varnamoSongs
+      .map((song) => `<h4>${song.title}</h4><p>${song.lyrics.trim()}</p>`)
+      .join('\n'),
+  };
+
+  return song;
+};
 
 export const songRouter = router({
   get: protectedProcedure
@@ -40,7 +90,7 @@ export const songRouter = router({
         melody: melody.trim(),
         lyrics,
       };
-      return await ctx.prisma.song.upsert({
+      const upsertedSong = await ctx.prisma.song.upsert({
         where: {
           id: id ?? '',
         },
@@ -50,6 +100,22 @@ export const songRouter = router({
           createdByCorpsId: ownCorpsId,
         },
       });
+
+      if (melody.trim() === 'Värnamovisan') {
+        await ctx.prisma.song.upsert({
+          where: {
+            title: varnamoMarathon.title,
+          },
+          create: {
+            ...(await generateVarnamoMarathon(ctx)),
+          },
+          update: {
+            ...(await generateVarnamoMarathon(ctx)),
+          },
+        });
+      }
+
+      return upsertedSong;
     }),
 
   remove: restrictedProcedure('manageCorps')
