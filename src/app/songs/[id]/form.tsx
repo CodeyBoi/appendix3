@@ -47,12 +47,15 @@ const SongForm = ({ song }: SongFormProps) => {
   });
 
   const mutation = api.song.upsert.useMutation({
-    onSuccess: async ({ id }) => {
+    onSuccess: async ({ title }) => {
       if (song) {
-        await utils.song.get.invalidate({ id });
+        await utils.song.get.invalidate({ id: song.title });
       }
       await utils.song.getAll.invalidate();
       router.back();
+      router.replace(
+        `/songs/${encodeURIComponent(title.replaceAll(' ', '_'))}`,
+      );
     },
   });
   const handleSubmit = (values: FormValues) => {
@@ -69,7 +72,8 @@ const SongForm = ({ song }: SongFormProps) => {
         await utils.song.get.invalidate({ id: song.id });
       }
       await utils.song.getAll.invalidate();
-      router.push('/songs');
+      router.back();
+      router.back();
     },
   });
 
