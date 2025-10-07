@@ -53,7 +53,6 @@ const SongForm = ({ song }: SongFormProps) => {
     } else {
       mutation.mutate({ ...values, id: song.id });
       void utils.song.get.invalidate({ id: song.title });
-      router.back();
     }
     router.replace(
       `/songs/${encodeURIComponent(values.title.replaceAll(' ', '_'))}`,
@@ -66,8 +65,7 @@ const SongForm = ({ song }: SongFormProps) => {
         await utils.song.get.invalidate({ id: song.id });
       }
       await utils.song.getAll.invalidate();
-      router.back();
-      router.back();
+      router.replace('/songs');
     },
   });
 
