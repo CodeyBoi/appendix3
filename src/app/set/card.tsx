@@ -23,8 +23,8 @@ const SetCard = ({
     <div
       className={cn(
         'flex aspect-[1.4] w-full justify-center gap-1 rounded border p-2 shadow-md md:p-4',
-        highlighted && 'bg-yellow-600/30',
-        selected && 'bg-red-600/30',
+        highlighted && 'border-yellow-600/40 bg-yellow-600/30',
+        selected && 'border-red-600/40 bg-red-600/30',
       )}
     >
       {range(amounts[amount]).map((i) => (

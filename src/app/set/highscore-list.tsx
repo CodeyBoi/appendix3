@@ -26,7 +26,7 @@ const SetHighscoreList = () => {
                 {String(
                   Math.floor(highscore.durationInMillis / 1000) % 60,
                 ).padStart(2, '0')}
-                <span className='text-xs font-thin text-gray-500'>
+                <span className='w-4 text-xs font-thin text-gray-500'>
                   .{String(highscore.durationInMillis % 1000).padStart(3, '0')}
                 </span>
               </span>

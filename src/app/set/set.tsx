@@ -192,6 +192,17 @@ const SetGame = ({
     setBoard(shuffledBoard);
   };
 
+  const redrawBoard = () => {
+    const { board: newBoard, deck: newDeck } = redrawCards(
+      [],
+      shuffle(deck.concat(board)),
+      range(boardSize),
+    );
+    setSelected([]);
+    setBoard(newBoard);
+    setDeck(newDeck);
+  };
+
   // Start game session when component mounted
   useEffect(() => {
     const { board: initialBoard, deck: initialDeck } = redrawCards(
@@ -348,14 +359,19 @@ const SetGame = ({
             </div>
           ))}
         </div>
-        <div className='flex justify-around gap-2'>
-          <Button onClick={shuffleBoard}>{lang('Blanda', 'Shuffle')}</Button>
-          <Button
-            onClick={() => {
-              setSelected([]);
-            }}
-          >
-            {lang('Rensa val', 'Clear selected')}
+        <div className='flex justify-between gap-2'>
+          <div className='flex gap-2'>
+            <Button onClick={shuffleBoard}>{lang('Blanda', 'Shuffle')}</Button>
+            <Button
+              onClick={() => {
+                setSelected([]);
+              }}
+            >
+              {lang('Rensa val', 'Clear selected')}
+            </Button>
+          </div>
+          <Button onClick={redrawBoard}>
+            {lang('Dra om kort', 'Redraw cards')}
           </Button>
         </div>
         <h3 className='text-center'>
@@ -368,7 +384,7 @@ const SetGame = ({
               <span>
                 {Math.floor(timeTaken / 60 / 1000)}:
                 {String(Math.floor(timeTaken / 1000) % 60).padStart(2, '0')}
-                <span className='text-md font-thin text-gray-500'>
+                <span className='text-sm font-thin text-gray-500'>
                   .{String(timeTaken % 1000).padStart(3, '0')}
                 </span>
               </span>
