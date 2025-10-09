@@ -367,8 +367,10 @@ const SetGame = ({
               )}
               <span>
                 {Math.floor(timeTaken / 60 / 1000)}:
-                {String(Math.floor(timeTaken / 1000) % 60).padStart(2, '0')}.
-                {String(timeTaken % 1000).padStart(3, '0')}
+                {String(Math.floor(timeTaken / 1000) % 60).padStart(2, '0')}
+                <span className='text-xs font-thin text-gray-500'>
+                  .{String(timeTaken % 1000).padStart(3, '0')}
+                </span>
               </span>
               !
             </>
