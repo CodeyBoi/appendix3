@@ -12,12 +12,12 @@ repos:
       - id: prettier-format
         name: Fix Formatting Issues
         language: system
-        entry: prettier
+        entry: bun prettier
         args: ["--write"]
         files: src/.*
       - id: eslint-fix
         name: Fix Linting Issues
         language: system
-        entry: eslint
+        entry: bun eslint
         args: ["--fix"]
         files: src/.*
