@@ -20,7 +20,7 @@ const MummyMazeTile = ({
     <div className='relative aspect-square' style={{ width: size }}>
       <div className='z-0 h-full w-full' style={{ backgroundColor: bgColor }} />
       {walls.has('up') && (
-        <>
+        <div className='flex gap-0'>
           <div className='absolute z-20 flex h-full w-full translate-y-[-110%] flex-col gap-0'>
             <div
               className='h-[5%]'
@@ -43,10 +43,10 @@ const MummyMazeTile = ({
               <polygon points='0,0 1,0 0,1' />
             </svg>
           </div>
-        </>
+        </div>
       )}
       {walls.has('left') && (
-        <>
+        <div className='flex gap-0'>
           <div className='absolute z-30 flex h-[125%] w-[8%] translate-y-[-88%] flex-col gap-0'>
             <div
               className='h-[105%]'
@@ -63,13 +63,13 @@ const MummyMazeTile = ({
               style={{ backgroundColor: WALL_COLORS.dark }}
             />
           </div>
-          <div className='absolute z-10 ml-[8%] flex h-[125%] w-[8%] -translate-y-3/4 flex-col gap-0'>
+          <div className='absolute z-10 flex h-[125%] w-[8%] -translate-y-3/4 translate-x-full flex-col gap-0'>
             <div className='h-4/5 w-full bg-black' />
             <svg className='aspect-square w-full fill-black' viewBox='0 0 1 1'>
               <polygon points='0,0 1,0 0,1' />
             </svg>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

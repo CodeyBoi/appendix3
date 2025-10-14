@@ -33,6 +33,7 @@ const MummyMazePage = () => {
           { kind: 'scorpion', pos: [6, 2], priority: 'horizontal' },
         ]}
         startPos={[2, 7]}
+        goal={[2, 9]}
       />
     </div>
   );

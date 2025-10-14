@@ -11,7 +11,8 @@ type Point = [number, number];
 
 const ALL_DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
 export type Direction = (typeof ALL_DIRECTIONS)[number];
-type Move = Direction | 'wait';
+const ALL_MOVES = ['up', 'down', 'left', 'right', 'wait'] as const;
+type Move = (typeof ALL_MOVES)[number];
 
 type Axis = 'horizontal' | 'vertical';
 type EnemyType = 'mummy' | 'scorpion';
@@ -30,6 +31,7 @@ interface MummyMazeProps {
   size?: [number, number];
   gate?: [Point, 'up' | 'left'];
   startPos: Point;
+  goal: Point;
 }
 
 const dirToPoint: Record<Direction, Point> = {
@@ -40,6 +42,11 @@ const dirToPoint: Record<Direction, Point> = {
 };
 
 const hashPoint = (point: Point) => `${point[0]}:${point[1]}`;
+
+const hashState = (state: MummyMazeProps & { playerPos: Point }) =>
+  `${hashPoint(state.playerPos)}/${state.enemies
+    .map((e) => hashPoint(e.pos))
+    .join(',')}`;
 
 const addDirection = ([x, y]: Point, direction: Direction) => {
   const [dx, dy] = dirToPoint[direction];
@@ -80,20 +87,21 @@ const getDirections = (
   return out.sort((a, b) => prios[a] - prios[b]);
 };
 
+const isLoss = (state: MummyMazeProps & { playerPos: Point }) =>
+  state.enemies.some((e) => hashPoint(e.pos) === hashPoint(state.playerPos));
+
+const isWin = (state: MummyMazeProps & { playerPos: Point }) =>
+  !isLoss(state) && hashPoint(state.playerPos) === hashPoint(state.goal);
+
 const MummyMaze = ({
   walls,
   size: [width, height] = [8, 8],
   enemies = [],
   gate,
   startPos,
+  goal,
 }: MummyMazeProps) => {
   const [history, setHistory] = useState<Move[]>([]);
-  const [isActionable, setIsActionable] = useState(true);
-
-  const currentPlayerPos = history.reduce(
-    (acc, move) => applyMove(acc, move),
-    startPos,
-  );
 
   const wallsAt = ([x, y]: Point) => {
     // Copy set, otherwise we could accidentally modify the wall set
@@ -121,16 +129,50 @@ const MummyMaze = ({
     return out;
   };
 
-  const canMove = (from: Point, direction: Direction) =>
-    !wallsAt(from).has(direction);
+  const solveMaze = (game: MummyMazeProps): Move[] | undefined => {
+    const seenStates = new Set();
+    const queue: Move[][] = [[]];
+
+    while (queue.length > 0) {
+      const moves = queue.shift();
+      if (!moves) {
+        return;
+      }
+      const gameState = processMoves(game, moves);
+      const hash = hashState(gameState);
+      if (seenStates.has(hash) || isLoss(gameState)) {
+        continue;
+      } else if (isWin(gameState)) {
+        return moves;
+      }
+
+      seenStates.add(hash);
+
+      for (const move of ALL_MOVES.filter((m) =>
+        canMove(gameState.playerPos, m),
+      )) {
+        moves.push(move);
+        queue.push(moves.slice());
+        moves.pop();
+      }
+    }
+  };
+
+  const canMove = (from: Point, move: Move) =>
+    move === 'wait' || !wallsAt(from).has(move);
 
   const calcEnemyMove = (enemy: Enemy, playerPos: Point): Move =>
     getDirections(enemy.pos, playerPos, enemy.priority).find((dir) =>
       canMove(enemy.pos, dir),
     ) ?? 'wait';
 
-  const processMoves = (game: MummyMazeProps, moves: Move[]) => {
-    let playerPos = game.startPos;
+  const processMoves = (
+    game: MummyMazeProps & { playerPos?: Point },
+    moves: Move[],
+  ) => {
+    let playerPos: Point = game.playerPos
+      ? [game.playerPos[0], game.playerPos[1]]
+      : [game.startPos[0], game.startPos[1]];
     let enemies = game.enemies.slice();
     for (const move of moves) {
       playerPos = applyMove(playerPos, move);
@@ -151,8 +193,6 @@ const MummyMaze = ({
     };
   };
 
-  useEffect(() => {}, [history]);
-
   const currentGameState = processMoves(
     {
       walls,
@@ -160,16 +200,16 @@ const MummyMaze = ({
       enemies,
       gate,
       startPos,
+      goal,
     },
     history,
   );
 
   const movePlayer = (move: Move) => {
-    if (move !== 'wait' && !canMove(currentPlayerPos, move)) {
+    if (move !== 'wait' && !canMove(currentGameState.playerPos, move)) {
       return;
     }
     setHistory((old) => [...old, move]);
-    setIsActionable(false);
   };
 
   const undo = () => {
@@ -194,7 +234,7 @@ const MummyMaze = ({
     movePlayer('right');
   });
 
-  useKeyDown('Space', () => {
+  useKeyDown(' ', () => {
     movePlayer('wait');
   });
 
@@ -202,16 +242,31 @@ const MummyMaze = ({
     undo();
   });
 
+  useKeyDown('N', () => {
+    const solution = solveMaze(currentGameState);
+    if (solution) {
+      console.log(`Solution found: ${solution}`);
+    } else {
+      console.log('No solution found!');
+    }
+  });
+
+  if (isLoss(currentGameState)) {
+    console.log('U LOST');
+  } else if (isWin(currentGameState)) {
+    console.log('U WIN');
+  }
+
   return (
     <>
-      <div className='relative flex flex-col gap-0 overflow-hidden md:max-w-2xl'>
+      <div className='relative flex flex-col gap-0 overflow-hidden md:max-w-3xl'>
         <div className='absolute aspect-square w-full'>
           <div
             className='relative z-20 aspect-square rounded-full bg-blue-600 transition-all'
             style={{
               width: `${100 / width}%`,
-              translate: `${currentPlayerPos[0] * 100}% ${
-                currentPlayerPos[1] * 100
+              translate: `${currentGameState.playerPos[0] * 100}% ${
+                currentGameState.playerPos[1] * 100
               }%`,
             }}
           />
@@ -237,6 +292,17 @@ const MummyMaze = ({
             </div>
           </div>
         ))}
+        <div className='absolute aspect-square w-full'>
+          <div
+            className='relative z-20 aspect-square rounded-full bg-green-600 transition-all'
+            style={{
+              width: `${100 / width}%`,
+              translate: `${currentGameState.goal[0] * 100}% ${
+                currentGameState.goal[1] * 100
+              }%`,
+            }}
+          />
+        </div>
         {range(height).map((y) => (
           <div key={`row:${y}`} className='flex gap-0'>
             {range(width).map((x) => {
