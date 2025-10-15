@@ -1,15 +1,15 @@
 'use client';
 
 import useKeyDown from 'hooks/use-key-down';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { range } from 'utils/array';
 import MummyMazeTile from './tile';
 import React from 'react';
 import { cn } from 'utils/class-names';
 
-type Point = [number, number];
+export type Point = [number, number];
 
-const ALL_DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
+export const ALL_DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
 export type Direction = (typeof ALL_DIRECTIONS)[number];
 const ALL_MOVES = ['up', 'down', 'left', 'right', 'wait'] as const;
 type Move = (typeof ALL_MOVES)[number];
@@ -19,19 +19,23 @@ type EnemyType = 'mummy' | 'scorpion';
 
 const TILE_COLORS = ['#87653c', '#a77f4e'] as const;
 
-interface Enemy {
+export interface Enemy {
   kind: EnemyType;
   pos: Point;
   priority: Axis;
 }
 
-interface MummyMazeProps {
+export interface Maze {
   walls: Map<string, Set<'up' | 'left'>>;
+  size: Point;
+}
+
+export interface MummyMazeProps {
   enemies: Enemy[];
-  size?: [number, number];
   gate?: [Point, 'up' | 'left'];
   startPos: Point;
   goal: Point;
+  maze: Maze;
 }
 
 const dirToPoint: Record<Direction, Point> = {
@@ -41,14 +45,14 @@ const dirToPoint: Record<Direction, Point> = {
   right: [1, 0],
 };
 
-const hashPoint = (point: Point) => `${point[0]}:${point[1]}`;
+export const hashPoint = (point: Point) => `${point[0]}:${point[1]}`;
 
 const hashState = (state: MummyMazeProps & { playerPos: Point }) =>
   `${hashPoint(state.playerPos)}/${state.enemies
     .map((e) => hashPoint(e.pos))
     .join(',')}`;
 
-const addDirection = ([x, y]: Point, direction: Direction) => {
+export const addDirection = ([x, y]: Point, direction: Direction) => {
   const [dx, dy] = dirToPoint[direction];
   return [x + dx, y + dy] as Point;
 };
@@ -93,41 +97,44 @@ const isLoss = (state: MummyMazeProps & { playerPos: Point }) =>
 const isWin = (state: MummyMazeProps & { playerPos: Point }) =>
   !isLoss(state) && hashPoint(state.playerPos) === hashPoint(state.goal);
 
-const MummyMaze = ({
-  walls,
-  size: [width, height] = [8, 8],
+const wallsAt = (maze: Maze, [x, y]: Point) => {
+  // Copy set, otherwise we could accidentally modify the wall set
+  const out: Set<Direction> = new Set(
+    maze.walls.get(hashPoint([x, y])) ?? new Set(),
+  );
+  if (y <= 0) {
+    out.add('up');
+  }
+  if (x <= 0) {
+    out.add('left');
+  }
+  if (
+    y + 1 >= maze.size[1] ||
+    (maze.walls.get(hashPoint([x, y + 1])) ?? new Set()).has('up')
+  ) {
+    out.add('down');
+  }
+  if (
+    x + 1 >= maze.size[0] ||
+    (maze.walls.get(hashPoint([x + 1, y])) ?? new Set()).has('left')
+  ) {
+    out.add('right');
+  }
+  return out;
+};
+
+const canMove = (maze: Maze, from: Point, move: Move) =>
+  move === 'wait' || !wallsAt(maze, from).has(move);
+
+const MummyMazeGame = ({
+  maze,
   enemies = [],
   gate,
   startPos,
   goal,
 }: MummyMazeProps) => {
   const [history, setHistory] = useState<Move[]>([]);
-
-  const wallsAt = ([x, y]: Point) => {
-    // Copy set, otherwise we could accidentally modify the wall set
-    const out: Set<Direction> = new Set(
-      walls.get(hashPoint([x, y])) ?? new Set(),
-    );
-    if (y <= 0) {
-      out.add('up');
-    }
-    if (x <= 0) {
-      out.add('left');
-    }
-    if (
-      y + 1 >= height ||
-      (walls.get(hashPoint([x, y + 1])) ?? new Set()).has('up')
-    ) {
-      out.add('down');
-    }
-    if (
-      x + 1 >= width ||
-      (walls.get(hashPoint([x + 1, y])) ?? new Set()).has('left')
-    ) {
-      out.add('right');
-    }
-    return out;
-  };
+  const [width, height] = maze.size;
 
   const solveMaze = (game: MummyMazeProps): Move[] | undefined => {
     const seenStates = new Set();
@@ -149,7 +156,7 @@ const MummyMaze = ({
       seenStates.add(hash);
 
       for (const move of ALL_MOVES.filter((m) =>
-        canMove(gameState.playerPos, m),
+        canMove(maze, gameState.playerPos, m),
       )) {
         moves.push(move);
         queue.push(moves.slice());
@@ -158,12 +165,9 @@ const MummyMaze = ({
     }
   };
 
-  const canMove = (from: Point, move: Move) =>
-    move === 'wait' || !wallsAt(from).has(move);
-
   const calcEnemyMove = (enemy: Enemy, playerPos: Point): Move =>
     getDirections(enemy.pos, playerPos, enemy.priority).find((dir) =>
-      canMove(enemy.pos, dir),
+      canMove(maze, enemy.pos, dir),
     ) ?? 'wait';
 
   const processMoves = (
@@ -195,8 +199,7 @@ const MummyMaze = ({
 
   const currentGameState = processMoves(
     {
-      walls,
-      size: [width, height],
+      maze,
       enemies,
       gate,
       startPos,
@@ -206,7 +209,7 @@ const MummyMaze = ({
   );
 
   const movePlayer = (move: Move) => {
-    if (move !== 'wait' && !canMove(currentGameState.playerPos, move)) {
+    if (move !== 'wait' && !canMove(maze, currentGameState.playerPos, move)) {
       return;
     }
     setHistory((old) => [...old, move]);
@@ -313,7 +316,7 @@ const MummyMaze = ({
                   <MummyMazeTile
                     bgColor={bgColor}
                     size={`${100 / width}%`}
-                    walls={walls.get(hashPoint([x, y]))}
+                    walls={maze.walls.get(hashPoint([x, y]))}
                   />
                 </React.Fragment>
               );
@@ -325,4 +328,4 @@ const MummyMaze = ({
   );
 };
 
-export default MummyMaze;
+export default MummyMazeGame;
