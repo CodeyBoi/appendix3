@@ -15,6 +15,7 @@ import {
 } from './mummy-maze';
 import MummyMazeRender from './mummy-maze-render';
 import useKeyDown from 'hooks/use-key-down';
+import Button from 'components/input/button';
 
 interface GenerateMummyMazeInput {
   noOfWalls?: number;
@@ -199,7 +200,15 @@ const MummyMazeElement = () => {
             const newGame = game.clone();
             newGame.maze.toggleWall(new Point(x, y), editDir);
             setGame(newGame);
-            console.log(new Point(x, y));
+            return;
+          }
+
+          const hash = new Point(x, y).hash();
+          for (const dir of ALL_DIRECTIONS) {
+            if (game.playerPos.add(dir).hash() === hash) {
+              movePlayer(dir);
+              return;
+            }
           }
         }}
       />
@@ -226,6 +235,27 @@ const MummyMazeElement = () => {
           max={5}
           step={0.1}
         />
+      </div>
+      <div className='flex max-w-md gap-2'>
+        <Button className='max-w-sm md:hidden' onClick={undo}>
+          Undo
+        </Button>
+        <Button
+          className='max-w-sm md:hidden'
+          onClick={() => {
+            setShowSolution(!showSolution);
+          }}
+        >
+          Show solution
+        </Button>
+        <Button
+          className='max-w-sm md:hidden'
+          onClick={() => {
+            setGame(generateSolvableMaze({ difficulty }));
+          }}
+        >
+          New maze
+        </Button>
       </div>
       {showSolution && (
         <>
