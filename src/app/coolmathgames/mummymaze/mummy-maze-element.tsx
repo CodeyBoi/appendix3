@@ -199,6 +199,8 @@ const MummyMazeElement = () => {
       />
       Move: WASD/Arrow keys
       <br />
+      Undo: U/Z
+      <br />
       New maze: R<br />
       Show solution: P<br />
       Edit mode: E
