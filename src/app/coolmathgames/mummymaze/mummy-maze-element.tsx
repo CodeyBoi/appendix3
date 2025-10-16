@@ -27,7 +27,7 @@ const rand = (end: number) => Math.floor(Math.random() * end);
 
 const generateSolvableMaze = ({
   noOfWalls = rand(35) + 20,
-  size = 10,
+  size = 8,
 }: GenerateMummyMazeInput) => {
   for (let i = 0; i < MAX_MAZE_ITERATIONS; i++) {
     const mummyMaze = generateMummyMaze({ noOfWalls, size });
