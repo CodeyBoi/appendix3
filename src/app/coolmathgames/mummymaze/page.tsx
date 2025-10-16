@@ -1,9 +1,7 @@
-import { range } from 'utils/array';
-import MummyMaze from './mummy-maze';
+import MummyMazeElement from './mummy-maze-element';
 
 const MummyMazePage = () => {
-  const size = 10;
-  return <MummyMaze />;
+  return <MummyMazeElement />;
 };
 
 export default MummyMazePage;

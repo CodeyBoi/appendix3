@@ -1,124 +1,304 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import MummyMazeGame, {
-  addDirection,
-  ALL_DIRECTIONS,
-  Enemy,
-  hashPoint,
-  Maze,
-  MummyMazeProps,
-  Point,
-} from './mummy-maze-game';
 import { range } from 'utils/array';
-import Loading from 'components/loading';
-import { lang } from 'utils/language';
 
-interface GenerateMummyMazeInput {
-  noOfWalls?: number;
-  size?: number;
+export class Point {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  hash() {
+    return `${this.x}:${this.y}`;
+  }
+
+  add(move: Move) {
+    const { x: dx, y: dy } =
+      move === 'wait' ? new Point(0, 0) : dirToPoint[move];
+    return new Point(this.x + dx, this.y + dy);
+  }
+
+  directions(other: Point, prio: Axis = 'horizontal') {
+    const prios: Record<Direction, number> =
+      prio === 'horizontal'
+        ? {
+            left: 1,
+            right: 1,
+            up: 2,
+            down: 2,
+          }
+        : {
+            up: 1,
+            down: 1,
+            left: 2,
+            right: 2,
+          };
+    const [dx, dy] = [other.x - this.x, other.y - this.y];
+    const out: Direction[] = [];
+    if (dy != 0) {
+      out.push(dy > 0 ? 'down' : 'up');
+    }
+
+    if (dx != 0) {
+      out.push(dx > 0 ? 'right' : 'left');
+    }
+    return out.sort((a, b) => prios[a] - prios[b]);
+  }
+
+  clone() {
+    return new Point(this.x, this.y);
+  }
+
+  toString() {
+    return `(${this.x}, ${this.y})`;
+  }
 }
 
-const rand = (end: number) => Math.floor(Math.random() * end);
+export const ALL_DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
+export type Direction = (typeof ALL_DIRECTIONS)[number];
+const ALL_MOVES = ['up', 'down', 'left', 'right', 'wait'] as const;
+export type Move = (typeof ALL_MOVES)[number];
 
-const findUnreachable = ({ walls, size }: Maze) => {
-  const [width, height] = size;
-  const visited = new Set();
-  const queue: Point[] = [[0, 0]];
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) {
-      break;
+type Axis = 'horizontal' | 'vertical';
+type EnemyType = 'mummy' | 'scorpion';
+
+export interface Enemy {
+  kind: EnemyType;
+  pos: Point;
+  priority: Axis;
+}
+
+export class Maze {
+  walls: Map<string, Set<'up' | 'left'>>;
+  size: Point;
+
+  constructor({
+    walls,
+    size,
+  }: {
+    walls: Map<string, Set<'up' | 'left'>>;
+    size: Point;
+  }) {
+    this.walls = walls;
+    this.size = size;
+  }
+
+  wallsAt({ x, y }: Point) {
+    // Copy set, otherwise we could accidentally modify the wall set
+    const out: Set<Direction> = new Set(
+      this.walls.get(new Point(x, y).hash()) ?? new Set(),
+    );
+    if (y <= 0) {
+      out.add('up');
     }
-    visited.add(hashPoint(current));
+    if (x <= 0) {
+      out.add('left');
+    }
+    if (
+      y + 1 >= this.size.y ||
+      (this.walls.get(new Point(x, y + 1).hash()) ?? new Set()).has('up')
+    ) {
+      out.add('down');
+    }
+    if (
+      x + 1 >= this.size.x ||
+      (this.walls.get(new Point(x + 1, y).hash()) ?? new Set()).has('left')
+    ) {
+      out.add('right');
+    }
+    return out;
+  }
 
-    for (const direction of ALL_DIRECTIONS) {
-      const next = addDirection(current, direction);
-      if (visited.has(hashPoint(next))) {
-        continue;
+  canMove(from: Point, move: Move) {
+    return move === 'wait' || !this.wallsAt(from).has(move);
+  }
+
+  findUnreachable() {
+    const { x: width, y: height } = this.size;
+    const visited = new Set();
+    const queue: Point[] = [new Point(0, 0)];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (!current) {
+        break;
       }
-      queue.push(addDirection(current, direction));
+      visited.add(current.hash());
+
+      for (const direction of ALL_DIRECTIONS) {
+        if (!this.canMove(current, direction)) {
+          continue;
+        }
+        const next = current.add(direction);
+        if (visited.has(next.hash())) {
+          continue;
+        }
+        queue.push(next);
+      }
+    }
+    return range(height)
+      .flatMap((y) => range(width).map((x) => new Point(x, y)))
+      .filter((p) => !visited.has(p.hash()));
+  }
+
+  fix() {
+    for (;;) {
+      const unreachables = this.findUnreachable();
+
+      if (unreachables.length === 0) {
+        break;
+      }
+
+      for (const tile of unreachables) {
+      }
     }
   }
-  return range(height).flatMap((y) => range(width).map((x) => [x, y] as Point)).filter((p) => !visited.has(hashPoint(p)));
+}
+
+const dirToPoint: Record<Direction, Point> = {
+  up: new Point(0, -1),
+  down: new Point(0, 1),
+  left: new Point(-1, 0),
+  right: new Point(1, 0),
 };
 
-const fixMaze = ({ walls, size }: Maze) => {
-  for (;;) {
-    const unreachables = findUnreachable({ walls, size });
+interface MummyMazeInput {
+  enemies: Enemy[];
+  gate?: [Point, 'up' | 'left'];
+  startPos: Point;
+  goal: Point;
+  maze: Maze;
+  history?: Move[];
+  playerPos?: Point;
+}
 
-    if (unreachables.length === 0) {
-      break;
-    }
-    
-    for (const tile of unreachables) {
-    }
-  }
-};
+export class MummyMaze {
+  enemies: Enemy[];
+  gate?: [Point, 'up' | 'left'];
+  startPos: Point;
+  goal: Point;
+  maze: Maze;
+  history: Move[];
+  playerPos: Point;
+  enemyStartingPos: Point[];
 
-const generateMummyMaze = ({
-  noOfWalls = rand(30) + 25,
-  size = 8,
-}: GenerateMummyMazeInput): MummyMazeProps => {
-  const walls = range(noOfWalls).reduce((acc, _) => {
-    const [x, y] = [rand(size), rand(size)];
-    if (x === 0 && y === 0) {
-      return acc;
-    }
-    const hash = `${x}:${y}`;
-    const direction =
-      x === 0 ? 'up' : y === 0 ? 'left' : Math.random() > 0.5 ? 'up' : 'left';
-    acc.set(hash, (acc.get(hash) ?? new Set()).add(direction));
-    return acc;
-  }, new Map<string, Set<'up' | 'left'>>());
-
-  const goalDir = ALL_DIRECTIONS[rand(ALL_DIRECTIONS.length)];
-  const offset = rand(size);
-  const goal: Point =
-    goalDir === 'up'
-      ? [offset, 0]
-      : goalDir === 'down'
-      ? [offset, size - 1]
-      : goalDir === 'left'
-      ? [0, offset]
-      : [size - 1, offset];
-
-  const priority = rand(3) === 0 ? 'vertical' : 'horizontal';
-  const enemies: Enemy[] = range(rand(2) + 1).map((_) => ({
-    kind: 'mummy',
-    pos: [rand(size), rand(size)],
-    priority,
-  }));
-  if (rand(4) === 0) {
-    enemies.push({ kind: 'scorpion', pos: [rand(size), rand(size)], priority });
-  }
-
-  return {
-    maze: {
-      walls,
-      size: [size, size],
-    },
-    startPos: [rand(size), rand(size)],
-    goal,
+  constructor({
     enemies,
-  };
-};
+    goal,
+    maze,
+    startPos,
+    gate,
+    history = [],
+    playerPos,
+  }: MummyMazeInput) {
+    this.enemies = enemies;
+    this.goal = goal;
+    this.startPos = startPos;
+    this.gate = gate;
+    this.maze = maze;
+    this.history = history;
+    this.playerPos = playerPos ?? startPos.clone();
+    this.enemyStartingPos = enemies.map((e) => e.pos.clone());
+  }
 
-const MummyMaze = () => {
-  const [inEditMode, setInEditMode] = useState(false);
-  const [game, setGame] = useState<MummyMazeProps | undefined>();
+  reset() {
+    this.history = [];
+    this.enemies = this.enemies.map((enemy, i) => ({
+      ...enemy,
+      pos: this.enemyStartingPos[i]?.clone() as Point,
+    }));
+    this.playerPos = this.startPos.clone();
+  }
 
-  useEffect(() => {
-    setGame(generateMummyMaze({}));
-  }, []);
+  undo() {
+    const history = this.history.slice(0, -1);
+    this.reset();
+    this.doMoves(history);
+  }
 
-  if (!game) {
+  calcEnemyMove(enemy: Enemy) {
     return (
-      <Loading msg={lang('Laddar Mummy Maze...', 'Loading Mummy Maze...')} />
+      enemy.pos
+        .directions(this.playerPos, enemy.priority)
+        .find((dir) => this.maze.canMove(enemy.pos, dir)) ?? 'wait'
     );
   }
 
-  return <MummyMazeGame {...game} />;
-};
+  doMoves(moves: Move[]) {
+    for (const move of moves) {
+      this.playerPos = this.playerPos.add(move);
+      this.enemies = this.enemies.map((enemy) =>
+        range(enemy.kind === 'scorpion' ? 1 : 2).reduce(
+          (acc, _) => ({
+            ...acc,
+            pos: acc.pos.add(this.calcEnemyMove(acc)),
+          }),
+          enemy,
+        ),
+      );
+      this.history.push(move);
+    }
+  }
 
-export default MummyMaze;
+  doMove(move: Move) {
+    this.doMoves([move]);
+  }
+
+  isLost() {
+    return this.enemies.some(
+      (enemy) => enemy.pos.hash() === this.playerPos.hash(),
+    );
+  }
+
+  isWon() {
+    return !this.isLost() && this.playerPos.hash() === this.goal.hash();
+  }
+
+  hash() {
+    return `${this.playerPos.hash()}/${this.enemies
+      .map((e) => e.pos.hash())
+      .join(',')}`;
+  }
+
+  clone() {
+    const clone = new MummyMaze({
+      ...this,
+      enemies: this.enemies.slice(),
+      history: this.history.slice(),
+      playerPos: this.playerPos.clone(),
+    });
+    clone.enemyStartingPos = this.enemyStartingPos.map((p) => p.clone());
+    return clone;
+  }
+
+  solve() {
+    const seenStates = new Set();
+    const queue: Move[][] = [[]];
+
+    while (queue.length > 0) {
+      // Make copy of initial game state
+      const game = this.clone();
+      const moves = queue.shift();
+      if (!moves) {
+        return;
+      }
+      game.doMoves(moves);
+      const hash = game.hash();
+      if (seenStates.has(hash) || game.isLost()) {
+        continue;
+      } else if (game.isWon()) {
+        return moves;
+      }
+
+      seenStates.add(hash);
+
+      for (const move of ALL_MOVES.filter((m) =>
+        game.maze.canMove(game.playerPos, m),
+      )) {
+        moves.push(move);
+        queue.push(moves.slice());
+        moves.pop();
+      }
+    }
+  }
+}
