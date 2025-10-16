@@ -218,7 +218,17 @@ const MummyMazeElement = () => {
       <br />
       New maze: R<br />
       Show solution: P<br />
-      Edit mode: E
+      Edit mode: E<br />
+      <br />
+      <span className='italic'>
+        Player: Blue
+        <br />
+        Goal: Green
+        <br />
+        Mummy: White/Red
+        <br />
+        Scorpion: Orange
+      </span>
       <div className='flex max-w-md flex-col gap-2'>
         <label htmlFor='difficulty'>Difficulty={difficulty}</label>
         <input

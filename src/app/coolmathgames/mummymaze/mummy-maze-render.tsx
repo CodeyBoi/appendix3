@@ -32,13 +32,13 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
                 game.playerPos.y * 100
               }%`,
             }}
-          >
-            <br />
-            player
-          </div>
+          ></div>
         </div>
         {game.enemies.map((enemy, i) => (
-          <div key={i} className='absolute aspect-square w-full'>
+          <div
+            key={`${enemy.kind}:${i}`}
+            className='absolute aspect-square w-full'
+          >
             <div
               className={cn(
                 'relative z-20 aspect-square rounded-full text-center text-black transition-all',
@@ -52,10 +52,7 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
                 width: `${100 / game.maze.size.x}%`,
                 translate: `${enemy.pos.x * 100}% ${enemy.pos.y * 100}%`,
               }}
-            >
-              <br />
-              {enemy.kind}
-            </div>
+            ></div>
           </div>
         ))}
         <div className='absolute aspect-square w-full'>
@@ -65,10 +62,7 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
               width: `${100 / game.maze.size.x}%`,
               translate: `${game.goal.x * 100}% ${game.goal.y * 100}%`,
             }}
-          >
-            <br />
-            goal
-          </div>
+          ></div>
         </div>
         {range(game.maze.size.y).map((y) => (
           <div key={`row:${y}`} className='flex gap-0'>
