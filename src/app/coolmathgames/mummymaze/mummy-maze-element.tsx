@@ -6,13 +6,14 @@ import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import {
   ALL_DIRECTIONS,
+  Direction,
   Enemy,
   Maze,
   Move,
   MummyMaze,
   Point,
 } from './mummy-maze';
-import MummyMazeRender from './mummy-maze-game';
+import MummyMazeRender from './mummy-maze-render';
 import useKeyDown from 'hooks/use-key-down';
 
 interface GenerateMummyMazeInput {
@@ -20,7 +21,34 @@ interface GenerateMummyMazeInput {
   size?: number;
 }
 
+const MAX_MAZE_ITERATIONS = 10000;
+
 const rand = (end: number) => Math.floor(Math.random() * end);
+
+const generateSolvableMaze = ({
+  noOfWalls = rand(35) + 20,
+  size = 10,
+}: GenerateMummyMazeInput) => {
+  for (let i = 0; i < MAX_MAZE_ITERATIONS; i++) {
+    const mummyMaze = generateMummyMaze({ noOfWalls, size });
+    if (!mummyMaze.maze.fix()) {
+      continue;
+    }
+    const solution = mummyMaze.solve() ?? [];
+    if (solution.length >= size * 2 * 2) {
+      console.log(`Found suitable maze after ${i + 1} tries`);
+      return mummyMaze;
+    }
+
+    if (i % (MAX_MAZE_ITERATIONS / 10) === MAX_MAZE_ITERATIONS / 10 - 1) {
+      console.log(
+        `${i + 1} iterations done, doing ${
+          MAX_MAZE_ITERATIONS - i - 1
+        } more...`,
+      );
+    }
+  }
+};
 
 const generateMummyMaze = ({
   noOfWalls = rand(30) + 25,
@@ -76,13 +104,22 @@ const generateMummyMaze = ({
 
 const MummyMazeElement = () => {
   const [inEditMode, setInEditMode] = useState(false);
+  const [editDir, setEditDir] = useState<Direction>('up');
+  const [showSolution, setShowSolution] = useState(false);
   const [game, setGame] = useState<MummyMaze | undefined>();
 
   useEffect(() => {
-    setGame(generateMummyMaze({}));
+    const mummyMaze = generateSolvableMaze({});
+    setGame(mummyMaze);
   }, []);
 
   const movePlayer = (move: Move) => {
+    if (inEditMode) {
+      if (move !== 'wait') {
+        setEditDir(move);
+      }
+      return;
+    }
     if (!game) {
       return;
     }
@@ -127,20 +164,16 @@ const MummyMazeElement = () => {
     undo();
   });
 
-  useKeyDown('N', () => {
-    if (!game) {
-      return;
-    }
-    const solution = game.solve();
-    if (solution) {
-      console.log(`Solution found: ${solution}`);
-    } else {
-      console.log('No solution found!');
-    }
-  });
-
   useKeyDown('E', () => {
     setInEditMode(!inEditMode);
+  });
+
+  useKeyDown('P', () => {
+    setShowSolution(!showSolution);
+  });
+
+  useKeyDown('R', () => {
+    setGame(generateSolvableMaze({}));
   });
 
   if (!game) {
@@ -149,7 +182,45 @@ const MummyMazeElement = () => {
     );
   }
 
-  return <MummyMazeRender game={game} />;
+  const solution = showSolution ? game.solve() : undefined;
+
+  return (
+    <div className='flex flex-col gap-4'>
+      <MummyMazeRender
+        game={game}
+        onClick={(x, y) => () => {
+          if (inEditMode) {
+            const newGame = game.clone();
+            newGame.maze.toggleWall(new Point(x, y), editDir);
+            setGame(newGame);
+            console.log(new Point(x, y));
+          }
+        }}
+      />
+      Move: WASD/Arrow keys
+      <br />
+      New maze: R<br />
+      Show solution: P<br />
+      Edit mode: E
+      {showSolution && (
+        <>
+          {!solution && <div>No solution found!</div>}
+          {solution && (
+            <div>
+              solution:{' '}
+              {game.history.length > 0 && (
+                <span className='text-green-600'>
+                  {game.history.join(', ') + ', '}
+                </span>
+              )}
+              <span className='text-gray-500'>{solution.join(', ')}</span>
+            </div>
+          )}
+        </>
+      )}
+      {inEditMode && <div>in edit mode, edit: {editDir}</div>}
+    </div>
+  );
 };
 
 export default MummyMazeElement;

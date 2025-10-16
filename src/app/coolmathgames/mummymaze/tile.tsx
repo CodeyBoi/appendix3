@@ -1,8 +1,7 @@
-import { Direction } from './mummymaze';
+import { Direction } from './mummy-maze';
 
 interface MummyMazeTileProps {
   bgColor: string;
-  size: string;
   walls?: Set<Direction>;
 }
 
@@ -11,16 +10,12 @@ const WALL_COLORS = {
   dark: '#453020',
 };
 
-const MummyMazeTile = ({
-  bgColor,
-  size,
-  walls = new Set(),
-}: MummyMazeTileProps) => {
+const MummyMazeTile = ({ bgColor, walls = new Set() }: MummyMazeTileProps) => {
   return (
-    <div className='relative aspect-square' style={{ width: size }}>
+    <>
       <div className='z-0 h-full w-full' style={{ backgroundColor: bgColor }} />
       {walls.has('up') && (
-        <div className='flex gap-0'>
+        <div className='pointer-events-none flex gap-0'>
           <div className='absolute z-20 flex h-full w-full translate-y-[-110%] flex-col gap-0'>
             <div
               className='h-[5%]'
@@ -46,7 +41,7 @@ const MummyMazeTile = ({
         </div>
       )}
       {walls.has('left') && (
-        <div className='flex gap-0'>
+        <div className='pointer-events-none flex gap-0'>
           <div className='absolute z-30 flex h-[125%] w-[8%] translate-y-[-88%] flex-col gap-0'>
             <div
               className='h-[105%]'
@@ -71,7 +66,7 @@ const MummyMazeTile = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

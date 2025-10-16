@@ -89,6 +89,9 @@ export class Maze {
     const out: Set<Direction> = new Set(
       this.walls.get(new Point(x, y).hash()) ?? new Set(),
     );
+    if (x < 0 || x >= this.size.x || y < 0 || y >= this.size.y) {
+      return new Set(ALL_DIRECTIONS);
+    }
     if (y <= 0) {
       out.add('up');
     }
@@ -123,7 +126,13 @@ export class Maze {
       if (!current) {
         break;
       }
-      visited.add(current.hash());
+
+      const hash = current.hash();
+      if (visited.has(hash)) {
+        continue;
+      }
+
+      visited.add(hash);
 
       for (const direction of ALL_DIRECTIONS) {
         if (!this.canMove(current, direction)) {
@@ -141,15 +150,56 @@ export class Maze {
       .filter((p) => !visited.has(p.hash()));
   }
 
+  toggleWall(point: Point, dir: Direction) {
+    const wallPoint = ['up', 'left'].includes(dir) ? point : point.add(dir);
+    const actualDir = dir === 'right' ? 'left' : dir === 'down' ? 'up' : dir;
+    if (this.wallsAt(wallPoint).has(actualDir)) {
+      this.walls.set(
+        wallPoint.hash(),
+        (this.walls.get(wallPoint.hash()) ?? new Set()).difference(
+          new Set([actualDir]),
+        ),
+      );
+    } else {
+      this.walls.set(
+        wallPoint.hash(),
+        (this.walls.get(wallPoint.hash()) ?? new Set()).union(
+          new Set([actualDir]),
+        ),
+      );
+    }
+  }
+
   fix() {
     for (;;) {
       const unreachables = this.findUnreachable();
 
       if (unreachables.length === 0) {
-        break;
+        return true;
       }
 
-      for (const tile of unreachables) {
+      let foundImprovement = false;
+
+      for (const tile of unreachables.sort((a, b) =>
+        a.x !== b.x ? a.x - b.x : a.y - b.y,
+      )) {
+        for (const dir of ALL_DIRECTIONS) {
+          this.toggleWall(tile, dir);
+          const newUnreachables = this.findUnreachable().length;
+          if (newUnreachables < unreachables.length) {
+            foundImprovement = true;
+            break;
+          }
+          this.toggleWall(tile, dir);
+        }
+        if (foundImprovement) {
+          break;
+        }
+      }
+
+      if (!foundImprovement) {
+        // No improvement could be found
+        return false;
       }
     }
   }
@@ -227,15 +277,52 @@ export class MummyMaze {
   doMoves(moves: Move[]) {
     for (const move of moves) {
       this.playerPos = this.playerPos.add(move);
-      this.enemies = this.enemies.map((enemy) =>
-        range(enemy.kind === 'scorpion' ? 1 : 2).reduce(
-          (acc, _) => ({
-            ...acc,
-            pos: acc.pos.add(this.calcEnemyMove(acc)),
-          }),
-          enemy,
-        ),
-      );
+      // Move all enemies
+      this.enemies = this.enemies.map((enemy) => ({
+        ...enemy,
+        pos: enemy.pos.add(this.calcEnemyMove(enemy)),
+      }));
+      // Kill scorpions overlapping with other enemies
+      this.enemies.forEach((enemy, i, enemies) => {
+        if (enemy.kind !== 'scorpion') {
+          return;
+        }
+        const hash = enemy.pos.hash();
+        if (enemies.some((other, j) => i !== j && hash === other.pos.hash())) {
+          enemy.pos = new Point(-1, -1);
+        }
+      });
+      // Kill mummies overlapping with other mummies
+      this.enemies.forEach((enemy, i, enemies) => {
+        const hash = enemy.pos.hash();
+        if (enemies.some((other, j) => i !== j && hash === other.pos.hash())) {
+          enemy.pos = new Point(-1, -1);
+        }
+      });
+
+      // Do above again but only move mummies
+      this.enemies = this.enemies.map((enemy) => ({
+        ...enemy,
+        pos:
+          enemy.kind === 'mummy'
+            ? enemy.pos.add(this.calcEnemyMove(enemy))
+            : enemy.pos,
+      }));
+      this.enemies.forEach((enemy, i, enemies) => {
+        if (enemy.kind !== 'scorpion') {
+          return;
+        }
+        const hash = enemy.pos.hash();
+        if (enemies.some((other, j) => i !== j && hash === other.pos.hash())) {
+          enemy.pos = new Point(-1, -1);
+        }
+      });
+      this.enemies.forEach((enemy, i, enemies) => {
+        const hash = enemy.pos.hash();
+        if (enemies.some((other, j) => i !== j && hash === other.pos.hash())) {
+          enemy.pos = new Point(-1, -1);
+        }
+      });
       this.history.push(move);
     }
   }
@@ -262,7 +349,10 @@ export class MummyMaze {
 
   clone() {
     const clone = new MummyMaze({
-      ...this,
+      goal: this.goal,
+      startPos: this.startPos,
+      gate: this.gate,
+      maze: this.maze,
       enemies: this.enemies.slice(),
       history: this.history.slice(),
       playerPos: this.playerPos.clone(),
