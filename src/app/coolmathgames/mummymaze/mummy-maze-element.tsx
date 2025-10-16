@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { range } from 'utils/array';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
@@ -19,6 +19,7 @@ import useKeyDown from 'hooks/use-key-down';
 interface GenerateMummyMazeInput {
   noOfWalls?: number;
   size?: number;
+  difficulty?: number;
 }
 
 const MAX_MAZE_ITERATIONS = 10000;
@@ -26,8 +27,9 @@ const MAX_MAZE_ITERATIONS = 10000;
 const rand = (end: number) => Math.floor(Math.random() * end);
 
 const generateSolvableMaze = ({
-  noOfWalls = rand(35) + 20,
   size = 8,
+  noOfWalls = rand(35) + size * 4,
+  difficulty = 3,
 }: GenerateMummyMazeInput) => {
   for (let i = 0; i < MAX_MAZE_ITERATIONS; i++) {
     const mummyMaze = generateMummyMaze({ noOfWalls, size });
@@ -35,7 +37,7 @@ const generateSolvableMaze = ({
       continue;
     }
     const solution = mummyMaze.solve() ?? [];
-    if (solution.length >= size * 2 * 2) {
+    if (solution.length >= size * difficulty) {
       console.log(`Found suitable maze after ${i + 1} tries`);
       return mummyMaze;
     }
@@ -107,9 +109,10 @@ const MummyMazeElement = () => {
   const [editDir, setEditDir] = useState<Direction>('up');
   const [showSolution, setShowSolution] = useState(false);
   const [game, setGame] = useState<MummyMaze | undefined>();
+  const [difficulty, setDifficulty] = useState(3);
 
   useEffect(() => {
-    const mummyMaze = generateSolvableMaze({});
+    const mummyMaze = generateSolvableMaze({ difficulty });
     setGame(mummyMaze);
   }, []);
 
@@ -173,16 +176,19 @@ const MummyMazeElement = () => {
   });
 
   useKeyDown('R', () => {
-    setGame(generateSolvableMaze({}));
+    setGame(generateSolvableMaze({ difficulty }));
   });
+
+  const solution = useMemo(
+    () => (showSolution && game ? game.solve() : undefined),
+    [showSolution, game],
+  );
 
   if (!game) {
     return (
       <Loading msg={lang('Laddar Mummy Maze...', 'Loading Mummy Maze...')} />
     );
   }
-
-  const solution = showSolution ? game.solve() : undefined;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -204,6 +210,23 @@ const MummyMazeElement = () => {
       New maze: R<br />
       Show solution: P<br />
       Edit mode: E
+      <div className='flex max-w-md flex-col gap-2'>
+        <label htmlFor='difficulty'>Difficulty={difficulty}</label>
+        <input
+          type='range'
+          value={difficulty}
+          onChange={(e) => {
+            const val = parseFloat(e.currentTarget.value);
+            if (isNaN(val)) {
+              return;
+            }
+            setDifficulty(val);
+          }}
+          min={1}
+          max={5}
+          step={0.1}
+        />
+      </div>
       {showSolution && (
         <>
           {!solution && <div>No solution found!</div>}
