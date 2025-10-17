@@ -23,7 +23,7 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
   return (
     <>
       <div className='relative flex flex-col gap-0 overflow-hidden md:max-w-3xl'>
-        <div className='absolute aspect-square w-full'>
+        <div className='pointer-events-none absolute aspect-square w-full'>
           <div
             className='relative z-20 aspect-square rounded-full bg-blue-600 text-center transition-all'
             style={{
@@ -37,7 +37,7 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
         {game.enemies.map((enemy, i) => (
           <div
             key={`${enemy.kind}:${i}`}
-            className='absolute aspect-square w-full'
+            className='pointer-events-none absolute aspect-square w-full'
           >
             <div
               className={cn(
@@ -55,7 +55,7 @@ const MummyMazeRender = ({ game, onClick }: MummyMazeRenderProps) => {
             ></div>
           </div>
         ))}
-        <div className='absolute aspect-square w-full'>
+        <div className='pointer-events-none absolute aspect-square w-full'>
           <div
             className='relative z-20 aspect-square rounded-full bg-green-600 text-center transition-all'
             style={{
