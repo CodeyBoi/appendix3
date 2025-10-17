@@ -26,7 +26,7 @@ const getName = (corps: Corps, nameFormat: NameFormat) => {
     return displayName(corps);
   } else if (nameFormat === 'number-only') {
     return corps.number === null && corps.bNumber === null
-      ? 'p.e. ' + corps.lastName.trim()
+      ? 'labubu ' + corps.lastName.trim()
       : displayNumber(corps);
   } else {
     return fullName(corps);
