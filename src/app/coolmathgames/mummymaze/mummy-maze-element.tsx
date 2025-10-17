@@ -25,23 +25,33 @@ interface GenerateMummyMazeInput {
   limit?: number;
 }
 
+const MAX_MAZE_ITERATIONS = 10000;
+
 const rand = (end: number) => Math.floor(Math.random() * end);
 
 const generateSolvableMaze = ({
   size = 8,
   noOfWalls = rand(35) + size * 4,
   difficulty = 3,
-  limit = 5000,
 }: GenerateMummyMazeInput) => {
-  const mummyMaze = generateMummyMaze({ noOfWalls, size });
-  for (let i = 0; i < limit; i++) {
+  for (let i = 0; i < MAX_MAZE_ITERATIONS; i++) {
+    const mummyMaze = generateMummyMaze({ noOfWalls, size });
+    if (!mummyMaze.maze.fix()) {
+      continue;
+    }
     const solution = mummyMaze.solve() ?? [];
     if (solution.length >= size * difficulty) {
-      console.log(`Found suitable maze after ${i} toggles`);
+      console.log(`Found suitable maze after ${i + 1} tries`);
       return mummyMaze;
     }
-    const wall = mummyMaze.maze.randomWall();
-    mummyMaze.maze.toggleWall(wall.point, wall.direction);
+
+    if (i % (MAX_MAZE_ITERATIONS / 10) === MAX_MAZE_ITERATIONS / 10 - 1) {
+      console.log(
+        `${i + 1} iterations done, doing ${
+          MAX_MAZE_ITERATIONS - i - 1
+        } more...`,
+      );
+    }
   }
 };
 
