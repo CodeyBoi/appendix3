@@ -6,6 +6,7 @@ import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import {
   ALL_DIRECTIONS,
+  ALL_MOVES,
   Direction,
   Enemy,
   Maze,
@@ -21,9 +22,8 @@ interface GenerateMummyMazeInput {
   noOfWalls?: number;
   size?: number;
   difficulty?: number;
+  limit?: number;
 }
-
-const MAX_MAZE_ITERATIONS = 10000;
 
 const rand = (end: number) => Math.floor(Math.random() * end);
 
@@ -31,44 +31,21 @@ const generateSolvableMaze = ({
   size = 8,
   noOfWalls = rand(35) + size * 4,
   difficulty = 3,
+  limit = 5000,
 }: GenerateMummyMazeInput) => {
-  for (let i = 0; i < MAX_MAZE_ITERATIONS; i++) {
-    const mummyMaze = generateMummyMaze({ noOfWalls, size });
-    if (!mummyMaze.maze.fix()) {
-      continue;
-    }
+  const mummyMaze = generateMummyMaze({ noOfWalls, size });
+  for (let i = 0; i < limit; i++) {
     const solution = mummyMaze.solve() ?? [];
     if (solution.length >= size * difficulty) {
-      console.log(`Found suitable maze after ${i + 1} tries`);
+      console.log(`Found suitable maze after ${i} toggles`);
       return mummyMaze;
     }
-
-    if (i % (MAX_MAZE_ITERATIONS / 10) === MAX_MAZE_ITERATIONS / 10 - 1) {
-      console.log(
-        `${i + 1} iterations done, doing ${
-          MAX_MAZE_ITERATIONS - i - 1
-        } more...`,
-      );
-    }
+    const wall = mummyMaze.maze.randomWall();
+    mummyMaze.maze.toggleWall(wall.point, wall.direction);
   }
 };
 
-const generateMummyMaze = ({
-  noOfWalls = rand(30) + 25,
-  size = 8,
-}: GenerateMummyMazeInput): MummyMaze => {
-  const walls = range(noOfWalls).reduce((acc, _) => {
-    const [x, y] = [rand(size), rand(size)];
-    if (x === 0 && y === 0) {
-      return acc;
-    }
-    const hash = `${x}:${y}`;
-    const direction =
-      x === 0 ? 'up' : y === 0 ? 'left' : Math.random() > 0.5 ? 'up' : 'left';
-    acc.set(hash, (acc.get(hash) ?? new Set()).add(direction));
-    return acc;
-  }, new Map<string, Set<'up' | 'left'>>());
-
+const generateMummyMaze = ({ size = 8 }: GenerateMummyMazeInput): MummyMaze => {
   const goalDir = ALL_DIRECTIONS[rand(ALL_DIRECTIONS.length)];
   const offset = rand(size);
   const goal =
@@ -95,10 +72,7 @@ const generateMummyMaze = ({
   }
 
   return new MummyMaze({
-    maze: new Maze({
-      walls,
-      size: new Point(size, size),
-    }),
+    maze: Maze.generateRandom(new Point(size, size), rand(30) + 25),
     startPos: new Point(rand(size), rand(size)),
     goal,
     enemies,
@@ -112,9 +86,12 @@ const MummyMazeElement = () => {
   const [game, setGame] = useState<MummyMaze | undefined>();
   const [difficulty, setDifficulty] = useState(3);
 
+  const generateNewMaze = () => {
+    setGame(generateSolvableMaze({ difficulty }));
+  };
+
   useEffect(() => {
-    const mummyMaze = generateSolvableMaze({ difficulty });
-    setGame(mummyMaze);
+    generateNewMaze();
   }, []);
 
   const movePlayer = (move: Move) => {
@@ -177,7 +154,7 @@ const MummyMazeElement = () => {
   });
 
   useKeyDown('R', () => {
-    setGame(generateSolvableMaze({ difficulty }));
+    generateNewMaze();
   });
 
   const solution = useMemo(
@@ -186,9 +163,7 @@ const MummyMazeElement = () => {
   );
 
   if (!game) {
-    return (
-      <Loading msg={lang('Laddar Mummy Maze...', 'Loading Mummy Maze...')} />
-    );
+    return <Loading msg={lang('Laddar...', 'Loading...')} />;
   }
 
   return (
@@ -203,23 +178,52 @@ const MummyMazeElement = () => {
             return;
           }
 
-          const hash = new Point(x, y).hash();
-          for (const dir of ALL_DIRECTIONS) {
-            if (game.playerPos.add(dir).hash() === hash) {
+          const clicked = new Point(x, y);
+          for (const dir of ALL_MOVES) {
+            if (clicked.eq(game.playerPos.add(dir))) {
               movePlayer(dir);
               return;
             }
           }
         }}
       />
-      Move: WASD/Arrow keys
-      <br />
-      Undo: U/Z
-      <br />
-      New maze: R<br />
-      Show solution: P<br />
-      Edit mode: E<br />
-      <br />
+      {showSolution && (
+        <>
+          {!solution && <div>No solution found!</div>}
+          {solution && (
+            <div>
+              solution:{' '}
+              {game.history.length > 0 && (
+                <span className='text-green-600'>
+                  {game.history.join(', ') + ', '}
+                </span>
+              )}
+              <span className='text-gray-500'>{solution.join(', ')}</span>
+            </div>
+          )}
+        </>
+      )}
+      <div className='flex max-w-md gap-2 lg:hidden'>
+        <Button className='max-w-sm' onClick={undo}>
+          Undo
+        </Button>
+        <Button
+          className='max-w-sm'
+          onClick={() => {
+            setShowSolution(!showSolution);
+          }}
+        >
+          Show solution
+        </Button>
+        <Button
+          className='max-w-sm'
+          onClick={() => {
+            generateNewMaze();
+          }}
+        >
+          New maze
+        </Button>
+      </div>
       <span className='italic'>
         Player: Blue
         <br />
@@ -228,6 +232,15 @@ const MummyMazeElement = () => {
         Mummy: White/Red
         <br />
         Scorpion: Orange
+      </span>
+      <span className='max-lg:hidden'>
+        Move: WASD/Arrow keys
+        <br />
+        Undo: U/Z
+        <br />
+        New maze: R<br />
+        Show solution: P<br />
+        Edit mode: E<br />
       </span>
       <div className='flex max-w-md flex-col gap-2'>
         <label htmlFor='difficulty'>Difficulty={difficulty}</label>
@@ -246,43 +259,6 @@ const MummyMazeElement = () => {
           step={0.1}
         />
       </div>
-      <div className='flex max-w-md gap-2'>
-        <Button className='max-w-sm md:hidden' onClick={undo}>
-          Undo
-        </Button>
-        <Button
-          className='max-w-sm md:hidden'
-          onClick={() => {
-            setShowSolution(!showSolution);
-          }}
-        >
-          Show solution
-        </Button>
-        <Button
-          className='max-w-sm md:hidden'
-          onClick={() => {
-            setGame(generateSolvableMaze({ difficulty }));
-          }}
-        >
-          New maze
-        </Button>
-      </div>
-      {showSolution && (
-        <>
-          {!solution && <div>No solution found!</div>}
-          {solution && (
-            <div>
-              solution:{' '}
-              {game.history.length > 0 && (
-                <span className='text-green-600'>
-                  {game.history.join(', ') + ', '}
-                </span>
-              )}
-              <span className='text-gray-500'>{solution.join(', ')}</span>
-            </div>
-          )}
-        </>
-      )}
       {inEditMode && <div>in edit mode, edit: {editDir}</div>}
     </div>
   );

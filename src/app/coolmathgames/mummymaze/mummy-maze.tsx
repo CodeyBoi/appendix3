@@ -1,5 +1,7 @@
 import { range } from 'utils/array';
 
+const rand = (end: number) => Math.floor(Math.random() * end);
+
 export class Point {
   x: number;
   y: number;
@@ -50,6 +52,10 @@ export class Point {
     return new Point(this.x, this.y);
   }
 
+  eq(other: Point) {
+    return this.x === other.x && this.y === other.y;
+  }
+
   toString() {
     return `(${this.x}, ${this.y})`;
   }
@@ -57,7 +63,7 @@ export class Point {
 
 export const ALL_DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
 export type Direction = (typeof ALL_DIRECTIONS)[number];
-const ALL_MOVES = ['up', 'down', 'left', 'right', 'wait'] as const;
+export const ALL_MOVES = ['up', 'down', 'left', 'right', 'wait'] as const;
 export type Move = (typeof ALL_MOVES)[number];
 
 type Axis = 'horizontal' | 'vertical';
@@ -82,6 +88,41 @@ export class Maze {
   }) {
     this.walls = walls;
     this.size = size;
+  }
+
+  static randomWall(size: Point) {
+    for (;;) {
+      const point = new Point(rand(size.x), rand(size.y));
+      const direction: Direction = Math.random() > 0.5 ? 'up' : 'left';
+
+      if (
+        (point.x === 0 && point.y === 0) ||
+        (point.x === 0 && direction === 'left') ||
+        (point.y === 0 && direction === 'up')
+      ) {
+        continue;
+      }
+      return { point, direction };
+    }
+  }
+
+  randomWall() {
+    return Maze.randomWall(this.size);
+  }
+
+  static generateRandom(size: Point, amountOfIterations: number = 40): Maze {
+    const maze = new Maze({ walls: new Map(), size: size });
+
+    for (let i = 0; i < amountOfIterations; i++) {
+      const wall = Maze.randomWall(size);
+      maze.toggleWall(wall.point, wall.direction);
+    }
+
+    if (!maze.fix()) {
+      return Maze.generateRandom(size, amountOfIterations);
+    }
+
+    return maze;
   }
 
   wallsAt({ x, y }: Point) {
