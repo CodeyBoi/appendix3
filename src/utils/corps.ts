@@ -51,7 +51,7 @@ export const displayNumber = (
     ? `#${corps.number}`
     : corps.bNumber
     ? `b${corps.bNumber}`
-    : 'labubu';
+    : 'p.e.';
 
 export const numberAndFullName = (
   corps:
