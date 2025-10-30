@@ -17,7 +17,7 @@ interface Corps {
   pronouns: string | null;
   number: number | null;
   bNumber: number | null;
-  contactUrl: string | null;
+  contactURL: string | null;
   points: number;
   firstGigDate: Date | undefined;
   firstRehearsalDate: Date | undefined;
@@ -51,7 +51,7 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
   const {
     nickName,
     pronouns,
-    contactUrl,
+    contactURL,
     points,
     firstGigDate,
     firstRehearsalDate,
@@ -108,9 +108,9 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
           {corpsName}
 
-          {(contactUrl) && (
+          {(contactURL) && (
             <ActionIcon
-              href={contactUrl}
+              href={contactURL}
               variant='subtle'
             >
               <IconMail />
