@@ -19,6 +19,7 @@ const initialValues = {
   number: '',
   bNumber: '',
   email: '',
+  contactURL: '',
   mainInstrument: '',
   otherInstruments: [] as string[],
   roles: [] as Permission[],
@@ -78,6 +79,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         number: corps.number?.toString() || '',
         bNumber: corps.bNumber?.toString() || '',
         email: corps.user.email ?? '',
+        contactURL: corps.contactURL ?? '',
         mainInstrument,
         otherInstruments,
         roles: corps.roles.map((r) => r.name as Permission),
@@ -133,6 +135,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           </div>
           <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <TextInput label='Pronomen' {...form.getInputProps('pronouns')} />
+          <TextInput label='Kontakt URL' {...form.getInputProps('contactURL')} />
           <div className='flex gap-4'>
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
