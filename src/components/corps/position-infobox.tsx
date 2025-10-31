@@ -9,6 +9,10 @@ interface Instrument {
   isMainInstrument: boolean;
 }
 
+interface Role {
+  name: string;
+}
+
 interface Corps {
   id: string;
   firstName: string;
@@ -22,6 +26,7 @@ interface Corps {
   firstGigDate: Date | undefined;
   firstRehearsalDate: Date | undefined;
   instruments: Instrument[];
+  roles: Role[];
 }
 
 interface CorpsInfoboxProps {
@@ -36,6 +41,19 @@ const genOtherInstrumentsString = (instruments: string[]) => {
     .slice(0, instrumentsLower.length - 1)
     .join(', ')} och ${instrumentsLower[instrumentsLower.length - 1] ?? ''}`;
 };
+
+const roleToEmail: Record<string, string> = {
+  Ordförande: "ordforande@bleckhornen.org",
+  ViceOrdförande: "vice@bleckhornen.org",
+  Sekreterare: "sekreterare@bleckhornen.org",
+  Kassör: "kassor@bleckhornen.org",
+};
+
+const roleListToEmail = (roles: Role[]) => {
+  const matchingRole = roles.find(r => roleToEmail[r.name]);
+
+  return matchingRole ? ('mailto:' + roleToEmail[matchingRole.name]) : null;
+}
 
 // A list of "instruments" which should have the prefix "är"
 const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
@@ -102,15 +120,18 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
+  const roleEmail = roleListToEmail(corps.roles)
+  const contact = roleEmail ? roleEmail : contactURL
+
   return (
     <div>
       <div className='text-lg font-bold'>
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
           {corpsName}
 
-          {(contactURL) && (
+          {(contact) && (
             <ActionIcon
-              href={contactURL}
+              href={contact}
               variant='subtle'
             >
               <IconMail />
