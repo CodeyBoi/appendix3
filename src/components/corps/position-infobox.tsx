@@ -103,7 +103,7 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
     '.';
 
   return (
-    <div className='flex flex-col p-2 text-left text-sm'>
+    <div>
       <div className='text-lg font-bold'>
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
           {corpsName}
