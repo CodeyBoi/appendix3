@@ -43,25 +43,23 @@ const Positions = async () => {
   return (
     <div>
       <h2>{lang('Ansvarsposter', 'Positions of responsibility')}</h2>
-      <div className='flex max-w-4xl flex-col space-y-4'>
-        <div className='rounded border shadow-md dark:border-neutral-800'>
-          <div className='flex flex-col space-y-2 p-4'>
-            <h3>{lang('styrelsen', 'The Board')}</h3>
-            bla bla lite text
-            <div className='grid grid-cols-2 gap-4'>
-              {ordoredBoardCorps.map((corps) => (
-                <div className='rounded border shadow-md dark:border-neutral-800 flex flex-col p-2 text-left text-sm' >
-                  {corps.roles.filter(role => Object.keys(styrelseOrder).includes(role.name))[0]?.name}
-                  <PositionInfobox corps={corps} />
-                </div>
-              ))
-              }
-            </div>
+      <div className='max-w-4xl'>
+        <div className='flex flex-col space-y-2 p-4'>
+          <h3>{lang('Styrelsen', 'The Board')}</h3>
+          bla bla lite text
+          <div className='grid grid-cols-2 gap-4'>
+            {ordoredBoardCorps.map((corps) => (
+              <div className='rounded border shadow-md dark:border-neutral-800 flex flex-col p-2 text-left text-sm' >
+                {corps.roles.filter(role => Object.keys(styrelseOrder).includes(role.name))[0]?.name}
+                <PositionInfobox corps={corps} />
+              </div>
+            ))
+            }
           </div>
         </div>
       </div>
 
-      <div className='max-w-4xl rounded border shadow-md dark:border-neutral-800'>
+      <div className='max-w-4xl'>
         <div className='flex flex-col space-y-2 p-4'>
           <h3>Trivselombud</h3>
           bla bla mer text.
@@ -80,10 +78,11 @@ const Positions = async () => {
         </div>
       </div>
 
-      <div className='max-w-4xl rounded border shadow-md dark:border-neutral-800'>
+      <div className='max-w-4xl'>
         <div className='flex flex-col space-y-2 p-4'>
           <h3>Utskott</h3>
           bla bla mer text.
+
           <div className='flex gap-1'>
             <h4>Pryl och Prov</h4>
             <ActionIcon
@@ -95,9 +94,16 @@ const Positions = async () => {
           </div>
           blub
 
-
-          <h4>PR</h4>
-          blab
+          <div className='flex gap-1'>
+            <h4>PR</h4>
+            <ActionIcon
+              href={`mailto:RP`}
+              variant='subtle'
+            >
+              <IconMail />
+            </ActionIcon>
+          </div>
+          blub
 
           <div className='flex gap-1'>
             <h4>ITK</h4>
@@ -112,6 +118,7 @@ const Positions = async () => {
             Driftansvaret includerar blindtarmen, den publika hemsidan och vår interna wiki.`,
             `ITK has responsibility for the operation of all Bleckhornens websites, as well as developing Blindtarmen.
             The operational responsebility includes Blindtarmen, the public website, and our internal wiki`)}
+
 
         </div>
       </div>
