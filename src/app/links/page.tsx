@@ -52,6 +52,17 @@ const Links = () => {
           <li>
             <a
               className='cursor-pointer text-red-600 underline'
+              href='https://samply.app/p/Ub5REp3lbAi3CCnJdgdm'
+            >
+              {lang(
+                'Samply',
+                "Samply",
+              )}
+            </a>
+          </li>
+          <li>
+            <a
+              className='cursor-pointer text-red-600 underline'
               href='https://drive.google.com/drive/folders/1vgdyOnL62QCgbjgwj-3sSp5jSJayGmDS'
             >
               {lang('Dansdriven', 'The Dance Drive')}
