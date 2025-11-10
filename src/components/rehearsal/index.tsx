@@ -12,7 +12,7 @@ const Rehearsal = ({ rehearsal }: RehearsalProps) => {
   return (
     <div className='flex flex-col gap-2'>
       <h1>
-        {rehearsal.title + ' (' + rehearsal.date.toLocaleDateString() + ')'}
+        {rehearsal.title + ' (' + dayjs(rehearsal.date).format('YYYY-MM-DD') + ')'}
       </h1>
       <Button href={`/admin/rehearsal/edit/${rehearsal.id}`}>
         <IconEdit />
