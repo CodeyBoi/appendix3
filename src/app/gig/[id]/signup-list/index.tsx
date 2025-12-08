@@ -193,7 +193,8 @@ const SignupList = ({ gigId }: SignupListProps) => {
   // Divide the list of corpsii into people who answered yes and people who answered maybe
   const splitList = signupsSorted.reduce(
     (acc, signup) => {
-      if (signup.status.value === 'Ja') {
+      // If gig has happened everyone who attended should be shown under the same list
+      if (gigHasHappened || signup.status.value === 'Ja') {
         acc.yesList.push(signup);
       } else if (signup.status.value === 'Kanske') {
         acc.maybeList.push(signup);
