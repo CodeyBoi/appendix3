@@ -193,7 +193,7 @@ const GigCard = async ({
             )}
           </div>
         </div>
-        <div>
+        <div className='whitespace-pre-wrap'>
           {gig.englishDescription
             ? lang(gig.description, gig.englishDescription)
             : gig.description}

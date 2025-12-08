@@ -14,11 +14,13 @@ interface Corps {
   nickName: string | null;
   number: number | null;
   bNumber: number | null;
+  corpsBirthday?: Date;
 }
 
 interface CorpsDisplayProps {
   corps: Corps;
   nameFormat?: NameFormat;
+  currentDate?: Date;
 }
 
 const getName = (corps: Corps, nameFormat: NameFormat) => {
@@ -36,8 +38,13 @@ const getName = (corps: Corps, nameFormat: NameFormat) => {
 const CorpsDisplay = ({
   corps,
   nameFormat = 'nickname',
+  currentDate = new Date(),
 }: CorpsDisplayProps) => {
   const [open, setOpen] = useState(false);
+  const isBirthday =
+    corps.corpsBirthday &&
+    corps.corpsBirthday.getDate() === currentDate.getDate() &&
+    corps.corpsBirthday.getMonth() === currentDate.getMonth();
   return (
     <Popover
       position='bottom-right'
@@ -50,7 +57,7 @@ const CorpsDisplay = ({
       targetClassName='max-w-max'
       target={
         <div className='hover:underline'>
-          {getName(corps, nameFormat).trim()}
+          {getName(corps, nameFormat).trim() + (isBirthday ? ' 🎂' : '')}
         </div>
       }
     >
