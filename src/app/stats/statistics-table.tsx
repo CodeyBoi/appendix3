@@ -19,6 +19,7 @@ const streakEmojis: StreakEmoji[] = [
   [50, '🪨'],
   [75, '🐐'],
   [100, '🗿'],
+  [150, '😵‍💫'],
 ].reverse() as StreakEmoji[];
 
 const getStreakEmoji = (streak: number) =>
