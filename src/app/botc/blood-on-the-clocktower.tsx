@@ -7,23 +7,21 @@ import Modal from 'components/modal';
 import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { Metadata } from 'next';
 import { useState } from 'react';
-import { range } from 'utils/array';
+import BOTCCharacterSelectTable from './character-select';
+import { EDITIONS } from './characters';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
 };
 
-const MIN_PLAYERS = 5;
-const MAX_PLAYERS = 15;
-
 interface GameState {
-  players: number;
-  edition: string;
+  numberOfPlayers: number;
+  editionId: string;
 }
 
 const newGameState: GameState = {
-  players: 7,
-  edition: 'trouble-brewing',
+  numberOfPlayers: 7,
+  editionId: 'trouble-brewing',
 };
 
 const editions: SelectItem[] = [
@@ -32,51 +30,6 @@ const editions: SelectItem[] = [
   'Sects and Violets',
   'Custom Script',
 ].map((v) => ({ value: v.toLowerCase().replace(' ', '-'), label: v }));
-
-const CHARACTER_TYPES = [
-  'townsfolk',
-  'outsiders',
-  'minions',
-  'demons',
-] as const;
-type CharacterType = (typeof CHARACTER_TYPES)[number];
-
-const getNumberOfCharacters = (
-  players: number,
-): Record<CharacterType, number> => {
-  if (players < 7) {
-    return {
-      townsfolk: 3,
-      outsiders: players === 5 ? 0 : 1,
-      minions: 1,
-      demons: 1,
-    };
-  } else {
-    const clampedPlayers = Math.min(players, MAX_PLAYERS);
-    return {
-      townsfolk: 5 + Math.floor((clampedPlayers - 7) / 3) * 2,
-      outsiders: (clampedPlayers - 7) % 3,
-      minions: 1 + Math.floor((clampedPlayers - 7) / 3),
-      demons: 1,
-    };
-  }
-};
-
-const generateCharacterRow = (character: CharacterType) => {
-  const color = ['townsfolk', 'outsiders'].includes(character)
-    ? 'text-blue-500'
-    : 'text-red-600';
-  return (
-    <tr className={color} key={character + 'amount'}>
-      <td className='first-letter:capitalize'>{character}</td>
-      {range(MIN_PLAYERS, MAX_PLAYERS + 1).map((n) => (
-        <td key={character + n.toString()}>
-          {getNumberOfCharacters(n)[character]}
-        </td>
-      ))}
-    </tr>
-  );
-};
 
 interface BloodOnTheClocktowerElementProps {
   state?: GameState;
@@ -94,6 +47,8 @@ const BloodOnTheClocktowerElement = ({
     _setSearchParamsGameState(JSON.stringify(newGameState));
   };
 
+  const edition = EDITIONS.find((edition) => edition.id === gameState.editionId) ?? EDITIONS[0]
+
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
       <h2>Blood On The Clocktower</h2>
@@ -105,7 +60,7 @@ const BloodOnTheClocktowerElement = ({
           label='Edition'
           options={editions}
           onChange={(v) => {
-            setGameState({ ...gameState, edition: v });
+            setGameState({ ...gameState, editionId: v });
           }}
         />
         <div className='h-2' />
@@ -118,36 +73,13 @@ const BloodOnTheClocktowerElement = ({
           }
           withCloseButton
         >
-          <table className='font-xs'>
-            <tbody>
-              <tr className='bold'>
-                <td>Players</td>
-                {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
-                  <td key={n}>{n}</td>
-                ))}
-                <td>{MAX_PLAYERS}+</td>
-              </tr>
-
-              {CHARACTER_TYPES.map((t) => generateCharacterRow(t))}
-            </tbody>
-          </table>
-          <input
-            type='range'
-            id='players'
-            name='players'
-            min={MIN_PLAYERS}
-            max={MAX_PLAYERS}
-            defaultValue={gameState.players}
-            onChange={(e) => {
-              setGameState({
-                ...gameState,
-                players: e.currentTarget.valueAsNumber,
-              });
-            }}
+          <BOTCCharacterSelectTable
+            numberOfPlayers={gameState.numberOfPlayers}
+            onNumberOfPlayersChange={(n) =>
+              setGameState({ ...gameState, numberOfPlayers: n })
+            }
+            edition={edition}
           />
-          <label htmlFor='players'>
-            Number of players: {gameState.players}
-          </label>
         </Modal>
         <div className='h-2' />
 
