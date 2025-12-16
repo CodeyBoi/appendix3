@@ -2,13 +2,13 @@
 
 import { IconUser } from '@tabler/icons-react';
 import Button from 'components/input/button';
-import Select, { SelectItem } from 'components/input/select';
+import Select from 'components/input/select';
 import Modal from 'components/modal';
 import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { Metadata } from 'next';
 import { useState } from 'react';
 import BOTCCharacterSelectTable from './character-select';
-import { EDITIONS } from './characters';
+import { BOTCPlayer, CharacterID, CharacterType, EDITIONS } from './characters';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -17,19 +17,14 @@ export const metadata: Metadata = {
 interface GameState {
   numberOfPlayers: number;
   editionId: string;
+  players: BOTCPlayer[];
 }
 
 const newGameState: GameState = {
   numberOfPlayers: 7,
   editionId: 'trouble-brewing',
+  players: [],
 };
-
-const editions: SelectItem[] = [
-  'Trouble Brewing',
-  'Bad Moon Rising',
-  'Sects and Violets',
-  'Custom Script',
-].map((v) => ({ value: v.toLowerCase().replace(' ', '-'), label: v }));
 
 interface BloodOnTheClocktowerElementProps {
   state?: GameState;
@@ -47,24 +42,27 @@ const BloodOnTheClocktowerElement = ({
     _setSearchParamsGameState(JSON.stringify(newGameState));
   };
 
-  const edition = EDITIONS.find((edition) => edition.id === gameState.editionId) ?? EDITIONS[0]
+  const edition = EDITIONS.find((edition) => edition.id === gameState.editionId)
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
       <h2>Blood On The Clocktower</h2>
-      <details className='border p-2 shadow-md'>
+      <details open className='border p-2 shadow-md'>
         <summary className='select-none'>Setup</summary>
 
         <div className='h-2' />
         <Select
           label='Edition'
-          options={editions}
+          options={EDITIONS.map((e) => ({ value: e.id, label: e.name })).concat([{value: 'custom', label: 'Custom Script' }])}
           onChange={(v) => {
             setGameState({ ...gameState, editionId: v });
           }}
+          value={gameState.editionId}
         />
         <div className='h-2' />
+        {edition ? <>
         <Modal
+          title={`Select Characters - ${edition.name}`}
           target={
             <Button>
               <IconUser />
@@ -84,6 +82,8 @@ const BloodOnTheClocktowerElement = ({
         <div className='h-2' />
 
         <div className='h-2' />
+        </>
+        : <div>{"Invalid edition id: " + gameState.editionId}</div>}
       </details>
     </div>
   );

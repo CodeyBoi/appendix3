@@ -1,7 +1,7 @@
 'use client';
 
 import Switch from 'components/input/switch';
-import { initObject, range } from 'utils/array';
+import { initObject, range, shuffle } from 'utils/array';
 import { cn } from 'utils/class-names';
 import {
   CHARACTER_TYPES,
@@ -14,6 +14,7 @@ import {
 } from './characters';
 import BOTCCharacterPanel from './character-panel';
 import { useState } from 'react';
+import Button from 'components/input/button';
 
 const getNumberOfCharacters = (
   players: number,
@@ -71,6 +72,48 @@ const generateCharacterRow = (
   );
 };
 
+
+
+// TODO: Handle logic if character which change the amount of each character type is chosen (e.g. Baron [+2 Outsiders])
+const selectRandom = (edition: Edition, numberOfCharacters: Record<CharacterType, number>) => {
+  const selected: CharacterID[] = [];
+  for (const characterType of CHARACTER_TYPES) {
+    const copy = shuffle(edition[characterType].slice());
+    selected.push(...copy.slice(0, numberOfCharacters[characterType]));
+  }
+  
+  return selected;
+}
+
+const findSelectionError = (characters: CharacterID[], numberOfCharacters: Record<CharacterType, number>) => {
+  const res = initObject(CHARACTER_TYPES, 0);
+  const addOutsiders = (n: number) => {
+    res['outsiders'] = res['outsiders'] + n;
+    res['townsfolk'] = res['townsfolk'] - n;
+  }
+  for (const c of characters) {
+    switch (c) {
+      case 'baron':
+        addOutsiders(2);
+        break;
+
+      case 'godfather':
+        // Add 1 outsider if number of outsiders is less than 2, otherwise remove 1
+        const difference = numberOfCharacters['outsiders'] < 2 ? 1 : -1;
+        addOutsiders(difference);
+        break;
+
+      case 'fanggu':
+        addOutsiders(1);
+        break;
+
+      case 'vigormortis':
+        addOutsiders(-1);
+        break;
+    }
+  }
+}
+
 interface BOTCCharacterSelectProps {
   numberOfPlayers: number;
   onNumberOfPlayersChange: (numberOfPlayers: number) => void;
@@ -93,6 +136,7 @@ const BOTCCharacterSelect = ({
       for (const characterType of CHARACTER_TYPES) {
         if (edition[characterType].includes(selectedCharacterId)) {
           acc[characterType] = acc[characterType] + 1;
+          break;
         }
       }
       return acc;
@@ -101,15 +145,15 @@ const BOTCCharacterSelect = ({
   );
 
   return (
-    <div className='flex flex-col gap-2'>
-      <table className='border- border-collapse text-center'>
+    <div className='flex flex-col gap-2 w-2xl'>
+      <table className='text-center w-min'>
         <tbody>
           <tr className='font-bold'>
             <td className='border-x border-t'>Players</td>
             {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
               <td
                 className={cn(
-                  'border-x border-t',
+                  'border-x border-t px-2',
                   n === numberOfPlayers && 'bg-red-600/20',
                 )}
                 key={n}
@@ -119,7 +163,7 @@ const BOTCCharacterSelect = ({
             ))}
             <td
               className={cn(
-                'border-x border-t',
+                'border-x border-t px-2',
                 15 === numberOfPlayers && 'bg-red-600/20',
               )}
             >
@@ -140,27 +184,50 @@ const BOTCCharacterSelect = ({
         min={MIN_PLAYERS}
         max={MAX_PLAYERS}
         defaultValue={numberOfPlayers}
-        onChange={(e) => { onNumberOfPlayersChange(e.currentTarget.valueAsNumber); }}
+        onChange={(e) => {
+          onNumberOfPlayersChange(e.currentTarget.valueAsNumber);
+        }}
       />
       <Switch
         label='Show character abilities'
         value={showDescriptions}
-        onChange={() => { setShowDescriptions(!showDescriptions); }}
+        onChange={() => {
+          setShowDescriptions(!showDescriptions);
+        }}
       />
       <Switch label='Allow duplicate characters' />
+      <div className='flex gap-2'>
+        <Button onClick={() => setSelectedCharacters(selectRandom(edition, numberOfCharacters))
+
+        }>
+          Select random
+        </Button>
+        <Button onClick={() => setSelectedCharacters([])}>
+          Clear selection
+        </Button>
+      </div>
       <div>
         {CHARACTER_TYPES.map((characterType) => {
           return (
-            <div className='flex flex-col rounded border'>
-              <h3 className='w-full bg-black text-white first-letter:capitalize'>
-                {characterType}
-              </h3>
-              <div className='grid-cols-3 md:grid-cols-5'>
+            <>
+            <div
+              key={edition.id + characterType}
+              className='flex flex-col rounded border-2 border-red-600'
+            >
+              <div className='flex gap-4 justify-between w-full px-2 bg-red-600 text-white'>
+                <h3 className='first-letter:capitalize'>{characterType}</h3>
+                <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
+              </div>
+              <div className='grid grid-cols-3 lg:grid-cols-5'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
                   .map(({ id, name, description }) => (
                     <div
                       key={id}
+                      className={cn(
+                        'px-2 py-1 border border-red-600/30',
+                        selectedCharacters.includes(id) && 'bg-red-600/20',
+                      )}
                       onClick={() => {
                         const newSelected = selectedCharacters.slice();
                         const idx = newSelected.findIndex((c) => c === id);
@@ -176,12 +243,13 @@ const BOTCCharacterSelect = ({
                         name={name}
                         description={description}
                         showDescription={showDescriptions}
-                        selected={selectedCharacters.includes(id)}
                       />
                     </div>
                   ))}
               </div>
             </div>
+          <div className='h-2' />
+          </>
           );
         })}
       </div>
