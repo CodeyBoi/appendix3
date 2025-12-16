@@ -50,8 +50,8 @@ export const filterNone = <T>(list: (T | null | undefined)[]): T[] =>
   list.flatMap((e) => (e !== null && e !== undefined ? [e] : []));
 
 export const shuffle = <T>(list: T[]) => {
-  for (let i = list.length - 1; i > 0; i--) {
-    const randomIndex = Math.floor(Math.random() * i);
+  for (let i = list.length - 1; i >= 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
     const temp = list[i] as T;
     list[i] = list[randomIndex] as T;
     list[randomIndex] = temp;

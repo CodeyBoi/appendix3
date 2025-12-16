@@ -15,28 +15,36 @@ import {
 import BOTCCharacterPanel from './character-panel';
 import { useState } from 'react';
 import Button from 'components/input/button';
+import React from 'react';
 
 const getNumberOfCharacters = (
   players: number,
+  selectedCharacters: CharacterID[] = [],
 ): Record<CharacterType, number> => {
-  if (players < 7) {
-    return {
-      townsfolk: 3,
-      outsiders: players === 5 ? 0 : 1,
-      minions: 1,
-      demons: 1,
-      travellers: 0,
-    };
-  } else {
-    const clampedPlayers = Math.min(players, MAX_PLAYERS);
-    return {
-      townsfolk: 5 + Math.floor((clampedPlayers - 7) / 3) * 2,
-      outsiders: (clampedPlayers - 7) % 3,
-      minions: 1 + Math.floor((clampedPlayers - 7) / 3),
-      demons: 1,
-      travellers: Math.max(players - MAX_PLAYERS, 0),
-    };
+  const clampedPlayers = Math.min(players, MAX_PLAYERS);
+  const res =
+    players < 7
+      ? {
+          townsfolk: 3,
+          outsiders: players === 5 ? 0 : 1,
+          minions: 1,
+          demons: 1,
+          travellers: 0,
+        }
+      : {
+          townsfolk: 5 + Math.floor((clampedPlayers - 7) / 3) * 2,
+          outsiders: (clampedPlayers - 7) % 3,
+          minions: 1 + Math.floor((clampedPlayers - 7) / 3),
+          demons: 1,
+          travellers: Math.max(players - MAX_PLAYERS, 0),
+        };
+  for (const [characterType, diff] of Object.entries(
+    findSelectionError(selectedCharacters, res),
+  )) {
+    res[characterType as CharacterType] =
+      res[characterType as CharacterType] + diff;
   }
+  return res;
 };
 
 const generateCharacterRow = (
@@ -72,25 +80,58 @@ const generateCharacterRow = (
   );
 };
 
-
-
-// TODO: Handle logic if character which change the amount of each character type is chosen (e.g. Baron [+2 Outsiders])
-const selectRandom = (edition: Edition, numberOfCharacters: Record<CharacterType, number>) => {
+const selectRandom = (
+  edition: Edition,
+  numberOfCharacters: Record<CharacterType, number>,
+) => {
   const selected: CharacterID[] = [];
   for (const characterType of CHARACTER_TYPES) {
     const copy = shuffle(edition[characterType].slice());
+    if (characterType === 'minions') console.log(copy);
     selected.push(...copy.slice(0, numberOfCharacters[characterType]));
   }
-  
-  return selected;
-}
 
-const findSelectionError = (characters: CharacterID[], numberOfCharacters: Record<CharacterType, number>) => {
-  const res = initObject(CHARACTER_TYPES, 0);
+  // Correct if characters which change character amounts are picked
+  for (const [type, diff] of Object.entries(
+    findSelectionError(selected, numberOfCharacters),
+  )) {
+    if (diff === 0) {
+      continue;
+    }
+    const characters = edition[type as CharacterType];
+    for (let i = 0; i < Math.abs(diff); i++) {
+      // Remove character belonging to character class
+      if (diff < 0) {
+        const idx = selected.findIndex((id) => characters.includes(id));
+        if (idx !== -1) {
+          selected.splice(idx, 1);
+        }
+      }
+
+      // Add character from character class
+      else {
+        const newCharacter = shuffle(characters.slice()).find(
+          (id) => !selected.includes(id),
+        );
+        if (newCharacter) {
+          selected.push(newCharacter);
+        }
+      }
+    }
+  }
+
+  return selected;
+};
+
+const findSelectionError = (
+  characters: CharacterID[],
+  numberOfCharacters: Record<CharacterType, number>,
+) => {
+  const res: Record<CharacterType, number> = initObject(CHARACTER_TYPES, 0);
   const addOutsiders = (n: number) => {
     res['outsiders'] = res['outsiders'] + n;
     res['townsfolk'] = res['townsfolk'] - n;
-  }
+  };
   for (const c of characters) {
     switch (c) {
       case 'baron':
@@ -99,8 +140,7 @@ const findSelectionError = (characters: CharacterID[], numberOfCharacters: Recor
 
       case 'godfather':
         // Add 1 outsider if number of outsiders is less than 2, otherwise remove 1
-        const difference = numberOfCharacters['outsiders'] < 2 ? 1 : -1;
-        addOutsiders(difference);
+        addOutsiders(numberOfCharacters['outsiders'] < 2 ? 1 : -1);
         break;
 
       case 'fanggu':
@@ -112,7 +152,8 @@ const findSelectionError = (characters: CharacterID[], numberOfCharacters: Recor
         break;
     }
   }
-}
+  return res;
+};
 
 interface BOTCCharacterSelectProps {
   numberOfPlayers: number;
@@ -130,7 +171,10 @@ const BOTCCharacterSelect = ({
     [],
   );
 
-  const numberOfCharacters = getNumberOfCharacters(numberOfPlayers);
+  const numberOfCharacters = getNumberOfCharacters(
+    numberOfPlayers,
+    selectedCharacters,
+  );
   const numberOfSelectedCharacters = selectedCharacters.reduce(
     (acc, selectedCharacterId) => {
       for (const characterType of CHARACTER_TYPES) {
@@ -145,8 +189,8 @@ const BOTCCharacterSelect = ({
   );
 
   return (
-    <div className='flex flex-col gap-2 w-2xl'>
-      <table className='text-center w-min'>
+    <div className='flex flex-col gap-2'>
+      <table className='w-min text-center'>
         <tbody>
           <tr className='font-bold'>
             <td className='border-x border-t'>Players</td>
@@ -197,59 +241,64 @@ const BOTCCharacterSelect = ({
       />
       <Switch label='Allow duplicate characters' />
       <div className='flex gap-2'>
-        <Button onClick={() => setSelectedCharacters(selectRandom(edition, numberOfCharacters))
-
-        }>
+        <Button
+          onClick={() => {
+            setSelectedCharacters(
+              selectRandom(edition, getNumberOfCharacters(numberOfPlayers)),
+            );
+          }}
+        >
           Select random
         </Button>
-        <Button onClick={() => setSelectedCharacters([])}>
+        <Button
+          onClick={() => {
+            setSelectedCharacters([]);
+          }}
+        >
           Clear selection
         </Button>
       </div>
       <div>
         {CHARACTER_TYPES.map((characterType) => {
           return (
-            <>
-            <div
-              key={edition.id + characterType}
-              className='flex flex-col rounded border-2 border-red-600'
-            >
-              <div className='flex gap-4 justify-between w-full px-2 bg-red-600 text-white'>
-                <h3 className='first-letter:capitalize'>{characterType}</h3>
-                <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
+            <React.Fragment key={edition.id + characterType}>
+              <div className='flex flex-col rounded border-2 border-red-600'>
+                <div className='flex w-full justify-between gap-4 bg-red-600 px-2 text-white'>
+                  <h3 className='first-letter:capitalize'>{characterType}</h3>
+                  <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
+                </div>
+                <div className='grid grid-cols-3 lg:grid-cols-5'>
+                  {edition[characterType]
+                    .map((id) => CHARACTERS[id])
+                    .map(({ id, name, description }) => (
+                      <div
+                        key={id}
+                        className={cn(
+                          'border border-red-600/30 px-2 py-1',
+                          selectedCharacters.includes(id) && 'bg-red-600/20',
+                        )}
+                        onClick={() => {
+                          const newSelected = selectedCharacters.slice();
+                          const idx = newSelected.findIndex((c) => c === id);
+                          if (idx !== -1) {
+                            newSelected.splice(idx, 1);
+                          } else {
+                            newSelected.push(id);
+                          }
+                          setSelectedCharacters(newSelected);
+                        }}
+                      >
+                        <BOTCCharacterPanel
+                          name={name}
+                          description={description}
+                          showDescription={showDescriptions}
+                        />
+                      </div>
+                    ))}
+                </div>
               </div>
-              <div className='grid grid-cols-3 lg:grid-cols-5'>
-                {edition[characterType]
-                  .map((id) => CHARACTERS[id])
-                  .map(({ id, name, description }) => (
-                    <div
-                      key={id}
-                      className={cn(
-                        'px-2 py-1 border border-red-600/30',
-                        selectedCharacters.includes(id) && 'bg-red-600/20',
-                      )}
-                      onClick={() => {
-                        const newSelected = selectedCharacters.slice();
-                        const idx = newSelected.findIndex((c) => c === id);
-                        if (idx !== -1) {
-                          newSelected.splice(idx, 1);
-                        } else {
-                          newSelected.push(id);
-                        }
-                        setSelectedCharacters(newSelected);
-                      }}
-                    >
-                      <BOTCCharacterPanel
-                        name={name}
-                        description={description}
-                        showDescription={showDescriptions}
-                      />
-                    </div>
-                  ))}
-              </div>
-            </div>
-          <div className='h-2' />
-          </>
+              <div className='h-2' />
+            </React.Fragment>
           );
         })}
       </div>
