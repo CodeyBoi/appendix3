@@ -8,7 +8,7 @@ export const range = (startOrStop: number, stop?: number, step = 1) => {
 };
 
 export const initObject = <K extends string | number | symbol, V>(
-  keys: K[],
+  keys: readonly K[],
   initialValue: V,
 ) =>
   keys.reduce(

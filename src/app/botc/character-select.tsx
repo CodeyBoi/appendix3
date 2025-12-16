@@ -1,7 +1,7 @@
 'use client';
 
 import Switch from 'components/input/switch';
-import { range } from 'utils/array';
+import { initObject, range } from 'utils/array';
 import { cn } from 'utils/class-names';
 import {
   CHARACTER_TYPES,
@@ -49,7 +49,7 @@ const generateCharacterRow = (
     <tr className={color} key={character + 'amount'}>
       <td
         className={cn(
-          'first-letter:capitalize border-x',
+          'border-x first-letter:capitalize',
           character === 'demons' && 'border-b',
         )}
       >
@@ -87,9 +87,22 @@ const BOTCCharacterSelect = ({
     [],
   );
 
+  const numberOfCharacters = getNumberOfCharacters(numberOfPlayers);
+  const numberOfSelectedCharacters = selectedCharacters.reduce(
+    (acc, selectedCharacterId) => {
+      for (const characterType of CHARACTER_TYPES) {
+        if (edition[characterType].includes(selectedCharacterId)) {
+          acc[characterType] = acc[characterType] + 1;
+        }
+      }
+      return acc;
+    },
+    initObject(CHARACTER_TYPES, 0),
+  );
+
   return (
     <div className='flex flex-col gap-2'>
-      <table className='text-center border- border-collapse'>
+      <table className='border- border-collapse text-center'>
         <tbody>
           <tr className='font-bold'>
             <td className='border-x border-t'>Players</td>
@@ -127,36 +140,50 @@ const BOTCCharacterSelect = ({
         min={MIN_PLAYERS}
         max={MAX_PLAYERS}
         defaultValue={numberOfPlayers}
-        onChange={(e) => onNumberOfPlayersChange(e.currentTarget.valueAsNumber)}
+        onChange={(e) => { onNumberOfPlayersChange(e.currentTarget.valueAsNumber); }}
       />
       <Switch
         label='Show character abilities'
         value={showDescriptions}
-        onChange={() => setShowDescriptions(!showDescriptions)}
+        onChange={() => { setShowDescriptions(!showDescriptions); }}
       />
       <Switch label='Allow duplicate characters' />
-      <div className='md:grid-cols-5 grid-cols-3'>
-        {CHARACTER_TYPES.map(t => edition[t]
-          .map((id) => CHARACTERS[id])
-          .map(({ id, name, description }) => (
-            <div key={id} onClick={() => {
-              const newSelected = selectedCharacters.slice();
-              const idx = newSelected.findIndex(c => c === id);
-              if (idx !== -1) {
-                newSelected.splice(idx, 1);
-              } else {
-                newSelected.push(id);
-              }
-              setSelectedCharacters(newSelected);
-            }}>
-              <BOTCCharacterPanel
-                name={name}
-                description={description}
-                showDescription={showDescriptions}
-                selected={selectedCharacters.includes(id)}
-              />
+      <div>
+        {CHARACTER_TYPES.map((characterType) => {
+          return (
+            <div className='flex flex-col rounded border'>
+              <h3 className='w-full bg-black text-white first-letter:capitalize'>
+                {characterType}
+              </h3>
+              <div className='grid-cols-3 md:grid-cols-5'>
+                {edition[characterType]
+                  .map((id) => CHARACTERS[id])
+                  .map(({ id, name, description }) => (
+                    <div
+                      key={id}
+                      onClick={() => {
+                        const newSelected = selectedCharacters.slice();
+                        const idx = newSelected.findIndex((c) => c === id);
+                        if (idx !== -1) {
+                          newSelected.splice(idx, 1);
+                        } else {
+                          newSelected.push(id);
+                        }
+                        setSelectedCharacters(newSelected);
+                      }}
+                    >
+                      <BOTCCharacterPanel
+                        name={name}
+                        description={description}
+                        showDescription={showDescriptions}
+                        selected={selectedCharacters.includes(id)}
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
-          )))}
+          );
+        })}
       </div>
     </div>
   );
