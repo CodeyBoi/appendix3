@@ -87,7 +87,6 @@ const selectRandom = (
   const selected: CharacterID[] = [];
   for (const characterType of CHARACTER_TYPES) {
     const copy = shuffle(edition[characterType].slice());
-    if (characterType === 'minions') console.log(copy);
     selected.push(...copy.slice(0, numberOfCharacters[characterType]));
   }
 
@@ -159,17 +158,23 @@ interface BOTCCharacterSelectProps {
   numberOfPlayers: number;
   onNumberOfPlayersChange: (numberOfPlayers: number) => void;
   edition: Edition;
+  onSelectedCharactersChange: (selectedCharacters: CharacterID[]) => void;
 }
 
 const BOTCCharacterSelect = ({
   numberOfPlayers,
   onNumberOfPlayersChange,
   edition,
+  onSelectedCharactersChange,
 }: BOTCCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
-  const [selectedCharacters, setSelectedCharacters] = useState<CharacterID[]>(
+  const [selectedCharacters, _setSelectedCharacters] = useState<CharacterID[]>(
     [],
   );
+  const setSelectedCharacters = (c: CharacterID[]) => {
+    onSelectedCharactersChange(c);
+    _setSelectedCharacters(c);
+  };
 
   const numberOfCharacters = getNumberOfCharacters(
     numberOfPlayers,
@@ -258,50 +263,48 @@ const BOTCCharacterSelect = ({
           Clear selection
         </Button>
       </div>
-      <div>
-        {CHARACTER_TYPES.map((characterType) => {
-          return (
-            <React.Fragment key={edition.id + characterType}>
-              <div className='flex flex-col rounded border-2 border-red-600'>
-                <div className='flex w-full justify-between gap-4 bg-red-600 px-2 text-white'>
-                  <h3 className='first-letter:capitalize'>{characterType}</h3>
-                  <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
-                </div>
-                <div className='grid grid-cols-3 lg:grid-cols-5'>
-                  {edition[characterType]
-                    .map((id) => CHARACTERS[id])
-                    .map(({ id, name, description }) => (
-                      <div
-                        key={id}
-                        className={cn(
-                          'border border-red-600/30 px-2 py-1',
-                          selectedCharacters.includes(id) && 'bg-red-600/20',
-                        )}
-                        onClick={() => {
-                          const newSelected = selectedCharacters.slice();
-                          const idx = newSelected.findIndex((c) => c === id);
-                          if (idx !== -1) {
-                            newSelected.splice(idx, 1);
-                          } else {
-                            newSelected.push(id);
-                          }
-                          setSelectedCharacters(newSelected);
-                        }}
-                      >
-                        <BOTCCharacterPanel
-                          name={name}
-                          description={description}
-                          showDescription={showDescriptions}
-                        />
-                      </div>
-                    ))}
-                </div>
+      {CHARACTER_TYPES.map((characterType) => {
+        return (
+          <React.Fragment key={edition.id + characterType}>
+            <div className='flex flex-col rounded border-2 border-red-600'>
+              <div className='flex w-full justify-between gap-4 bg-red-600 px-2 text-white'>
+                <h3 className='first-letter:capitalize'>{characterType}</h3>
+                <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
               </div>
-              <div className='h-2' />
-            </React.Fragment>
-          );
-        })}
-      </div>
+              <div className='grid grid-cols-3 lg:grid-cols-5'>
+                {edition[characterType]
+                  .map((id) => CHARACTERS[id])
+                  .map(({ id, name, description }) => (
+                    <div
+                      key={id}
+                      className={cn(
+                        'border border-red-600/30 px-2 py-1',
+                        selectedCharacters.includes(id) && 'bg-red-600/20',
+                      )}
+                      onClick={() => {
+                        const newSelected = selectedCharacters.slice();
+                        const idx = newSelected.findIndex((c) => c === id);
+                        if (idx !== -1) {
+                          newSelected.splice(idx, 1);
+                        } else {
+                          newSelected.push(id);
+                        }
+                        setSelectedCharacters(newSelected);
+                      }}
+                    >
+                      <BOTCCharacterPanel
+                        name={name}
+                        description={description}
+                        showDescription={showDescriptions}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <div className='h-2' />
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 };

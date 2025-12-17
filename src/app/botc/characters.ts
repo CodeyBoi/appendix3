@@ -39,29 +39,12 @@ export const EDITIONS: [Edition, Edition, Edition] = [
       'soldier',
       'mayor',
     ],
-    outsiders: [
-      'butler',
-      'drunk',
-      'recluse',
-      'saint',
-    ],
-    minions: [
-      'poisoner',
-      'spy',
-      'scarletwoman',
-      'baron',
-    ],
-    demons: [
-      'imp',
-    ],
-    travellers: [
-      'bureaucrat',
-      'thief',
-      'gunslinger',
-      'scapegoat',
-      'beggar',
-    ],
-  }, {
+    outsiders: ['butler', 'drunk', 'recluse', 'saint'],
+    minions: ['poisoner', 'spy', 'scarletwoman', 'baron'],
+    demons: ['imp'],
+    travellers: ['bureaucrat', 'thief', 'gunslinger', 'scapegoat', 'beggar'],
+  },
+  {
     id: 'bad-moon-rising',
     name: 'Bad Moon Rising',
     townsfolk: [
@@ -79,32 +62,12 @@ export const EDITIONS: [Edition, Edition, Edition] = [
       'pacifist',
       'fool',
     ],
-    outsiders: [
-      'tinker',
-      'moonchild',
-      'goon',
-      'lunatic',
-    ],
-    minions: [
-      'godfather',
-      'devilsadvocate',
-      'assassin',
-      'mastermind',
-    ],
-    demons: [
-      'zombuul',
-      'pukka',
-      'shabaloth',
-      'po',
-    ],
-    travellers: [
-      'apprentice',
-      'matron',
-      'judge',
-      'bishop',
-      'voudon',
-    ],
-  }, {
+    outsiders: ['tinker', 'moonchild', 'goon', 'lunatic'],
+    minions: ['godfather', 'devilsadvocate', 'assassin', 'mastermind'],
+    demons: ['zombuul', 'pukka', 'shabaloth', 'po'],
+    travellers: ['apprentice', 'matron', 'judge', 'bishop', 'voudon'],
+  },
+  {
     id: 'sects-and-violets',
     name: 'Sects and Violets',
     townsfolk: [
@@ -122,41 +85,37 @@ export const EDITIONS: [Edition, Edition, Edition] = [
       'juggler',
       'sage',
     ],
-    outsiders: [
-      'mutant',
-      'sweetheart',
-      'barber',
-      'klutz',
-    ],
-    minions: [
-      'eviltwin',
-      'witch',
-      'cerenovus',
-      'pithag',
-    ],
-    demons: [
-      'fanggu',
-      'vigormortis',
-      'nodashii',
-      'vortox',
-    ],
-    travellers: [
-      'barista',
-      'harlot',
-      'butcher',
-      'bonecollector',
-      'deviant',
-    ],
+    outsiders: ['mutant', 'sweetheart', 'barber', 'klutz'],
+    minions: ['eviltwin', 'witch', 'cerenovus', 'pithag'],
+    demons: ['fanggu', 'vigormortis', 'nodashii', 'vortox'],
+    travellers: ['barista', 'harlot', 'butcher', 'bonecollector', 'deviant'],
   },
 ] as const;
+
+export const NIGHT_ORDER: CharacterID[] = [
+  'poisoner',
+  'monk',
+  'scarletwoman',
+  'imp',
+  'ravenkeeper',
+  'washerwoman',
+  'librarian',
+  'investigator',
+  'chef',
+  'empath',
+  'fortuneteller',
+  'undertaker',
+  'butler',
+  'spy',
+];
 
 export const EDITION_IDS = [
   'trouble-brewing',
   'bad-moon-rising',
   'sects-and-violets',
   'custom',
-]
-export type EditionID = (typeof EDITION_IDS)[number]
+];
+export type EditionID = (typeof EDITION_IDS)[number];
 
 export interface BOTCCharacter {
   id: CharacterID;
@@ -282,65 +241,80 @@ const _characters = {
   // Trouble Brewing - Travelers
   bureaucrat: {
     name: 'Bureaucrat',
-    description: 'Each night, choose a player (not yourself): their vote counts as 3 votes tomorrow.',
+    description:
+      'Each night, choose a player (not yourself): their vote counts as 3 votes tomorrow.',
   },
   thief: {
     name: 'Thief',
-    description: 'Each night, choose a player (not yourself): their vote counts negatively tomorrow.',
+    description:
+      'Each night, choose a player (not yourself): their vote counts negatively tomorrow.',
   },
   gunslinger: {
     name: 'Gunslinger',
-    description: 'Each day, after the 1st vote has been tallied, you may choose a player that voted: they die.',
+    description:
+      'Each day, after the 1st vote has been tallied, you may choose a player that voted: they die.',
   },
   scapegoat: {
     name: 'Scapegoat',
-    description: 'If a player of your alignment is executed, you might be executed instead.',
+    description:
+      'If a player of your alignment is executed, you might be executed instead.',
   },
   beggar: {
     name: 'Beggar',
-    description: 'You must use a vote token to vote. If a dead player gives you theirs, you learn their alignment. You are sober & healthy.',
+    description:
+      'You must use a vote token to vote. If a dead player gives you theirs, you learn their alignment. You are sober & healthy.',
   },
 
   // Bad Moon Rising - Townsfolk
   grandmother: {
     name: 'Grandmother',
-    description: 'You start knowing a good player & their character. If the Demon kills them, you die too.',
+    description:
+      'You start knowing a good player & their character. If the Demon kills them, you die too.',
   },
   sailor: {
     name: 'Sailor',
-    description: "Each night, choose an alive player: either you or they are drunk until dusk. You can't die.",
+    description:
+      "Each night, choose an alive player: either you or they are drunk until dusk. You can't die.",
   },
   chambermaid: {
     name: 'Chambermaid',
-    description: 'Each night, choose 2 alive players (not yourself): you learn how many woke tonight due to their ability.',
+    description:
+      'Each night, choose 2 alive players (not yourself): you learn how many woke tonight due to their ability.',
   },
   exorcist: {
     name: 'Exorcist',
-    description: "Each night*, choose a player (different to last night): the Demon, if chosen, learns who you are then doesn't wake tonight.",
+    description:
+      "Each night*, choose a player (different to last night): the Demon, if chosen, learns who you are then doesn't wake tonight.",
   },
   innkeeper: {
     name: 'Innkeeper',
-    description: "Each night*, choose 2 players: they can't die tonight, but 1 is drunk until dusk.",
+    description:
+      "Each night*, choose 2 players: they can't die tonight, but 1 is drunk until dusk.",
   },
   gambler: {
     name: 'Gambler',
-    description: 'Each night*, choose a player & guess their character: if you guess wrong, you die.',
+    description:
+      'Each night*, choose a player & guess their character: if you guess wrong, you die.',
   },
   gossip: {
     name: 'Gossip',
-    description: 'Each day, you may make a public statement. Tonight, if it was true, a player dies.',
+    description:
+      'Each day, you may make a public statement. Tonight, if it was true, a player dies.',
   },
   courtier: {
     name: 'Courtier',
-    description: 'Once per game, at night, choose a character: they are drunk for 3 nights & 3 days.',
+    description:
+      'Once per game, at night, choose a character: they are drunk for 3 nights & 3 days.',
   },
   professor: {
     name: 'Professor',
-    description: 'Once per game, at night*, choose a dead player: if they are a Townsfolk, they are resurrected.',
+    description:
+      'Once per game, at night*, choose a dead player: if they are a Townsfolk, they are resurrected.',
   },
   minstrel: {
     name: 'Minstrel',
-    description: 'When a Minion dies by execution, all other players (except Travellers) are drunk until dusk tomorrow.',
+    description:
+      'When a Minion dies by execution, all other players (except Travellers) are drunk until dusk tomorrow.',
   },
   tealady: {
     name: 'Tea Lady',
@@ -358,493 +332,593 @@ const _characters = {
   // Bad Moon Rising - Outsiders
   tinker: {
     name: 'Tinker',
-    description: "You might die at any time.",
+    description: 'You might die at any time.',
   },
   moonchild: {
     name: 'Moonchild',
-    description: "When you learn that you died, publicly choose 1 alive player. Tonight, if it was a good player, they die.",
+    description:
+      'When you learn that you died, publicly choose 1 alive player. Tonight, if it was a good player, they die.',
   },
   goon: {
     name: 'Goon',
-    description: "Each night, the 1st player to choose you with their ability is drunk until dusk. You become their alignment.",
+    description:
+      'Each night, the 1st player to choose you with their ability is drunk until dusk. You become their alignment.',
   },
   lunatic: {
     name: 'Lunatic',
-    description: "You think you are a Demon, but you are not. The Demon knows who you are & who you choose at night.",
+    description:
+      'You think you are a Demon, but you are not. The Demon knows who you are & who you choose at night.',
   },
 
   // Bad Moon Rising - Minions
   godfather: {
     name: 'Godfather',
-    description: "You start knowing which Outsiders are in play. If 1 died today, choose a player tonight: they die. [-1 or +1 Outsider]",
+    description:
+      'You start knowing which Outsiders are in play. If 1 died today, choose a player tonight: they die. [-1 or +1 Outsider]',
   },
   devilsadvocate: {
     name: "Devil's Advocate",
-    description: "Each night, choose a living player (different to last night): if executed tomorrow, they don't die.",
+    description:
+      "Each night, choose a living player (different to last night): if executed tomorrow, they don't die.",
   },
   assassin: {
     name: 'Assassin',
-    description: "Once per game, at night*, choose a player: they die, even if for some reason they could not.",
+    description:
+      'Once per game, at night*, choose a player: they die, even if for some reason they could not.',
   },
   mastermind: {
     name: 'Mastermind',
-    description: "If the Demon dies by execution (ending the game), play for 1 more day. If a player is then executed, their team loses.",
+    description:
+      'If the Demon dies by execution (ending the game), play for 1 more day. If a player is then executed, their team loses.',
   },
 
   // Bad Moon Rising - Demons
   zombuul: {
     name: 'Zombuul',
-    description: "Each night*, if no-one died today, choose a player: they die. The 1st time you die, you live but register as dead.",
+    description:
+      'Each night*, if no-one died today, choose a player: they die. The 1st time you die, you live but register as dead.',
   },
   pukka: {
     name: 'Pukka',
-    description: "Each night, choose a player: they are poisoned. The previously poisoned player dies then becomes healthy.",
+    description:
+      'Each night, choose a player: they are poisoned. The previously poisoned player dies then becomes healthy.',
   },
   shabaloth: {
     name: 'Shabaloth',
-    description: "Each night*, choose 2 players: they die. A dead player you chose last night might be regurgitated.",
+    description:
+      'Each night*, choose 2 players: they die. A dead player you chose last night might be regurgitated.',
   },
   po: {
     name: 'Po',
-    description: "Each night*, you may choose a player: they die. If your last choice was no-one, choose 3 players tonight.",
+    description:
+      'Each night*, you may choose a player: they die. If your last choice was no-one, choose 3 players tonight.',
   },
 
   // Bad Moon Rising - Travellers
   apprentice: {
     name: 'Apprentice',
-    description: "On your 1st night, you gain a Townsfolk ability (if good), or a Minion ability (if evil).",
+    description:
+      'On your 1st night, you gain a Townsfolk ability (if good), or a Minion ability (if evil).',
   },
   matron: {
     name: 'Matron',
-    description: "Each day, you may choose up to 3 sets of 2 players to swap seats. Players may not leave their seats to talk in private.",
+    description:
+      'Each day, you may choose up to 3 sets of 2 players to swap seats. Players may not leave their seats to talk in private.',
   },
   judge: {
     name: 'Judge',
-    description: "Once per game, if another player nominated, you may choose to force the current execution to pass or fail.",
+    description:
+      'Once per game, if another player nominated, you may choose to force the current execution to pass or fail.',
   },
   bishop: {
     name: 'Bishop',
-    description: "Only the Storyteller can nominate. At least 1 opposing player must be nominated each day.",
+    description:
+      'Only the Storyteller can nominate. At least 1 opposing player must be nominated each day.',
   },
   voudon: {
     name: 'Voudon',
-    description: "Only you & the dead can vote. They don't need a vote token to do so. A 50% majority isn't required.",
+    description:
+      "Only you & the dead can vote. They don't need a vote token to do so. A 50% majority isn't required.",
   },
 
   // Sects and Violets - Townsfolk
   clockmaker: {
     name: 'Clockmaker',
-    description: "You start knowing how many steps from the Demon to its nearest Minion.",
+    description:
+      'You start knowing how many steps from the Demon to its nearest Minion.',
   },
   dreamer: {
     name: 'Dreamer',
-    description: "Each night, choose a player (not yourself or Travellers): you learn 1 good & 1 evil character, 1 of which is correct.",
+    description:
+      'Each night, choose a player (not yourself or Travellers): you learn 1 good & 1 evil character, 1 of which is correct.',
   },
   snakecharmer: {
     name: 'Snake Charmer',
-    description: "Each night, choose an alive player: a chosen Demon swaps characters & alignments with you & is then poisoned.",
+    description:
+      'Each night, choose an alive player: a chosen Demon swaps characters & alignments with you & is then poisoned.',
   },
   mathematician: {
     name: 'Mathematician',
-    description: "Each night, you learn how many players’ abilities worked abnormally (since dawn) due to another character's ability.",
+    description:
+      "Each night, you learn how many players’ abilities worked abnormally (since dawn) due to another character's ability.",
   },
   flowergirl: {
     name: 'Flowergirl',
-    description: "Each night*, you learn if a Demon voted today.",
+    description: 'Each night*, you learn if a Demon voted today.',
   },
   towncrier: {
     name: 'Town Crier',
-    description: "Each night*, you learn if a Minion nominated today.",
+    description: 'Each night*, you learn if a Minion nominated today.',
   },
   oracle: {
     name: 'Oracle',
-    description: "Each night*, you learn how many dead players are evil.",
+    description: 'Each night*, you learn how many dead players are evil.',
   },
   savant: {
     name: 'Savant',
-    description: "Each day, you may visit the Storyteller to learn 2 things in private: 1 is true & 1 is false.",
+    description:
+      'Each day, you may visit the Storyteller to learn 2 things in private: 1 is true & 1 is false.',
   },
   seamstress: {
     name: 'Seamstress',
-    description: "Once per game, at night, choose 2 players (not yourself): you learn if they are the same alignment.",
+    description:
+      'Once per game, at night, choose 2 players (not yourself): you learn if they are the same alignment.',
   },
   philosopher: {
     name: 'Philosopher',
-    description: "Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk.",
+    description:
+      'Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk.',
   },
   artist: {
     name: 'Artist',
-    description: "Once per game, during the day, privately ask the Storyteller any yes/no question.",
+    description:
+      'Once per game, during the day, privately ask the Storyteller any yes/no question.',
   },
   juggler: {
     name: 'Juggler',
-    description: "On your 1st day, publicly guess up to 5 players' characters. That night, you learn how many you got correct.",
+    description:
+      "On your 1st day, publicly guess up to 5 players' characters. That night, you learn how many you got correct.",
   },
   sage: {
     name: 'Sage',
-    description: "If the Demon kills you, you learn that it is 1 of 2 players.",
+    description: 'If the Demon kills you, you learn that it is 1 of 2 players.',
   },
 
   // Sects and Violets - Outsiders
   mutant: {
     name: 'Mutant',
-    description: "If you are “mad” about being an Outsider, you might be executed.",
+    description:
+      'If you are “mad” about being an Outsider, you might be executed.',
   },
   sweetheart: {
     name: 'Sweetheart',
-    description: "When you die, 1 player is drunk from now on.",
+    description: 'When you die, 1 player is drunk from now on.',
   },
   barber: {
     name: 'Barber',
-    description: "If you died today or tonight, the Demon may choose 2 players (not another Demon) to swap characters.",
+    description:
+      'If you died today or tonight, the Demon may choose 2 players (not another Demon) to swap characters.',
   },
   klutz: {
     name: 'Klutz',
-    description: "When you learn that you died, publicly choose 1 alive player: if they are evil, your team loses.",
+    description:
+      'When you learn that you died, publicly choose 1 alive player: if they are evil, your team loses.',
   },
 
   // Sects and Violets - Minions
   eviltwin: {
     name: 'Evil Twin',
-    description: "You & an opposing player know each other. If the good player is executed, evil wins. Good can't win if you both live.",
+    description:
+      "You & an opposing player know each other. If the good player is executed, evil wins. Good can't win if you both live.",
   },
   witch: {
     name: 'Witch',
-    description: "Each night, choose a player: if they nominate tomorrow, they die. If just 3 players live, you lose this ability.",
+    description:
+      'Each night, choose a player: if they nominate tomorrow, they die. If just 3 players live, you lose this ability.',
   },
   cerenovus: {
     name: 'Cerenovus',
-    description: "Each night, choose a player & a good character: they are “mad” they are this character tomorrow, or might be executed.",
+    description:
+      'Each night, choose a player & a good character: they are “mad” they are this character tomorrow, or might be executed.',
   },
   pithag: {
     name: 'Pit-Hag',
-    description: "Each night*, choose a player & a character they become (if not in play). If a Demon is made, deaths tonight are arbitrary.",
+    description:
+      'Each night*, choose a player & a character they become (if not in play). If a Demon is made, deaths tonight are arbitrary.',
   },
 
   // Sects and Violets - Demons
   fanggu: {
     name: 'Fang Gu',
-    description: "Each night*, choose a player: they die. The 1st Outsider this kills becomes an evil Fang Gu & you die instead. [+1 Outsider]",
+    description:
+      'Each night*, choose a player: they die. The 1st Outsider this kills becomes an evil Fang Gu & you die instead. [+1 Outsider]',
   },
   vigormortis: {
     name: 'Vigormortis',
-    description: "Each night*, choose a player: they die. Minions you kill keep their ability & poison 1 Townsfolk neighbor. [-1 Outsider]",
+    description:
+      'Each night*, choose a player: they die. Minions you kill keep their ability & poison 1 Townsfolk neighbor. [-1 Outsider]',
   },
   nodashii: {
     name: 'No Dashii',
-    description: "Each night*, choose a player: they die. Your 2 Townsfolk neighbors are poisoned.",
+    description:
+      'Each night*, choose a player: they die. Your 2 Townsfolk neighbors are poisoned.',
   },
   vortox: {
     name: 'Vortox',
-    description: "Each night*, choose a player: they die. Townsfolk abilities yield false info. Each day, if no-one is executed, evil wins.",
+    description:
+      'Each night*, choose a player: they die. Townsfolk abilities yield false info. Each day, if no-one is executed, evil wins.',
   },
-  
+
   // Sects and Violets - Travellers
   barista: {
     name: 'Barista',
-    description: "Each night, until dusk, 1) a player becomes sober, healthy & gets true info, or 2) their ability works twice. They learn which.",
+    description:
+      'Each night, until dusk, 1) a player becomes sober, healthy & gets true info, or 2) their ability works twice. They learn which.',
   },
   harlot: {
     name: 'Harlot',
-    description: "Each night*, choose a living player: if they agree, you learn their character, but you both might die.",
+    description:
+      'Each night*, choose a living player: if they agree, you learn their character, but you both might die.',
   },
   butcher: {
     name: 'Butcher',
-    description: "Each day, after the 1st execution, you may nominate again.",
+    description: 'Each day, after the 1st execution, you may nominate again.',
   },
   bonecollector: {
     name: 'Bone Collector',
-    description: "Once per game, at night*, choose a dead player: they regain their ability until dusk.",
+    description:
+      'Once per game, at night*, choose a dead player: they regain their ability until dusk.',
   },
   deviant: {
     name: 'Deviant',
-    description: "If you were funny today, you cannot die by exile.",
+    description: 'If you were funny today, you cannot die by exile.',
   },
 
   // Carousel - Townsfolk
   acrobat: {
-    name: "Acrobat",
-    description: "Each night*, choose a player: if they are or become drunk or poisoned tonight, you die.",
+    name: 'Acrobat',
+    description:
+      'Each night*, choose a player: if they are or become drunk or poisoned tonight, you die.',
   },
   alchemist: {
-    name: "Alchemist",
-    description: "You have a Minion ability. When using this, the Storyteller may prompt you to choose differently.",
+    name: 'Alchemist',
+    description:
+      'You have a Minion ability. When using this, the Storyteller may prompt you to choose differently.',
   },
   alsaahir: {
-    name: "Alsaahir",
-    description: "Each day, if you publicly guess which players are Minion(s) and which are Demon(s), good wins.",
+    name: 'Alsaahir',
+    description:
+      'Each day, if you publicly guess which players are Minion(s) and which are Demon(s), good wins.',
   },
   amnesiac: {
-    name: "Amnesiac",
-    description: "You do not know what your ability is. Each day, privately guess what it is: you learn how accurate you are.",
+    name: 'Amnesiac',
+    description:
+      'You do not know what your ability is. Each day, privately guess what it is: you learn how accurate you are.',
   },
   atheist: {
-    name: "Atheist",
-    description: "The Storyteller can break the game rules, and if executed, good wins, even if you are dead. [No evil characters]",
+    name: 'Atheist',
+    description:
+      'The Storyteller can break the game rules, and if executed, good wins, even if you are dead. [No evil characters]',
   },
   balloonist: {
-    name: "Balloonist",
-    description: "Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]",
+    name: 'Balloonist',
+    description:
+      'Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]',
   },
   banshee: {
-    name: "Banshee",
-    description: "If the Demon kills you, all players learn this. From now on, you may nominate twice per day and vote twice per nomination.",
+    name: 'Banshee',
+    description:
+      'If the Demon kills you, all players learn this. From now on, you may nominate twice per day and vote twice per nomination.',
   },
   bountyhunter: {
-    name: "Bounty Hunter",
-    description: "You start knowing 1 evil player. If the player you know dies, you learn another evil player tonight. [1 Townsfolk is evil]",
+    name: 'Bounty Hunter',
+    description:
+      'You start knowing 1 evil player. If the player you know dies, you learn another evil player tonight. [1 Townsfolk is evil]',
   },
   cannibal: {
-    name: "Cannibal",
-    description: "You have the ability of the recently killed executee. If they are evil, you are poisoned until a good player dies by execution.",
+    name: 'Cannibal',
+    description:
+      'You have the ability of the recently killed executee. If they are evil, you are poisoned until a good player dies by execution.',
   },
   choirboy: {
-    name: "Choirboy",
-    description: "If the Demon kills the King, you learn which player is the Demon. [+the King]",
+    name: 'Choirboy',
+    description:
+      'If the Demon kills the King, you learn which player is the Demon. [+the King]',
   },
   cultleader: {
-    name: "Cult Leader",
-    description: "Each night, you become the alignment of an alive neighbor. If all good players choose to join your cult, your team wins.",
+    name: 'Cult Leader',
+    description:
+      'Each night, you become the alignment of an alive neighbor. If all good players choose to join your cult, your team wins.',
   },
   engineer: {
-    name: "Engineer",
-    description: "Once per game, at night, choose which Minions or which Demon is in play.",
+    name: 'Engineer',
+    description:
+      'Once per game, at night, choose which Minions or which Demon is in play.',
   },
   farmer: {
-    name: "Farmer",
-    description: "When you die at night, an alive good player becomes a Farmer.",
+    name: 'Farmer',
+    description:
+      'When you die at night, an alive good player becomes a Farmer.',
   },
   fisherman: {
-    name: "Fisherman",
-    description: "Once per game, during the day, visit the Storyteller for some advice to help your team win.",
+    name: 'Fisherman',
+    description:
+      'Once per game, during the day, visit the Storyteller for some advice to help your team win.',
   },
   general: {
-    name: "General",
-    description: "Each night, you learn which alignment the Storyteller believes is winning: good, evil, or neither.",
+    name: 'General',
+    description:
+      'Each night, you learn which alignment the Storyteller believes is winning: good, evil, or neither.',
   },
   highpriestess: {
-    name: "High Priestess",
-    description: "Each night, learn which player the Storyteller believes you should talk to most.",
+    name: 'High Priestess',
+    description:
+      'Each night, learn which player the Storyteller believes you should talk to most.',
   },
   huntsman: {
-    name: "Huntsman",
-    description: "Once per game, at night, choose a living player: the Damsel, if chosen, becomes a not-in-play Townsfolk. [+the Damsel]",
+    name: 'Huntsman',
+    description:
+      'Once per game, at night, choose a living player: the Damsel, if chosen, becomes a not-in-play Townsfolk. [+the Damsel]',
   },
   king: {
-    name: "King",
-    description: "Each night, if the dead equal or outnumber the living, you learn 1 alive character. The Demon knows you are the King.",
+    name: 'King',
+    description:
+      'Each night, if the dead equal or outnumber the living, you learn 1 alive character. The Demon knows you are the King.',
   },
   knight: {
-    name: "Knight",
-    description: "You start knowing 2 players that are not the Demon.",
+    name: 'Knight',
+    description: 'You start knowing 2 players that are not the Demon.',
   },
   lycanthrope: {
-    name: "Lycanthrope",
-    description: "Each night*, choose an alive player. If good, they die & the Demon doesn’t kill tonight. One good player registers as evil.",
+    name: 'Lycanthrope',
+    description:
+      'Each night*, choose an alive player. If good, they die & the Demon doesn’t kill tonight. One good player registers as evil.',
   },
   magician: {
-    name: "Magician",
-    description: "The Demon thinks you are a Minion. Minions think you are a Demon.",
+    name: 'Magician',
+    description:
+      'The Demon thinks you are a Minion. Minions think you are a Demon.',
   },
   nightwatchman: {
-    name: "Nightwatchman",
-    description: "Once per game, at night, choose a player: they learn you are the Nightwatchman.",
+    name: 'Nightwatchman',
+    description:
+      'Once per game, at night, choose a player: they learn you are the Nightwatchman.',
   },
   noble: {
-    name: "Noble",
-    description: "You start knowing 3 players, 1 and only 1 of which is evil.",
+    name: 'Noble',
+    description: 'You start knowing 3 players, 1 and only 1 of which is evil.',
   },
   pixie: {
-    name: "Pixie",
-    description: "You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.",
+    name: 'Pixie',
+    description:
+      'You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.',
   },
   poppygrower: {
-    name: "Poppygrower",
-    description: "Minions & Demons do not know each other. If you die, they learn who each other are that night.",
+    name: 'Poppygrower',
+    description:
+      'Minions & Demons do not know each other. If you die, they learn who each other are that night.',
   },
   princess: {
-    name: "Princess",
-    description: "On your 1st day, if you nominated & executed a player, the Demon doesn't kill tonight.",
+    name: 'Princess',
+    description:
+      "On your 1st day, if you nominated & executed a player, the Demon doesn't kill tonight.",
   },
   preacher: {
-    name: "Preacher",
-    description: "Each night, choose a player: a Minion, if chosen, learns this. All chosen Minions have no ability.",
+    name: 'Preacher',
+    description:
+      'Each night, choose a player: a Minion, if chosen, learns this. All chosen Minions have no ability.',
   },
   shugenja: {
-    name: "Shugenja",
-    description: "You start knowing if your closest evil player is clockwise or anti-clockwise. If equidistant, this info is arbitrary.",
+    name: 'Shugenja',
+    description:
+      'You start knowing if your closest evil player is clockwise or anti-clockwise. If equidistant, this info is arbitrary.',
   },
   steward: {
-    name: "Steward",
-    description: "You start knowing 1 good player.",
+    name: 'Steward',
+    description: 'You start knowing 1 good player.',
   },
   villageidiot: {
-    name: "Village Idiot",
-    description: "Each night, choose a player: you learn their alignment. [+0 to +2 Village Idiots. 1 of the extras is drunk]",
+    name: 'Village Idiot',
+    description:
+      'Each night, choose a player: you learn their alignment. [+0 to +2 Village Idiots. 1 of the extras is drunk]',
   },
 
   // Carousel - Outsiders
   damsel: {
-    name: "Damsel",
-    description: "All Minions know a Damsel is in play. If a Minion publicly guesses you (once), your team loses.",
+    name: 'Damsel',
+    description:
+      'All Minions know a Damsel is in play. If a Minion publicly guesses you (once), your team loses.',
   },
   golem: {
-    name: "Golem",
-    description: "You may only nominate once per game. When you do, if the nominee is not the Demon, they die.",
+    name: 'Golem',
+    description:
+      'You may only nominate once per game. When you do, if the nominee is not the Demon, they die.',
   },
   heretic: {
-    name: "Heretic",
-    description: "Whoever wins, loses & whoever loses, wins, even if you are dead.",
+    name: 'Heretic',
+    description:
+      'Whoever wins, loses & whoever loses, wins, even if you are dead.',
   },
   hermit: {
-    name: "Hermit",
-    description: "You have all Outsider abilities. [-0 or -1 Outsider]",
+    name: 'Hermit',
+    description: 'You have all Outsider abilities. [-0 or -1 Outsider]',
   },
   hatter: {
-    name: "Hatter",
-    description: "If you died today or tonight, the Minion & Demon players may choose new Minion & Demon characters to be.",
+    name: 'Hatter',
+    description:
+      'If you died today or tonight, the Minion & Demon players may choose new Minion & Demon characters to be.',
   },
   ogre: {
-    name: "Ogre",
-    description: "On your 1st night, choose a player (not yourself): you become their alignment (you don't know which) even if drunk or poisoned.",
+    name: 'Ogre',
+    description:
+      "On your 1st night, choose a player (not yourself): you become their alignment (you don't know which) even if drunk or poisoned.",
   },
   plaguedoctor: {
-    name: "Plague Doctor",
-    description: "When you die, the Storyteller gains a Minion ability.",
+    name: 'Plague Doctor',
+    description: 'When you die, the Storyteller gains a Minion ability.',
   },
   politician: {
-    name: "Politician",
-    description: "If you were the player most responsible for your team losing, you change alignment & win, even if dead.",
+    name: 'Politician',
+    description:
+      'If you were the player most responsible for your team losing, you change alignment & win, even if dead.',
   },
   puzzlemaster: {
-    name: "Puzzlemaster",
-    description: "1 player is drunk, even if you die. If you guess (once) who it is, learn the Demon player, but guess wrong & get false info.",
+    name: 'Puzzlemaster',
+    description:
+      '1 player is drunk, even if you die. If you guess (once) who it is, learn the Demon player, but guess wrong & get false info.',
   },
   snitch: {
-    name: "Snitch",
-    description: "Each Minion gets 3 bluffs.",
+    name: 'Snitch',
+    description: 'Each Minion gets 3 bluffs.',
   },
   zealot: {
-    name: "Zealot",
-    description: "If there are 5 or more players alive, you must vote for every nomination.",
+    name: 'Zealot',
+    description:
+      'If there are 5 or more players alive, you must vote for every nomination.',
   },
 
   // Carousel - Minions
   boffin: {
-    name: "Boffin",
-    description: "The Demon (even if drunk or poisoned) has a not-in-play good character’s ability. You both know which.",
+    name: 'Boffin',
+    description:
+      'The Demon (even if drunk or poisoned) has a not-in-play good character’s ability. You both know which.',
   },
   boomdandy: {
-    name: "Boomdandy",
-    description: "If you are executed, all but 3 players die. After a 10 to 1 countdown, the player with the most players pointing at them, dies.",
+    name: 'Boomdandy',
+    description:
+      'If you are executed, all but 3 players die. After a 10 to 1 countdown, the player with the most players pointing at them, dies.',
   },
   fearmonger: {
-    name: "Fearmonger",
-    description: "Each night, choose a player: if you nominate & execute them, their team loses. All players know if you choose a new player.",
+    name: 'Fearmonger',
+    description:
+      'Each night, choose a player: if you nominate & execute them, their team loses. All players know if you choose a new player.',
   },
   goblin: {
-    name: "Goblin",
-    description: "If you publicly claim to be the Goblin when nominated & are executed that day, your team wins.",
+    name: 'Goblin',
+    description:
+      'If you publicly claim to be the Goblin when nominated & are executed that day, your team wins.',
   },
   harpy: {
-    name: "Harpy",
-    description: "Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die.",
+    name: 'Harpy',
+    description:
+      'Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die.',
   },
   marionette: {
-    name: "Marionette",
-    description: "You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]",
+    name: 'Marionette',
+    description:
+      'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
   },
   mezepheles: {
-    name: "Mezepheles",
-    description: "You start knowing a secret word. The 1st good player to say this word becomes evil that night.",
+    name: 'Mezepheles',
+    description:
+      'You start knowing a secret word. The 1st good player to say this word becomes evil that night.',
   },
   organgrinder: {
-    name: "Organ Grinder",
-    description: "All players keep their eyes closed when voting and the vote tally is secret. Each night, choose if you are drunk until dusk.",
+    name: 'Organ Grinder',
+    description:
+      'All players keep their eyes closed when voting and the vote tally is secret. Each night, choose if you are drunk until dusk.',
   },
   summoner: {
-    name: "Summoner",
-    description: "You get 3 bluffs. On the 3rd night, choose a player: they become an evil Demon of your choice. [No Demon]",
+    name: 'Summoner',
+    description:
+      'You get 3 bluffs. On the 3rd night, choose a player: they become an evil Demon of your choice. [No Demon]',
   },
   psychopath: {
-    name: "Psychopath",
-    description: "Each day, before nominations, you may publicly choose a player: they die. If executed, you only die if you lose roshambo.",
+    name: 'Psychopath',
+    description:
+      'Each day, before nominations, you may publicly choose a player: they die. If executed, you only die if you lose roshambo.',
   },
   vizier: {
-    name: "Vizier",
-    description: "All players know you are the Vizier. You cannot die during the day. If good voted, you may choose to execute immediately.",
+    name: 'Vizier',
+    description:
+      'All players know you are the Vizier. You cannot die during the day. If good voted, you may choose to execute immediately.',
   },
   widow: {
-    name: "Widow",
-    description: "On your 1st night, look at the Grimoire & choose a player: they are poisoned. 1 good player knows a Widow is in play.",
+    name: 'Widow',
+    description:
+      'On your 1st night, look at the Grimoire & choose a player: they are poisoned. 1 good player knows a Widow is in play.',
   },
   wizard: {
-    name: "Wizard",
-    description: "Once per game, choose to make a wish. If granted, it might have a price & leave a clue as to its nature.",
+    name: 'Wizard',
+    description:
+      'Once per game, choose to make a wish. If granted, it might have a price & leave a clue as to its nature.',
   },
   xaan: {
-    name: "Xaan",
-    description: "On night X, all Townsfolk are poisoned until dusk. [X Outsiders]",
+    name: 'Xaan',
+    description:
+      'On night X, all Townsfolk are poisoned until dusk. [X Outsiders]',
   },
   wraith: {
-    name: "Wraith",
-    description: "You may choose to open your eyes at night. You wake when other evil players do.",
+    name: 'Wraith',
+    description:
+      'You may choose to open your eyes at night. You wake when other evil players do.',
   },
 
   // Carousel - Demons
   riot: {
-    name: "Riot",
-    description: "On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen.",
+    name: 'Riot',
+    description:
+      'On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen.',
   },
   alhadikhia: {
-    name: "Al-Hadikhia",
-    description: "Each night*, you may choose 3 players (all players learn who): each silently chooses to live or die, but if all live, all die.",
+    name: 'Al-Hadikhia',
+    description:
+      'Each night*, you may choose 3 players (all players learn who): each silently chooses to live or die, but if all live, all die.',
   },
   kazali: {
-    name: "Kazali",
-    description: "Each night*, choose a player: they die. [You choose which players are which Minions. -? to +? Outsiders]",
+    name: 'Kazali',
+    description:
+      'Each night*, choose a player: they die. [You choose which players are which Minions. -? to +? Outsiders]',
   },
   legion: {
-    name: "Legion",
-    description: "Each night*, a player might die. Executions fail if only evil voted. You register as a Minion too. [Most players are Legion]",
+    name: 'Legion',
+    description:
+      'Each night*, a player might die. Executions fail if only evil voted. You register as a Minion too. [Most players are Legion]',
   },
   leviathan: {
-    name: "Leviathan",
-    description: "If more than 1 good player is executed, evil wins. All players know you are in play. After day 5, evil wins.",
+    name: 'Leviathan',
+    description:
+      'If more than 1 good player is executed, evil wins. All players know you are in play. After day 5, evil wins.',
   },
   lilmonsta: {
     name: "Lil'Monsta",
     description: `Each night, Minions choose who babysits Lil' Monsta & "is the Demon". Each night*, a player might die. [+1 Minion]`,
   },
   lleech: {
-    name: "Lleech",
-    description: "Each night*, choose a player: they die. You start by choosing a player: they are poisoned. You die if & only if they are dead.",
+    name: 'Lleech',
+    description:
+      'Each night*, choose a player: they die. You start by choosing a player: they are poisoned. You die if & only if they are dead.',
   },
   lordoftyphon: {
-    name: "Lord of Typhon",
-    description: "Each night*, choose a player: they die. [Evil characters are in a line. You are in the middle. +1 Minion. -? to +? Outsiders]",
+    name: 'Lord of Typhon',
+    description:
+      'Each night*, choose a player: they die. [Evil characters are in a line. You are in the middle. +1 Minion. -? to +? Outsiders]',
   },
   ojo: {
-    name: "Ojo",
-    description: "Each night*, choose a character: they die. If they are not in play, the Storyteller chooses who dies.",
+    name: 'Ojo',
+    description:
+      'Each night*, choose a character: they die. If they are not in play, the Storyteller chooses who dies.',
   },
   yaggababble: {
-    name: "Yaggababble",
-    description: "You start knowing a secret phrase. For each time you said it publicly today, a player might die.",
+    name: 'Yaggababble',
+    description:
+      'You start knowing a secret phrase. For each time you said it publicly today, a player might die.',
   },
 
   // Carousel - Townsfolk
   gangster: {
-    name: "Gangster",
-    description: "Once per day, you may choose to kill an alive neighbor, if your other alive neighbor agrees.",
+    name: 'Gangster',
+    description:
+      'Once per day, you may choose to kill an alive neighbor, if your other alive neighbor agrees.',
   },
   gnome: {
-    name: "Gnome",
-    description: "All players start knowing a player of your alignment. You may choose to kill anyone who nominates them.",
+    name: 'Gnome',
+    description:
+      'All players start knowing a player of your alignment. You may choose to kill anyone who nominates them.',
   },
 } as const;
 
-export type CharacterID = keyof typeof _characters
+export type CharacterID = keyof typeof _characters;
 
 export const CHARACTERS = Object.entries(_characters).reduce(
   (acc, [id, val]) => {
@@ -859,9 +933,82 @@ export interface BOTCPlayer {
   characterType: CharacterType;
   corpsId: string;
   reminders: Reminder[];
+  alive: boolean;
+  hasVoteToken: boolean;
+  isDrunk: boolean;
+  isPoisoned: boolean;
 }
 
 export interface Reminder {
   characterId: CharacterID;
   message: string;
 }
+
+interface NightOrderEntry {
+  firstNight?: string;
+  otherNights?: string;
+}
+
+export const NIGHT_ORDER_TEXT: Partial<Record<CharacterID, NightOrderEntry>> = {
+  poisoner: {
+    firstNight: 'The poisoner points to a player. That player is poisoned.',
+    otherNights:
+      'The previously poisoned player is no longer poisoned. The Poisoner points to a player. That player is poisoned.',
+  },
+  monk: {
+    otherNights:
+      "The previously protected player is no longer protected. The Monk points to a player not themself. Mark that player 'Protected'.",
+  },
+  scarletwoman: {
+    otherNights:
+      "If the Scarlet Woman became the Demon today: Show the 'You are' card, then the demon token.",
+  },
+  imp: {
+    otherNights:
+      "The Imp points to a player. That player dies. If the Imp chose themselves: Replace the character of 1 alive minion with a spare Imp token. Show the 'You are' card, then the Imp token.",
+  },
+  ravenkeeper: {
+    otherNights:
+      "If the Ravenkeeper died tonight: The Ravenkeeper points to a player. Show that player's character token.",
+  },
+  washerwoman: {
+    firstNight:
+      'Show the character token of a Townsfolk in play. Point to two players, one of which is that character.',
+  },
+  librarian: {
+    firstNight:
+      'Show the character token of an Outsider in play. Point to two players, one of which is that character.',
+  },
+  investigator: {
+    firstNight:
+      'Show the character token of a Minion in play. Point to two players, one of which is that character.',
+  },
+  chef: {
+    firstNight:
+      'Show the finger signal (0, 1, 2, …) for the number of pairs of neighbouring evil players.',
+  },
+  empath: {
+    firstNight:
+      'Show the finger signal (0, 1, 2) for the number of evil alive neighbours of the Empath.',
+    otherNights:
+      'Show the finger signal (0, 1, 2) for the number of evil alive neighbours of the Empath.',
+  },
+  fortuneteller: {
+    firstNight:
+      'The Fortune Teller points to two players. Give the head signal (nod yes, shake no) for whether one of those players is the Demon. ',
+    otherNights:
+      "The Fortune Teller points to two players. Show the head signal (nod 'yes', shake 'no') for whether one of those players is the Demon.",
+  },
+  undertaker: {
+    otherNights:
+      "If a player was executed today: Show that player's character token.",
+  },
+  butler: {
+    firstNight: "The Butler points to a player. Mark that player as 'Master'.",
+    otherNights: "The Butler points to a player. Mark that player as 'Master'.",
+  },
+  spy: {
+    firstNight: 'Show the Grimoire to the Spy for as long as they need.',
+    otherNights: 'Show the Grimoire to the Spy for as long as they need.',
+  },
+};

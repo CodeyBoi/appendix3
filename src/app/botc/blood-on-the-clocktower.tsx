@@ -8,7 +8,9 @@ import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { Metadata } from 'next';
 import { useState } from 'react';
 import BOTCCharacterSelectTable from './character-select';
-import { BOTCPlayer, CharacterID, CharacterType, EDITIONS } from './characters';
+import { BOTCPlayer, CharacterID, EDITIONS, NIGHT_ORDER } from './characters';
+import NightOrderEntry from './night-order-entry';
+import Switch from 'components/input/switch';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -17,12 +19,14 @@ export const metadata: Metadata = {
 interface GameState {
   numberOfPlayers: number;
   editionId: string;
+  characters: CharacterID[];
   players: BOTCPlayer[];
 }
 
 const newGameState: GameState = {
   numberOfPlayers: 7,
   editionId: 'trouble-brewing',
+  characters: [],
   players: [],
 };
 
@@ -42,7 +46,20 @@ const BloodOnTheClocktowerElement = ({
     _setSearchParamsGameState(JSON.stringify(newGameState));
   };
 
-  const edition = EDITIONS.find((edition) => edition.id === gameState.editionId)
+  const [showFirstNight, setShowFirstNight] = useState(true);
+  const [showDeadCharacters, setShowDeadCharacters] = useState(false);
+  const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
+
+  const edition = EDITIONS.find(
+    (edition) => edition.id === gameState.editionId,
+  );
+  const isTeensyville = gameState.numberOfPlayers < 7;
+
+  if (!edition) {
+    return <div>NO EDITION FOUND</div>;
+  }
+
+  const demon = gameState.characters.find((c) => edition.demons.includes(c));
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
@@ -53,37 +70,106 @@ const BloodOnTheClocktowerElement = ({
         <div className='h-2' />
         <Select
           label='Edition'
-          options={EDITIONS.map((e) => ({ value: e.id, label: e.name })).concat([{value: 'custom', label: 'Custom Script' }])}
+          options={EDITIONS.map((e) => ({ value: e.id, label: e.name })).concat(
+            [{ value: 'custom', label: 'Custom Script' }],
+          )}
           onChange={(v) => {
             setGameState({ ...gameState, editionId: v });
           }}
           value={gameState.editionId}
         />
         <div className='h-2' />
-        {edition ? <>
-        <Modal
-          title={`Select Characters - ${edition.name}`}
-          target={
-            <Button>
-              <IconUser />
-              Select Characters
-            </Button>
-          }
-          withCloseButton
-        >
-          <BOTCCharacterSelectTable
-            numberOfPlayers={gameState.numberOfPlayers}
-            onNumberOfPlayersChange={(n) =>
-              setGameState({ ...gameState, numberOfPlayers: n })
-            }
-            edition={edition}
-          />
-        </Modal>
-        <div className='h-2' />
+        {edition ? (
+          <>
+            <Modal
+              title={`Select Characters - ${edition.name}`}
+              target={
+                <Button>
+                  <IconUser />
+                  Select Characters
+                </Button>
+              }
+              withCloseButton
+            >
+              <BOTCCharacterSelectTable
+                numberOfPlayers={gameState.numberOfPlayers}
+                onNumberOfPlayersChange={(n) => {
+                  setGameState({ ...gameState, numberOfPlayers: n });
+                }}
+                edition={edition}
+                onSelectedCharactersChange={(characters) => {
+                  setGameState({ ...gameState, characters });
+                }}
+              />
+            </Modal>
+            <div className='h-2' />
 
+            <div className='h-2' />
+          </>
+        ) : (
+          <div>{'Invalid edition id: ' + gameState.editionId}</div>
+        )}
+      </details>
+      <details open className='border p-2 shadow-md'>
+        <summary className='select-none'>Grimoire</summary>
+      </details>
+      <details open className='border p-2 shadow-md'>
+        <summary className='select-none'>Night Order</summary>
         <div className='h-2' />
-        </>
-        : <div>{"Invalid edition id: " + gameState.editionId}</div>}
+        <Select
+          label='Show'
+          options={[
+            { value: 'first', label: 'First night' },
+            { value: 'other', label: 'Other nights' },
+          ]}
+          onChange={(v) => {
+            setShowFirstNight(v === 'first');
+          }}
+        />
+        <div className='h-2' />
+        <div className='flex gap-4'>
+          <Switch
+            label='Show dead characters'
+            value={showDeadCharacters}
+            onChange={() => {
+              setShowDeadCharacters(!showDeadCharacters);
+            }}
+          />
+          <Switch
+            label='Show characters not in play'
+            value={showCharactersNotInPlay}
+            onChange={() => {
+              setShowCharactersNotInPlay(!showCharactersNotInPlay);
+            }}
+          />
+        </div>
+        <div className='h-2' />
+        {!isTeensyville && showFirstNight && (
+          <>
+            {demon && (
+              <>
+                <NightOrderEntry
+                  isFirstNight={showFirstNight}
+                  firstNight='Wake all the Minions and show them the Demon.'
+                  characterId={demon}
+                />
+                <NightOrderEntry
+                  isFirstNight={showFirstNight}
+                  firstNight='Wake the Demon, show them their minions and their 3 bluffs (characters not in play).'
+                  characterId={demon}
+                />
+              </>
+            )}
+          </>
+        )}
+        {NIGHT_ORDER.filter((id) => gameState.characters.includes(id)).map(
+          (id) => (
+            <NightOrderEntry
+              key={`${id}night${showFirstNight ? 1 : 2}`}
+              characterId={id}
+            />
+          ),
+        )}
       </details>
     </div>
   );
