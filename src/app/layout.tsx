@@ -46,15 +46,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   ) as ColorScheme;
   const language = corps?.language as Language;
 
-  const snowflakes = isChristmas() ? (
-    <>
-      {range(8).map((i) => (
-        <div key={i} className='snowflake'>
-          <div className='inner'>❄️</div>
-        </div>
-      ))}
-    </>
-  ) : null;
+  const snowflakes =
+    false && isChristmas() ? (
+      <>
+        {range(8).map((i) => (
+          <div key={i} className='snowflake'>
+            <div className='inner'>❄️</div>
+          </div>
+        ))}
+      </>
+    ) : null;
 
   return (
     <html
