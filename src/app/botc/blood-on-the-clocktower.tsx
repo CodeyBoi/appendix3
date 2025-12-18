@@ -12,11 +12,10 @@ import {
   BOTCPlayer,
   CharacterID,
   EDITIONS,
-  FIRST_NIGHT_TEXT,
-  OTHER_NIGHTS_TEXT,
+  getAllCharacters,
 } from './characters';
-import NightOrderEntry from './night-order-entry';
-import Switch from 'components/input/switch';
+import NightOrder from './night-order';
+import Grimoire from './grimoire';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -52,28 +51,23 @@ const BloodOnTheClocktowerElement = ({
     _setSearchParamsGameState(JSON.stringify(newGameState));
   };
 
-  const [showFirstNight, setShowFirstNight] = useState(true);
-  const [showDeadCharacters, setShowDeadCharacters] = useState(false);
-  const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
-
   const edition = EDITIONS.find(
     (edition) => edition.id === gameState.editionId,
   );
-  const isTeensyville = gameState.numberOfPlayers < 7;
 
   if (!edition) {
     return <div>NO EDITION FOUND</div>;
   }
 
-  const demon = gameState.characters.find((c) => edition.demons.includes(c));
+  const detailsStartOpen = true;
 
   // TODO: Change this to alive players
   const alivePlayers = gameState.characters;
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
-      <h2>Blood On The Clocktower</h2>
-      <details className='border p-2 shadow-md'>
+      <h2>Bleck on the Corpstower</h2>
+      <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Setup</summary>
 
         <div className='h-2' />
@@ -83,7 +77,7 @@ const BloodOnTheClocktowerElement = ({
             [{ value: 'custom', label: 'Custom Script' }],
           )}
           onChange={(v) => {
-            setGameState({ ...gameState, editionId: v });
+            setGameState({ ...gameState, characters: [], editionId: v });
           }}
           value={gameState.editionId}
         />
@@ -110,66 +104,29 @@ const BloodOnTheClocktowerElement = ({
           />
         </Modal>
         <div className='h-2' />
+        <Button
+          onClick={() => {
+            setGameState(newGameState);
+          }}
+        >
+          Clear cache
+        </Button>
       </details>
-      <details className='border p-2 shadow-md'>
+      <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Grimoire</summary>
+        <Grimoire
+          players={gameState.players}
+          characters={gameState.characters}
+        />
       </details>
-      <details className='border p-2 shadow-md'>
+      <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Night Order</summary>
         <div className='h-2' />
-        <Select
-          label='Show'
-          options={[
-            { value: 'first', label: 'First night' },
-            { value: 'other', label: 'Other nights' },
-          ]}
-          onChange={(v) => {
-            setShowFirstNight(v === 'first');
-          }}
+        <NightOrder
+          alivePlayers={alivePlayers}
+          numberOfPlayers={gameState.numberOfPlayers}
+          allCharacters={getAllCharacters(edition)}
         />
-        <div className='h-2' />
-        <div className='flex gap-4'>
-          <Switch
-            label='Show dead characters'
-            value={showDeadCharacters}
-            onChange={() => {
-              setShowDeadCharacters(!showDeadCharacters);
-            }}
-          />
-          <Switch
-            label='Show characters not in play'
-            value={showCharactersNotInPlay}
-            onChange={() => {
-              setShowCharactersNotInPlay(!showCharactersNotInPlay);
-            }}
-          />
-        </div>
-        <div className='h-2' />
-        {!isTeensyville && showFirstNight && (
-          <>
-            {demon && (
-              <>
-                <NightOrderEntry
-                  name='Minions'
-                  text='Wake all the Minions and show them the Demon.'
-                />
-                <NightOrderEntry
-                  name='Demon'
-                  text='Wake the Demon, show them their minions and their 3 bluffs (characters not in play).'
-                />
-              </>
-            )}
-          </>
-        )}
-        {(showFirstNight ? FIRST_NIGHT_TEXT : OTHER_NIGHTS_TEXT)
-          .filter(([id, _]) => alivePlayers.includes(id))
-          .map(([id, text]) => (
-            <NightOrderEntry
-              key={`${id}night${showFirstNight ? 1 : 2}`}
-              characterId={id}
-              text={text}
-            />
-          ))}
       </details>
     </div>
   );

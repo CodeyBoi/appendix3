@@ -9,6 +9,9 @@ import {
   CHARACTERS,
   CharacterType,
   Edition,
+  getImagePathFromId,
+  isEvil,
+  isGood,
   MAX_PLAYERS,
   MIN_PLAYERS,
 } from './characters';
@@ -51,9 +54,7 @@ const generateCharacterRow = (
   character: CharacterType,
   selectedColumn: number,
 ) => {
-  const color = ['townsfolk', 'outsiders'].includes(character)
-    ? 'text-blue-500'
-    : 'text-red-600';
+  const color = isGood(character) ? 'text-blue-500' : 'text-red-600';
   return (
     <tr className={color} key={character + 'amount'}>
       <td
@@ -90,7 +91,7 @@ const selectRandom = (
     selected.push(...copy.slice(0, numberOfCharacters[characterType]));
   }
 
-  // Correct if characters which change character amounts are picked
+  // Correct errors if characters which change character amounts are picked
   for (const [type, diff] of Object.entries(
     findSelectionError(selected, numberOfCharacters),
   )) {
@@ -119,7 +120,7 @@ const selectRandom = (
     }
   }
 
-  return selected;
+  return shuffle(selected);
 };
 
 const findSelectionError = (
@@ -138,8 +139,12 @@ const findSelectionError = (
         break;
 
       case 'godfather':
-        // Add 1 outsider if number of outsiders is less than 2, otherwise remove 1
-        addOutsiders(numberOfCharacters['outsiders'] < 2 ? 1 : -1);
+        // Remove 1 outsider if number of outsiders is 2 and Fang Gu is in the game, otherwise add 1
+        addOutsiders(
+          numberOfCharacters['outsiders'] == 2 && characters.includes('fanggu')
+            ? -1
+            : 1,
+        );
         break;
 
       case 'fanggu':
@@ -264,22 +269,48 @@ const BOTCCharacterSelect = ({
         </Button>
       </div>
       {CHARACTER_TYPES.map((characterType) => {
+        const border = isGood(characterType)
+          ? 'border-blue-500'
+          : isEvil(characterType)
+          ? 'border-red-600'
+          : 'border-neutral-500';
+        const subtleBorder = isGood(characterType)
+          ? 'border-blue-500/30'
+          : isEvil(characterType)
+          ? 'border-red-600/30'
+          : 'border-neutral-500/30';
+        const bg = isGood(characterType)
+          ? 'bg-blue-500'
+          : isEvil(characterType)
+          ? 'bg-red-600'
+          : 'bg-neutral-500';
+        const bgShade = isGood(characterType)
+          ? 'bg-blue-500/20'
+          : isEvil(characterType)
+          ? 'bg-red-600/20'
+          : 'bg-neutral-500/20';
         return (
           <React.Fragment key={edition.id + characterType}>
-            <div className='flex flex-col rounded border-2 border-red-600'>
-              <div className='flex w-full justify-between gap-4 bg-red-600 px-2 text-white'>
+            <div className={cn('flex flex-col rounded border-2', border)}>
+              <div
+                className={cn(
+                  'flex w-full justify-between gap-4 px-2 text-white',
+                  bg,
+                )}
+              >
                 <h3 className='first-letter:capitalize'>{characterType}</h3>
                 <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
               </div>
-              <div className='grid grid-cols-3 lg:grid-cols-5'>
+              <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
                   .map(({ id, name, description }) => (
                     <div
                       key={id}
                       className={cn(
-                        'border border-red-600/30 px-2 py-1',
-                        selectedCharacters.includes(id) && 'bg-red-600/20',
+                        'border px-2 py-1',
+                        subtleBorder,
+                        selectedCharacters.includes(id) && bgShade,
                       )}
                       onClick={() => {
                         const newSelected = selectedCharacters.slice();
@@ -294,6 +325,7 @@ const BOTCCharacterSelect = ({
                     >
                       <BOTCCharacterPanel
                         name={name}
+                        imgSrc={getImagePathFromId(id)}
                         description={description}
                         showDescription={showDescriptions}
                       />

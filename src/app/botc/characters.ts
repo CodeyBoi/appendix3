@@ -103,18 +103,56 @@ export const getType = (id: CharacterID) => {
   return 'townsfolk';
 };
 
-export const getAlignment = (id: CharacterID): Alignment =>
-  ['townsfolk', 'outsiders'].includes(getType(id)) ? 'good' : 'evil';
+export type Alignment = 'good' | 'evil';
+
+const GOOD_CHARACTER_TYPES: CharacterType[] = ['townsfolk', 'outsiders'];
+const EVIL_CHARACTER_TYPES: CharacterType[] = ['minions', 'demons'];
+
+export const isGood = (t: CharacterType) => GOOD_CHARACTER_TYPES.includes(t);
+export const isEvil = (t: CharacterType) => EVIL_CHARACTER_TYPES.includes(t);
+
+export const getDefaultAlignment = (id: CharacterID): Alignment => {
+  switch (getType(id)) {
+    case 'townsfolk':
+    case 'outsiders':
+      return 'good';
+    case 'minions':
+    case 'demons':
+      return 'evil';
+    case 'travellers':
+      return 'good';
+  }
+};
 
 export const getEdition = (id: CharacterID): EditionID => {
   for (const edition of EDITIONS) {
-    const characters = CHARACTER_TYPES.flatMap((t) => edition[t]);
-    if (characters.includes(id)) {
+    if (getAllCharacters(edition).includes(id)) {
       return edition.id;
     }
   }
   return 'custom';
 };
+
+export const getAllCharacters = (edition: Edition) =>
+  CHARACTER_TYPES.flatMap((t) => edition[t]);
+
+const ABBREVIATIONS: Record<EditionID, string> = {
+  'trouble-brewing': 'tb',
+  'bad-moon-rising': 'bmr',
+  'sects-and-violets': 'snv',
+  custom: 'carousel',
+};
+const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
+export const getImagePathFromId = (id: CharacterID) =>
+  baseImgUrl
+    .replace('<EDITION>', ABBREVIATIONS[getEdition(id)])
+    .replace('<NAME>', id)
+    .replace(
+      '<ALIGNMENT>',
+      getType(id) === 'travellers'
+        ? ''
+        : '_' + getDefaultAlignment(id).slice(0, 1),
+    );
 
 export const EDITION_IDS = [
   'trouble-brewing',
@@ -912,7 +950,7 @@ const _characters = {
       'You start knowing a secret phrase. For each time you said it publicly today, a player might die.',
   },
 
-  // Carousel - Townsfolk
+  // Carousel - Travellers
   gangster: {
     name: 'Gangster',
     description:
@@ -937,7 +975,7 @@ export const CHARACTERS = Object.entries(_characters).reduce(
 
 export interface BOTCPlayer {
   characterId: CharacterID;
-  characterType: CharacterType;
+  alignment: Alignment;
   corpsId: string;
   reminders: Reminder[];
   alive: boolean;
@@ -950,8 +988,6 @@ export interface Reminder {
   characterId: CharacterID;
   message: string;
 }
-
-export type Alignment = 'good' | 'evil';
 
 export const FIRST_NIGHT_TEXT: [CharacterID, string][] = [
   ['wraith', 'Wake the Wraith whenever other evil players wake.'],
