@@ -8,7 +8,13 @@ import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { Metadata } from 'next';
 import { useState } from 'react';
 import BOTCCharacterSelectTable from './character-select';
-import { BOTCPlayer, CharacterID, EDITIONS, NIGHT_ORDER } from './characters';
+import {
+  BOTCPlayer,
+  CharacterID,
+  EDITIONS,
+  FIRST_NIGHT_TEXT,
+  OTHER_NIGHTS_TEXT,
+} from './characters';
 import NightOrderEntry from './night-order-entry';
 import Switch from 'components/input/switch';
 
@@ -61,10 +67,13 @@ const BloodOnTheClocktowerElement = ({
 
   const demon = gameState.characters.find((c) => edition.demons.includes(c));
 
+  // TODO: Change this to alive players
+  const alivePlayers = gameState.characters;
+
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
       <h2>Blood On The Clocktower</h2>
-      <details open className='border p-2 shadow-md'>
+      <details className='border p-2 shadow-md'>
         <summary className='select-none'>Setup</summary>
 
         <div className='h-2' />
@@ -79,41 +88,33 @@ const BloodOnTheClocktowerElement = ({
           value={gameState.editionId}
         />
         <div className='h-2' />
-        {edition ? (
-          <>
-            <Modal
-              title={`Select Characters - ${edition.name}`}
-              target={
-                <Button>
-                  <IconUser />
-                  Select Characters
-                </Button>
-              }
-              withCloseButton
-            >
-              <BOTCCharacterSelectTable
-                numberOfPlayers={gameState.numberOfPlayers}
-                onNumberOfPlayersChange={(n) => {
-                  setGameState({ ...gameState, numberOfPlayers: n });
-                }}
-                edition={edition}
-                onSelectedCharactersChange={(characters) => {
-                  setGameState({ ...gameState, characters });
-                }}
-              />
-            </Modal>
-            <div className='h-2' />
-
-            <div className='h-2' />
-          </>
-        ) : (
-          <div>{'Invalid edition id: ' + gameState.editionId}</div>
-        )}
+        <Modal
+          title={`Select Characters - ${edition.name}`}
+          target={
+            <Button>
+              <IconUser />
+              Select Characters
+            </Button>
+          }
+          withCloseButton
+        >
+          <BOTCCharacterSelectTable
+            numberOfPlayers={gameState.numberOfPlayers}
+            onNumberOfPlayersChange={(n) => {
+              setGameState({ ...gameState, numberOfPlayers: n });
+            }}
+            edition={edition}
+            onSelectedCharactersChange={(characters) => {
+              setGameState({ ...gameState, characters });
+            }}
+          />
+        </Modal>
+        <div className='h-2' />
       </details>
-      <details open className='border p-2 shadow-md'>
+      <details className='border p-2 shadow-md'>
         <summary className='select-none'>Grimoire</summary>
       </details>
-      <details open className='border p-2 shadow-md'>
+      <details className='border p-2 shadow-md'>
         <summary className='select-none'>Night Order</summary>
         <div className='h-2' />
         <Select
@@ -149,27 +150,26 @@ const BloodOnTheClocktowerElement = ({
             {demon && (
               <>
                 <NightOrderEntry
-                  isFirstNight={showFirstNight}
-                  firstNight='Wake all the Minions and show them the Demon.'
-                  characterId={demon}
+                  name='Minions'
+                  text='Wake all the Minions and show them the Demon.'
                 />
                 <NightOrderEntry
-                  isFirstNight={showFirstNight}
-                  firstNight='Wake the Demon, show them their minions and their 3 bluffs (characters not in play).'
-                  characterId={demon}
+                  name='Demon'
+                  text='Wake the Demon, show them their minions and their 3 bluffs (characters not in play).'
                 />
               </>
             )}
           </>
         )}
-        {NIGHT_ORDER.filter((id) => gameState.characters.includes(id)).map(
-          (id) => (
+        {(showFirstNight ? FIRST_NIGHT_TEXT : OTHER_NIGHTS_TEXT)
+          .filter(([id, _]) => alivePlayers.includes(id))
+          .map(([id, text]) => (
             <NightOrderEntry
               key={`${id}night${showFirstNight ? 1 : 2}`}
               characterId={id}
+              text={text}
             />
-          ),
-        )}
+          ))}
       </details>
     </div>
   );
