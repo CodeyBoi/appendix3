@@ -74,7 +74,8 @@ const BloodOnTheClocktowerElement = ({
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
-      <h2>Bleck on the Corpstower</h2>
+      <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
+      <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
       <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Setup</summary>
 

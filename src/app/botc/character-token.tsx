@@ -47,6 +47,13 @@ const CharacterToken = ({
 
   return (
     <Modal
+      title={
+        playerName
+          ? playerName + (character ? `, the ${character.name}` : '')
+          : character
+          ? character.name
+          : 'Token'
+      }
       open={modalOpen}
       onFocus={() => {
         setModalOpen(true);
