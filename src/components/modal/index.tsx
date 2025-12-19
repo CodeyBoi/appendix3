@@ -3,10 +3,11 @@
 import { IconX } from '@tabler/icons-react';
 import Divider from 'components/divider';
 import ActionIcon from 'components/input/action-icon';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 interface ModalProps {
+  open?: boolean;
   target?: ReactNode;
   children: ReactNode;
   title?: ReactNode;
@@ -18,6 +19,7 @@ interface ModalProps {
 }
 
 const Modal = ({
+  open: openProp,
   target,
   children,
   title,
@@ -37,6 +39,13 @@ const Modal = ({
     }
     setOpenValue(value);
   };
+
+  useEffect(() => {
+    if (openProp === undefined) {
+      return;
+    }
+    setOpen(openProp);
+  }, [openProp]);
 
   const handleClick = () => {
     if (!open) {

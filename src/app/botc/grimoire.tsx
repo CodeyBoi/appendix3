@@ -1,34 +1,23 @@
 import CharacterToken from './character-token';
-import { BOTCPlayer, CharacterId } from './characters';
+import { BOTCPlayer } from './characters';
 
 interface GrimoireProps {
   players: BOTCPlayer[];
-  characters: CharacterId[];
+  setPlayers: (newPlayers: BOTCPlayer[]) => void;
 }
 
-const playerNames = [
-  'Hannes',
-  'Hannes2',
-  'Bartolomeus',
-  'Kyoto',
-  'Jörgen',
-  'Pratkvarn',
-  'Pelle',
-  'Lars',
-];
-
-const Grimoire = ({ characters }: GrimoireProps) => {
-  const fakePlayers = characters.map((characterId, i) => ({
-    characterId,
-    name: i < playerNames.length ? (playerNames[i] as string) : undefined,
-  }));
+const Grimoire = ({ players, setPlayers }: GrimoireProps) => {
   return (
     <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
-      {fakePlayers.map((player) => (
+      {players.map((player, i) => (
         <CharacterToken
           key={(player.name ?? '') + player.characterId}
           playerName={player.name}
           characterId={player.characterId}
+          players={players}
+          playerIndex={i}
+          setPlayers={setPlayers}
+          dead={!player.isAlive}
         />
       ))}
     </div>
