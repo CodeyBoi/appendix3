@@ -58,3 +58,9 @@ export const shuffle = <T>(list: T[]) => {
   }
   return list;
 };
+
+export const zip = <T1, T2>(listA: T1[], listB: T2[]): [T1, T2][] =>
+  Array.from({ length: Math.min(listA.length, listB.length) }, (_, i) => [
+    listA[i] as T1,
+    listB[i] as T2,
+  ]);

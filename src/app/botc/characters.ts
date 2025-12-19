@@ -11,13 +11,13 @@ export const CHARACTER_TYPES = [
 export type CharacterType = (typeof CHARACTER_TYPES)[number];
 
 export interface Edition {
-  id: EditionID;
+  id: EditionId;
   name: string;
-  townsfolk: CharacterID[];
-  outsiders: CharacterID[];
-  minions: CharacterID[];
-  demons: CharacterID[];
-  travellers: CharacterID[];
+  townsfolk: CharacterId[];
+  outsiders: CharacterId[];
+  minions: CharacterId[];
+  demons: CharacterId[];
+  travellers: CharacterId[];
 }
 
 export const EDITIONS: [Edition, Edition, Edition] = [
@@ -92,7 +92,7 @@ export const EDITIONS: [Edition, Edition, Edition] = [
   },
 ] as const;
 
-export const getType = (id: CharacterID) => {
+export const getType = (id: CharacterId) => {
   for (const edition of EDITIONS) {
     for (const t of CHARACTER_TYPES) {
       if (edition[t].includes(id)) {
@@ -111,7 +111,7 @@ const EVIL_CHARACTER_TYPES: CharacterType[] = ['minions', 'demons'];
 export const isGood = (t: CharacterType) => GOOD_CHARACTER_TYPES.includes(t);
 export const isEvil = (t: CharacterType) => EVIL_CHARACTER_TYPES.includes(t);
 
-export const getDefaultAlignment = (id: CharacterID): Alignment => {
+export const getDefaultAlignment = (id: CharacterId): Alignment => {
   switch (getType(id)) {
     case 'townsfolk':
     case 'outsiders':
@@ -124,7 +124,7 @@ export const getDefaultAlignment = (id: CharacterID): Alignment => {
   }
 };
 
-export const getEdition = (id: CharacterID): EditionID => {
+export const getEdition = (id: CharacterId): EditionId => {
   for (const edition of EDITIONS) {
     if (getAllCharacters(edition).includes(id)) {
       return edition.id;
@@ -136,14 +136,14 @@ export const getEdition = (id: CharacterID): EditionID => {
 export const getAllCharacters = (edition: Edition) =>
   CHARACTER_TYPES.flatMap((t) => edition[t]);
 
-const ABBREVIATIONS: Record<EditionID, string> = {
+const ABBREVIATIONS: Record<EditionId, string> = {
   'trouble-brewing': 'tb',
   'bad-moon-rising': 'bmr',
   'sects-and-violets': 'snv',
   custom: 'carousel',
 };
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
-export const getImagePathFromId = (id: CharacterID) =>
+export const getImagePathFromId = (id: CharacterId) =>
   baseImgUrl
     .replace('<EDITION>', ABBREVIATIONS[getEdition(id)])
     .replace('<NAME>', id)
@@ -160,10 +160,10 @@ export const EDITION_IDS = [
   'sects-and-violets',
   'custom',
 ] as const;
-export type EditionID = (typeof EDITION_IDS)[number];
+export type EditionId = (typeof EDITION_IDS)[number];
 
 export interface BOTCCharacter {
-  id: CharacterID;
+  id: CharacterId;
   name: string;
   description: string;
 }
@@ -963,33 +963,54 @@ const _characters = {
   },
 } as const;
 
-export type CharacterID = keyof typeof _characters;
+export type CharacterId = keyof typeof _characters;
 
 export const CHARACTERS = Object.entries(_characters).reduce(
   (acc, [id, val]) => {
-    acc[id as CharacterID] = { ...val, id: id as CharacterID };
+    acc[id as CharacterId] = { ...val, id: id as CharacterId };
     return acc;
   },
-  {} as Record<CharacterID, BOTCCharacter>,
+  {} as Record<CharacterId, BOTCCharacter>,
 );
 
 export interface BOTCPlayer {
-  characterId: CharacterID;
+  name?: string;
+  characterId: CharacterId;
   alignment: Alignment;
-  corpsId: string;
+  corpsId?: string;
   reminders: Reminder[];
-  alive: boolean;
-  hasVoteToken: boolean;
+  isAlive: boolean;
   isDrunk: boolean;
   isPoisoned: boolean;
+  hasVoteToken: boolean;
 }
 
+export const createPlayer = ({
+  name,
+  corpsId,
+  characterId,
+}: {
+  name?: string;
+  corpsId?: string;
+  characterId: CharacterId;
+}): BOTCPlayer => ({
+  name,
+  corpsId,
+  characterId,
+  reminders: [],
+  alignment: getDefaultAlignment(characterId),
+  isAlive: true,
+  isDrunk: false,
+  isPoisoned: false,
+  hasVoteToken: true,
+});
+
 export interface Reminder {
-  characterId: CharacterID;
+  characterId: CharacterId;
   message: string;
 }
 
-export const FIRST_NIGHT_TEXT: [CharacterID, string][] = [
+export const FIRST_NIGHT_TEXT: [CharacterId, string][] = [
   ['wraith', 'Wake the Wraith whenever other evil players wake.'],
   [
     'lordoftyphon',
@@ -1211,7 +1232,7 @@ export const FIRST_NIGHT_TEXT: [CharacterID, string][] = [
   ],
 ] as const;
 
-export const OTHER_NIGHTS_TEXT: [CharacterID, string][] = [
+export const OTHER_NIGHTS_TEXT: [CharacterId, string][] = [
   ['wraith', 'Wake the Wraith whenever other evil players wake.'],
   [
     'philosopher',

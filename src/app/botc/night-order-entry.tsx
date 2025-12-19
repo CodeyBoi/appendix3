@@ -1,8 +1,8 @@
 import { cn } from 'utils/class-names';
-import { CharacterID, CHARACTERS, getImagePathFromId } from './characters';
+import { CharacterId, CHARACTERS, getImagePathFromId } from './characters';
 
 interface NightOrderEntryProps {
-  characterId?: CharacterID;
+  characterId?: CharacterId;
   name?: string;
   imagePath?: string;
   text: string;

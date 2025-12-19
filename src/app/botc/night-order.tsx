@@ -1,51 +1,51 @@
 import Select from 'components/input/select';
 import { useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
-import { CharacterID, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
+import {
+  BOTCPlayer,
+  CharacterId,
+  FIRST_NIGHT_TEXT,
+  OTHER_NIGHTS_TEXT,
+} from './characters';
 import Switch from 'components/input/switch';
 
 interface NightOrderProps {
-  numberOfPlayers: number;
-  alivePlayers: CharacterID[];
-  allCharacters: CharacterID[];
+  players: BOTCPlayer[];
+  allCharacters: CharacterId[];
 }
 
-const NightOrder = ({
-  numberOfPlayers,
-  alivePlayers,
-  allCharacters,
-}: NightOrderProps) => {
+const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
   const [showFirstNight, setShowFirstNight] = useState(true);
   const [showDeadCharacters, setShowDeadCharacters] = useState(false);
   const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
 
-  const isTeensyville = numberOfPlayers < 7;
+  const isTeensyville = allCharacters.length < 7;
 
-  const nightOrders = useMemo(
+  const allNightOrders = useMemo(
     () => ({
-      alive: {
-        firstNight: FIRST_NIGHT_TEXT.filter(([id, _]) =>
-          alivePlayers.includes(id),
-        ),
-        otherNights: OTHER_NIGHTS_TEXT.filter(([id, _]) =>
-          alivePlayers.includes(id),
-        ),
-      },
-      all: {
-        firstNight: FIRST_NIGHT_TEXT.filter(([id, _]) =>
-          allCharacters.includes(id),
-        ),
-        otherNights: OTHER_NIGHTS_TEXT.filter(([id, _]) =>
-          allCharacters.includes(id),
-        ),
-      },
+      firstNight: FIRST_NIGHT_TEXT.filter(([id, _]) =>
+        allCharacters.includes(id),
+      ),
+      otherNights: OTHER_NIGHTS_TEXT.filter(([id, _]) =>
+        allCharacters.includes(id),
+      ),
     }),
-    [alivePlayers],
+    [allCharacters],
   );
 
-  const nightOrder = showCharactersNotInPlay
-    ? nightOrders.all
-    : nightOrders.alive;
+  const gameCharacters = players.map((p) => p.characterId);
+  const deadCharacters = players
+    .filter((p) => p.isAlive)
+    .map((p) => p.characterId);
+  let nightOrder = showFirstNight
+    ? allNightOrders.firstNight
+    : allNightOrders.otherNights;
+  if (!showCharactersNotInPlay) {
+    nightOrder = nightOrder.filter(([id, _]) => gameCharacters.includes(id));
+  }
+  if (!showDeadCharacters) {
+    nightOrder = nightOrder.filter(([id, _]) => !deadCharacters.includes(id));
+  }
 
   return (
     <div>
@@ -72,16 +72,14 @@ const NightOrder = ({
           />
         </>
       )}
-      {(showFirstNight ? nightOrder.firstNight : nightOrder.otherNights).map(
-        ([id, text]) => (
-          <NightOrderEntry
-            muted={!alivePlayers.includes(id)}
-            key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
-            characterId={id}
-            text={text}
-          />
-        ),
-      )}
+      {nightOrder.map(([id, text]) => (
+        <NightOrderEntry
+          muted={!gameCharacters.includes(id)}
+          key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
+          characterId={id}
+          text={text}
+        />
+      ))}
       <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
         <Switch
           label='Show dead characters'
