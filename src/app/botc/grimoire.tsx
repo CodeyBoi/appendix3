@@ -1,9 +1,9 @@
 import CharacterToken from './character-token';
-import { BOTCPlayer, CharacterID } from './characters';
+import { BOTCPlayer, CharacterId } from './characters';
 
 interface GrimoireProps {
   players: BOTCPlayer[];
-  characters: CharacterID[];
+  characters: CharacterId[];
 }
 
 const playerNames = [

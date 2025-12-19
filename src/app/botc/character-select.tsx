@@ -5,7 +5,7 @@ import { initObject, range, shuffle } from 'utils/array';
 import { cn } from 'utils/class-names';
 import {
   CHARACTER_TYPES,
-  CharacterID,
+  CharacterId,
   CHARACTERS,
   CharacterType,
   Edition,
@@ -22,7 +22,7 @@ import React from 'react';
 
 const getNumberOfCharacters = (
   players: number,
-  selectedCharacters: CharacterID[] = [],
+  selectedCharacters: CharacterId[] = [],
 ): Record<CharacterType, number> => {
   const clampedPlayers = Math.min(players, MAX_PLAYERS);
   const res =
@@ -85,7 +85,7 @@ const selectRandom = (
   edition: Edition,
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
-  const selected: CharacterID[] = [];
+  const selected: CharacterId[] = [];
   for (const characterType of CHARACTER_TYPES) {
     const copy = shuffle(edition[characterType].slice());
     selected.push(...copy.slice(0, numberOfCharacters[characterType]));
@@ -124,7 +124,7 @@ const selectRandom = (
 };
 
 const findSelectionError = (
-  characters: CharacterID[],
+  characters: CharacterId[],
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
   const res: Record<CharacterType, number> = initObject(CHARACTER_TYPES, 0);
@@ -160,23 +160,20 @@ const findSelectionError = (
 };
 
 interface BOTCCharacterSelectProps {
-  numberOfPlayers: number;
-  onNumberOfPlayersChange: (numberOfPlayers: number) => void;
   edition: Edition;
-  onSelectedCharactersChange: (selectedCharacters: CharacterID[]) => void;
+  onSelectedCharactersChange: (selectedCharacters: CharacterId[]) => void;
 }
 
 const BOTCCharacterSelect = ({
-  numberOfPlayers,
-  onNumberOfPlayersChange,
   edition,
   onSelectedCharactersChange,
 }: BOTCCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
-  const [selectedCharacters, _setSelectedCharacters] = useState<CharacterID[]>(
+  const [numberOfPlayers, setNumberOfPlayers] = useState(7);
+  const [selectedCharacters, _setSelectedCharacters] = useState<CharacterId[]>(
     [],
   );
-  const setSelectedCharacters = (c: CharacterID[]) => {
+  const setSelectedCharacters = (c: CharacterId[]) => {
     onSelectedCharactersChange(c);
     _setSelectedCharacters(c);
   };
@@ -232,14 +229,15 @@ const BOTCCharacterSelect = ({
       </table>
       <label htmlFor='players'>Number of players: {numberOfPlayers}</label>
       <input
+        className='max-w-sm'
         type='range'
         id='players'
         name='players'
         min={MIN_PLAYERS}
         max={MAX_PLAYERS}
-        defaultValue={numberOfPlayers}
+        value={numberOfPlayers}
         onChange={(e) => {
-          onNumberOfPlayersChange(e.currentTarget.valueAsNumber);
+          setNumberOfPlayers(e.currentTarget.valueAsNumber);
         }}
       />
       <Switch

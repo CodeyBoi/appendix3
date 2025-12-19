@@ -14,10 +14,15 @@ const BOTCCharacterPanel = ({
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center gap-4'>
-        <img className='h-12 w-12 scale-150' loading='lazy' src={imgSrc} />
-        <h4>{name}</h4>
+        <img
+          className='h-10 w-10 scale-150 lg:h-12 lg:w-12'
+          loading='lazy'
+          src={imgSrc}
+        />
+        <h4 className='hidden lg:block'>{name}</h4>
+        <h5 className='lg:hidden'>{name}</h5>
       </div>
-      {showDescription && <p className='text-sm'>{description}</p>}
+      {showDescription && <p className='text-xs'>{description}</p>}
     </div>
   );
 };

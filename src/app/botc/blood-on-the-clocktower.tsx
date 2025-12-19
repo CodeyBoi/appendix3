@@ -10,29 +10,31 @@ import { useState } from 'react';
 import BOTCCharacterSelectTable from './character-select';
 import {
   BOTCPlayer,
-  CharacterID,
+  CharacterId,
+  createPlayer,
   EDITIONS,
   getAllCharacters,
 } from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
+import { shuffle, zip } from 'utils/array';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
 };
 
 interface GameState {
-  numberOfPlayers: number;
   editionId: string;
-  characters: CharacterID[];
+  characters: CharacterId[];
+  lobby: { name: string; corpsId?: string }[];
   players: BOTCPlayer[];
 }
 
 const newGameState: GameState = {
-  numberOfPlayers: 7,
   editionId: 'trouble-brewing',
   characters: [],
   players: [],
+  lobby: [],
 };
 
 interface BloodOnTheClocktowerElementProps {
@@ -51,18 +53,23 @@ const BloodOnTheClocktowerElement = ({
     _setSearchParamsGameState(JSON.stringify(newGameState));
   };
 
+  const assignCharacters = () => {
+    const players = zip(
+      shuffle(gameState.characters.slice()),
+      gameState.lobby,
+    ).map(([characterId, player]) => createPlayer({ ...player, characterId }));
+    setGameState({
+      ...gameState,
+      lobby: gameState.lobby.slice(players.length),
+      players,
+    });
+  };
+
   const edition = EDITIONS.find(
     (edition) => edition.id === gameState.editionId,
   );
 
-  if (!edition) {
-    return <div>NO EDITION FOUND</div>;
-  }
-
   const detailsStartOpen = true;
-
-  // TODO: Change this to alive players
-  const alivePlayers = gameState.characters;
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
@@ -82,35 +89,59 @@ const BloodOnTheClocktowerElement = ({
           value={gameState.editionId}
         />
         <div className='h-2' />
-        <Modal
-          title={`Select Characters - ${edition.name}`}
-          target={
-            <Button>
-              <IconUser />
-              Select Characters
-            </Button>
-          }
-          withCloseButton
-        >
-          <BOTCCharacterSelectTable
-            numberOfPlayers={gameState.numberOfPlayers}
-            onNumberOfPlayersChange={(n) => {
-              setGameState({ ...gameState, numberOfPlayers: n });
-            }}
-            edition={edition}
-            onSelectedCharactersChange={(characters) => {
-              setGameState({ ...gameState, characters });
-            }}
-          />
-        </Modal>
+        {edition && (
+          <div className='flex gap-4'>
+            <Modal
+              title={`Select Characters - ${edition.name}`}
+              target={
+                <Button>
+                  <IconUser />
+                  Select Characters
+                </Button>
+              }
+              withCloseButton
+            >
+              <BOTCCharacterSelectTable
+                edition={edition}
+                onSelectedCharactersChange={(characters) => {
+                  setGameState({ ...gameState, characters });
+                }}
+              />
+            </Modal>
+            {gameState.characters.length > 0 && (
+              <Button onClick={assignCharacters}>Assign characters</Button>
+            )}
+          </div>
+        )}
         <div className='h-2' />
-        <Button
-          onClick={() => {
-            setGameState(newGameState);
-          }}
-        >
-          Clear cache
-        </Button>
+        <div className='flex gap-4'>
+          <Button
+            onClick={() => {
+              setGameState(newGameState);
+            }}
+          >
+            Clear cache
+          </Button>
+          <Button
+            onClick={() => {
+              setGameState({
+                ...gameState,
+                lobby: [
+                  { name: 'Hannes' },
+                  { name: 'Hannes2' },
+                  { name: 'Bartolomeus' },
+                  { name: 'Kyoto' },
+                  { name: 'Jörgen' },
+                  { name: 'Pratkvarn' },
+                  { name: 'Pelle' },
+                  { name: 'Lars' },
+                ],
+              });
+            }}
+          >
+            Populate lobby
+          </Button>
+        </div>
       </details>
       <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Grimoire</summary>
@@ -119,15 +150,16 @@ const BloodOnTheClocktowerElement = ({
           characters={gameState.characters}
         />
       </details>
-      <details open={detailsStartOpen} className='border p-2 shadow-md'>
-        <summary className='select-none'>Night Order</summary>
-        <div className='h-2' />
-        <NightOrder
-          alivePlayers={alivePlayers}
-          numberOfPlayers={gameState.numberOfPlayers}
-          allCharacters={getAllCharacters(edition)}
-        />
-      </details>
+      {edition && gameState.players.length > 0 && (
+        <details open={detailsStartOpen} className='border p-2 shadow-md'>
+          <summary className='select-none'>Night Order</summary>
+          <div className='h-2' />
+          <NightOrder
+            players={gameState.players}
+            allCharacters={getAllCharacters(edition)}
+          />
+        </details>
+      )}
     </div>
   );
 };
