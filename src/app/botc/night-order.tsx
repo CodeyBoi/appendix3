@@ -35,7 +35,7 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
 
   const gameCharacters = players.map((p) => p.characterId);
   const deadCharacters = players
-    .filter((p) => p.isAlive)
+    .filter((p) => !p.isAlive)
     .map((p) => p.characterId);
   let nightOrder = showFirstNight
     ? allNightOrders.firstNight
@@ -48,9 +48,30 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
   }
 
   return (
-    <div>
+    <div className='flex flex-col'>
+      <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
+        <Switch
+          label='Show dead characters'
+          value={showDeadCharacters}
+          onChange={() => {
+            setShowDeadCharacters(!showDeadCharacters);
+          }}
+        />
+        <Switch
+          label='Show characters not in play'
+          value={showCharactersNotInPlay}
+          onChange={() => {
+            if (!showCharactersNotInPlay) {
+              setShowCharactersNotInPlay(true);
+              setShowDeadCharacters(true);
+            } else {
+              setShowCharactersNotInPlay(false);
+            }
+          }}
+        />
+      </div>
       <Select
-        label='Show'
+        label='Show nights'
         options={[
           { value: 'first', label: 'First night' },
           { value: 'other', label: 'Following nights' },
@@ -74,28 +95,12 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
       )}
       {nightOrder.map(([id, text]) => (
         <NightOrderEntry
-          muted={!gameCharacters.includes(id)}
+          muted={deadCharacters.includes(id) || !gameCharacters.includes(id)}
           key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
           characterId={id}
           text={text}
         />
       ))}
-      <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
-        <Switch
-          label='Show dead characters'
-          value={showDeadCharacters}
-          onChange={() => {
-            setShowDeadCharacters(!showDeadCharacters);
-          }}
-        />
-        <Switch
-          label='Show characters not in play'
-          value={showCharactersNotInPlay}
-          onChange={() => {
-            setShowCharactersNotInPlay(!showCharactersNotInPlay);
-          }}
-        />
-      </div>
     </div>
   );
 };

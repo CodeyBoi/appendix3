@@ -1,6 +1,6 @@
 'use client';
 
-import { IconUser } from '@tabler/icons-react';
+import { IconScript, IconUser } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
 import Modal from 'components/modal';
@@ -18,6 +18,7 @@ import {
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
 import { shuffle, zip } from 'utils/array';
+import ParamsTextInput from 'components/input/params-text-input';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -73,7 +74,8 @@ const BloodOnTheClocktowerElement = ({
 
   return (
     <div className='flex max-w-3xl flex-col gap-2'>
-      <h2>Bleck on the Corpstower</h2>
+      <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
+      <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
       <details open={detailsStartOpen} className='border p-2 shadow-md'>
         <summary className='select-none'>Setup</summary>
 
@@ -88,6 +90,13 @@ const BloodOnTheClocktowerElement = ({
           }}
           value={gameState.editionId}
         />
+        {gameState.editionId === 'custom' && (
+          <ParamsTextInput
+            label='Script URL'
+            icon={<IconScript />}
+            paramName='scriptUrl'
+          />
+        )}
         <div className='h-2' />
         {edition && (
           <div className='flex gap-4'>
@@ -147,7 +156,9 @@ const BloodOnTheClocktowerElement = ({
         <summary className='select-none'>Grimoire</summary>
         <Grimoire
           players={gameState.players}
-          characters={gameState.characters}
+          setPlayers={(players) => {
+            setGameState({ ...gameState, players });
+          }}
         />
       </details>
       {edition && gameState.players.length > 0 && (

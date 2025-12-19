@@ -1,29 +1,73 @@
 import Modal from 'components/modal';
 import {
+  BOTCPlayer,
   CharacterId,
   CHARACTERS,
   FIRST_NIGHT_TEXT,
   getImagePathFromId,
   OTHER_NIGHTS_TEXT,
 } from './characters';
+import { cn } from 'utils/class-names';
+import Button from 'components/input/button';
+import { useState } from 'react';
 
 interface CharacterTokenProps {
   playerName?: string;
   characterId?: CharacterId;
+  dead?: boolean;
+  players: BOTCPlayer[];
+  playerIndex: number;
+  setPlayers: (newPlayers: BOTCPlayer[]) => void;
 }
 
 const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(([id, _]) => id));
 const OTHER_NIGHT_CHARACTERS = new Set(OTHER_NIGHTS_TEXT.map(([id, _]) => id));
 
-const CharacterToken = ({ playerName, characterId }: CharacterTokenProps) => {
+const CharacterToken = ({
+  playerName,
+  characterId,
+  dead = false,
+  players,
+  playerIndex,
+  setPlayers,
+}: CharacterTokenProps) => {
   const character = characterId ? CHARACTERS[characterId] : undefined;
   const hasLeftLeaf = characterId && FIRST_NIGHT_CHARACTERS.has(characterId);
   const hasRightLeaf = characterId && OTHER_NIGHT_CHARACTERS.has(characterId);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const killOrRevivePlayer = () => {
+    const newPlayers = players.slice();
+    const player = newPlayers[playerIndex];
+    if (!player) throw new Error('Invalid playerIndex in CharacterToken');
+    player.isAlive = dead;
+    setModalOpen(false);
+    setPlayers(newPlayers);
+  };
 
   return (
     <Modal
+      title={
+        playerName
+          ? playerName + (character ? `, the ${character.name}` : '')
+          : character
+          ? character.name
+          : 'Token'
+      }
+      open={modalOpen}
+      onFocus={() => {
+        setModalOpen(true);
+      }}
+      onBlur={() => {
+        setModalOpen(false);
+      }}
       target={
-        <div className='relative mt-1 h-32 w-32 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md'>
+        <div
+          className={cn(
+            'relative mt-1 h-32 w-32 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md',
+            dead && 'grayscale',
+          )}
+        >
           <h5 className='absolute -top-1 left-1/2 -translate-x-1/2 rounded bg-red-600 px-2 text-white'>
             {playerName}
           </h5>
@@ -69,7 +113,9 @@ const CharacterToken = ({ playerName, characterId }: CharacterTokenProps) => {
         </div>
       }
     >
-      TEST
+      <Button onClick={killOrRevivePlayer}>
+        {dead ? 'Revive' : 'Kill'} player
+      </Button>
     </Modal>
   );
 };
