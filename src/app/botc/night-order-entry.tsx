@@ -15,7 +15,9 @@ const NightOrderEntry = ({
   muted = false,
   ...props
 }: NightOrderEntryProps) => {
-  const name = characterId ? CHARACTERS[characterId].name : props.name;
+  const name = characterId
+    ? CHARACTERS[characterId].name + (props.name ? ` (${props.name})` : '')
+    : props.name;
 
   if (!name || !text) {
     return null;

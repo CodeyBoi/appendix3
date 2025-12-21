@@ -10,6 +10,8 @@ import {
 import { cn } from 'utils/class-names';
 import Button from 'components/input/button';
 import { useState } from 'react';
+import ReminderToken from './reminder-token';
+import Switch from 'components/input/switch';
 
 interface CharacterTokenProps {
   playerName?: string;
@@ -18,10 +20,13 @@ interface CharacterTokenProps {
   players: BOTCPlayer[];
   playerIndex: number;
   setPlayers: (newPlayers: BOTCPlayer[]) => void;
+  allCharacters?: CharacterId[];
 }
 
-const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(([id, _]) => id));
-const OTHER_NIGHT_CHARACTERS = new Set(OTHER_NIGHTS_TEXT.map(([id, _]) => id));
+const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(({ id }) => id));
+const OTHER_NIGHT_CHARACTERS = new Set(OTHER_NIGHTS_TEXT.map(({ id }) => id));
+
+type SelectMode = 'none' | 'reminder';
 
 const CharacterToken = ({
   playerName,
@@ -30,11 +35,14 @@ const CharacterToken = ({
   players,
   playerIndex,
   setPlayers,
+  allCharacters = [],
 }: CharacterTokenProps) => {
   const character = characterId ? CHARACTERS[characterId] : undefined;
   const hasLeftLeaf = characterId && FIRST_NIGHT_CHARACTERS.has(characterId);
   const hasRightLeaf = characterId && OTHER_NIGHT_CHARACTERS.has(characterId);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectMode, setSelectMode] = useState<SelectMode>('none');
+  const [showAllReminders, setShowAllReminders] = useState(false);
 
   const killOrRevivePlayer = () => {
     const newPlayers = players.slice();
@@ -45,15 +53,18 @@ const CharacterToken = ({
     setPlayers(newPlayers);
   };
 
+  const canKill = character?.reminderTokens?.includes('Killed by') ?? false;
+
   return (
     <Modal
       title={
-        playerName
-          ? playerName + (character ? `, the ${character.name}` : '')
-          : character
-          ? character.name
-          : 'Token'
+        selectMode === 'none'
+          ? character
+            ? character.name + (playerName ? ` (${playerName})` : '')
+            : 'Empty Token'
+          : 'Add reminder token'
       }
+      withCloseButton
       open={modalOpen}
       onFocus={() => {
         setModalOpen(true);
@@ -88,7 +99,6 @@ const CharacterToken = ({
               src='/botc/leaf-right.webp'
             />
           )}
-
           {character && (
             <>
               <img
@@ -101,7 +111,7 @@ const CharacterToken = ({
                   d='M 13 75 C 13 160, 138 160, 138 75'
                   id='curve'
                   fill='transparent'
-                ></path>
+                />
                 <text textAnchor='middle'>
                   <textPath startOffset='50%' href='#curve'>
                     {character.name}
@@ -113,9 +123,58 @@ const CharacterToken = ({
         </div>
       }
     >
-      <Button onClick={killOrRevivePlayer}>
-        {dead ? 'Revive' : 'Kill'} player
-      </Button>
+      {character?.description}
+      {selectMode === 'none' && (
+        <div className='grid grid-cols-2 gap-x-4 gap-y-2'>
+          <Button fullWidth onClick={killOrRevivePlayer}>
+            {dead ? 'Revive' : 'Kill'} this player
+          </Button>
+          <Button fullWidth disabled={!canKill} onClick={killOrRevivePlayer}>
+            Kill another player
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => {
+              setSelectMode('reminder');
+            }}
+          >
+            Add reminder
+          </Button>
+        </div>
+      )}
+      {selectMode === 'reminder' && (
+        <div className='flex flex-col gap-4'>
+          <div className='grid grid-cols-4 gap-y-2 md:grid-cols-5 lg:grid-cols-7'>
+            {(showAllReminders
+              ? allCharacters
+              : players.flatMap((p) => p.characterId)
+            ).flatMap(
+              (id) =>
+                CHARACTERS[id].reminderTokens?.map((reminderText) => (
+                  <ReminderToken
+                    key={id + reminderText}
+                    onClick={() => {
+                      const newPlayers = players.slice();
+                      newPlayers[playerIndex]?.reminders.push({
+                        characterId: id,
+                        message: reminderText,
+                      });
+                      setPlayers(newPlayers);
+                      setModalOpen(false);
+                    }}
+                    characterId={id}
+                    text={reminderText}
+                  />
+                )) ?? [],
+            )}
+          </div>
+          <Switch
+            label='Show all reminders'
+            value={showAllReminders}
+            onChange={setShowAllReminders}
+          />
+        </div>
+      )}
     </Modal>
   );
 };

@@ -58,7 +58,9 @@ const BloodOnTheClocktowerElement = ({
     const players = zip(
       shuffle(gameState.characters.slice()),
       gameState.lobby,
-    ).map(([characterId, player]) => createPlayer({ ...player, characterId }));
+    ).map(([characterId, player], index) =>
+      createPlayer({ ...player, characterId, index }),
+    );
     setGameState({
       ...gameState,
       lobby: gameState.lobby.slice(players.length),
@@ -99,7 +101,7 @@ const BloodOnTheClocktowerElement = ({
         )}
         <div className='h-2' />
         {edition && (
-          <div className='flex gap-4'>
+          <div className='flex flex-col gap-2 lg:flex-row'>
             <Modal
               title={`Select Characters - ${edition.name}`}
               target={
@@ -117,9 +119,15 @@ const BloodOnTheClocktowerElement = ({
                 }}
               />
             </Modal>
-            {gameState.characters.length > 0 && (
-              <Button onClick={assignCharacters}>Assign characters</Button>
-            )}
+            <Button
+              disabled={
+                gameState.characters.length === 0 &&
+                'Select some characters first'
+              }
+              onClick={assignCharacters}
+            >
+              Assign characters
+            </Button>
           </div>
         )}
         <div className='h-2' />
@@ -152,24 +160,27 @@ const BloodOnTheClocktowerElement = ({
           </Button>
         </div>
       </details>
-      <details open={detailsStartOpen} className='border p-2 shadow-md'>
-        <summary className='select-none'>Grimoire</summary>
-        <Grimoire
-          players={gameState.players}
-          setPlayers={(players) => {
-            setGameState({ ...gameState, players });
-          }}
-        />
-      </details>
       {edition && gameState.players.length > 0 && (
-        <details open={detailsStartOpen} className='border p-2 shadow-md'>
-          <summary className='select-none'>Night Order</summary>
-          <div className='h-2' />
-          <NightOrder
-            players={gameState.players}
-            allCharacters={getAllCharacters(edition)}
-          />
-        </details>
+        <>
+          <details open={detailsStartOpen} className='border p-2 shadow-md'>
+            <summary className='select-none'>Grimoire</summary>
+            <Grimoire
+              edition={edition}
+              players={gameState.players}
+              setPlayers={(players) => {
+                setGameState({ ...gameState, players });
+              }}
+            />
+          </details>
+          <details open={detailsStartOpen} className='border p-2 shadow-md'>
+            <summary className='select-none'>Night Order</summary>
+            <div className='h-2' />
+            <NightOrder
+              players={gameState.players}
+              allCharacters={getAllCharacters(edition)}
+            />
+          </details>
+        </>
       )}
     </div>
   );

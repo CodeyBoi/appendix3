@@ -23,10 +23,10 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
 
   const allNightOrders = useMemo(
     () => ({
-      firstNight: FIRST_NIGHT_TEXT.filter(([id, _]) =>
+      firstNight: FIRST_NIGHT_TEXT.filter(({ id }) =>
         allCharacters.includes(id),
       ),
-      otherNights: OTHER_NIGHTS_TEXT.filter(([id, _]) =>
+      otherNights: OTHER_NIGHTS_TEXT.filter(({ id }) =>
         allCharacters.includes(id),
       ),
     }),
@@ -41,10 +41,10 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
     ? allNightOrders.firstNight
     : allNightOrders.otherNights;
   if (!showCharactersNotInPlay) {
-    nightOrder = nightOrder.filter(([id, _]) => gameCharacters.includes(id));
+    nightOrder = nightOrder.filter(({ id }) => gameCharacters.includes(id));
   }
   if (!showDeadCharacters) {
-    nightOrder = nightOrder.filter(([id, _]) => !deadCharacters.includes(id));
+    nightOrder = nightOrder.filter(({ id }) => !deadCharacters.includes(id));
   }
 
   return (
@@ -93,12 +93,16 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
           />
         </>
       )}
-      {nightOrder.map(([id, text]) => (
+      {nightOrder.map(({ id, description }) => (
         <NightOrderEntry
+          name={players
+            .filter((p) => p.characterId === id)
+            .map((p) => p.name)
+            .join(', ')}
           muted={deadCharacters.includes(id) || !gameCharacters.includes(id)}
           key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
           characterId={id}
-          text={text}
+          text={description}
         />
       ))}
     </div>
