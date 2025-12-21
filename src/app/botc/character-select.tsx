@@ -197,7 +197,7 @@ const BOTCCharacterSelect = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      <table className='w-min text-center'>
+      <table className='w-min text-center text-xs lg:text-lg'>
         <tbody>
           <tr className='font-bold'>
             <td className='border-x border-t'>Players</td>
