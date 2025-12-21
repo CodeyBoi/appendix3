@@ -1,12 +1,17 @@
+import Tooltip from 'components/tooltip';
 import Link from 'next/link';
 import React, { ButtonHTMLAttributes } from 'react';
 import { cn } from 'utils/class-names';
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'disabled'
+> & {
   color?: Color;
   href?: string;
   compact?: boolean;
   fullWidth?: boolean;
+  disabled?: boolean | string;
 };
 
 type Color = 'red' | 'transparent' | 'navbutton' | 'no-fill';
@@ -20,7 +25,7 @@ const colorClasses: Record<Color, string> = {
 
 const Button = ({
   color = 'red',
-  disabled,
+  disabled = false,
   children,
   href,
   compact = false,
@@ -36,7 +41,7 @@ const Button = ({
         'h-min rounded transition-colors hover:shadow active:translate-y-px',
         colorClasses[color],
         compact ? 'px-1 py-0.5' : 'px-3 py-2.5',
-        disabled && 'pointer-events-none opacity-50',
+        !!disabled && 'pointer-events-none opacity-50',
         fullWidth ? 'w-full' : 'max-w-max',
         className,
       )}
@@ -47,12 +52,21 @@ const Button = ({
     </button>
   );
 
+  const withDisabledTooltip =
+    disabled && typeof disabled === 'string' ? (
+      <Tooltip text={disabled} position='top'>
+        {buttonElement}
+      </Tooltip>
+    ) : (
+      buttonElement
+    );
+
   return href ? (
     <Link className={fullWidth ? 'w-full' : 'max-w-max'} href={href}>
-      {buttonElement}
+      {withDisabledTooltip}
     </Link>
   ) : (
-    buttonElement
+    withDisabledTooltip
   );
 };
 
