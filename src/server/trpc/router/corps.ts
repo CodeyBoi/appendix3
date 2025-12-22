@@ -141,6 +141,7 @@ export const corpsRouter = router({
         nickName: z.string().transform(emptyToNull),
         pronouns: z.string().transform(emptyToNull),
         email: z.string(),
+        contactURL: z.string(),
         vegetarian: z.boolean(),
         vegan: z.boolean(),
         glutenFree: z.boolean(),
@@ -154,6 +155,7 @@ export const corpsRouter = router({
         nickName,
         pronouns,
         email,
+        contactURL,
         vegetarian,
         vegan,
         glutenFree,
@@ -217,6 +219,7 @@ export const corpsRouter = router({
         data: {
           nickName,
           pronouns,
+          contactURL,
           user: {
             update: {
               email: email.trim(),
@@ -243,6 +246,7 @@ export const corpsRouter = router({
         number: z.number().nullable(),
         bNumber: z.number().nullable(),
         email: z.string(),
+        contactURL: z.string(),
         mainInstrument: z.string(),
         otherInstruments: z.array(z.string()),
         roles: z.array(z.string()),
@@ -261,6 +265,8 @@ export const corpsRouter = router({
           input.nickName.trim().length > 0 ? input.nickName.trim() : null,
         pronouns:
           input.pronouns.trim().length > 0 ? input.pronouns.trim() : null,
+        contactURL:
+          input.contactURL.trim().length > 0 ? input.contactURL.trim() : null,
         number: input.number,
         bNumber: input.bNumber,
         instruments: {
