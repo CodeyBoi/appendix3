@@ -10,6 +10,7 @@ import RestoreStreckListButton from './restore-streck-list';
 import { lang } from 'utils/language';
 import Tooltip from 'components/tooltip';
 import Link from 'next/link';
+import { getStreckListType } from 'utils/streck';
 
 interface StreckListTableProps {
   start?: Date;
@@ -65,14 +66,7 @@ const StreckListTable = async ({
           </div>
           <div className='table-row-group gap-1'>
             {streckLists.map((streckList) => {
-              const listType =
-                new Set(streckList.transactions.map((t) => t.item)).size !== 1
-                  ? 'strecklist'
-                  : streckList.transactions.every((t) => t.pricePer < 0)
-                  ? 'cost'
-                  : streckList.transactions.every((t) => t.pricePer > 0)
-                  ? 'deposit'
-                  : 'unknown';
+              const listType = getStreckListType(streckList.transactions);
               const link = `/admin/streck/view/${streckList.id}`;
               return (
                 <div

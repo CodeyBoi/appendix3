@@ -149,7 +149,7 @@ const getBalances = async (
   return activeCorps.sort(sortCorpsByName);
 };
 
-type StreckList = NonNullable<Awaited<ReturnType<typeof getStreckList>>>;
+export type StreckList = NonNullable<Awaited<ReturnType<typeof getStreckList>>>;
 
 export const toStreckListMatrix = (
   transactions: StreckList['transactions'],
@@ -166,7 +166,6 @@ export const toStreckListMatrix = (
         return transaction.amount;
       case 'cost':
         return -transaction.pricePer;
-
       case 'deposit':
         return transaction.pricePer;
     }
