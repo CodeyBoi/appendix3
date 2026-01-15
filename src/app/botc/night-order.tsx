@@ -1,16 +1,12 @@
 import Select from 'components/input/select';
 import { useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
-import {
-  BOTCPlayer,
-  CharacterId,
-  FIRST_NIGHT_TEXT,
-  OTHER_NIGHTS_TEXT,
-} from './characters';
+import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
 import Switch from 'components/input/switch';
+import { BotcPlayer } from './blood-on-the-clocktower-game';
 
 interface NightOrderProps {
-  players: BOTCPlayer[];
+  players: BotcPlayer[];
   allCharacters: CharacterId[];
 }
 

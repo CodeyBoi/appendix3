@@ -1,3 +1,5 @@
+import { BotcPlayer } from './blood-on-the-clocktower-game';
+
 export const MIN_PLAYERS = 5;
 export const MAX_PLAYERS = 15;
 
@@ -11,7 +13,7 @@ export const CHARACTER_TYPES = [
 export type CharacterType = (typeof CHARACTER_TYPES)[number];
 
 export interface Edition {
-  id: EditionId;
+  id: string;
   name: string;
   townsfolk: CharacterId[];
   outsiders: CharacterId[];
@@ -20,7 +22,7 @@ export interface Edition {
   travellers: CharacterId[];
 }
 
-export const EDITIONS: [Edition, Edition, Edition] = [
+export const EDITIONS: readonly Edition[] = [
   {
     id: 'trouble-brewing',
     name: 'Trouble Brewing',
@@ -90,6 +92,85 @@ export const EDITIONS: [Edition, Edition, Edition] = [
     demons: ['fanggu', 'vigormortis', 'nodashii', 'vortox'],
     travellers: ['barista', 'harlot', 'butcher', 'bonecollector', 'deviant'],
   },
+  {
+    id: 'carousel',
+    name: 'Carousel',
+    townsfolk: [
+      'acrobat',
+      'alchemist',
+      'alsaahir',
+      'amnesiac',
+      'atheist',
+      'balloonist',
+      'banshee',
+      'bountyhunter',
+      'cannibal',
+      'choirboy',
+      'cultleader',
+      'engineer',
+      'farmer',
+      'fisherman',
+      'general',
+      'highpriestess',
+      'huntsman',
+      'king',
+      'knight',
+      'lycanthrope',
+      'magician',
+      'nightwatchman',
+      'noble',
+      'pixie',
+      'poppygrower',
+      'princess',
+      'preacher',
+      'shugenja',
+      'steward',
+      'villageidiot',
+    ],
+    outsiders: [
+      'damsel',
+      'golem',
+      'heretic',
+      'hermit',
+      'hatter',
+      'ogre',
+      'plaguedoctor',
+      'politician',
+      'puzzlemaster',
+      'snitch',
+      'zealot',
+    ],
+    minions: [
+      'boffin',
+      'boomdandy',
+      'fearmonger',
+      'goblin',
+      'harpy',
+      'marionette',
+      'mezepheles',
+      'organgrinder',
+      'summoner',
+      'psychopath',
+      'vizier',
+      'widow',
+      'wizard',
+      'xaan',
+      'wraith',
+    ],
+    demons: [
+      'riot',
+      'alhadikhia',
+      'kazali',
+      'legion',
+      'leviathan',
+      'lilmonsta',
+      'lleech',
+      'lordoftyphon',
+      'ojo',
+      'yaggababble',
+    ],
+    travellers: ['gangster', 'gnome'],
+  },
 ] as const;
 
 export const getType = (id: CharacterId) => {
@@ -124,7 +205,7 @@ export const getDefaultAlignment = (id: CharacterId): Alignment => {
   }
 };
 
-export const getEdition = (id: CharacterId): EditionId => {
+export const getEdition = (id: CharacterId) => {
   for (const edition of EDITIONS) {
     if (getAllCharacters(edition).includes(id)) {
       return edition.id;
@@ -136,7 +217,7 @@ export const getEdition = (id: CharacterId): EditionId => {
 export const getAllCharacters = (edition: Edition) =>
   CHARACTER_TYPES.flatMap((t) => edition[t]);
 
-const ABBREVIATIONS: Record<EditionId, string> = {
+const ABBREVIATIONS: Record<string, string> = {
   'trouble-brewing': 'tb',
   'bad-moon-rising': 'bmr',
   'sects-and-violets': 'snv',
@@ -145,7 +226,7 @@ const ABBREVIATIONS: Record<EditionId, string> = {
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
 export const getImagePathFromId = (id: CharacterId) =>
   baseImgUrl
-    .replace('<EDITION>', ABBREVIATIONS[getEdition(id)])
+    .replace('<EDITION>', ABBREVIATIONS[getEdition(id)] ?? '')
     .replace('<NAME>', id)
     .replace(
       '<ALIGNMENT>',
@@ -176,7 +257,7 @@ export interface BOTCCharacter {
   name: string;
   description: string;
   reminderTokens?: readonly string[];
-  setupFunction?: (players: BOTCPlayer[]) => BOTCPlayer[];
+  setupFunction?: (players: BotcPlayer[]) => BotcPlayer[];
 }
 
 // const chooseRandom = (players: BOTCPlayer[], filter: (player: BOTCPlayer) => boolean) => {
@@ -1055,42 +1136,6 @@ export const CHARACTERS = Object.entries(_characters).reduce(
   {} as Record<CharacterId, BOTCCharacter>,
 );
 
-export interface BOTCPlayer {
-  name?: string;
-  characterId: CharacterId;
-  index: number;
-  alignment: Alignment;
-  corpsId?: string;
-  reminders: Reminder[];
-  isAlive: boolean;
-  isDrunk: boolean;
-  isPoisoned: boolean;
-  hasVoteToken: boolean;
-}
-
-export const createPlayer = ({
-  name,
-  corpsId,
-  characterId,
-  index,
-}: {
-  name?: string;
-  corpsId?: string;
-  characterId: CharacterId;
-  index: number;
-}): BOTCPlayer => ({
-  name,
-  corpsId,
-  characterId,
-  index,
-  reminders: [],
-  alignment: getDefaultAlignment(characterId),
-  isAlive: true,
-  isDrunk: false,
-  isPoisoned: false,
-  hasVoteToken: true,
-});
-
 export interface Reminder {
   characterId: CharacterId;
   message: string;
@@ -1106,9 +1151,9 @@ interface NightAbilityTargetType {
 interface NightAbility {
   targetType: NightAbilityTargetType;
   abilityFunction: (
-    players: BOTCPlayer[],
+    players: BotcPlayer[],
     targets?: NightAbilityTarget[],
-  ) => BOTCPlayer[];
+  ) => BotcPlayer[];
 }
 
 interface NightOrderAbility {

@@ -1,6 +1,5 @@
 import Modal from 'components/modal';
 import {
-  BOTCPlayer,
   CharacterId,
   CHARACTERS,
   FIRST_NIGHT_TEXT,
@@ -12,14 +11,15 @@ import Button from 'components/input/button';
 import { useState } from 'react';
 import ReminderToken from './reminder-token';
 import Switch from 'components/input/switch';
+import { BotcPlayer } from './blood-on-the-clocktower-game';
 
 interface CharacterTokenProps {
   playerName?: string;
   characterId?: CharacterId;
   dead?: boolean;
-  players: BOTCPlayer[];
+  players: BotcPlayer[];
   playerIndex: number;
-  setPlayers: (newPlayers: BOTCPlayer[]) => void;
+  setPlayers: (newPlayers: BotcPlayer[]) => void;
   allCharacters?: CharacterId[];
 }
 
@@ -75,7 +75,7 @@ const CharacterToken = ({
       target={
         <div
           className={cn(
-            'relative mt-1 h-32 w-32 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md',
+            'relative mt-1 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md',
             dead && 'grayscale',
           )}
         >
@@ -161,6 +161,7 @@ const CharacterToken = ({
                       });
                       setPlayers(newPlayers);
                       setModalOpen(false);
+                      setSelectMode('none');
                     }}
                     characterId={id}
                     text={reminderText}
