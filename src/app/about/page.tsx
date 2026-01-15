@@ -1,3 +1,4 @@
+import { APPENDIX_DEVELOPERS } from 'utils/corps';
 import { lang } from 'utils/language';
 
 const About = () => {
@@ -12,12 +13,9 @@ const About = () => {
         <a href='https://nextjs.org/'>Next.js</a>
         {lang(' av följande tappra hjältar:', ' by the following heroes:')}
         <ul className='list-disc py-2 pl-6'>
-          <li>#516 Hannes Ryberg</li>
-          <li>h.m. Hampus Wall</li>
-          <li>#580 Hanna Nilsson</li>
-          <li>!509 Hugo Rogmark</li>
-          <li>#558 Aron Paulsson</li>
-          <li>#611 Linnéa Mörk</li>
+          {APPENDIX_DEVELOPERS.map((name) => (
+            <li>{name}</li>
+          ))}
         </ul>
         {lang(
           'Bjud dem gärna på ett streck eller dylikt om ni ser dem i vardagen. Vill man bidra med kod eller design kan man snacka med någon i ITK eller kolla in den publika ',

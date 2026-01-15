@@ -21,13 +21,6 @@ export const getOperatingYear = () => {
   return month >= 8 ? year : year - 1;
 };
 
-export const isAprilFools = () => {
-  const date = new Date();
-  const month = date.getMonth();
-  const day = date.getDate();
-  return month === 3 && day === 1;
-};
-
 const aprilFoolsInstruments: Record<string, string> = {
   piccola: 'Pytteliten banjo',
   flöjt: 'Banjo på tvärs',
@@ -50,8 +43,8 @@ const aprilFoolsInstruments: Record<string, string> = {
   annat: 'Banjo på avvägar',
 };
 
-export const aprilFoolsInstrumentLabel = (instrument: string) => {
-  if (!isAprilFools()) {
+export const aprilFoolsInstrumentLabel = (date: Date, instrument: string) => {
+  if (!isAprilFools(date)) {
     return instrument;
   } else {
     return aprilFoolsInstruments[instrument.toLowerCase()] ?? 'Okänd banjo';
@@ -60,9 +53,21 @@ export const aprilFoolsInstrumentLabel = (instrument: string) => {
 
 export const startOperatingYear = 2010;
 
-export const isChristmas = () => new Date().getMonth() === 11;
+export const isAprilFools = (date: Date) =>
+  date.getMonth() === 3 && date.getDate() === 1;
 
-export const isJuly = () => new Date().getMonth() === 6;
+export const isChristmas = (date: Date) => date.getMonth() === 11;
+
+export const isJuly = (date: Date) => date.getMonth() === 6;
+
+export const isAppendixBirthday = (date: Date) =>
+  date.getMonth() === 0 && date.getDate() === 17;
+
+const appendixBirthday = dayjs('2023-01-17').toDate();
+export const getAppendixAgeInDays = (date: Date) =>
+  Math.floor(
+    (date.getTime() - appendixBirthday.getTime()) / 1000 / 60 / 60 / 24,
+  );
 
 const getSwedenHourOffset = (date: Date) => {
   const d = new Date(date);

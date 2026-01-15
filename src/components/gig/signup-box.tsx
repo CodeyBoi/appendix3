@@ -34,6 +34,7 @@ interface GigSignupBoxProps {
     value: string;
     color: string;
   }[];
+  currentDate?: Date;
 }
 
 const GigSignupBox = ({
@@ -45,6 +46,7 @@ const GigSignupBox = ({
   checkbox2,
   signup,
   signupOptions,
+  currentDate = new Date(),
 }: GigSignupBoxProps) => {
   const utils = trpc.useUtils();
 
@@ -112,7 +114,7 @@ const GigSignupBox = ({
   return (
     <FormLoadingOverlay showSpinner={false} visible={submitting}>
       <div className='flex flex-col gap-2'>
-        {isAprilFools() ? (
+        {isAprilFools(currentDate) ? (
           <Wheel
             options={signupOptions}
             onChange={handleSignupStatusChange}
@@ -164,10 +166,10 @@ const GigSignupBox = ({
           />
         )}
         {instruments.length > 1 &&
-          (isAprilFools() ? (
+          (isAprilFools(currentDate) ? (
             <Wheel
               options={instruments.map((instrument) => ({
-                label: aprilFoolsInstrumentLabel(instrument.name),
+                label: aprilFoolsInstrumentLabel(currentDate, instrument.name),
                 value: instrument.name,
               }))}
               onChange={handleInstrumentChange}

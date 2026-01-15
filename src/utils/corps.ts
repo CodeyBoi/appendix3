@@ -1,5 +1,14 @@
 import { Prisma } from '@prisma/client';
 
+export const APPENDIX_DEVELOPERS = [
+  '#516 Hannes Ryberg',
+  'h.m. Hampus Wall',
+  '#580 Hanna Nilsson',
+  '!509 Hugo Rogmark',
+  '#558 Aron Paulsson',
+  '#611 Linnéa Mörk',
+] as const;
+
 export const displayName = (
   corps:
     | {

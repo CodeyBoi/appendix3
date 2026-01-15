@@ -103,7 +103,7 @@ const Links = () => {
           <li>
             <a
               className='cursor-pointer text-red-600 underline'
-              href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+              href='https://www.youtube.com/watch?v=xvFZjo5PgG0'
             >
               {lang(
                 'Nakenbilder av Arvid Tarmén',
