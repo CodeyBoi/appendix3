@@ -86,7 +86,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
 
   const joinedAt =
     (firstGigDate?.getTime() ?? Number.MAX_VALUE) <
-    (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
+      (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
       ? firstGigDate
       : firstRehearsalDate;
 
