@@ -16,6 +16,7 @@ import { aprilFoolsInstrumentLabel } from 'utils/date';
 
 interface SignupListProps {
   gigId: string;
+  currentDate?: Date;
 }
 
 const FULL_SETTING: [string, number][] = [
@@ -121,7 +122,7 @@ const toPlural = (instrument: string, language: Language = 'sv') => {
   return plural ?? instrument;
 };
 
-const SignupList = ({ gigId }: SignupListProps) => {
+const SignupList = ({ gigId, currentDate = new Date() }: SignupListProps) => {
   const utils = api.useUtils();
   const { language } = useLanguage();
 
@@ -260,6 +261,7 @@ const SignupList = ({ gigId }: SignupListProps) => {
 
   const signupsToTable = (
     signups: typeof signupsSorted,
+    currentDate: Date,
     displayAmount: boolean = false,
   ) => {
     if (signups.length === 0) {
@@ -298,7 +300,10 @@ const SignupList = ({ gigId }: SignupListProps) => {
                     <td colSpan={2}>
                       <h6 className='mt-2 first-letter:capitalize'>
                         {toPlural(
-                          aprilFoolsInstrumentLabel(signup.instrument.name),
+                          aprilFoolsInstrumentLabel(
+                            currentDate,
+                            signup.instrument.name,
+                          ),
                           language,
                         ) +
                           (displayAmount && fullSettingAmount > 0
@@ -341,9 +346,9 @@ const SignupList = ({ gigId }: SignupListProps) => {
     );
   };
 
-  const yesTable = signupsToTable(yesList, true);
-  const maybeTable = signupsToTable(maybeList);
-  const noTable = signupsToTable(noList);
+  const yesTable = signupsToTable(yesList, currentDate, true);
+  const maybeTable = signupsToTable(maybeList, currentDate);
+  const noTable = signupsToTable(noList, currentDate);
 
   // Get a count of how many people are missing for each instrument
   const missingInstrumentsCount = useMemo(() => {

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
 };
 
-interface GameState {
+export interface GameState {
   editionId: string;
   characters: CharacterId[];
   lobby: { name: string; corpsId?: string }[];
