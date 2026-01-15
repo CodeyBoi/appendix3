@@ -28,9 +28,13 @@ export const metadata: Metadata = {
 
 interface RootLayoutProps {
   children: ReactElement;
+  currentDate?: Date;
 }
 
-const RootLayout = async ({ children }: RootLayoutProps) => {
+const RootLayout = async ({
+  children,
+  currentDate = new Date(),
+}: RootLayoutProps) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect('/login');
@@ -42,20 +46,19 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     select: { colorScheme: true, language: true },
   });
   const colorScheme = (
-    isAprilFools() ? 'dark' : corps?.colorScheme
+    isAprilFools(currentDate) ? 'dark' : corps?.colorScheme
   ) as ColorScheme;
   const language = corps?.language as Language;
 
-  const snowflakes =
-    false && isChristmas() ? (
-      <>
-        {range(8).map((i) => (
-          <div key={i} className='snowflake'>
-            <div className='inner'>❄️</div>
-          </div>
-        ))}
-      </>
-    ) : null;
+  const snowflakes = isChristmas(currentDate) ? (
+    <>
+      {range(8).map((i) => (
+        <div key={i} className='snowflake'>
+          <div className='inner'>❄️</div>
+        </div>
+      ))}
+    </>
+  ) : null;
 
   return (
     <html
@@ -93,7 +96,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         <meta name='theme-color' content='#B80900'></meta>
       </head>
       <body className='overflow-y-auto bg-white text-black dark:bg-darkBg dark:text-darkText'>
-        {isChristmas() && snowflakes}
+        {isChristmas(currentDate) && snowflakes}
         <TRPCReactProvider headers={headers()}>
           <AppProvider
             defaultColorScheme={colorScheme}

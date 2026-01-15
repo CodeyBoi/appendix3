@@ -30,7 +30,7 @@ const useColorScheme = (initialColorScheme?: ColorScheme) => {
   };
 
   return {
-    colorScheme: isAprilFools() ? 'dark' : colorScheme,
+    colorScheme: isAprilFools(new Date()) ? 'dark' : colorScheme,
     toggleColorScheme,
   };
 };

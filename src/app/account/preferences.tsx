@@ -28,7 +28,13 @@ const initialValues = {
 };
 type FormValues = typeof initialValues;
 
-const AccountPreferences = () => {
+interface AccountPreferencesProps {
+  currentDate?: Date;
+}
+
+const AccountPreferences = ({
+  currentDate = new Date(),
+}: AccountPreferencesProps) => {
   const { data: corps, isLoading: corpsLoading } =
     trpc.corps.getSelf.useQuery();
   const utils = trpc.useUtils();
@@ -101,10 +107,10 @@ const AccountPreferences = () => {
               checked={colorScheme === 'dark'}
               onChange={() => {
                 /* April fools */
-                if (isAprilFools()) {
+                if (isAprilFools(currentDate)) {
                   alert('get pranked');
                   window.open(
-                    'https://www.youtube.com/watch?v=h-d4PlcAGb4',
+                    'https://www.youtube.com/watch?v=xvFZjo5PgG0',
                     '_blank',
                   );
                   return;
