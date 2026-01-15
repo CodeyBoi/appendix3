@@ -1,18 +1,7 @@
 import BloodOnTheClocktowerElement from './blood-on-the-clocktower';
 
-interface BloodOnTheClocktowerProps {
-  searchParams?: {
-    state?: string;
-  };
-}
-
-const BloodOnTheClocktowerPage = ({
-  searchParams,
-}: BloodOnTheClocktowerProps) => {
-  const initialState = searchParams?.state
-    ? JSON.parse(searchParams.state)
-    : undefined;
-  return <BloodOnTheClocktowerElement state={initialState} />;
+const BloodOnTheClocktowerPage = () => {
+  return <BloodOnTheClocktowerElement />;
 };
 
 export default BloodOnTheClocktowerPage;
