@@ -75,9 +75,7 @@ interface HomePageProps {
   currentDate?: Date;
 }
 
-const HomePage = async ({
-  currentDate = new Date('2026-01-17'),
-}: HomePageProps) => {
+const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
   const month = currentDate.toLocaleDateString('sv-SE', { month: 'long' });
 
   const [killerGame, killerPlayer, streaks, streckAccount] = await Promise.all([
