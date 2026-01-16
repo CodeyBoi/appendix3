@@ -24,7 +24,8 @@ const fetchGigs = async (year: number, tab: string) => {
 
 const numberSuffix = (n: number) => {
   const lastDigit = n % 10;
-  return lastDigit === 1 || lastDigit === 2 ? 'a' : 'e';
+  const secondDigit = (((n % 100) - lastDigit) / 10);
+  return (lastDigit === 1 || lastDigit === 2) and secondDigit !== 1 ? 'a' : 'e';
 };
 
 const GigList = async ({ year, tab }: GigListProps) => {
