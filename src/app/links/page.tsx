@@ -56,8 +56,8 @@ const Links = () => {
               href='https://samply.app/p/Ub5REp3lbAi3CCnJdgdm'
             >
               {lang(
-                'Samply',
-                "Samply",
+                'Samply, en hemsida där man kan streama våra låtar.',
+                'Samply, a website where you can stream our songs.',
               )}
             </a>
           </li>
