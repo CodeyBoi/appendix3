@@ -15,7 +15,7 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
 } from './characters';
-import BOTCCharacterPanel from './character-panel';
+import BotcCharacterPanel from './character-panel';
 import { useState } from 'react';
 import Button from 'components/input/button';
 import React from 'react';
@@ -85,6 +85,9 @@ const selectRandom = (
   edition: Edition,
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
+  const isCharacterType = (typeOrId: string): typeOrId is CharacterType =>
+    (CHARACTER_TYPES as readonly string[]).includes(typeOrId);
+
   const selected: CharacterId[] = [];
   for (const characterType of CHARACTER_TYPES) {
     const copy = shuffle(edition[characterType].slice());
@@ -92,31 +95,36 @@ const selectRandom = (
   }
 
   // Correct errors if characters which change character amounts are picked
-  for (const [type, diff] of Object.entries(
+  for (const [typeOrId, diff] of Object.entries(
     findSelectionError(selected, numberOfCharacters),
   )) {
     if (diff === 0) {
       continue;
     }
-    const characters = edition[type as CharacterType];
-    for (let i = 0; i < Math.abs(diff); i++) {
-      // Remove character belonging to character class
-      if (diff < 0) {
-        const idx = selected.findIndex((id) => characters.includes(id));
-        if (idx !== -1) {
-          selected.splice(idx, 1);
+    if (isCharacterType(typeOrId)) {
+      const characters = edition[typeOrId];
+      for (let i = 0; i < Math.abs(diff); i++) {
+        // Remove character belonging to character class
+        if (diff < 0) {
+          const idx = selected.findIndex((id) => characters.includes(id));
+          if (idx !== -1) {
+            selected.splice(idx, 1);
+          }
         }
-      }
 
-      // Add character from character class
-      else {
-        const newCharacter = shuffle(characters.slice()).find(
-          (id) => !selected.includes(id),
-        );
-        if (newCharacter) {
-          selected.push(newCharacter);
+        // Add character from character class
+        else {
+          const newCharacter = shuffle(characters.slice()).find(
+            (id) => !selected.includes(id),
+          );
+          if (newCharacter) {
+            selected.push(newCharacter);
+          }
         }
       }
+    } else {
+      // TODO: Handle diffs in character ids
+      // const _characterId = typeOrId as CharacterId;
     }
   }
 
@@ -127,13 +135,14 @@ const findSelectionError = (
   characters: CharacterId[],
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
-  const res: Record<CharacterType, number> = initObject(CHARACTER_TYPES, 0);
+  const res: Record<CharacterType, number> &
+    Partial<Record<CharacterId, number>> = initObject(CHARACTER_TYPES, 0);
   const addOutsiders = (n: number) => {
     res['outsiders'] = res['outsiders'] + n;
     res['townsfolk'] = res['townsfolk'] - n;
   };
-  for (const c of characters) {
-    switch (c) {
+  for (const character of characters) {
+    switch (character) {
       case 'baron':
         addOutsiders(2);
         break;
@@ -154,20 +163,47 @@ const findSelectionError = (
       case 'vigormortis':
         addOutsiders(-1);
         break;
+      case 'legionary':
+        res['legionary'] = Math.floor(Math.random() * 3);
+        break;
+      case 'scholar':
+        addOutsiders(1);
+        break;
+      case 'haruspex':
+        if (!characters.includes('spartacus')) {
+          res['spartacus'] = 1;
+        }
+        break;
+      case 'hannibal':
+        res['hannibal'] =
+          2 -
+          characters.reduce(
+            (acc, ch) => (ch === 'hannibal' ? acc + 1 : acc),
+            0,
+          );
+        break;
+      case 'mercenary':
+        res['mercenary'] =
+          2 -
+          characters.reduce(
+            (acc, ch) => (ch === 'mercenary' ? acc + 1 : acc),
+            0,
+          );
+        break;
     }
   }
   return res;
 };
 
-interface BOTCCharacterSelectProps {
+interface BotcCharacterSelectProps {
   edition: Edition;
   onSelectedCharactersChange: (selectedCharacters: CharacterId[]) => void;
 }
 
-const BOTCCharacterSelect = ({
+const BotcCharacterSelect = ({
   edition,
   onSelectedCharactersChange,
-}: BOTCCharacterSelectProps) => {
+}: BotcCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
   const [numberOfPlayers, setNumberOfPlayers] = useState(7);
   const [selectedCharacters, _setSelectedCharacters] = useState<CharacterId[]>(
@@ -306,7 +342,7 @@ const BOTCCharacterSelect = ({
                     <div
                       key={id}
                       className={cn(
-                        'border px-2 py-1',
+                        'border px-2 py-1 hover:cursor-pointer',
                         subtleBorder,
                         selectedCharacters.includes(id) && bgShade,
                       )}
@@ -321,7 +357,7 @@ const BOTCCharacterSelect = ({
                         setSelectedCharacters(newSelected);
                       }}
                     >
-                      <BOTCCharacterPanel
+                      <BotcCharacterPanel
                         name={name}
                         imgSrc={getImagePathFromId(id)}
                         description={description}
@@ -339,4 +375,4 @@ const BOTCCharacterSelect = ({
   );
 };
 
-export default BOTCCharacterSelect;
+export default BotcCharacterSelect;

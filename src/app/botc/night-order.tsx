@@ -1,16 +1,12 @@
 import Select from 'components/input/select';
 import { useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
-import {
-  BOTCPlayer,
-  CharacterId,
-  FIRST_NIGHT_TEXT,
-  OTHER_NIGHTS_TEXT,
-} from './characters';
+import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
 import Switch from 'components/input/switch';
+import { BotcPlayer } from './blood-on-the-clocktower-game';
 
 interface NightOrderProps {
-  players: BOTCPlayer[];
+  players: BotcPlayer[];
   allCharacters: CharacterId[];
 }
 
@@ -19,7 +15,7 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
   const [showDeadCharacters, setShowDeadCharacters] = useState(false);
   const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
 
-  const isTeensyville = allCharacters.length < 7;
+  const isTeensyville = players.length < 7;
 
   const allNightOrders = useMemo(
     () => ({
