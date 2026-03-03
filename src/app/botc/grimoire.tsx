@@ -1,29 +1,26 @@
 import { range, zip } from 'utils/array';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import CharacterToken from './character-token';
-import { Edition, getAllCharacters } from './characters';
 import ReminderToken from './reminder-token';
 import React from 'react';
 
 interface GrimoireProps {
-  edition: Edition;
   players: BotcPlayer[];
-  setPlayers: (newPlayers: BotcPlayer[]) => void;
+  setCurrentPlayerIndex: (index: number) => void;
 }
 
 const getOvalPoints = (n: number) =>
   range(n).map((i) => {
     const t = (2.0 * i * Math.PI) / n - Math.PI / 2.0;
-    return { left: 0.5 + 0.4 * Math.cos(t), top: 0.5 + 0.35 * Math.sin(t) };
+    return { left: 0.5 + 0.4 * Math.cos(t), top: 0.5 + 0.42 * Math.sin(t) };
   });
 
 const toPercent = (v: number) => `${Math.floor(v * 100)}%`;
 
-const Grimoire = ({ edition, players, setPlayers }: GrimoireProps) => {
-  const allCharacters = getAllCharacters(edition);
+const Grimoire = ({ players, setCurrentPlayerIndex }: GrimoireProps) => {
   const points = getOvalPoints(players.length);
   return (
-    <div className='relative w-full' style={{ height: '500px' }}>
+    <div className='relative h-[85vh] w-full lg:h-[900px] '>
       {zip(players, points).map(([player, point], i) => {
         const key = (player.name ?? '') + player.characterId;
         return (
@@ -38,22 +35,26 @@ const Grimoire = ({ edition, players, setPlayers }: GrimoireProps) => {
               <CharacterToken
                 playerName={player.name}
                 characterId={player.characterId}
-                players={players}
-                playerIndex={i}
-                setPlayers={setPlayers}
                 dead={!player.isAlive}
-                allCharacters={allCharacters}
+                onClick={() => {
+                  setCurrentPlayerIndex(i);
+                }}
               />
             </div>
             {player.reminders
               .concat(player.automaticReminders)
               .map((reminder, i) => (
                 <div
-                  className='absolute'
+                  className='absolute -translate-x-1/2 -translate-y-1/2'
                   key={key + reminder.characterId + reminder.message}
                   style={{
-                    left: toPercent(point.left * (1 - (i + 1) / 5)),
-                    top: toPercent(point.top * (1 - (i + 1) / 5)),
+                    left: toPercent(
+                      (point.left - 0.5) * (1 - (i + 1.6) / 5.5) + 0.5,
+                    ),
+                    top: toPercent(
+                      (point.top - 0.5) * (1 - (i + 1.6) / 5.5) + 0.5,
+                    ),
+                    zIndex: -(i + 1),
                   }}
                 >
                   <ReminderToken

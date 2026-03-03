@@ -5,6 +5,7 @@ import {
   CharacterId,
   CharacterType,
   Edition,
+  EditionId,
   getDefaultAlignment,
   getType,
   Reminder,
@@ -42,7 +43,7 @@ export class BotcGame {
         return acc;
       },
       {
-        id,
+        id: id as EditionId,
         name,
         townsfolk: [],
         outsiders: [],

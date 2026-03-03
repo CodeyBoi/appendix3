@@ -1,21 +1,26 @@
-interface BOTCCharacterPanelProps {
+import { cn } from 'utils/class-names';
+
+interface BotcCharacterPanelProps {
   name: string;
   imgSrc: string;
   description: string;
   showDescription: boolean;
 }
 
-const BOTCCharacterPanel = ({
+const BotcCharacterPanel = ({
   name,
   imgSrc,
   description,
   showDescription,
-}: BOTCCharacterPanelProps) => {
+}: BotcCharacterPanelProps) => {
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center gap-4'>
         <img
-          className='h-8 w-8 scale-150 lg:h-12 lg:w-12'
+          className={cn(
+            'h-8 w-8 scale-150 lg:h-12 lg:w-12',
+            imgSrc.includes('Fall_of_Rome') && 'translate-y-1.5',
+          )}
           loading='lazy'
           src={imgSrc}
         />
@@ -27,4 +32,4 @@ const BOTCCharacterPanel = ({
   );
 };
 
-export default BOTCCharacterPanel;
+export default BotcCharacterPanel;

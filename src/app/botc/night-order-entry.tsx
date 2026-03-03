@@ -36,7 +36,14 @@ const NightOrderEntry = ({
     >
       <div className='flex gap-4'>
         {imgPath && (
-          <img className='h-12 w-12 scale-150' loading='lazy' src={imgPath} />
+          <img
+            className={cn(
+              'h-12 w-12 scale-150',
+              imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
+            )}
+            loading='lazy'
+            src={imgPath}
+          />
         )}
         <h4 className={cn(imgPath && 'mt-3')}>{name}</h4>
       </div>

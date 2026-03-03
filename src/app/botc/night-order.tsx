@@ -15,7 +15,7 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
   const [showDeadCharacters, setShowDeadCharacters] = useState(false);
   const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
 
-  const isTeensyville = allCharacters.length < 7;
+  const isTeensyville = players.length < 7;
 
   const allNightOrders = useMemo(
     () => ({

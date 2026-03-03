@@ -1,3 +1,4 @@
+import { cn } from 'utils/class-names';
 import { CharacterId, CHARACTERS, getImagePathFromId } from './characters';
 
 interface ReminderTokenProps {
@@ -11,11 +12,14 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
   const imgSrc = getImagePathFromId(characterId);
   return (
     <div
-      className='relative h-24 w-24 cursor-pointer rounded-full bg-blue-900 shadow-md'
+      className='relative h-24 w-24 scale-75 rounded-full bg-blue-900 shadow-md hover:cursor-pointer'
       onClick={onClick}
     >
       <img
-        className='absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2'
+        className={cn(
+          'absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2',
+          imgSrc.includes('Fall_of_Rome') && 'scale-75',
+        )}
         src={imgSrc}
         loading='lazy'
       />
@@ -25,7 +29,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
           id='top-curve'
           fill='transparent'
         />
-        <text textAnchor='middle'>
+        <text className='translate-y-2' textAnchor='middle' fontSize={22}>
           <textPath
             className='fill-white stroke-white stroke-1'
             startOffset='50%'
@@ -41,7 +45,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
           id='bottom-curve'
           fill='transparent'
         />
-        <text textAnchor='middle'>
+        <text textAnchor='middle' fontSize={22}>
           <textPath
             className='fill-white stroke-white stroke-0'
             startOffset='50%'

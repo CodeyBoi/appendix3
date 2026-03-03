@@ -13,7 +13,7 @@ export const CHARACTER_TYPES = [
 export type CharacterType = (typeof CHARACTER_TYPES)[number];
 
 export interface Edition {
-  id: string;
+  id: EditionId;
   name: string;
   townsfolk: CharacterId[];
   outsiders: CharacterId[];
@@ -91,6 +91,36 @@ export const EDITIONS: readonly Edition[] = [
     minions: ['eviltwin', 'witch', 'cerenovus', 'pithag'],
     demons: ['fanggu', 'vigormortis', 'nodashii', 'vortox'],
     travellers: ['barista', 'harlot', 'butcher', 'bonecollector', 'deviant'],
+  },
+  {
+    id: 'fall-of-rome',
+    name: 'Fall of Rome',
+    townsfolk: [
+      'sculptor',
+      'vestalvirgin',
+      'physician',
+      'legionary',
+      'trumpeter',
+      'mortician',
+      'standardbearer',
+      'centurion',
+      'merchant',
+      'gladiator',
+      'actor',
+      'blacksmith',
+      'scholar',
+    ],
+    outsiders: ['thetwins', 'winemaker', 'spartacus', 'badomen'],
+    minions: ['temptress', 'haruspex', 'glykon', 'augur'],
+    demons: ['cleopatra', 'crassus', 'hannibal', 'caesar'],
+    travellers: [
+      'mercenary',
+      'architect',
+      'sibyl',
+      'highpriest',
+      'highpriest2',
+      'emperor',
+    ],
   },
   {
     id: 'carousel',
@@ -205,7 +235,7 @@ export const getDefaultAlignment = (id: CharacterId): Alignment => {
   }
 };
 
-export const getEdition = (id: CharacterId) => {
+export const getEdition = (id: CharacterId): EditionId => {
   for (const edition of EDITIONS) {
     if (getAllCharacters(edition).includes(id)) {
       return edition.id;
@@ -221,24 +251,38 @@ const ABBREVIATIONS: Record<string, string> = {
   'trouble-brewing': 'tb',
   'bad-moon-rising': 'bmr',
   'sects-and-violets': 'snv',
+  carousel: 'carousel',
   custom: 'carousel',
 };
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
-export const getImagePathFromId = (id: CharacterId) =>
-  baseImgUrl
-    .replace('<EDITION>', ABBREVIATIONS[getEdition(id)] ?? '')
-    .replace('<NAME>', id)
-    .replace(
-      '<ALIGNMENT>',
-      getType(id) === 'travellers'
-        ? ''
-        : '_' + getDefaultAlignment(id).slice(0, 1),
-    );
+const fallOfRomeBaseImgUrl =
+  'https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/<NAME>_fall_of_rome.png';
+export const getImagePathFromId = (id: CharacterId) => {
+  if (getEdition(id) === 'fall-of-rome') {
+    // Centurion, Glykon and High Priest are stored at <name>1
+    const name = ['centurion', 'glykon', 'highpriest'].includes(id)
+      ? `${id}1`
+      : id;
+    return fallOfRomeBaseImgUrl.replace('<NAME>', name);
+  } else {
+    return baseImgUrl
+      .replace('<EDITION>', ABBREVIATIONS[getEdition(id)] ?? '')
+      .replace('<NAME>', id)
+      .replace(
+        '<ALIGNMENT>',
+        getType(id) === 'travellers'
+          ? ''
+          : '_' + getDefaultAlignment(id).slice(0, 1),
+      );
+  }
+};
 
 export const EDITION_IDS = [
   'trouble-brewing',
   'bad-moon-rising',
   'sects-and-violets',
+  'fall-of-rome',
+  'carousel',
   'custom',
 ] as const;
 export type EditionId = (typeof EDITION_IDS)[number];
@@ -252,7 +296,7 @@ export type AbilityEffects =
   | 'Alive'
   | 'Safe from execution';
 
-export interface BOTCCharacter {
+export interface BotcCharacter {
   id: CharacterId;
   name: string;
   description: string;
@@ -404,7 +448,7 @@ const _characters = {
     name: 'Thief',
     description:
       'Each night, choose a player (not yourself): their vote counts negatively tomorrow.',
-    reminderTokens: ['Vote counts negatively'],
+    reminderTokens: ['Vote counts negative'],
   },
   gunslinger: {
     name: 'Gunslinger',
@@ -782,6 +826,195 @@ const _characters = {
     reminderTokens: ['Were funny'],
   },
 
+  // Fall of Rome - Townsfolk
+  sculptor: {
+    name: 'Sculptor',
+    description:
+      'You start knowing a player. Each night*, you learn the alignment of their most recent nomination.',
+    reminderTokens: ['Sculpture', 'Nominated'],
+  },
+  vestalvirgin: {
+    name: 'Vestal Virgin',
+    description:
+      'You start knowing 1 good & 1 evil character, 1 of which is in-play. When they die, that night you learn 1 good & 1 evil character, 1 of which is in-play.',
+    reminderTokens: ['Learns'],
+  },
+  physician: {
+    name: 'Physician',
+    description:
+      'Each night, choose two players (not yourself): they are sober, healthy & get true info tonight. The 1st time the Demon kills one, you learn the Demon type.',
+    reminderTokens: ['Patient', '1st Demon'],
+  },
+  legionary: {
+    name: 'Legionary',
+    description:
+      'Each night, you learn how many living evil players are sat clockwise between yourself and the next living Legionary. [+0 to +2 Legionary]',
+  },
+  trumpeter: {
+    name: 'Trumpeter',
+    description:
+      'Each night*, you learn how many evil players publicly claimed to be Spartacus today.',
+    reminderTokens: ['Evil claim'],
+  },
+  mortician: {
+    name: 'Mortician',
+    description:
+      'Each night*, if a player died by execution today you learn if either of their living neighbours are evil.',
+    reminderTokens: ['Recently executed'],
+  },
+  standardbearer: {
+    name: 'Standard Bearer',
+    description:
+      'When you are nominated, you may make a unique public statement about the nominator (not yourself). Tonight, you learn if the statement was true.',
+    reminderTokens: ['True', 'False'],
+  },
+  centurion: {
+    name: 'Centurion',
+    description:
+      'If you nominate & execute a living player, their team loses. You are safe from the Demon. If you publicly claimed to be Spartacus today, you are drunk until dawn.',
+    reminderTokens: ['Drunk'],
+  },
+  merchant: {
+    name: 'Merchant',
+    description:
+      'Once per game, at night*, choose to learn the characters of players that have nominated you.',
+    reminderTokens: ['Nominated', 'No ability'],
+  },
+  gladiator: {
+    name: 'Gladiator',
+    description:
+      'Once per game, during the day, publicly choose a living player. Tonight, you and they wake & silently play roshambo: whoever loses dies (someone must lose).',
+    reminderTokens: ['Duel', 'Killed by', 'No ability'],
+  },
+  actor: {
+    name: 'Actor',
+    description:
+      "Once per game, during the day, publicly guess 3 players' character types (not yourself, 1 guess per type). That night, you learn how many you got correct.",
+    reminderTokens: ['Correct', 'Incorrect', 'No ability'],
+  },
+  blacksmith: {
+    name: 'Blacksmith',
+    description:
+      'The 1st time the Demon kills you, you live & gain a not-in-play Townsfolk ability.',
+    reminderTokens: ['Is the Blacksmith'],
+  },
+  scholar: {
+    name: 'Scholar',
+    description:
+      'The 1st time you nominate a living Outsider, they immediately become a not-in-play Townsfolk. [+1 Outsider]',
+    reminderTokens: ['Lectured', 'No ability'],
+  },
+
+  // Fall of Rome - Outsiders
+  thetwins: {
+    name: 'The Twins',
+    description:
+      'You start knowing a player: if either of you are executed, all Townsfolk are drunk until dusk tomorrow.',
+    reminderTokens: ['Townsfolk drunk', 'Twin'],
+  },
+  winemaker: {
+    name: 'Winemaker',
+    description:
+      'Your Townsfolk neighbours are drunk, but every other night, you are drunk until dusk, even if you are dead.',
+    reminderTokens: ['Odd', 'Even'],
+  },
+  spartacus: {
+    name: 'Spartacus',
+    description:
+      "If an evil player guesses you (once), your team loses. You might register as a Townsfolk; each day, if you did not publicly claim to be Spartacus, you don't.",
+    reminderTokens: ['Guess used'],
+  },
+  badomen: {
+    name: 'Bad Omen',
+    description:
+      'You do not know you are a Bad Omen. You think you are a Townsfolk, but you receive false information. You might register as evil, even if dead.',
+    reminderTokens: ['Is the Bad Omen'],
+  },
+
+  // Fall of Rome - Minions
+  temptress: {
+    name: 'Temptress',
+    description:
+      'On your 1st night choose two players: they learn that they were chosen. The 1st time one of them dies by execution, the other becomes evil that night.',
+    reminderTokens: ['Seduced'],
+  },
+  haruspex: {
+    name: 'Haruspex',
+    description:
+      'Each night, choose a player: you learn their character. The 1st player you choose twice in this way, dies. [+Spartacus]',
+    reminderTokens: ['Foretold', "Can't kill"],
+  },
+  glykon: {
+    name: 'Glykon',
+    description:
+      'You might register as good. Until dawn, players you nominate register as the opposing alignment & if a Townsfolk, are also poisoned.',
+    reminderTokens: ['Snake bite', 'Poisoned'],
+  },
+  augur: {
+    name: 'Augur',
+    description:
+      'If a Townsfolk nominates you, they immediately become a Bad Omen.',
+    reminderTokens: ['Is a Bad Omen'],
+  },
+
+  // Fall of Rome - Demons
+  cleopatra: {
+    name: 'Cleopatra',
+    description:
+      "Each night, choose two players: if they nominate tomorrow, they die that night. Each day, if a good player (Travellers don't count) does not nominate, evil wins.",
+    reminderTokens: ['Chosen by', 'Killed by'],
+  },
+  crassus: {
+    name: 'Crassus',
+    description:
+      'Each night*, choose a player: they die. If the 1st Crassus publicly claims to be Spartacus & dies with 5 or more players alive, an evil player becomes Crassus.',
+    reminderTokens: ['1st Crassus', 'Killed by'],
+  },
+  hannibal: {
+    name: 'Hannibal',
+    description:
+      'You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. The 1st Hannibal to die, becomes good. [+1 Hannibal]',
+    reminderTokens: ['Is Hannibal', 'Killed by'],
+  },
+  caesar: {
+    name: 'Caesar',
+    description:
+      'Each night*, choose a player: they die. The 1st time an evil player dies by execution, that night, choose an additional player: they die.',
+    reminderTokens: ['Betrayal', 'Kill used', 'Killed by'],
+  },
+
+  // Fall of Rome - Travellers
+  mercenary: {
+    name: 'Mercenary',
+    description:
+      'Each night*, gain the ability of a player who publicly claimed Spartacus today. If a Mercenary is exiled, you are exiled too. [+1 Mercenary of opposing alignment]',
+  },
+  architect: {
+    name: 'Architect',
+    description:
+      'Each night*, choose a player: 1) they become a not-in-play character of the same type, or 2) they swap characters with a player of the same type.',
+  },
+  sibyl: {
+    name: 'Sibyl',
+    description:
+      'Each day, after the 1st execution, you may publicly choose a dead player: they may nominate. If the majority of the dead and yourself agree, they are executed.',
+  },
+  highpriest: {
+    name: 'High Priest',
+    description:
+      'Each day, publicly choose a unique living player to bless: if a majority of players agree, something good happens to them.',
+  },
+  highpriest2: {
+    name: 'High Priest',
+    description:
+      'Each day, publicly choose a unique living player to bless: if a majority of players agree, tomorrow they may learn a statement. Tonight, choose if it’s true.',
+  },
+  emperor: {
+    name: 'Emperor',
+    description:
+      "Each day, choose the 1st execution's outcome. If you choose to protect today's execution: they survive. Otherwise, tonight you learn their alignment.",
+  },
+
   // Carousel - Townsfolk
   acrobat: {
     name: 'Acrobat',
@@ -1133,7 +1366,7 @@ export const CHARACTERS = Object.entries(_characters).reduce(
     acc[id as CharacterId] = { ...val, id: id as CharacterId };
     return acc;
   },
-  {} as Record<CharacterId, BOTCCharacter>,
+  {} as Record<CharacterId, BotcCharacter>,
 );
 
 export interface Reminder {
@@ -1168,6 +1401,11 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     description: 'Wake the Wraith whenever other evil players wake.',
   },
   {
+    id: 'hannibal',
+    description:
+      "During Minion information, when showing the Demon point to the players who have the 'Is Hannibal' token next to their characters and show the Hannibal token. Show the other Minions as normal. Show the minions three not-in-play characters.",
+  },
+  {
     id: 'lordoftyphon',
     description:
       "Wake the players on either side of the Demon. Show them the 'You Are' card, the token of the Minion they now are, and a thumbs down to indicate they are evil.",
@@ -1198,6 +1436,15 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'yaggababble',
     description: 'Show the Yaggababble their secret phrase.',
+  },
+  {
+    id: 'temptress',
+    description:
+      "Wake the Temptress and ask them to choose two players. Place the 'Seduced' reminder token next to the two players. Wake the two players separately showing the 'This character selected you' card, then the Temptress token.",
+  },
+  {
+    id: 'crassus',
+    description: "Place the '1st Crassus' reminder token next to Crassus.",
   },
   {
     id: 'snitch',
@@ -1314,6 +1561,46 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'pukka',
     description: 'The Pukka points to a player. That player is poisoned.',
+  },
+  {
+    id: 'cleopatra',
+    description:
+      "Wake Cleopatra and ask them to choose two players. Place the 'Chosen by' reminder token next to the two players.",
+  },
+  {
+    id: 'haruspex',
+    description:
+      "Wake the Haruspex and ask them to choose a player. Place the 'Foretold' reminder token next to the chosen player and show the Haruspex the chosen player's character. If the chosen player already has a 'Foretold' reminder token, show the Haruspex that player's character, then swap the existing 'Foretold' reminder token with the 'Killed by' reminder token, the chosen player dies, then place the 'Can't kill' reminder token next to the Haruspex.",
+  },
+  {
+    id: 'winemaker',
+    description:
+      "Place the 'Odd' or 'Even' reminder token next to the Winemaker. If an 'Odd' reminder token, the Winemaker is drunk on all of the odd nights (first, third, fifth...). If an 'Even' reminder token, the Winemaker is drunk on all of the even nights (second, fourth, sixth...). If reminder token is 'Odd', the Winemaker is drunk. Otherwise, their Townfolk neighbours are drunk (first night counts as night 1).",
+  },
+  {
+    id: 'thetwins',
+    description:
+      "Wake The Twins, and point to a player. Place the 'Twin' reminder token next to that player (Note that all references to 'The Twins' are to the Outsider character itself, i.e. 'Wake The Twins' means wake the player playing as The Twins).",
+  },
+  {
+    id: 'physician',
+    description:
+      "Wake the Physician and ask them to choose two players. Place the 'Patient' reminder token next to the two players.",
+  },
+  {
+    id: 'sculptor',
+    description:
+      "Wake the Sculptor and point to a player. Place the 'Sculpture' reminder token next to the shown player. The shown player can be of any alignment.",
+  },
+  {
+    id: 'vestalvirgin',
+    description:
+      "Wake the Vestal Virgin and show them one good character and one evil character, one of which is in play. Place the 'Learns' reminder token next to the player with the in-play character.",
+  },
+  {
+    id: 'legionary',
+    description:
+      'Wake the Legionaries separately. They learn the number of evil players sitting clockwise between them and the next living Legionary. If they are the only Legionary, they learn clockwise to themselves. If a Legionary dies and there are other Legionaries alive, you still wake the living Legionaries. ',
   },
   {
     id: 'pixie',
@@ -1480,6 +1767,56 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     id: 'sailor',
     description:
       'The previously drunk player is no longer drunk. The Sailor points to a living player. Either the Sailor, or the chosen player, is drunk.',
+  },
+  {
+    id: 'scholar',
+    description:
+      "If the Scholar nominated a living Outsider and converted them today, wake the nominated player and show them the 'You are' card, then show them their Townsfolk character token. Place the 'Lectured' reminder token next to the nominated player, and the 'No ability' reminder token next to the Scholar.",
+  },
+  {
+    id: 'temptress',
+    description:
+      "If a player with the 'Seduced' reminder token was executed today and died, remove their 'Seduced' reminder token. That night, wake the player with the remaining 'Seduced' reminder token. Show them the 'You are' card and then the thumbs down evil signal. They are now evil. Remove their 'Seduced' reminder token and replace it with the 'Evil' reminder token.",
+  },
+  {
+    id: 'mercenary',
+    description:
+      "Place the 'Good ability' reminder token next to a player with an I AM SPARTACUS! Fabled reminder token. Wake the good Mercenary and show them the character token of the player with the 'Good ability' reminder token; the good Mercenary has that ability until they receive a new ability during the following night. Complete the same process for the evil Mercenary, this time using the 'Evil ability' reminder token.",
+  },
+  {
+    id: 'highpriest',
+    description:
+      "Have something good happen to the player with the 'Blessed' reminder token.",
+  },
+  {
+    id: 'highpriest2',
+    description:
+      'do whatever i dont fukcing understand this character. almanac says nothing',
+  },
+  {
+    id: 'architect',
+    description:
+      "Wake the Architect and ask them to choose a player. Place the REDESIGNED reminder token next to that player. Place an additional REDESIGNED reminder token next to a player of the same character type, or choose not to;\n\nIf only 1 REDESIGNED reminder token is on the grimoire, replace the character token of that player with a not-in-play character of the same type. Wake the player and show them the 'You are' card, then shown them their new character token.\n\nIf 2 REDESIGNED reminder tokens are on the grimoire, swap the character tokens of those two players. Wake each player separately and show them the 'You are' card, then shown them their new character token.",
+  },
+  {
+    id: 'emperor',
+    description:
+      "If the Emperor went through with todays execution, wake the Emperor, they learn the executed player's alignment. If good, tell them 'good' (thumbs up) otherwise tell them 'evil (thumbs down).",
+  },
+  {
+    id: 'winemaker',
+    description:
+      "On odd nights, if the 'Even' reminder token is next to the Winemaker place the 'Drunk' reminder token next to the Winemaker's Townsfolk neighbours. Otherwise: remove all 'Drunk' reminder tokens.\n\nOn even nights, if the 'Odd' reminder token is next to the Winemaker place the 'Drunk' reminder token next to the Winemaker's Townsfolk neighbours. Otherwise: remove all 'Drunk' reminder tokens.",
+  },
+  {
+    id: 'thetwins',
+    description:
+      "If a player with the 'Twin' reminder token or The Twins was executed today, place the 'Townsfolk drunk' reminder token next to The Twins.",
+  },
+  {
+    id: 'physician',
+    description:
+      "Remove all 'Patient' reminder tokens. Wake the Physician and ask them to choose two players. Place the 'Patient' reminder token next to the two players.\n\nIf a player with a 'Patient' reminder token is killed by the Demon, place the '1st Demon' reminder token next to the Physician. If the '1st Demon' reminder token is already next to the Physician, do not wake the Physician. Otherwise wake the Physician and show them the Demon token.",
   },
   {
     id: 'engineer',
@@ -1679,6 +2016,26 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: 'The Kazali points to a player. That player dies.',
   },
   {
+    id: 'cleopatra',
+    description:
+      "If no good players (excluding players that register as evil) nominated today, the game ends and evil wins.\n\nIf a player marked with the 'Chosen' reminder token nominated today, mark them with the 'Killed by' reminder token. They die. Otherwise, remove their 'Chosen' reminder token.  Wake Cleopatra and ask them to choose two players. Place the 'Chosen' reminder token next to the two players.",
+  },
+  {
+    id: 'crassus',
+    description:
+      "On Crassus' first night place the '1st Crassus' reminder token next to Crassus. If the '1st Crassus' reminder token is already on the grimoire, do not move it.\n\nWake Crassus and ask them to choose a player. Mark the chosen player with the 'Killed by' reminder token. They die.",
+  },
+  {
+    id: 'hannibal',
+    description:
+      "A player might die for each living Hannibal. Place the 'Killed by' reminder token(s) next to the chosen player(s). They die.",
+  },
+  {
+    id: 'caesar',
+    description:
+      "If there is no 'Kill used' reminder token next to Caesar and an evil player died by execution today, ask Caesar to choose two players. Mark the chosen players with the 'Killed by' reminder tokens. They die. Place the 'Kill used' reminder token next to Caesar.\n\nOtherwise, ask Caesar to choose a player. Mark the chosen player with the 'Killed by' reminder token. They die.",
+  },
+  {
     id: 'assassin',
     description:
       "If the Assassin has not yet used their ability: The Assassin either shows the 'no' head signal, or points to a player. That player dies.",
@@ -1689,9 +2046,64 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
       'If an Outsider died today: The Godfather points to a player. That player dies.',
   },
   {
+    id: 'haruspex',
+    description:
+      "Wake the Haruspex and ask them to choose a player. Place the 'Foretold' reminder token next to the chosen player and show the Haruspex the chosen player's character. If the chosen player already has a 'Foretold' reminder token, show the Haruspex that player's character, then swap the existing 'Foretold' reminder token with the 'Killed by' reminder token, the chosen player dies, then place the 'Can't kill' reminder token next to the Haruspex.",
+  },
+  {
+    id: 'blacksmith',
+    description:
+      "If the Blacksmith is targeted by the Demon for the first time, and would normally die, instead place the 'Is the Blacksmith' reminder token next to the Blacksmith. Replace the Blacksmith character token with a not-in-play Townsfolk character token. Wake the Blacksmith and show them the 'You are' card, then show them their not-in-play Townsfolk character ability.",
+  },
+  {
     id: 'gossip',
     description:
       "If the Gossip's public statement was true: Choose a player not protected from dying tonight. That player dies.",
+  },
+  {
+    id: 'gladiator',
+    description:
+      "If a player has the 'Duel' token next to them wake both that player and the Gladiator at the same time. Have both players silently play roshambo, each choosing rock, paper or scissors. If both players choose the same, have them play again until someone wins. Place the 'Killed by' reminder token next to the player that lost, they die. Place the 'No ability' token next to the Gladiator.",
+  },
+  {
+    id: 'sculptor',
+    description:
+      "If a player has the 'Nominated' reminder token next to them, wake the Sculptor. The Sculptor learns the current alignment of the player with the 'Nominated' token next to them. If no players have the 'Nominated' token next to them, the Sculptor is not woken and does not learn anything at night.",
+  },
+  {
+    id: 'vestalvirgin',
+    description:
+      "If the player with the 'Learns' reminder token is dead, wake the Vestal Virgin and show them one good and one evil character, one of which is in play. If the in-play character is alive, do not wake the Vestal Virgin.",
+  },
+  {
+    id: 'legionary',
+    description:
+      'Wake the Legionaries separately. They learn the number of evil players sitting clockwise between them and the next living Legionary. If they are the only Legionary, they learn clockwise to themselves. If a Legionary dies and there are other Legionaries alive, you still wake the living Legionaries. ',
+  },
+  {
+    id: 'trumpeter',
+    description:
+      'Wake the Trumpeter. They learn how many evil players publicly claimed to be Spartacus today (keep misregistrations in mind).',
+  },
+  {
+    id: 'mortician',
+    description:
+      "If a player was executed today, wake the Mortician. They learn if either of the player's current living neighbours are evil. If one or both of the living neighbours are evil tell the Mortician 'yes', otherwise tell the player 'no'. If multiple people were executed (e.g. via Sibyl), do the former for both players and clarify which by first pointing to the associated player.",
+  },
+  {
+    id: 'standardbearer',
+    description:
+      "If the Standard Bearer has a 'True' or 'False' reminder token next to them, wake the Standard Bearer. They learn which token is next to them 'true' or 'false'. Remove any 'True' or 'False' reminder tokens, if any.",
+  },
+  {
+    id: 'actor',
+    description:
+      "If the Actor made their public guess today, wake them. The Actor learns the number equal to the number of 'Correct' reminder tokens on the grimoire, then place the 'No ability' reminder token.",
+  },
+  {
+    id: 'merchant',
+    description:
+      "If the Merchant hasn't used their ability, wake and ask them if they would like to use their ability. If yes, show the character tokens of any players with the 'Nominated' reminder tokens.",
   },
   {
     id: 'hatter',
