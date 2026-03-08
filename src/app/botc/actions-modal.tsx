@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { CharacterId, CHARACTERS } from './characters';
+import { useMemo, useState } from 'react';
+import { CharacterId, CHARACTERS, Reminder } from './characters';
 import ReminderToken from './reminder-token';
 import Modal from 'components/modal';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import Button from 'components/input/button';
 import Switch from 'components/input/switch';
+import Divider from 'components/divider';
 
-type SelectMode = 'none' | 'reminder' | 'player';
+type SelectMode = 'none' | 'player';
 
 interface BotcActionsModalProps {
   open: boolean;
@@ -37,16 +38,19 @@ const BotcActionsModal = ({
   const [addMultipleReminders, setAddMultipleReminders] = useState(false);
 
   const characters = new Set(players.map((p) => p.characterId));
-  const reminderTokens = (
-    showAllReminders
-      ? allCharacters
-      : allCharacters.filter((id) => characters.has(id))
-  ).flatMap(
-    (id) =>
-      CHARACTERS[id].reminderTokens?.map((reminderText) => ({
-        id,
-        reminderText,
-      })) ?? [],
+  const reminderTokens = useMemo(
+    () =>
+      (showAllReminders
+        ? allCharacters
+        : allCharacters.filter((id) => characters.has(id))
+      ).flatMap(
+        (id) =>
+          CHARACTERS[id].reminderTokens?.map((reminderText) => ({
+            characterId: id,
+            message: reminderText,
+          })) ?? [],
+      ),
+    [showAllReminders, allCharacters, characters],
   );
 
   const killOrRevivePlayer = () => {
@@ -60,13 +64,30 @@ const BotcActionsModal = ({
 
   const canKill = character.reminderTokens?.includes('Killed by') ?? false;
 
+  const reminderHash = (reminder: Reminder) =>
+    `id:${reminder.characterId},message:${reminder.message}`;
+  const alreadyAdded = new Set(player.reminders.map(reminderHash));
+
+  const filterReminderTokens = (reminder: Reminder) => {
+    if (alreadyAdded.has(reminderHash(reminder))) {
+      return false;
+    }
+
+    if (
+      reminder.message === 'No ability' &&
+      reminder.characterId !== player.characterId
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <Modal
       title={
         selectMode === 'none'
           ? character.name + (player.name ? ` (${player.name})` : '')
-          : selectMode === 'reminder'
-          ? 'Add reminder token'
           : 'Select player'
       }
       withCloseButton
@@ -86,81 +107,70 @@ const BotcActionsModal = ({
             <Button fullWidth onClick={killOrRevivePlayer}>
               {player.isAlive ? 'Kill' : 'Revive'} this player
             </Button>
-            <Button fullWidth disabled={!canKill} onClick={killOrRevivePlayer}>
+            <Button fullWidth disabled={!canKill}>
               Kill another player
             </Button>
-            <Button
-              fullWidth
-              onClick={() => {
-                setSelectMode('reminder');
-              }}
-            >
-              Add reminder
-            </Button>
+          </div>
+          <Divider />
+          <div className='flex flex-col gap-2 px-2'>
+            <div className='flex flex-col gap-4 md:flex-row'>
+              <h4>Add Reminder</h4>
+              <Switch
+                label='Show tokens not in play'
+                value={showAllReminders}
+                onChange={setShowAllReminders}
+              />
+              <Switch
+                label='Add multiple tokens'
+                value={addMultipleReminders}
+                onChange={setAddMultipleReminders}
+              />
+            </div>
+            <div className='grid grid-cols-3 gap-4 md:grid-cols-5 lg:grid-cols-7'>
+              {reminderTokens
+                .filter(filterReminderTokens)
+                .map(({ characterId, message }) => (
+                  <ReminderToken
+                    key={characterId + message}
+                    onClick={() => {
+                      const newPlayers = players.slice();
+                      newPlayers[playerIndex]?.reminders.push({
+                        characterId,
+                        message,
+                      });
+                      setPlayers(newPlayers);
+                      if (!addMultipleReminders) {
+                        setOpen(false);
+                      }
+                    }}
+                    characterId={characterId}
+                    text={message}
+                  />
+                ))}
+            </div>
           </div>
           {player.reminders.length > 0 && (
             <>
-              <h5>Added reminders (click to remove)</h5>
-              <div className='grid grid-cols-4 gap-y-2 md:grid-cols-5 lg:grid-cols-7'>
+              <h4>Added reminders (click to remove)</h4>
+              <div className='grid grid-cols-3 gap-4 px-2 md:grid-cols-5 lg:grid-cols-7'>
                 {player.reminders.map((reminder, i) => (
                   <ReminderToken
-                    key={`index:${playerIndex}${reminder.characterId}${reminder.message}`}
+                    key={`player:${playerIndex}${reminder.characterId}${reminder.message}`}
                     characterId={reminder.characterId}
                     text={reminder.message}
                     onClick={() => {
                       const newPlayers = players.slice();
                       newPlayers[playerIndex]?.reminders.splice(i, 1);
                       setPlayers(newPlayers);
+                      if (!addMultipleReminders) {
+                        setOpen(false);
+                      }
                     }}
                   />
                 ))}
               </div>
             </>
           )}
-        </div>
-      )}
-      {selectMode === 'reminder' && (
-        <div className='flex flex-col gap-4'>
-          <div className='flex gap-4'>
-            <Switch
-              label='Show all'
-              value={showAllReminders}
-              onChange={setShowAllReminders}
-            />
-            <Switch
-              label='Add multiple'
-              value={addMultipleReminders}
-              onChange={setAddMultipleReminders}
-            />
-          </div>
-          <div className='grid grid-cols-4 gap-y-2 md:grid-cols-5 lg:grid-cols-7'>
-            {reminderTokens.map(({ id, reminderText }) => (
-              <ReminderToken
-                key={id + reminderText}
-                onClick={() => {
-                  const newPlayers = players.slice();
-                  newPlayers[playerIndex]?.reminders.push({
-                    characterId: id,
-                    message: reminderText,
-                  });
-                  setPlayers(newPlayers);
-                  if (!addMultipleReminders) {
-                    setOpen(false);
-                    setSelectMode('none');
-                  }
-                }}
-                characterId={id}
-                text={reminderText}
-              />
-            ))}
-          </div>
-          <Button
-            onClick={() => {
-              setSelectMode('none');
-            }}
-          >
-            Cancel
-          </Button>
         </div>
       )}
       {selectMode === 'player' && 'test'}

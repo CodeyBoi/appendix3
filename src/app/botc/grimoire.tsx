@@ -26,7 +26,7 @@ const Grimoire = ({ players, setCurrentPlayerIndex }: GrimoireProps) => {
         return (
           <React.Fragment key={key}>
             <div
-              className='absolute'
+              className='absolute w-[18%] min-w-[92px]'
               style={{
                 left: toPercent(point.left),
                 top: toPercent(point.top),
@@ -45,7 +45,7 @@ const Grimoire = ({ players, setCurrentPlayerIndex }: GrimoireProps) => {
               .concat(player.automaticReminders)
               .map((reminder, i) => (
                 <div
-                  className='absolute -translate-x-1/2 -translate-y-1/2'
+                  className='absolute w-[10%] min-w-[64px] -translate-x-1/2 -translate-y-1/2'
                   key={key + reminder.characterId + reminder.message}
                   style={{
                     left: toPercent(

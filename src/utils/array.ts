@@ -49,6 +49,9 @@ export const intersection = <T>(a: T[], b: T[]) => {
 export const filterNone = <T>(list: (T | null | undefined)[]): T[] =>
   list.flatMap((e) => (e !== null && e !== undefined ? [e] : []));
 
+export const chooseRandom = <T>(list: T[]) =>
+  list[Math.floor(Math.random() * list.length)];
+
 export const shuffle = <T>(list: T[]) => {
   for (let i = list.length - 1; i >= 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1));

@@ -13,6 +13,7 @@ import Grimoire from './grimoire';
 import ParamsTextInput from 'components/input/params-text-input';
 import { BotcGame } from './blood-on-the-clocktower-game';
 import BotcActionsModal from './actions-modal';
+import InfoTokenList from './info-token-list';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -183,6 +184,14 @@ const BloodOnTheClocktowerElement = () => {
               <NightOrder
                 players={gameState.players}
                 allCharacters={getAllCharacters(edition)}
+              />
+            </details>
+            <details open={detailsStartOpen} className='border p-2 shadow-md'>
+              <summary className='select-none'>Info Tokens</summary>
+
+              <InfoTokenList
+                chosenCharacters={gameState.charactersInPlay()}
+                allCharacters={gameState.characters()}
               />
             </details>
           </>
