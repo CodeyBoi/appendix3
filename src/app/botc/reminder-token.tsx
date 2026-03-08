@@ -1,5 +1,10 @@
 import { cn } from 'utils/class-names';
-import { CharacterId, CHARACTERS, getImagePathFromId } from './characters';
+import {
+  CharacterId,
+  CHARACTERS,
+  getDefaultAlignment,
+  getImagePathFromId,
+} from './characters';
 
 interface ReminderTokenProps {
   characterId: CharacterId;
@@ -9,10 +14,14 @@ interface ReminderTokenProps {
 
 const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
   const character = CHARACTERS[characterId];
+  const defaultAlignment = getDefaultAlignment(character.id);
   const imgSrc = getImagePathFromId(characterId);
   return (
     <div
-      className='relative h-24 w-24 scale-75 rounded-full bg-blue-900 shadow-md hover:cursor-pointer'
+      className={cn(
+        'relative aspect-square w-full rounded-full shadow-md hover:cursor-pointer',
+        defaultAlignment === 'good' ? 'bg-blue-900' : 'bg-red-900',
+      )}
       onClick={onClick}
     >
       <img

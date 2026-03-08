@@ -32,7 +32,7 @@ const CharacterToken = ({
   return (
     <div
       className={cn(
-        'relative mt-1 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md transition-all hover:scale-105 hover:cursor-pointer',
+        'relative mt-1 aspect-square w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md transition-all hover:scale-105 hover:cursor-pointer',
         dead && 'grayscale',
       )}
       onClick={onClick}

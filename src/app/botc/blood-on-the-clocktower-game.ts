@@ -1,4 +1,4 @@
-import { shuffle, zip } from 'utils/array';
+import { chooseRandom, shuffle, zip } from 'utils/array';
 import {
   Alignment,
   CHARACTER_TYPES,
@@ -15,6 +15,7 @@ export class BotcGame {
   edition: Edition;
   lobby: { name: string; corpsId?: string }[];
   players: BotcPlayer[];
+  demonBluffs: CharacterId[];
 
   constructor(initial: {
     edition: Edition;
@@ -24,6 +25,7 @@ export class BotcGame {
     this.edition = initial.edition;
     this.lobby = initial.lobby ?? [];
     this.players = initial.players ?? [];
+    this.demonBluffs = [];
   }
 
   static fromJSON(json: string) {
@@ -59,11 +61,35 @@ export class BotcGame {
     return CHARACTER_TYPES.flatMap((t) => this.edition[t]);
   }
 
+  charactersInPlay() {
+    return this.players.map((p) => p.characterId);
+  }
+
   assignCharacters(characters: CharacterId[]) {
     this.players = zip(shuffle(characters.slice()), this.lobby).map(
       ([characterId, player], index) =>
         new BotcPlayer({ ...player, characterId, index }),
     );
+  }
+
+  generateDemonBluffs(numberOfBluffs: number = 3) {
+    const chosenCharacterSet = new Set(this.charactersInPlay());
+    const validTownsfolk = shuffle(
+      this.edition.townsfolk.filter((t) => !chosenCharacterSet.has(t)),
+    );
+    const validOutsiders = this.edition.outsiders.filter(
+      (t) => !chosenCharacterSet.has(t),
+    );
+
+    const outsiderBluff = chooseRandom(validOutsiders);
+
+    if (!outsiderBluff || numberOfBluffs === 1) {
+      return validTownsfolk.slice(0, numberOfBluffs);
+    } else {
+      const bluffs = validTownsfolk.slice(0, numberOfBluffs - 1);
+      bluffs.push(outsiderBluff);
+      return bluffs;
+    }
   }
 }
 
