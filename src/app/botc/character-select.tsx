@@ -53,6 +53,7 @@ const getNumberOfCharacters = (
 const generateCharacterRow = (
   character: CharacterType,
   selectedColumn: number,
+  onClick: (n: number) => void,
 ) => {
   const color = isGood(character) ? 'text-blue-500' : 'text-red-600';
   return (
@@ -67,12 +68,15 @@ const generateCharacterRow = (
       </td>
       {range(MIN_PLAYERS, MAX_PLAYERS + 1).map((n) => (
         <td
+          key={character + n.toString()}
           className={cn(
-            'border-x',
+            'border-x hover:cursor-pointer',
             n === selectedColumn && 'bg-red-600/20',
             character === 'demons' && 'border-b',
           )}
-          key={character + n.toString()}
+          onClick={() => {
+            onClick(n);
+          }}
         >
           {getNumberOfCharacters(n)[character]}
         </td>
@@ -240,42 +244,35 @@ const BotcCharacterSelect = ({
             {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
               <td
                 className={cn(
-                  'border-x border-t px-2',
+                  'border-x border-t px-2 hover:cursor-pointer',
                   n === numberOfPlayers && 'bg-red-600/20',
                 )}
                 key={n}
+                onClick={() => {
+                  setNumberOfPlayers(n);
+                }}
               >
                 {n}
               </td>
             ))}
             <td
               className={cn(
-                'border-x border-t px-2',
+                'border-x border-t px-2 hover:cursor-pointer',
                 15 === numberOfPlayers && 'bg-red-600/20',
               )}
+              onClick={() => {
+                setNumberOfPlayers(15);
+              }}
             >
               {MAX_PLAYERS}+
             </td>
           </tr>
 
           {CHARACTER_TYPES.slice(0, -1).map((t) =>
-            generateCharacterRow(t, numberOfPlayers),
+            generateCharacterRow(t, numberOfPlayers, setNumberOfPlayers),
           )}
         </tbody>
       </table>
-      <label htmlFor='players'>Number of players: {numberOfPlayers}</label>
-      <input
-        className='max-w-sm'
-        type='range'
-        id='players'
-        name='players'
-        min={MIN_PLAYERS}
-        max={MAX_PLAYERS}
-        value={numberOfPlayers}
-        onChange={(e) => {
-          setNumberOfPlayers(e.currentTarget.valueAsNumber);
-        }}
-      />
       <Switch
         label='Show character abilities'
         value={showDescriptions}

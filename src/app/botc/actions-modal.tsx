@@ -126,47 +126,52 @@ const BotcActionsModal = ({
                 onChange={setAddMultipleReminders}
               />
             </div>
-            <div className='grid grid-cols-3 gap-4 md:grid-cols-5 lg:grid-cols-7'>
+            <div className='flex flex-wrap gap-4'>
               {reminderTokens
                 .filter(filterReminderTokens)
                 .map(({ characterId, message }) => (
-                  <ReminderToken
-                    key={characterId + message}
-                    onClick={() => {
-                      const newPlayers = players.slice();
-                      newPlayers[playerIndex]?.reminders.push({
-                        characterId,
-                        message,
-                      });
-                      setPlayers(newPlayers);
-                      if (!addMultipleReminders) {
-                        setOpen(false);
-                      }
-                    }}
-                    characterId={characterId}
-                    text={message}
-                  />
+                  <div key={characterId + message} className='w-20'>
+                    <ReminderToken
+                      onClick={() => {
+                        const newPlayers = players.slice();
+                        newPlayers[playerIndex]?.reminders.push({
+                          characterId,
+                          message,
+                        });
+                        setPlayers(newPlayers);
+                        if (!addMultipleReminders) {
+                          setOpen(false);
+                        }
+                      }}
+                      characterId={characterId}
+                      text={message}
+                    />
+                  </div>
                 ))}
             </div>
           </div>
           {player.reminders.length > 0 && (
             <>
               <h4>Added reminders (click to remove)</h4>
-              <div className='grid grid-cols-3 gap-4 px-2 md:grid-cols-5 lg:grid-cols-7'>
+              <div className='flex flex-wrap gap-4'>
                 {player.reminders.map((reminder, i) => (
-                  <ReminderToken
+                  <div
                     key={`player:${playerIndex}${reminder.characterId}${reminder.message}`}
-                    characterId={reminder.characterId}
-                    text={reminder.message}
-                    onClick={() => {
-                      const newPlayers = players.slice();
-                      newPlayers[playerIndex]?.reminders.splice(i, 1);
-                      setPlayers(newPlayers);
-                      if (!addMultipleReminders) {
-                        setOpen(false);
-                      }
-                    }}
-                  />
+                    className='w-20'
+                  >
+                    <ReminderToken
+                      characterId={reminder.characterId}
+                      text={reminder.message}
+                      onClick={() => {
+                        const newPlayers = players.slice();
+                        newPlayers[playerIndex]?.reminders.splice(i, 1);
+                        setPlayers(newPlayers);
+                        if (!addMultipleReminders) {
+                          setOpen(false);
+                        }
+                      }}
+                    />
+                  </div>
                 ))}
               </div>
             </>

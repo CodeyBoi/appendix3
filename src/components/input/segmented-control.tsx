@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
 type Color = 'red' | 'gray';
-interface SegmentedControlOption {
+export interface SegmentedControlOption {
   label: React.ReactNode;
   value: string | number;
 }
