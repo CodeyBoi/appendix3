@@ -20,7 +20,7 @@ const toPercent = (v: number) => `${Math.floor(v * 100)}%`;
 const Grimoire = ({ players, setCurrentPlayerIndex }: GrimoireProps) => {
   const points = getOvalPoints(players.length);
   return (
-    <div className='relative h-[85vh] w-full lg:h-[900px] '>
+    <div className='relative h-[85vh] w-[90%] lg:h-[900px]'>
       {zip(players, points).map(([player, point], i) => {
         const key = (player.name ?? '') + player.characterId;
         return (

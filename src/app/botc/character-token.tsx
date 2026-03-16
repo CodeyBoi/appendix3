@@ -37,7 +37,7 @@ const CharacterToken = ({
       )}
       onClick={onClick}
     >
-      <h5 className='absolute -top-1 left-1/2 -translate-x-1/2 rounded bg-red-600 px-2 text-white'>
+      <h5 className='absolute -top-1 left-1/2 -translate-x-1/2 rounded bg-red-600 px-2 text-sm text-white'>
         {playerName}
       </h5>
       <img

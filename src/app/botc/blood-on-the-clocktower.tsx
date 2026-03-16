@@ -7,19 +7,38 @@ import Modal from 'components/modal';
 import { Metadata } from 'next';
 import { useMemo, useState } from 'react';
 import BotcCharacterSelectTable from './character-select';
-import { CharacterId, Edition, EDITIONS, getAllCharacters } from './characters';
+import {
+  CharacterId,
+  Edition,
+  EDITIONS,
+  getAllCharacters,
+  parsePocketGrimoireUrl,
+} from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
-import ParamsTextInput from 'components/input/params-text-input';
 import { BotcGame } from './blood-on-the-clocktower-game';
 import BotcActionsModal from './actions-modal';
 import InfoTokenList from './info-token-list';
+import Tabs from 'components/input/tabs';
+import { useSearchParams } from 'next/navigation';
+import TextInput from 'components/input/text-input';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
 };
 
+type Tab = 'setup' | 'grimoire' | 'night-order' | 'info-tokens';
+
 const TROUBLE_BREWING = EDITIONS[0] as Edition;
+const CUSTOM_EDITION: Edition = {
+  name: 'Custom Script',
+  id: 'custom',
+  townsfolk: [],
+  outsiders: [],
+  minions: [],
+  demons: [],
+  travellers: [],
+};
 const newGameState = new BotcGame({ edition: TROUBLE_BREWING });
 
 const BloodOnTheClocktowerElement = () => {
@@ -42,6 +61,20 @@ const BloodOnTheClocktowerElement = () => {
     localStorage.setItem('botcGameState', JSON.stringify(state));
   };
 
+  const searchParams = useSearchParams();
+  const tab = (searchParams?.get('tab') ?? 'setup') as Tab;
+  const tabOptions: { label: string; value: Tab }[] =
+    gameState.players.length === 0
+      ? [{ label: 'Setup', value: 'setup' }]
+      : [
+          { label: 'Setup', value: 'setup' },
+          { label: 'Grimoire', value: 'grimoire' },
+          { label: 'Night Order', value: 'night-order' },
+          { label: 'Info Tokens', value: 'info-tokens' },
+        ];
+
+  const [customScriptUrl, setCustomScriptUrl] = useState('');
+
   const [selectedCharacters, setSelectedCharacters] = useState<CharacterId[]>(
     [],
   );
@@ -56,7 +89,6 @@ const BloodOnTheClocktowerElement = () => {
   const edition = gameState.edition;
 
   const allCharacters = useMemo(() => getAllCharacters(edition), [edition]);
-  const detailsStartOpen = true;
 
   return (
     <>
@@ -72,129 +104,163 @@ const BloodOnTheClocktowerElement = () => {
         allCharacters={allCharacters}
       />
 
-      <div className='flex max-w-3xl flex-col gap-2'>
+      <div className='flex flex-col gap-2 lg:max-w-3xl'>
         <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
         <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
-        <details open={detailsStartOpen} className='border p-2 shadow-md'>
-          <summary className='select-none'>Setup</summary>
-
-          <div className='h-2' />
-          <Select
-            label='Edition'
-            options={EDITIONS.map((e) => ({
-              value: e.id,
-              label: e.name,
-            })).concat([{ value: 'custom', label: 'Custom Script' }])}
-            onChange={(v) => {
-              setGameState(
-                new BotcGame({
-                  edition:
-                    EDITIONS.find((edition) => edition.id === v) ??
-                    (EDITIONS[0] as Edition),
-                }),
-              );
-            }}
-            value={gameState.edition.id}
-          />
-          {gameState.edition.id === 'custom' && (
-            <ParamsTextInput
-              label='Script URL'
-              icon={<IconScript />}
-              paramName='scriptUrl'
+        <span className='text-sm'>
+          <Tabs defaultTab='setup' options={tabOptions} />
+        </span>
+        {tab === 'setup' && (
+          <div className='flex max-w-md flex-col gap-y-2'>
+            <Select
+              label='Edition'
+              options={EDITIONS.map((e) => ({
+                value: e.id,
+                label: e.name,
+              })).concat([{ value: 'custom', label: 'Custom Script' }])}
+              onChange={(v) => {
+                setGameState(
+                  new BotcGame({
+                    edition:
+                      EDITIONS.find((edition) => edition.id === v) ??
+                      CUSTOM_EDITION,
+                  }),
+                );
+              }}
+              value={gameState.edition.id}
             />
-          )}
-          <div className='h-2' />
-          <div className='flex flex-col gap-2 lg:flex-row'>
-            <Modal
-              title={`Select Characters - ${edition.name}`}
-              target={
-                <Button>
-                  <IconUser />
-                  Select Characters
-                </Button>
-              }
-              withCloseButton
-            >
-              <BotcCharacterSelectTable
-                edition={edition}
-                onSelectedCharactersChange={(characters) => {
-                  setSelectedCharacters(characters);
-                }}
-              />
-            </Modal>
-            <Button
-              disabled={
-                selectedCharacters.length === 0 &&
-                'Select some characters first'
-              }
-              onClick={assignCharacters}
-            >
-              Assign characters
-            </Button>
-          </div>
-          <div className='h-2' />
-          <div className='flex gap-4'>
-            <Button
-              onClick={() => {
-                if (
-                  confirm(
-                    'This will reset everything to a clean slate. Are you sure?',
-                  )
-                ) {
-                  setGameState(newGameState);
+            {gameState.edition.id === 'custom' && (
+              <div className='flex flex-col gap-4'>
+                <div className='flex flex-wrap gap-x-4'>
+                  <TextInput
+                    label='Script URL'
+                    icon={<IconScript />}
+                    onChange={setCustomScriptUrl}
+                    value={customScriptUrl}
+                  />
+                  <div className='flex gap-4'>
+                    <Button
+                      className='mt-2'
+                      disabled={!customScriptUrl}
+                      onClick={() => {
+                        if (customScriptUrl) {
+                          setGameState(
+                            new BotcGame({
+                              edition: parsePocketGrimoireUrl(customScriptUrl),
+                            }),
+                          );
+                          setCustomScriptUrl('');
+                        }
+                      }}
+                    >
+                      Import
+                    </Button>
+                    <Button
+                      className='mt-2'
+                      disabled={
+                        !customScriptUrl &&
+                        getAllCharacters(edition).length === 0
+                      }
+                      onClick={() => {
+                        setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
+                        setCustomScriptUrl('');
+                      }}
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                </div>
+                {getAllCharacters(edition).length > 0 && (
+                  <h4>Loaded script: {edition.name}</h4>
+                )}
+              </div>
+            )}
+            <div className='h-2' />
+            <div className='flex flex-col gap-2 lg:flex-row'>
+              <Modal
+                title={`Select Characters - ${edition.name}`}
+                target={
+                  <Button>
+                    <IconUser />
+                    Select Characters
+                  </Button>
                 }
-              }}
-            >
-              Reset
-            </Button>
-            <Button
-              onClick={() => {
-                gameState.lobby = [
-                  { name: 'Hannes' },
-                  { name: 'Hannes2' },
-                  { name: 'Bartolomeus' },
-                  { name: 'Kyoto' },
-                  { name: 'Jörgen' },
-                  { name: 'Pratkvarn' },
-                  { name: 'Pelle' },
-                  { name: 'Lars' },
-                ];
-                setGameState(gameState);
-              }}
-            >
-              Populate lobby
-            </Button>
-          </div>
-        </details>
-        {gameState.players.length > 0 && (
-          <>
-            <details open={detailsStartOpen} className='border p-2 shadow-md'>
-              <summary className='select-none'>Grimoire</summary>
-              <Grimoire
-                players={gameState.players}
-                setCurrentPlayerIndex={(idx) => {
-                  setCurrentPlayerIndex(idx);
-                  setModalOpen(true);
+                withCloseButton
+              >
+                <BotcCharacterSelectTable
+                  edition={edition}
+                  onSelectedCharactersChange={(characters) => {
+                    setSelectedCharacters(characters);
+                  }}
+                />
+              </Modal>
+              <Button
+                disabled={
+                  selectedCharacters.length === 0 &&
+                  'Select some characters first'
+                }
+                onClick={assignCharacters}
+              >
+                Assign characters
+              </Button>
+            </div>
+            <div className='h-2' />
+            <div className='flex gap-4'>
+              <Button
+                onClick={() => {
+                  if (
+                    confirm(
+                      'This will reset everything to a clean slate. Are you sure?',
+                    )
+                  ) {
+                    setGameState(newGameState);
+                  }
                 }}
-              />
-            </details>
-            <details open={detailsStartOpen} className='border p-2 shadow-md'>
-              <summary className='select-none'>Night Order</summary>
-              <div className='h-2' />
-              <NightOrder
-                players={gameState.players}
-                allCharacters={getAllCharacters(edition)}
-              />
-            </details>
-            <details open={detailsStartOpen} className='border p-2 shadow-md'>
-              <summary className='select-none'>Info Tokens</summary>
-
-              <InfoTokenList
-                chosenCharacters={gameState.charactersInPlay()}
-                allCharacters={gameState.characters()}
-              />
-            </details>
-          </>
+              >
+                Reset
+              </Button>
+              <Button
+                onClick={() => {
+                  gameState.lobby = [
+                    { name: 'Hannes' },
+                    { name: 'Hannes2' },
+                    { name: 'Bartolomeus' },
+                    { name: 'Kyoto' },
+                    { name: 'Jörgen' },
+                    { name: 'Pratkvarn' },
+                    { name: 'Pelle' },
+                    { name: 'Lars' },
+                  ];
+                  setGameState(gameState);
+                }}
+              >
+                Populate lobby
+              </Button>
+            </div>
+          </div>
+        )}
+        {tab === 'grimoire' && (
+          <div className='flex justify-center rounded border shadow-md'>
+            <Grimoire
+              players={gameState.players}
+              setCurrentPlayerIndex={(idx) => {
+                setCurrentPlayerIndex(idx);
+                setModalOpen(true);
+              }}
+            />
+          </div>
+        )}
+        {tab === 'night-order' && (
+          <NightOrder
+            players={gameState.players}
+            allCharacters={getAllCharacters(edition)}
+          />
+        )}
+        {tab === 'info-tokens' && (
+          <InfoTokenList
+            chosenCharacters={gameState.charactersInPlay()}
+            allCharacters={gameState.characters()}
+          />
         )}
       </div>
     </>

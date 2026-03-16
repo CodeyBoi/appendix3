@@ -244,6 +244,41 @@ export const getEdition = (id: CharacterId): EditionId => {
   return 'custom';
 };
 
+const pocketGrimoireBaseUrl = 'https://www.pocketgrimoire.co.uk/en_GB/sheet';
+export const toPocketGrimoireUrl = (edition: Edition) =>
+  `${pocketGrimoireBaseUrl}?name=${edition.name.replaceAll(
+    ' ',
+    '+',
+  )}&characters=${encodeURIComponent(getAllCharacters(edition).join(','))}`;
+
+export const parsePocketGrimoireUrl = (url: string): Edition => {
+  const searchParams = new URLSearchParams(url.split('?')[1]);
+  console.log(searchParams);
+  const name =
+    searchParams.get('name')?.replaceAll('+', ' ') ?? 'Unknown Script';
+  const id = 'custom';
+  const characterIds = searchParams.get('characters')?.split(',') ?? [];
+  const characters = characterIds.reduce<Record<CharacterType, CharacterId[]>>(
+    (acc, id) => {
+      const type = getType(id as CharacterId);
+      acc[type].push(id as CharacterId);
+      return acc;
+    },
+    {
+      townsfolk: [],
+      outsiders: [],
+      minions: [],
+      demons: [],
+      travellers: [],
+    },
+  );
+  return {
+    id: id as EditionId,
+    name,
+    ...characters,
+  };
+};
+
 export const getAllCharacters = (edition: Edition) =>
   CHARACTER_TYPES.flatMap((t) => edition[t]);
 
