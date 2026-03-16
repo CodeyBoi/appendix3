@@ -157,10 +157,7 @@ const BloodOnTheClocktowerElement = () => {
                     </Button>
                     <Button
                       className='mt-2'
-                      disabled={
-                        !customScriptUrl &&
-                        getAllCharacters(edition).length === 0
-                      }
+                      disabled={!customScriptUrl && allCharacters.length === 0}
                       onClick={() => {
                         setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
                         setCustomScriptUrl('');
@@ -170,7 +167,7 @@ const BloodOnTheClocktowerElement = () => {
                     </Button>
                   </div>
                 </div>
-                {getAllCharacters(edition).length > 0 && (
+                {allCharacters.length > 0 && (
                   <h4>Loaded script: {edition.name}</h4>
                 )}
               </div>
