@@ -1,9 +1,8 @@
 'use client';
 
-import { IconScript, IconUser } from '@tabler/icons-react';
+import { IconExternalLink, IconScript } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
-import Modal from 'components/modal';
 import { Metadata } from 'next';
 import { useMemo, useState } from 'react';
 import BotcCharacterSelectTable from './character-select';
@@ -13,6 +12,7 @@ import {
   EDITIONS,
   getAllCharacters,
   parsePocketGrimoireUrl,
+  toPocketGrimoireUrl,
 } from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
@@ -62,7 +62,9 @@ const BloodOnTheClocktowerElement = () => {
   };
 
   const searchParams = useSearchParams();
-  const tab = (searchParams?.get('tab') ?? 'setup') as Tab;
+  const [tab, setTab] = useState<Tab>(
+    (searchParams?.get('tab') ?? 'setup') as Tab,
+  );
   const tabOptions: { label: string; value: Tab }[] =
     gameState.players.length === 0
       ? [{ label: 'Setup', value: 'setup' }]
@@ -81,9 +83,12 @@ const BloodOnTheClocktowerElement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  const assignCharacters = () => {
+  const startGame = () => {
     gameState.assignCharacters(selectedCharacters);
-    setGameState(gameState);
+    if (gameState.players.length > 0) {
+      setGameState(gameState);
+      setTab('grimoire');
+    }
   };
 
   const edition = gameState.edition;
@@ -103,32 +108,40 @@ const BloodOnTheClocktowerElement = () => {
         }}
         allCharacters={allCharacters}
       />
-
       <div className='flex flex-col gap-2 lg:max-w-3xl'>
         <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
         <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
         <span className='text-sm'>
-          <Tabs defaultTab='setup' options={tabOptions} />
+          <Tabs
+            defaultTab='setup'
+            options={tabOptions}
+            onTabChange={(t) => {
+              setTab(t as Tab);
+            }}
+            tab={tab}
+          />
         </span>
         {tab === 'setup' && (
-          <div className='flex max-w-md flex-col gap-y-2'>
-            <Select
-              label='Edition'
-              options={EDITIONS.map((e) => ({
-                value: e.id,
-                label: e.name,
-              })).concat([{ value: 'custom', label: 'Custom Script' }])}
-              onChange={(v) => {
-                setGameState(
-                  new BotcGame({
-                    edition:
-                      EDITIONS.find((edition) => edition.id === v) ??
-                      CUSTOM_EDITION,
-                  }),
-                );
-              }}
-              value={gameState.edition.id}
-            />
+          <div className='flex max-w-full flex-col gap-y-2'>
+            <div className='max-w-md'>
+              <Select
+                label='Edition'
+                options={EDITIONS.map((e) => ({
+                  value: e.id,
+                  label: e.name,
+                })).concat([{ value: 'custom', label: 'Custom Script' }])}
+                onChange={(v) => {
+                  setGameState(
+                    new BotcGame({
+                      edition:
+                        EDITIONS.find((edition) => edition.id === v) ??
+                        CUSTOM_EDITION,
+                    }),
+                  );
+                }}
+                value={gameState.edition.id}
+              />
+            </div>
             {gameState.edition.id === 'custom' && (
               <div className='flex flex-col gap-4'>
                 <div className='flex flex-wrap gap-x-4'>
@@ -172,74 +185,80 @@ const BloodOnTheClocktowerElement = () => {
                 )}
               </div>
             )}
-            <div className='h-2' />
-            <div className='flex flex-col gap-2 lg:flex-row'>
-              <Modal
-                title={`Select Characters - ${edition.name}`}
-                target={
-                  <Button>
-                    <IconUser />
-                    Select Characters
-                  </Button>
-                }
-                withCloseButton
-              >
+            {allCharacters.length > 0 && (
+              <>
+                <Button href={toPocketGrimoireUrl(edition)} target='_blank'>
+                  Character Sheet
+                  <IconExternalLink />
+                </Button>
                 <BotcCharacterSelectTable
                   edition={edition}
                   onSelectedCharactersChange={(characters) => {
                     setSelectedCharacters(characters);
                   }}
                 />
-              </Modal>
-              <Button
-                disabled={
-                  selectedCharacters.length === 0 &&
-                  'Select some characters first'
-                }
-                onClick={assignCharacters}
-              >
-                Assign characters
-              </Button>
-            </div>
-            <div className='h-2' />
-            <div className='flex gap-4'>
-              <Button
-                onClick={() => {
-                  if (
-                    confirm(
-                      'This will reset everything to a clean slate. Are you sure?',
-                    )
-                  ) {
-                    setGameState(newGameState);
-                  }
-                }}
-              >
-                Reset
-              </Button>
-              <Button
-                onClick={() => {
-                  gameState.lobby = [
-                    { name: 'Hannes' },
-                    { name: 'Hannes2' },
-                    { name: 'Bartolomeus' },
-                    { name: 'Kyoto' },
-                    { name: 'Jörgen' },
-                    { name: 'Pratkvarn' },
-                    { name: 'Pelle' },
-                    { name: 'Lars' },
-                  ];
-                  setGameState(gameState);
-                }}
-              >
-                Populate lobby
-              </Button>
-            </div>
+                <div className='flex justify-end gap-2 lg:flex-row'>
+                  <Button
+                    onClick={() => {
+                      if (
+                        confirm(
+                          'This will reset everything to a clean slate. Are you sure?',
+                        )
+                      ) {
+                        setGameState(newGameState);
+                      }
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    disabled={
+                      selectedCharacters.length === 0 &&
+                      'Select some characters first'
+                    }
+                    onClick={startGame}
+                  >
+                    Start game
+                  </Button>
+                </div>
+                <div className='flex gap-4'>
+                  <Button
+                    onClick={() => {
+                      gameState.lobby = [
+                        { name: 'Hannes' },
+                        { name: 'Hannes2' },
+                        { name: 'Bartolomeus' },
+                        { name: 'Kyoto' },
+                        { name: 'Jörgen' },
+                        { name: 'Pratkvarn' },
+                        { name: 'Pelle' },
+                        { name: 'Lars' },
+                        { name: 'Göran' },
+                        { name: 'Långtnamnsomingenbordeha' },
+                        { name: 'Svanslös' },
+                        { name: 'Svansfull' },
+                        { name: 'Stor Person' },
+                        { name: 'Adam' },
+                        { name: 'Tim' },
+                      ];
+                      setGameState(gameState);
+                    }}
+                  >
+                    Populate lobby
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         )}
         {tab === 'grimoire' && (
           <div className='flex justify-center rounded border shadow-md'>
             <Grimoire
               players={gameState.players}
+              setPlayers={(players) => {
+                gameState.players = players;
+                setGameState(gameState);
+              }}
               setCurrentPlayerIndex={(idx) => {
                 setCurrentPlayerIndex(idx);
                 setModalOpen(true);

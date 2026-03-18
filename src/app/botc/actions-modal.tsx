@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from 'react';
 import { CharacterId, CHARACTERS, Reminder } from './characters';
 import ReminderToken from './reminder-token';
@@ -6,8 +8,9 @@ import { BotcPlayer } from './blood-on-the-clocktower-game';
 import Button from 'components/input/button';
 import Switch from 'components/input/switch';
 import Divider from 'components/divider';
+import CharacterTokenSelector from './character-token-selector';
 
-type SelectMode = 'none' | 'player';
+type SelectMode = 'none' | 'character' | 'player';
 
 interface BotcActionsModalProps {
   open: boolean;
@@ -56,13 +59,11 @@ const BotcActionsModal = ({
   const killOrRevivePlayer = () => {
     const newPlayers = players.slice();
     const player = newPlayers[playerIndex];
-    if (!player) throw new Error('Invalid playerIndex in CharacterToken');
+    if (!player) throw new Error('Invalid playerIndex when killing player');
     player.isAlive = !player.isAlive;
     setOpen(false);
     setPlayers(newPlayers);
   };
-
-  const canKill = character.reminderTokens?.includes('Killed by') ?? false;
 
   const reminderHash = (reminder: Reminder) =>
     `id:${reminder.characterId},message:${reminder.message}`;
@@ -88,7 +89,7 @@ const BotcActionsModal = ({
       title={
         selectMode === 'none'
           ? character.name + (player.name ? ` (${player.name})` : '')
-          : 'Select player'
+          : 'Replace Character Token'
       }
       withCloseButton
       open={open}
@@ -103,34 +104,28 @@ const BotcActionsModal = ({
       {character.description}
       {selectMode === 'none' && (
         <div className='flex flex-col gap-2'>
-          <div className='grid grid-cols-2 gap-x-4 gap-y-2'>
+          <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
             <Button fullWidth onClick={killOrRevivePlayer}>
-              {player.isAlive ? 'Kill' : 'Revive'} this player
+              {player.isAlive ? 'Kill' : 'Revive'}
             </Button>
-            <Button fullWidth disabled={!canKill}>
-              Kill another player
+            <Button
+              fullWidth
+              onClick={() => {
+                setSelectMode('character');
+              }}
+            >
+              Replace
             </Button>
+            <Button fullWidth>Show</Button>
           </div>
           <Divider />
           <div className='flex flex-col gap-2 px-2'>
-            <div className='flex flex-col gap-4 md:flex-row'>
-              <h4>Add Reminder</h4>
-              <Switch
-                label='Show tokens not in play'
-                value={showAllReminders}
-                onChange={setShowAllReminders}
-              />
-              <Switch
-                label='Add multiple tokens'
-                value={addMultipleReminders}
-                onChange={setAddMultipleReminders}
-              />
-            </div>
+            <h4>Add Reminder</h4>
             <div className='flex flex-wrap gap-4'>
               {reminderTokens
                 .filter(filterReminderTokens)
                 .map(({ characterId, message }) => (
-                  <div key={characterId + message} className='w-20'>
+                  <div key={characterId + message} className='min-w-[64px]'>
                     <ReminderToken
                       onClick={() => {
                         const newPlayers = players.slice();
@@ -151,13 +146,13 @@ const BotcActionsModal = ({
             </div>
           </div>
           {player.reminders.length > 0 && (
-            <>
+            <div className='px-2'>
               <h4>Added reminders (click to remove)</h4>
               <div className='flex flex-wrap gap-4'>
                 {player.reminders.map((reminder, i) => (
                   <div
                     key={`player:${playerIndex}${reminder.characterId}${reminder.message}`}
-                    className='w-20'
+                    className='min-w-[64px]'
                   >
                     <ReminderToken
                       characterId={reminder.characterId}
@@ -174,9 +169,39 @@ const BotcActionsModal = ({
                   </div>
                 ))}
               </div>
-            </>
+            </div>
           )}
+          <div className='h-2' />
+          <div className='flex flex-col gap-4 md:flex-row'>
+            <Switch
+              label='Show tokens not in play'
+              value={showAllReminders}
+              onChange={setShowAllReminders}
+            />
+            <Switch
+              label='Keep open after selecting'
+              value={addMultipleReminders}
+              onChange={setAddMultipleReminders}
+            />
+          </div>
         </div>
+      )}
+      {selectMode === 'character' && (
+        <CharacterTokenSelector
+          characters={players.map((p) => p.characterId)}
+          allCharacters={allCharacters}
+          onChange={(id) => {
+            const newPlayers = players.slice();
+            const player = newPlayers[playerIndex];
+            if (!player)
+              throw new Error(
+                'Invalid playerIndex when indexing during Replace Character Token',
+              );
+            player.characterId = id;
+            setPlayers(newPlayers);
+            setOpen(false);
+          }}
+        />
       )}
       {selectMode === 'player' && 'test'}
     </Modal>

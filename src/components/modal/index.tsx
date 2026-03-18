@@ -16,6 +16,7 @@ interface ModalProps {
   onBlur?: () => void;
   withCloseButton?: boolean;
   startsOpen?: boolean;
+  hideBackground?: boolean;
 }
 
 const Modal = ({
@@ -28,6 +29,7 @@ const Modal = ({
   onBlur,
   withCloseButton = false,
   startsOpen = false,
+  hideBackground = false,
 }: ModalProps) => {
   const [open, setOpenValue] = useState(startsOpen);
 
@@ -88,7 +90,12 @@ const Modal = ({
       <div
         className={cn(
           'fixed right-0 top-0 z-10 h-screen w-screen bg-black transition-opacity',
-          open ? 'opacity-50' : 'pointer-events-none opacity-0',
+          open
+            ? hideBackground
+              ? 'opacity-100'
+              : 'opacity-50'
+            : 'pointer-events-none opacity-0',
+          hideBackground && 'bg-neutral-500',
         )}
         onClick={() => {
           setOpen(false);
