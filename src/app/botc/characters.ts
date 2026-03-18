@@ -203,16 +203,17 @@ export const EDITIONS: readonly Edition[] = [
   },
 ] as const;
 
-export const getType = (id: CharacterId) => {
-  for (const edition of EDITIONS) {
-    for (const t of CHARACTER_TYPES) {
-      if (edition[t].includes(id)) {
-        return t;
-      }
+const _CHARACTER_TYPE_MAP = EDITIONS.reduce((acc, edition) => {
+  console.log('Generating CharacterType Map');
+  for (const type of CHARACTER_TYPES) {
+    for (const characterId of edition[type]) {
+      acc.set(characterId, type);
     }
   }
-  return 'townsfolk';
-};
+  return acc;
+}, new Map<CharacterId, CharacterType>());
+export const getType = (id: CharacterId) =>
+  _CHARACTER_TYPE_MAP.get(id) ?? 'townsfolk';
 
 export type Alignment = 'good' | 'evil';
 

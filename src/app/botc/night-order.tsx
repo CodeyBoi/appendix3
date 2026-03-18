@@ -45,38 +45,6 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
 
   return (
     <div className='flex flex-col'>
-      <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
-        <Switch
-          label='Show dead characters'
-          value={showDeadCharacters}
-          onChange={() => {
-            setShowDeadCharacters(!showDeadCharacters);
-          }}
-        />
-        <Switch
-          label='Show characters not in play'
-          value={showCharactersNotInPlay}
-          onChange={() => {
-            if (!showCharactersNotInPlay) {
-              setShowCharactersNotInPlay(true);
-              setShowDeadCharacters(true);
-            } else {
-              setShowCharactersNotInPlay(false);
-            }
-          }}
-        />
-      </div>
-      <Select
-        label='Show nights'
-        options={[
-          { value: 'first', label: 'First night' },
-          { value: 'other', label: 'Following nights' },
-        ]}
-        onChange={(v) => {
-          setShowFirstNight(v === 'first');
-        }}
-      />
-      <div className='h-2' />
       {!isTeensyville && showFirstNight && (
         <>
           <NightOrderEntry
@@ -101,6 +69,38 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
           text={description}
         />
       ))}
+      <div className='h-2' />
+      <Select
+        label='Show nights'
+        options={[
+          { value: 'first', label: 'First night' },
+          { value: 'other', label: 'Following nights' },
+        ]}
+        onChange={(v) => {
+          setShowFirstNight(v === 'first');
+        }}
+      />
+      <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
+        <Switch
+          label='Show dead characters'
+          value={showDeadCharacters}
+          onChange={() => {
+            setShowDeadCharacters(!showDeadCharacters);
+          }}
+        />
+        <Switch
+          label='Show characters not in play'
+          value={showCharactersNotInPlay}
+          onChange={() => {
+            if (!showCharactersNotInPlay) {
+              setShowCharactersNotInPlay(true);
+              setShowDeadCharacters(true);
+            } else {
+              setShowCharactersNotInPlay(false);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

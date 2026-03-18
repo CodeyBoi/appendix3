@@ -2,12 +2,14 @@
 
 import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { cn } from '../../utils/class-names';
+import { useEffect } from 'react';
 
 interface TabsProps {
   options: ({ label: React.ReactNode; value: string } | string)[];
   name?: string;
   defaultTab?: string;
   onTabChange?: (value: string) => void;
+  tab?: string;
 }
 
 const Tabs = ({
@@ -15,8 +17,20 @@ const Tabs = ({
   onTabChange,
   options: optionsProp,
   name = 'tab',
+  tab: propTab,
 }: TabsProps) => {
   const [tab, setTab] = useSearchParamsState(name, defaultTab);
+  if (defaultTab && tab === '') {
+    setTab(defaultTab);
+    onTabChange?.(defaultTab);
+  }
+
+  useEffect(() => {
+    if (propTab) {
+      setTab(propTab);
+    }
+  }, [propTab]);
+
   const options = optionsProp.map((o) =>
     typeof o === 'string' ? { value: o, label: o } : o,
   );

@@ -12,6 +12,7 @@ export type ButtonProps = Omit<
   compact?: boolean;
   fullWidth?: boolean;
   disabled?: boolean | string;
+  target?: string;
 };
 
 type Color = 'red' | 'transparent' | 'navbutton' | 'no-fill';
@@ -31,6 +32,7 @@ const Button = ({
   compact = false,
   className,
   fullWidth = false,
+  target,
   ...props
 }: ButtonProps) => {
   const buttonElement = (
@@ -62,7 +64,11 @@ const Button = ({
     );
 
   return href ? (
-    <Link className={fullWidth ? 'w-full' : 'max-w-max'} href={href}>
+    <Link
+      className={fullWidth ? 'w-full' : 'max-w-max'}
+      href={href}
+      target={target}
+    >
       {withDisabledTooltip}
     </Link>
   ) : (

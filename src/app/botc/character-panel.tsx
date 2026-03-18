@@ -24,7 +24,7 @@ const BotcCharacterPanel = ({
           loading='lazy'
           src={imgSrc}
         />
-        <h4 className='hidden lg:block'>{name}</h4>
+        <h5 className='hidden lg:block'>{name}</h5>
         <h6 className='lg:hidden'>{name}</h6>
       </div>
       {showDescription && <p className='text-xs lg:text-sm'>{description}</p>}
