@@ -86,6 +86,8 @@ const BloodOnTheClocktowerElement = () => {
   const startGame = () => {
     gameState.assignCharacters(selectedCharacters);
     if (gameState.players.length > 0) {
+      const bluffs = gameState.generateDemonBluffs();
+      gameState.demonBluffs = bluffs;
       setGameState(gameState);
       setTab('grimoire');
     }
@@ -276,6 +278,11 @@ const BloodOnTheClocktowerElement = () => {
           <InfoTokenList
             chosenCharacters={gameState.charactersInPlay()}
             allCharacters={gameState.characters()}
+            demonBluffs={gameState.demonBluffs}
+            setDemonBluffs={(demonBluffs) => {
+              gameState.demonBluffs = demonBluffs;
+              setGameState(gameState);
+            }}
           />
         )}
       </div>
