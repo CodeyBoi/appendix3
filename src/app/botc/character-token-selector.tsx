@@ -9,14 +9,16 @@ interface CharacterTokenSelectorProps {
   characters: CharacterId[];
   allCharacters: CharacterId[];
   onChange?: (arg0: CharacterId) => void;
+  defaultShowAll?: boolean;
 }
 
 const CharacterTokenSelector = ({
   characters,
   allCharacters,
   onChange,
+  defaultShowAll = false,
 }: CharacterTokenSelectorProps) => {
-  const [showAllCharacters, setShowAllCharacters] = useState(true);
+  const [showAllCharacters, setShowAllCharacters] = useState(defaultShowAll);
 
   const charactersSet = new Set(characters);
   const activeCharacters = showAllCharacters

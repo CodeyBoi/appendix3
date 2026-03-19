@@ -21,11 +21,12 @@ export class BotcGame {
     edition: Edition;
     lobby?: { name: string; corpsId?: string }[];
     players?: BotcPlayer[];
+    demonBluffs?: CharacterId[];
   }) {
     this.edition = initial.edition;
     this.lobby = initial.lobby ?? [];
     this.players = initial.players ?? [];
-    this.demonBluffs = [];
+    this.demonBluffs = initial.demonBluffs ?? [];
   }
 
   static fromJSON(json: string) {

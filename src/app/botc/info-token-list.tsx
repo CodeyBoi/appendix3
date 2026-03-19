@@ -9,23 +9,33 @@ import InfoToken from './info-token';
 interface InfoTokenListProps {
   chosenCharacters: CharacterId[];
   allCharacters: CharacterId[];
+  demonBluffs: CharacterId[];
+  setDemonBluffs: (arg0: CharacterId[]) => void;
 }
 
 const INFO_TOKENS = [
   {
     text: 'This is the Demon',
-    className: 'bg-red-600',
+    className: 'bg-red-700',
   },
   {
     text: 'These are your Minions',
-    className: 'bg-red-600',
+    className: 'bg-red-700',
   },
   {
-    text: 'These characters are not in play',
+    text: 'These are your Demon bluffs',
     className: 'bg-blue-500',
   },
   {
     text: 'This character selected you',
+    className: 'bg-blue-500',
+  },
+  {
+    text: 'These characters are NOT in play',
+    className: 'bg-blue-500',
+  },
+  {
+    text: 'These characters are in play',
     className: 'bg-blue-500',
   },
   {
@@ -41,25 +51,44 @@ const INFO_TOKENS = [
 const InfoTokenList = ({
   chosenCharacters,
   allCharacters,
+  demonBluffs,
+  setDemonBluffs,
 }: InfoTokenListProps) => {
   const [activeTokenIndex, setActiveTokenIndex] = useState<
     number | undefined
   >();
   const [modalOpen, setModalOpen] = useState(false);
-  const token =
-    activeTokenIndex !== undefined ? INFO_TOKENS[activeTokenIndex] : undefined;
-  console.log({ chosenCharacters, allCharacters });
   return (
     <>
       <Modal
+        title='Info token'
         open={modalOpen}
         onBlur={() => {
           setModalOpen(false);
+          setActiveTokenIndex(undefined);
         }}
         withCloseButton
         hideBackground
       >
-        {token && <InfoToken text={token.text} />}
+        {INFO_TOKENS.map((token, i) => (
+          <div
+            key={'inModal:' + token.text}
+            className={i === activeTokenIndex ? '' : 'hidden'}
+          >
+            <InfoToken
+              text={token.text}
+              className={token.className}
+              characters={chosenCharacters}
+              allCharacters={allCharacters}
+              demonBluffs={
+                token.text.includes('bluffs') ? demonBluffs : undefined
+              }
+              setDemonBluffs={
+                token.text.includes('bluffs') ? setDemonBluffs : undefined
+              }
+            />
+          </div>
+        ))}
       </Modal>
       <div className='grid grid-cols-2 gap-2 text-xs'>
         {INFO_TOKENS.map((token, i) => (

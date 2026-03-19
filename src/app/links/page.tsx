@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { lang } from 'utils/language';
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ const Links = () => {
   return (
     <div>
       <h1>{lang('Länkar', 'Links')}</h1>
-      <div className='text-lg'>
+      <span className='text-lg'>
         <ul className='list-disc pl-4'>
           <li>
             <a
@@ -112,7 +113,32 @@ const Links = () => {
             </a>
           </li>
         </ul>
-      </div>
+        <div className='h-8' />
+        <h3>Cool Corps Games</h3>
+        <ul className='list-disc pl-4'>
+          <li>
+            <Link className='cursor-pointer text-red-600 underline' href='/set'>
+              Set
+            </Link>
+          </li>
+          <li>
+            <Link
+              className='cursor-pointer text-red-600 underline'
+              href='/botc'
+            >
+              Bleck on the Corpstower
+            </Link>
+          </li>
+          <li>
+            <Link
+              className='cursor-pointer text-red-600 underline'
+              href='/coolmathgames/mummymaze'
+            >
+              Mummy Maze (WIP)
+            </Link>
+          </li>
+        </ul>
+      </span>
     </div>
   );
 };

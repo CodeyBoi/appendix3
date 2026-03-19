@@ -201,6 +201,7 @@ const BotcActionsModal = ({
             setPlayers(newPlayers);
             setOpen(false);
           }}
+          defaultShowAll
         />
       )}
       {selectMode === 'player' && 'test'}
