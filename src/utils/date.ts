@@ -105,7 +105,14 @@ export const getGigCalenderDates = (gig: {
   const start = parseGigTime(gig.date, gig.start);
 
   if (!meetup && !start) {
-    return undefined;
+    const startOfDay = new Date(gig.date);
+    startOfDay.setUTCHours(0 - getSwedenHourOffset(startOfDay));
+    const endOfDay = new Date(gig.date);
+    endOfDay.setUTCHours(24 - getSwedenHourOffset(endOfDay));
+    return {
+      start: startOfDay,
+      end: endOfDay,
+    };
   } else if (meetup && !start) {
     return {
       start: meetup,
