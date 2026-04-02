@@ -13,7 +13,7 @@ import { cn } from 'utils/class-names';
 import CharacterToken from './character-token';
 
 interface InfoTokenProps {
-  text: string;
+  text?: string;
   className?: string;
   characters: CharacterId[];
   allCharacters: CharacterId[];
@@ -22,7 +22,7 @@ interface InfoTokenProps {
 }
 
 const InfoToken = ({
-  text,
+  text = '',
   className = '',
   characters,
   allCharacters,

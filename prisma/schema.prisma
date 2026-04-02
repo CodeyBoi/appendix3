@@ -99,6 +99,7 @@ model Corps {
   givenNicknames     Nickname[]          @relation("GivenNicknames")
   createdNicknames   Nickname[]          @relation("CreatedNicknames")
   setSessions        SetSession[]
+  botcSessions       BotcSession[]
 }
 
 model Role {
@@ -379,11 +380,28 @@ model Nickname {
 }
 
 model SetSession {
-  id Int @id @default(autoincrement())
-  corpsId String
-  startedAt DateTime @default(now())
-  endedAt DateTime?
+  id               Int @id @default(autoincrement())
+  corpsId          String
+  startedAt        DateTime @default(now())
+  endedAt          DateTime?
   durationInMillis Int?
 
   corps Corps @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+}
+
+model BotcSession {
+  id Int @id @default(autoincrement())
+
+  players BotcPlayer[]
+}
+
+model BotcPlayer {
+  id          Int @id @default(autoincrement())
+  name        String?
+  characterId String?
+  corpsId     String
+  sessionId   Int
+
+  corps   Corps       @relation(fields: [corpsId], references: [id], onDelete: Cascade)
+  session BotcSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }

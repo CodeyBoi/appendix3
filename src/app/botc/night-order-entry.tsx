@@ -15,11 +15,9 @@ const NightOrderEntry = ({
   muted = false,
   ...props
 }: NightOrderEntryProps) => {
-  const name = characterId
-    ? CHARACTERS[characterId].name + (props.name ? ` (${props.name})` : '')
-    : props.name;
+  const characterName = characterId ? CHARACTERS[characterId].name : props.name;
 
-  if (!name || !text) {
+  if (!characterName || !text) {
     return null;
   }
 
@@ -45,7 +43,14 @@ const NightOrderEntry = ({
             src={imgPath}
           />
         )}
-        <h4 className={cn(imgPath && 'mt-3')}>{name}</h4>
+        <div className={cn(imgPath && 'mt-3')}>
+          <h4>
+            {characterName}{' '}
+            {props.name && characterId && (
+              <span className='text-xs text-neutral-500'>({props.name})</span>
+            )}
+          </h4>
+        </div>
       </div>
       <span className='text-sm'>{text}</span>
     </div>

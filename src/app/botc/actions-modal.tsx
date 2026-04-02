@@ -10,7 +10,7 @@ import Switch from 'components/input/switch';
 import Divider from 'components/divider';
 import CharacterTokenSelector from './character-token-selector';
 
-type SelectMode = 'none' | 'character' | 'player';
+type SelectMode = 'none' | 'character' | 'player' | 'showToken';
 
 interface BotcActionsModalProps {
   open: boolean;

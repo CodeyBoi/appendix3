@@ -4,30 +4,34 @@ import NightOrderEntry from './night-order-entry';
 import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
 import Switch from 'components/input/switch';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
+import { cn } from 'utils/class-names';
 
 interface NightOrderProps {
   players: BotcPlayer[];
   allCharacters: CharacterId[];
+  setCurrentPlayerIndex: (n: number) => void;
 }
 
-const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
+const NightOrder = ({
+  players,
+  allCharacters,
+  setCurrentPlayerIndex,
+}: NightOrderProps) => {
   const [showFirstNight, setShowFirstNight] = useState(true);
   const [showDeadCharacters, setShowDeadCharacters] = useState(false);
   const [showCharactersNotInPlay, setShowCharactersNotInPlay] = useState(false);
 
   const isTeensyville = players.length < 7;
 
-  const allNightOrders = useMemo(
-    () => ({
-      firstNight: FIRST_NIGHT_TEXT.filter(({ id }) =>
-        allCharacters.includes(id),
-      ),
+  const allNightOrders = useMemo(() => {
+    const allCharactersSet = new Set(allCharacters);
+    return {
+      firstNight: FIRST_NIGHT_TEXT.filter(({ id }) => allCharactersSet.has(id)),
       otherNights: OTHER_NIGHTS_TEXT.filter(({ id }) =>
-        allCharacters.includes(id),
+        allCharactersSet.has(id),
       ),
-    }),
-    [allCharacters],
-  );
+    };
+  }, [allCharacters]);
 
   const gameCharacters = players.map((p) => p.characterId);
   const deadCharacters = players
@@ -57,18 +61,38 @@ const NightOrder = ({ players, allCharacters }: NightOrderProps) => {
           />
         </>
       )}
-      {nightOrder.map(({ id, description }) => (
-        <NightOrderEntry
-          name={players
-            .filter((p) => p.characterId === id)
-            .map((p) => p.name)
-            .join(', ')}
-          muted={deadCharacters.includes(id) || !gameCharacters.includes(id)}
-          key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
-          characterId={id}
-          text={description}
-        />
-      ))}
+      {nightOrder.map(({ id, description }) => {
+        const playerIndex = players.findIndex(
+          (player) => player.characterId === id,
+        );
+        return (
+          <div
+            className={cn(
+              playerIndex !== -1 && 'hover:cursor-pointer hover:bg-red-600/10',
+            )}
+            onClick={
+              playerIndex !== -1
+                ? () => {
+                    setCurrentPlayerIndex(playerIndex);
+                  }
+                : undefined
+            }
+          >
+            <NightOrderEntry
+              name={players
+                .filter((p) => p.characterId === id)
+                .map((p) => p.name)
+                .join(', ')}
+              muted={
+                deadCharacters.includes(id) || !gameCharacters.includes(id)
+              }
+              key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
+              characterId={id}
+              text={description}
+            />
+          </div>
+        );
+      })}
       <div className='h-2' />
       <Select
         label='Show nights'

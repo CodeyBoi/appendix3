@@ -272,6 +272,10 @@ const BloodOnTheClocktowerElement = () => {
           <NightOrder
             players={gameState.players}
             allCharacters={getAllCharacters(edition)}
+            setCurrentPlayerIndex={(idx) => {
+              setCurrentPlayerIndex(idx);
+              setModalOpen(true);
+            }}
           />
         )}
         {tab === 'info-tokens' && (
