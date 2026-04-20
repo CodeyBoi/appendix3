@@ -113,16 +113,14 @@ const AccountPreferences = ({
                     'https://www.youtube.com/watch?v=xvFZjo5PgG0',
                     '_blank',
                   );
-                  return;
+                  return false;
                 }
                 /* April fools */
-                if (colorScheme !== 'dark') {
-                  if (confirm(darkThemeMessage)) {
-                    toggleColorScheme();
-                  }
-                } else {
-                  toggleColorScheme();
+                if (colorScheme !== 'dark' && !confirm(darkThemeMessage)) {
+                  return false;
                 }
+                toggleColorScheme();
+                return true;
               }}
             />
             <h5>{lang('Språk', 'Language')}</h5>
