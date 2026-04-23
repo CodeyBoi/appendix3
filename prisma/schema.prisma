@@ -100,6 +100,7 @@ model Corps {
   createdNicknames   Nickname[]          @relation("CreatedNicknames")
   setSessions        SetSession[]
   botcSessions       BotcSession[]
+  botcProfiles       BotcPlayer[]
 }
 
 model Role {
@@ -380,9 +381,9 @@ model Nickname {
 }
 
 model SetSession {
-  id               Int @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   corpsId          String
-  startedAt        DateTime @default(now())
+  startedAt        DateTime  @default(now())
   endedAt          DateTime?
   durationInMillis Int?
 
@@ -390,14 +391,18 @@ model SetSession {
 }
 
 model BotcSession {
-  id Int @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
+  storytellerId String
+  createdAt     DateTime @default(now())
+  script        String   @db.Text
+  hasStarted    Boolean  @default(false)
 
-  players BotcPlayer[]
+  storyteller Corps        @relation(fields: [storytellerId], references: [id], onDelete: Cascade)
+  players     BotcPlayer[]
 }
 
 model BotcPlayer {
-  id          Int @id @default(autoincrement())
-  name        String?
+  id          Int     @id @default(autoincrement())
   characterId String?
   corpsId     String
   sessionId   Int
