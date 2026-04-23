@@ -78,6 +78,7 @@ model Corps {
   language    String   @default("sv")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  contactURL  String?
 
   roles              Role[]
   permissions        Permission[]

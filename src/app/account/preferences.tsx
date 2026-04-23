@@ -24,6 +24,7 @@ const initialValues = {
   lactoseFree: false,
   otherFoodPrefs: '',
   email: '',
+  contactURL: '',
   mainInstrument: '',
 };
 type FormValues = typeof initialValues;
@@ -65,6 +66,7 @@ const AccountPreferences = ({
       lactoseFree: corps.foodPrefs?.lactoseFree ?? false,
       otherFoodPrefs: corps.foodPrefs?.other ?? '',
       email: corps.user.email || undefined,
+      contactURL: corps.contactURL ?? '',
       mainInstrument,
     });
   }, [corps]);
@@ -91,6 +93,8 @@ const AccountPreferences = ({
     value: i.instrument.name,
     label: i.instrument.name,
   }));
+
+  const isTrivselOmbud = corps?.roles.some(role => role.name === "Trivselombud");
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -161,6 +165,14 @@ const AccountPreferences = ({
               label={lang('Pronomen', 'Pronouns')}
               {...form.getInputProps('pronouns')}
             />
+            {
+              (isTrivselOmbud) &&
+              (<TextInput
+                label={lang('Kontakt URL', 'Contact URL')}
+                {...form.getInputProps('contactURL')}
+              />)
+            }
+
           </div>
           <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>

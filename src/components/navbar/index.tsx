@@ -3,6 +3,7 @@ import {
   IconClipboardList,
   IconHome,
   IconInfoSquare,
+  IconInfoCircle,
   IconKey,
   IconLink,
   IconMicrophone2,
@@ -61,6 +62,11 @@ const userTab: NavbarLinkGroup = {
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
     { label: lang('Länkar', 'Links'), href: '/links', icon: <IconLink /> },
+    {
+      label: lang('Om Bleckhornen', 'About Bleckhornen'),
+      href: '/info',
+      icon: <IconInfoCircle />,
+    },
   ],
 };
 const adminTab: NavbarLinkGroup = {
