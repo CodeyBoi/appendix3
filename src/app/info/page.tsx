@@ -64,7 +64,7 @@ const InfoPage = async () => {
           rehearsals, performances, formal sittings, concerts, trips, and other activities. This is done
           with the support and collaboration of the entire corps.`,
           )}
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
             {boardCorps.map(({ name, corpsii }) => (
               <div key={name}>
                 {corpsii.length > 0 && (
@@ -103,7 +103,10 @@ const InfoPage = async () => {
           {allRoles
             .filter((role) => role.name == 'Trivselombud')
             .map((role) => (
-              <div key={role.id} className='grid grid-cols-2 gap-4'>
+              <div
+                key={role.id}
+                className='grid grid-cols-1 gap-4 lg:grid-cols-2'
+              >
                 {trivselCorps.map((corps) => (
                   <div className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'>
                     <PositionInfobox corps={corps} />
