@@ -43,21 +43,19 @@ const genOtherInstrumentsString = (instruments: string[]) => {
 };
 
 const roleToEmail: Record<string, string> = {
-  Ordförande: "ordforande@bleckhornen.org",
-  ViceOrdförande: "vice@bleckhornen.org",
-  Sekreterare: "sekreterare@bleckhornen.org",
-  Kassör: "kassor@bleckhornen.org",
+  Ordförande: 'ordforande@bleckhornen.org',
+  'Vice Ordförande': 'vice@bleckhornen.org',
+  Sekreterare: 'sekreterare@bleckhornen.org',
+  Kassör: 'kassor@bleckhornen.org',
 };
 
 const roleListToEmail = (roles: Role[]) => {
-  const matchingRole = roles.find(r => roleToEmail[r.name]);
-
-  return matchingRole ? ('mailto:' + roleToEmail[matchingRole.name]) : null;
-}
+  const matchingRole = roles.find((r) => roleToEmail[r.name]);
+  return matchingRole ? `mailto:${roleToEmail[matchingRole.name]}` : null;
+};
 
 // A list of "instruments" which should have the prefix "är"
 const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
-
 
 const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
   const corpsNameTemp = numberAndFullName(corps);
@@ -73,7 +71,7 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
     points,
     firstGigDate,
     firstRehearsalDate,
-    instruments
+    instruments,
   } = corps;
 
   const mainInstrument =
@@ -89,10 +87,9 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
     beingPrefixes.includes(i.toLowerCase()),
   );
 
-
   const joinedAt =
     (firstGigDate?.getTime() ?? Number.MAX_VALUE) <
-      (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
+    (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
       ? firstGigDate
       : firstRehearsalDate;
 
@@ -120,8 +117,8 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
       : '') +
     '.';
 
-  const roleEmail = roleListToEmail(corps.roles)
-  const contact = roleEmail ? roleEmail : contactURL
+  const roleEmail = roleListToEmail(corps.roles);
+  const contact = roleEmail ? roleEmail : contactURL;
 
   return (
     <div>
@@ -129,11 +126,8 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
           {corpsName}
 
-          {(contact) && (
-            <ActionIcon
-              href={contact}
-              variant='subtle'
-            >
+          {contact && (
+            <ActionIcon href={contact} variant='subtle'>
               <IconMail />
             </ActionIcon>
           )}
@@ -151,9 +145,7 @@ const PositionInfobox = ({ corps }: CorpsInfoboxProps) => {
       <div className='h-1.5' />
       <div className='text-sm font-light'>
         {joinedAt && joinedMsg} {instrumentsMsg}{' '}
-
       </div>
-
     </div>
   );
 };
