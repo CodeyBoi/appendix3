@@ -106,7 +106,10 @@ const InfoPage = async () => {
                 className='grid grid-cols-1 gap-4 lg:grid-cols-2'
               >
                 {trivselCorps.map((corps) => (
-                  <div className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'>
+                  <div
+                    key={`Trivselombudbox:${corps.id}`}
+                    className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'
+                  >
                     <PositionInfobox corps={corps} />
                   </div>
                 ))}
