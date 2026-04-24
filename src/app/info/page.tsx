@@ -14,10 +14,10 @@ const ALL_BOARD_ROLES = [
 ] as const;
 
 const InfoPage = async () => {
-  const allRoles = await api.permission.getRoles.query();
+  const publicRoles = await api.permission.getPublicRoles.query();
   const boardCorps = await Promise.all(
     ALL_BOARD_ROLES.map(async (roleName) => {
-      const role = allRoles.find((role) => role.name === roleName);
+      const role = publicRoles.find((role) => role.name === roleName);
       if (!role) {
         throw new Error(
           'Failed when getting board members. The list with board role names in ALL_BOARD_ROLES in src/app/info/page.tsx has probably desynced from the role names defined in the database.',
@@ -36,7 +36,7 @@ const InfoPage = async () => {
   );
 
   const trivselCorps = await Promise.all(
-    allRoles
+    publicRoles
       .filter((role) => role.name === 'Trivselombud')
       .flatMap((role) =>
         role.corpsii.map(async (corps) => {
@@ -100,7 +100,7 @@ const InfoPage = async () => {
           You can always approach the Wellbeing Representatives whenever you feel the need, but you
           can also contact us through our forms, where there is also an option to remain anonymous.`,
           )}
-          {allRoles
+          {publicRoles
             .filter((role) => role.name == 'Trivselombud')
             .map((role) => (
               <div

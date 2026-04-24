@@ -168,4 +168,42 @@ export const permissionRouter = router({
       });
       return role;
     }),
+
+  getPublicRoles: protectedProcedure.query(async ({ ctx }) => {
+    const PUBLIC_ROLES = [
+      'Ordförande',
+      'Vice Ordförande',
+      'Sekreterare',
+      'Kassör',
+      'Trivselombud',
+    ];
+    const roles = await ctx.prisma.role.findMany({
+      where: {
+        name: {
+          in: PUBLIC_ROLES,
+        },
+      },
+      include: {
+        permissions: {
+          orderBy: {
+            name: 'asc',
+          },
+        },
+        corpsii: {
+          include: {
+            instruments: true,
+            roles: true,
+          },
+          orderBy: corpsOrderBy,
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+    return roles.map((role) => ({
+      ...role,
+      permissions: role.permissions as PermissionEntry[],
+    }));
+  }),
 });
