@@ -129,7 +129,15 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                     <td className='flex gap-2 py-1'>
                       <CorpsDisplay corps={stat} />
                       <span className='whitespace-nowrap'>
-                        {streak >= 3 && `${streak}${getStreakEmoji(streak)}`}
+                        {streak >= 3 &&
+                          streak < 200 &&
+                          `${streak}${getStreakEmoji(streak)}`}
+                        {streak >= 200 && (
+                          <div className='flex gap-1'>
+                            {streak}
+                            <img className='h-6' src='imgs/bruh.png'></img>
+                          </div>
+                        )}
                       </span>
                     </td>
                     <td className='text-center'>{points}</td>
