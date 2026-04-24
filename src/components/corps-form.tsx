@@ -135,7 +135,10 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           </div>
           <TextInput label='Smeknamn' {...form.getInputProps('nickName')} />
           <TextInput label='Pronomen' {...form.getInputProps('pronouns')} />
-          <TextInput label='Kontakt URL' {...form.getInputProps('contactURL')} />
+          <TextInput
+            label='Kontakt-URL'
+            {...form.getInputProps('contactURL')}
+          />
           <div className='flex gap-4'>
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
@@ -158,7 +161,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           />
           <MultiSelect
             label='Övriga instrument'
-            placeholder='Välj instrument...'
+            placeholder='Övriga instrument...'
             options={
               instruments?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }
@@ -166,7 +169,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
           />
           <MultiSelect
             label='Behörighetsroller'
-            placeholder='Välj behörighet...'
+            placeholder='Välj behörighetroller...'
             options={
               roles?.map((i) => ({ value: i.name, label: i.name })) ?? []
             }

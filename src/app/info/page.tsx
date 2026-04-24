@@ -23,9 +23,7 @@ const InfoPage = async () => {
           'Failed when getting board members. The list with board role names in ALL_BOARD_ROLES in src/app/info/page.tsx has probably desynced from the role names defined in the database.',
         );
       }
-      const corpsIds = (
-        await api.permission.getRole.query({ id: role.id })
-      ).corpsii.map((corps) => corps.id);
+      const corpsIds = role.corpsii.map((corps) => corps.id);
       return {
         name: roleName,
         corpsii: filterNone(
