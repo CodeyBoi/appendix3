@@ -5,7 +5,7 @@ import {
   IconChevronRight,
   IconCoin,
   IconRefresh,
-  IconRosetteDiscountCheck,
+  IconCircleCheck,
   IconSparkles,
 } from '@tabler/icons-react';
 import Button from 'components/input/button';
@@ -13,8 +13,8 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { shuffle } from 'utils/array';
 
-const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs'] as const;
-const RANKS: Rank[] = [
+const SUITS = ['spades', 'hearts', 'diamonds', 'clubs'] as const;
+const RANKS = [
   'A',
   'K',
   'Q',
@@ -29,8 +29,8 @@ const RANKS: Rank[] = [
   '3',
   '2',
 ] as const;
-type Suit = (typeof SUITS)[number]
-type Rank = (typeof RANKS)[number]
+type Suit = (typeof SUITS)[number];
+type Rank = (typeof RANKS)[number];
 
 interface Card {
   id: string;
@@ -66,11 +66,13 @@ const SUIT_COLORS: Record<Suit, string> = {
 };
 
 const buildDeck = (): Card[] => {
-  const deck = SUITS.flatMap((suit) => RANKS.map((rank) => ({
-  id: `${rank}-${suit}`,
-        rank,
-        suit,
-}))) 
+  const deck = SUITS.flatMap((suit) =>
+    RANKS.map((rank) => ({
+      id: `${rank}-${suit}`,
+      rank,
+      suit,
+    })),
+  );
   return shuffle(deck);
 };
 
@@ -123,8 +125,11 @@ const drawCard = (deck: Card[]) => {
     const nextDeck = buildDeck();
     const [replacement, ...remaining] = nextDeck;
 
+    if (!replacement)
+      throw new Error('Error when constructing new deck while drafting');
+
     return {
-      card: replacement!,
+      card: replacement,
       deck: remaining,
     };
   }
@@ -419,10 +424,12 @@ const BlackjackGame = () => {
             <ScoreCard
               icon={<IconChevronRight size={18} />}
               label='Bet'
-              value={currentBet > 0 ? formatMoney(currentBet) : formatMoney(bet)}
+              value={
+                currentBet > 0 ? formatMoney(currentBet) : formatMoney(bet)
+              }
             />
             <ScoreCard
-              icon={<IconRosetteDiscountCheck size={18} />}
+              icon={<IconCircleCheck size={18} />}
               label='Wins'
               value={`${stats.wins}`}
             />
@@ -463,10 +470,10 @@ const BlackjackGame = () => {
                   playerHand.length === 0
                     ? 'Waiting for the deal'
                     : isSoftHand(playerHand)
-                      ? 'Soft hand'
-                      : hasDoubled
-                        ? 'Doubled down'
-                        : 'Live hand'
+                    ? 'Soft hand'
+                    : hasDoubled
+                    ? 'Doubled down'
+                    : 'Live hand'
                 }
               />
             </div>
@@ -501,8 +508,12 @@ const BlackjackGame = () => {
                   <button
                     key={amount}
                     type='button'
-                    onClick={() => setBet(amount)}
-                    disabled={phase === 'player-turn' || phase === 'dealer-turn'}
+                    onClick={() => {
+                      setBet(amount);
+                    }}
+                    disabled={
+                      phase === 'player-turn' || phase === 'dealer-turn'
+                    }
                     className={[
                       'rounded-2xl border px-4 py-3 text-left transition',
                       amount === bet
@@ -584,12 +595,14 @@ const BlackjackGame = () => {
               </Button>
             </div>
 
-            {bankroll < bet && phase !== 'player-turn' && phase !== 'dealer-turn' && (
-              <p className='mt-4 text-sm font-medium text-red-600 dark:text-red-400'>
-                Bankroll too low for the selected bet. Reset the table or lower
-                the stake.
-              </p>
-            )}
+            {bankroll < bet &&
+              phase !== 'player-turn' &&
+              phase !== 'dealer-turn' && (
+                <p className='mt-4 text-sm font-medium text-red-600 dark:text-red-400'>
+                  Bankroll too low for the selected bet. Reset the table or
+                  lower the stake.
+                </p>
+              )}
           </div>
 
           <div className='rounded-[2rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/50 dark:border-white/10 dark:bg-slate-900 dark:shadow-black/20'>
@@ -598,10 +611,7 @@ const BlackjackGame = () => {
               <StatTile label='Rounds played' value={`${roundCount}`} />
               <StatTile label='Losses' value={`${stats.losses}`} />
               <StatTile label='Pushes' value={`${stats.pushes}`} />
-              <StatTile
-                label='Deck status'
-                value={`${deck.length} cards`}
-              />
+              <StatTile label='Deck status' value={`${deck.length} cards`} />
             </div>
           </div>
         </aside>
@@ -672,7 +682,7 @@ const HandPanel = ({
 
       <div className='flex min-h-[10rem] flex-wrap gap-3'>
         {cards.length === 0 ? (
-          <div className='flex w-full items-center justify-center rounded-[1.5rem] border border-dashed border-emerald-900/20 bg-white/50 px-4 py-10 text-sm text-emerald-950/60 dark:border-white/15 dark:bg-black/10 dark:text-emerald-50/60'>
+          <div className='flex w-full items-center justify-center rounded-3xl border border-dashed border-emerald-900/20 bg-white/50 px-4 py-10 text-sm text-emerald-950/60 dark:bg-black/10 dark:text-emerald-50/60'>
             No cards on the felt yet.
           </div>
         ) : (
@@ -689,17 +699,11 @@ const HandPanel = ({
   );
 };
 
-const PlayingCard = ({
-  card,
-  hidden,
-}: {
-  card: Card;
-  hidden?: boolean;
-}) => {
+const PlayingCard = ({ card, hidden }: { card: Card; hidden?: boolean }) => {
   if (hidden) {
     return (
       <div className='relative h-40 w-28 overflow-hidden rounded-[1.4rem] border border-emerald-950/50 bg-[linear-gradient(135deg,_#064e3b,_#022c22)] shadow-lg shadow-emerald-950/20'>
-        <div className='absolute inset-2 rounded-[1rem] border border-white/15 bg-[radial-gradient(circle_at_20%_20%,_rgba(255,255,255,0.16),_transparent_25%),repeating-linear-gradient(135deg,_rgba(255,255,255,0.1)_0px,_rgba(255,255,255,0.1)_8px,_transparent_8px,_transparent_16px)]' />
+        <div className='absolute inset-2 rounded-2xl border bg-[radial-gradient(circle_at_20%_20%,_rgba(255,255,255,0.16),_transparent_25%),repeating-linear-gradient(135deg,_rgba(255,255,255,0.1)_0px,_rgba(255,255,255,0.1)_8px,_transparent_8px,_transparent_16px)]' />
       </div>
     );
   }
@@ -713,7 +717,11 @@ const PlayingCard = ({
       <div className={`self-center text-4xl ${SUIT_COLORS[card.suit]}`}>
         {SUIT_SYMBOLS[card.suit]}
       </div>
-      <div className={`rotate-180 self-end text-lg font-bold ${SUIT_COLORS[card.suit]}`}>
+      <div
+        className={`rotate-180 self-end text-lg font-bold ${
+          SUIT_COLORS[card.suit]
+        }`}
+      >
         <div>{card.rank}</div>
         <div className='text-xl leading-none'>{SUIT_SYMBOLS[card.suit]}</div>
       </div>
