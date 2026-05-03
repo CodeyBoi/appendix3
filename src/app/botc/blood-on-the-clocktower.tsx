@@ -11,8 +11,8 @@ import {
   Edition,
   EDITIONS,
   getAllCharacters,
-  parsePocketGrimoireUrl,
   toPocketGrimoireUrl,
+  urlToEdition,
 } from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
@@ -76,6 +76,7 @@ const BloodOnTheClocktowerElement = () => {
         ];
 
   const [customScriptUrl, setCustomScriptUrl] = useState('');
+  const [customScriptUrlError, setCustomScriptUrlError] = useState('');
 
   const [selectedCharacters, setSelectedCharacters] = useState<CharacterId[]>(
     [],
@@ -150,8 +151,12 @@ const BloodOnTheClocktowerElement = () => {
                   <TextInput
                     label='Script URL'
                     icon={<IconScript />}
-                    onChange={setCustomScriptUrl}
+                    onChange={(value) => {
+                      setCustomScriptUrl(value);
+                      setCustomScriptUrlError('');
+                    }}
                     value={customScriptUrl}
+                    error={customScriptUrlError}
                   />
                   <div className='flex gap-4'>
                     <Button
@@ -159,12 +164,18 @@ const BloodOnTheClocktowerElement = () => {
                       disabled={!customScriptUrl}
                       onClick={() => {
                         if (customScriptUrl) {
+                          const edition = urlToEdition(customScriptUrl);
+                          if (!edition) {
+                            setCustomScriptUrlError('Invalid script URL/JSON');
+                            return;
+                          }
                           setGameState(
                             new BotcGame({
-                              edition: parsePocketGrimoireUrl(customScriptUrl),
+                              edition,
                             }),
                           );
                           setCustomScriptUrl('');
+                          setCustomScriptUrlError('');
                         }
                       }}
                     >

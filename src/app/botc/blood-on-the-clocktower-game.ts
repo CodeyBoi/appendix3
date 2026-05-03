@@ -5,7 +5,6 @@ import {
   CharacterId,
   CharacterType,
   Edition,
-  EditionId,
   getDefaultAlignment,
   getType,
   Reminder,
@@ -27,35 +26,6 @@ export class BotcGame {
     this.lobby = initial.lobby ?? [];
     this.players = initial.players ?? [];
     this.demonBluffs = initial.demonBluffs ?? [];
-  }
-
-  static fromJSON(json: string) {
-    interface BotcMetadata {
-      id: string;
-      author: string;
-      name: string;
-    }
-    const [meta, ...characters]: [BotcMetadata, ...CharacterId[]] = JSON.parse(
-      json,
-    ) as [BotcMetadata, ...CharacterId[]];
-    const id = meta.id;
-    const name = meta.name;
-    const edition = characters.reduce<Edition>(
-      (acc, id) => {
-        acc[getType(id)].push(id);
-        return acc;
-      },
-      {
-        id: id as EditionId,
-        name,
-        townsfolk: [],
-        outsiders: [],
-        minions: [],
-        demons: [],
-        travellers: [],
-      },
-    );
-    return new BotcGame({ edition });
   }
 
   characters() {
