@@ -61,7 +61,7 @@ const InfoToken = ({
   return (
     <div
       className={cn(
-        'relative flex flex-col items-center rounded border p-12 text-white shadow-md',
+        'relative flex flex-col items-center rounded border px-2 py-12 text-white shadow-md lg:p-12',
         className,
       )}
     >
