@@ -67,6 +67,7 @@ const NightOrder = ({
         );
         return (
           <div
+            key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
             className={cn(
               playerIndex !== -1 && 'hover:cursor-pointer hover:bg-red-600/10',
             )}
@@ -86,7 +87,6 @@ const NightOrder = ({
               muted={
                 deadCharacters.includes(id) || !gameCharacters.includes(id)
               }
-              key={`${id}night${showFirstNight ? 'FirstNight' : 'OtherNights'}`}
               characterId={id}
               text={description}
             />

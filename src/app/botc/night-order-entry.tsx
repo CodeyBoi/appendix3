@@ -36,7 +36,7 @@ const NightOrderEntry = ({
         {imgPath && (
           <img
             className={cn(
-              'h-12 w-12 scale-150',
+              'relative z-0 h-12 w-12 scale-150',
               imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
             )}
             loading='lazy'
@@ -47,7 +47,9 @@ const NightOrderEntry = ({
           <h4>
             {characterName}{' '}
             {props.name && characterId && (
-              <span className='text-xs text-neutral-500'>({props.name})</span>
+              <span className='text-xs font-light text-neutral-500'>
+                ({props.name})
+              </span>
             )}
           </h4>
         </div>

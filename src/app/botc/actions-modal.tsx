@@ -9,6 +9,7 @@ import Button from 'components/input/button';
 import Switch from 'components/input/switch';
 import Divider from 'components/divider';
 import CharacterTokenSelector from './character-token-selector';
+import InfoToken from './info-token';
 
 type SelectMode = 'none' | 'character' | 'player' | 'showToken';
 
@@ -40,12 +41,13 @@ const BotcActionsModal = ({
   const [showAllReminders, setShowAllReminders] = useState(false);
   const [addMultipleReminders, setAddMultipleReminders] = useState(false);
 
-  const characters = new Set(players.map((p) => p.characterId));
+  const characters = players.map((p) => p.characterId);
+  const characterSet = new Set(characters);
   const reminderTokens = useMemo(
     () =>
       (showAllReminders
         ? allCharacters
-        : allCharacters.filter((id) => characters.has(id))
+        : allCharacters.filter((id) => characterSet.has(id))
       ).flatMap(
         (id) =>
           CHARACTERS[id].reminderTokens?.map((reminderText) => ({
@@ -53,7 +55,7 @@ const BotcActionsModal = ({
             message: reminderText,
           })) ?? [],
       ),
-    [showAllReminders, allCharacters, characters],
+    [showAllReminders, allCharacters, characterSet],
   );
 
   const killOrRevivePlayer = () => {
@@ -89,19 +91,24 @@ const BotcActionsModal = ({
       title={
         selectMode === 'none'
           ? character.name + (player.name ? ` (${player.name})` : '')
-          : 'Replace Character Token'
+          : selectMode === 'character'
+          ? 'Replace Character Token'
+          : selectMode === 'showToken'
+          ? 'Show token'
+          : ''
       }
       withCloseButton
       open={open}
       onFocus={() => {
         setOpen(true);
+        setSelectMode('none');
       }}
       onBlur={() => {
         setOpen(false);
-        setSelectMode('none');
       }}
+      hideBackground={selectMode === 'showToken'}
     >
-      {character.description}
+      {selectMode !== 'showToken' && character.description}
       {selectMode === 'none' && (
         <div className='flex flex-col gap-2'>
           <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
@@ -116,7 +123,14 @@ const BotcActionsModal = ({
             >
               Replace
             </Button>
-            <Button fullWidth>Show</Button>
+            <Button
+              fullWidth
+              onClick={() => {
+                setSelectMode('showToken');
+              }}
+            >
+              Show
+            </Button>
           </div>
           <Divider />
           <div className='flex flex-col gap-2 px-2'>
@@ -204,7 +218,14 @@ const BotcActionsModal = ({
           defaultShowAll
         />
       )}
-      {selectMode === 'player' && 'test'}
+      {selectMode === 'showToken' && (
+        <InfoToken
+          className={player.alignment === 'good' ? 'bg-blue-500' : 'bg-red-600'}
+          initialCharacters={[player.characterId]}
+          characters={characters}
+          allCharacters={allCharacters}
+        />
+      )}
     </Modal>
   );
 };

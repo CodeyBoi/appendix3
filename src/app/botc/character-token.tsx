@@ -50,7 +50,7 @@ const CharacterToken = ({
       {playerName && (
         <h5
           className={cn(
-            'absolute -top-1 left-1/2 -translate-x-1/2 rounded px-2 text-sm text-white',
+            'absolute -top-1 left-1/2 z-10 -translate-x-1/2 rounded px-2 text-sm text-white',
             nameColor,
           )}
         >
@@ -58,7 +58,7 @@ const CharacterToken = ({
         </h5>
       )}
       <img
-        className='absolute left-1/2 top-1/2 w-24 -translate-x-1/2 -translate-y-1/2'
+        className='absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2'
         src='/botc/clockface.webp'
         loading='lazy'
       />
