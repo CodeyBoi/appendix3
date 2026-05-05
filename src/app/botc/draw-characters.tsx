@@ -33,8 +33,8 @@ const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
             setPickedNumbers(new Set(pickedNumbers).add(i));
           }}
           className={cn(
-            'flex h-24 w-24 flex-col justify-center rounded-full bg-red-600 p-8 text-center text-5xl font-bold text-white',
-            pickedNumbers.has(i) ? 'opacity-50' : 'hover:cursor-pointer',
+            'flex h-20 w-20 flex-col justify-center rounded-full bg-red-600 p-8 text-center text-4xl font-bold text-white lg:h-24 lg:w-24 lg:text-5xl',
+            pickedNumbers.has(i) ? 'opacity-25' : 'hover:cursor-pointer',
           )}
         >
           {(i + 1).toString()}
