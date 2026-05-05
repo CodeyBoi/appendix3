@@ -203,8 +203,10 @@ export const EDITIONS: readonly Edition[] = [
   },
 ] as const;
 
+export const getAllCharacters = (edition: Edition) =>
+  CHARACTER_TYPES.flatMap((t) => edition[t]);
+
 const _CHARACTER_TYPE_MAP = EDITIONS.reduce((acc, edition) => {
-  console.log('Generating CharacterType Map');
   for (const type of CHARACTER_TYPES) {
     for (const characterId of edition[type]) {
       acc.set(characterId, type);
@@ -214,6 +216,15 @@ const _CHARACTER_TYPE_MAP = EDITIONS.reduce((acc, edition) => {
 }, new Map<CharacterId, CharacterType>());
 export const getType = (id: CharacterId) =>
   _CHARACTER_TYPE_MAP.get(id) ?? 'townsfolk';
+
+const _EDITION_MAP = EDITIONS.reduce((acc, edition) => {
+  for (const characterId of getAllCharacters(edition)) {
+    acc.set(characterId, edition.id);
+  }
+  return acc;
+}, new Map<CharacterId, EditionId>());
+export const getEdition = (id: CharacterId): EditionId =>
+  _EDITION_MAP.get(id) ?? 'custom';
 
 export type Alignment = 'good' | 'evil';
 
@@ -236,15 +247,6 @@ export const getDefaultAlignment = (id: CharacterId): Alignment => {
   }
 };
 
-export const getEdition = (id: CharacterId): EditionId => {
-  for (const edition of EDITIONS) {
-    if (getAllCharacters(edition).includes(id)) {
-      return edition.id;
-    }
-  }
-  return 'custom';
-};
-
 const pocketGrimoireBaseUrl = 'https://www.pocketgrimoire.co.uk/en_GB/sheet';
 export const toPocketGrimoireUrl = (edition: Edition) =>
   `${pocketGrimoireBaseUrl}?name=${edition.name.replaceAll(
@@ -252,9 +254,8 @@ export const toPocketGrimoireUrl = (edition: Edition) =>
     '+',
   )}&characters=${encodeURIComponent(getAllCharacters(edition).join(','))}`;
 
-export const parsePocketGrimoireUrl = (url: string): Edition => {
+const parsePocketGrimoireUrl = (url: string): Edition => {
   const searchParams = new URLSearchParams(url.split('?')[1]);
-  console.log(searchParams);
   const name =
     searchParams.get('name')?.replaceAll('+', ' ') ?? 'Unknown Script';
   const id = 'custom';
@@ -280,8 +281,52 @@ export const parsePocketGrimoireUrl = (url: string): Edition => {
   };
 };
 
-export const getAllCharacters = (edition: Edition) =>
-  CHARACTER_TYPES.flatMap((t) => edition[t]);
+const jsonToEdition = (json: string) => {
+  interface BotcMetadata {
+    id: string;
+    author: string;
+    name: string;
+  }
+  const [meta, ...characters]: [BotcMetadata, ...CharacterId[]] = JSON.parse(
+    json,
+  ) as [BotcMetadata, ...CharacterId[]];
+  const id = meta.id;
+  const name = meta.name;
+  const edition = characters.reduce<Edition>(
+    (acc, id) => {
+      acc[getType(id)].push(id);
+      return acc;
+    },
+    {
+      id: id as EditionId,
+      name,
+      townsfolk: [],
+      outsiders: [],
+      minions: [],
+      demons: [],
+      travellers: [],
+    },
+  );
+  return edition;
+};
+
+export const urlToEdition = (url: string): Edition | null => {
+  const parseUrl = (url: string) => {
+    if (url.startsWith('[{"id":"')) {
+      return jsonToEdition(url);
+    } else if (url.startsWith(pocketGrimoireBaseUrl)) {
+      return parsePocketGrimoireUrl(url);
+    }
+  };
+  const edition = parseUrl(url);
+  if (!edition) {
+    return null;
+  }
+  return {
+    ...edition,
+    id: 'custom',
+  };
+};
 
 const ABBREVIATIONS: Record<string, string> = {
   'trouble-brewing': 'tb',

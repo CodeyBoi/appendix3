@@ -35,12 +35,12 @@ const Tabs = ({
     typeof o === 'string' ? { value: o, label: o } : o,
   );
   return (
-    <div className='flex flex-nowrap overflow-x-auto overflow-y-hidden px-2'>
+    <div className='flex flex-nowrap overflow-x-auto overflow-y-hidden bg-white px-2 dark:bg-darkBg'>
       {options.map((o) => (
         <div
           key={o.value}
           className={cn(
-            'h-9 w-36 whitespace-nowrap border-b-2 px-4 py-2 text-center',
+            'z-10 h-9 w-36 whitespace-nowrap border-b-2 px-4 py-2 text-center',
             o.value === tab
               ? 'border-b-red-600'
               : 'cursor-pointer border-b-neutral-300 hover:bg-red-300/5 dark:border-b-neutral-700',

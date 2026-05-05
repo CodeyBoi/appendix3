@@ -142,6 +142,10 @@ const findSelectionError = (
   const res: Record<CharacterType, number> &
     Partial<Record<CharacterId, number>> = initObject(CHARACTER_TYPES, 0);
   const addOutsiders = (n: number) => {
+    // Don't modify if number of outsiders would go below 0
+    if (res['outsiders'] + n < 0) {
+      return;
+    }
     res['outsiders'] = res['outsiders'] + n;
     res['townsfolk'] = res['townsfolk'] - n;
   };
@@ -244,7 +248,7 @@ const BotcCharacterSelect = ({
             {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
               <td
                 className={cn(
-                  'border-x border-t px-2 hover:cursor-pointer',
+                  'border-x border-t px-1 hover:cursor-pointer lg:px-2',
                   n === numberOfPlayers && 'bg-red-600/20',
                 )}
                 key={n}
@@ -257,7 +261,7 @@ const BotcCharacterSelect = ({
             ))}
             <td
               className={cn(
-                'border-x border-t px-2 hover:cursor-pointer',
+                'border-x border-t px-1 hover:cursor-pointer',
                 15 === numberOfPlayers && 'bg-red-600/20',
               )}
               onClick={() => {

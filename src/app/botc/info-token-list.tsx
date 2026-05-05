@@ -43,7 +43,15 @@ const INFO_TOKENS = [
     className: 'bg-green-500',
   },
   {
+    text: 'This person is',
+    className: 'bg-green-500',
+  },
+  {
     text: 'Use your ability?',
+    className: 'bg-green-500',
+  },
+  {
+    text: 'Are you sure?',
     className: 'bg-green-500',
   },
 ];
@@ -90,7 +98,7 @@ const InfoTokenList = ({
           </div>
         ))}
       </Modal>
-      <div className='grid grid-cols-2 gap-2 text-xs'>
+      <div className='grid grid-cols-1 gap-2 text-xs lg:grid-cols-2'>
         {INFO_TOKENS.map((token, i) => (
           <Button
             key={token.text}

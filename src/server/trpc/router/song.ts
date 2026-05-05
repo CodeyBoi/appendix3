@@ -43,7 +43,6 @@ const generateVarnamoMarathon = async (ctx: Context) => {
   )
     .sort()
     .join(', ');
-  console.log(authors);
   const song = {
     ...varnamoMarathon,
     author: authors,

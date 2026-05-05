@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
+import { protectedProcedure, publicProcedure, router } from '../trpc';
 import { filterNone } from 'utils/array';
 
 export const gamesRouter = router({
@@ -104,4 +104,69 @@ export const gamesRouter = router({
     );
     return filterNone(withCorps);
   }),
+
+  getJoinableBotcSessions: publicProcedure.query(async ({ ctx }) => {
+    const res = await ctx.prisma.botcSession.groupBy({
+      by: ['storytellerId'],
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 1,
+      where: {
+        hasStarted: false,
+      },
+    });
+
+    const withCorps = await Promise.all(
+      res.map(async (session) => {
+        return {
+          corps: await ctx.prisma.corps.findUniqueOrThrow({
+            where: { id: session.storytellerId },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              number: true,
+              bNumber: true,
+              nickName: true,
+            },
+          }),
+        };
+      }),
+    );
+
+    return withCorps;
+  }),
+
+  createBotcSession: protectedProcedure
+    .input(
+      z.object({
+        scriptCharacters: z.array(z.string()),
+        corpsIds: z.array(z.string().cuid()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { scriptCharacters, corpsIds = [] } = input;
+      const corpsId = ctx.session.user.corps.id;
+
+      const res = ctx.prisma.botcSession.create({
+        data: {
+          script: scriptCharacters.join(','),
+          players: {
+            createMany: {
+              data: corpsIds.map((corpsId) => ({
+                corpsId,
+              })),
+            },
+          },
+          storyteller: {
+            connect: {
+              id: corpsId,
+            },
+          },
+        },
+      });
+
+      return res;
+    }),
 });

@@ -11,8 +11,8 @@ import {
   Edition,
   EDITIONS,
   getAllCharacters,
-  parsePocketGrimoireUrl,
   toPocketGrimoireUrl,
+  urlToEdition,
 } from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
@@ -22,6 +22,9 @@ import InfoTokenList from './info-token-list';
 import Tabs from 'components/input/tabs';
 import { useSearchParams } from 'next/navigation';
 import TextInput from 'components/input/text-input';
+import Modal from 'components/modal';
+import { shuffle } from 'utils/array';
+import DrawCharacters from './draw-characters';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -48,10 +51,8 @@ const BloodOnTheClocktowerElement = () => {
       const savedState = new BotcGame(
         JSON.parse(savedStateString) as InstanceType<typeof BotcGame>,
       );
-      console.log('Got value ' + savedStateString + ' from localStorage');
       return savedState;
     } else {
-      console.log('No game state found in localstorage. Using default...');
       return newGameState;
     }
   });
@@ -76,22 +77,13 @@ const BloodOnTheClocktowerElement = () => {
         ];
 
   const [customScriptUrl, setCustomScriptUrl] = useState('');
+  const [customScriptUrlError, setCustomScriptUrlError] = useState('');
 
   const [selectedCharacters, setSelectedCharacters] = useState<CharacterId[]>(
     [],
   );
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-
-  const startGame = () => {
-    gameState.assignCharacters(selectedCharacters);
-    if (gameState.players.length > 0) {
-      const bluffs = gameState.generateDemonBluffs();
-      gameState.demonBluffs = bluffs;
-      setGameState(gameState);
-      setTab('grimoire');
-    }
-  };
 
   const edition = gameState.edition;
 
@@ -150,8 +142,12 @@ const BloodOnTheClocktowerElement = () => {
                   <TextInput
                     label='Script URL'
                     icon={<IconScript />}
-                    onChange={setCustomScriptUrl}
+                    onChange={(value) => {
+                      setCustomScriptUrl(value);
+                      setCustomScriptUrlError('');
+                    }}
                     value={customScriptUrl}
+                    error={customScriptUrlError}
                   />
                   <div className='flex gap-4'>
                     <Button
@@ -159,12 +155,18 @@ const BloodOnTheClocktowerElement = () => {
                       disabled={!customScriptUrl}
                       onClick={() => {
                         if (customScriptUrl) {
+                          const edition = urlToEdition(customScriptUrl);
+                          if (!edition) {
+                            setCustomScriptUrlError('Invalid script URL/JSON');
+                            return;
+                          }
                           setGameState(
                             new BotcGame({
-                              edition: parsePocketGrimoireUrl(customScriptUrl),
+                              edition,
                             }),
                           );
                           setCustomScriptUrl('');
+                          setCustomScriptUrlError('');
                         }
                       }}
                     >
@@ -213,41 +215,44 @@ const BloodOnTheClocktowerElement = () => {
                   >
                     Reset
                   </Button>
-                  <Button
-                    disabled={
-                      selectedCharacters.length === 0 &&
-                      'Select some characters first'
+                  <Modal
+                    title='Draw characters'
+                    target={
+                      <Button
+                        onClick={() => {
+                          setSelectedCharacters(
+                            shuffle(selectedCharacters.slice()),
+                          );
+                        }}
+                        disabled={
+                          selectedCharacters.length === 0 &&
+                          'Select some characters first'
+                        }
+                      >
+                        Draw characters
+                      </Button>
                     }
-                    onClick={startGame}
-                  >
-                    Start game
-                  </Button>
-                </div>
-                <div className='flex gap-4'>
-                  <Button
-                    onClick={() => {
-                      gameState.lobby = [
-                        { name: 'Hannes' },
-                        { name: 'Hannes2' },
-                        { name: 'Bartolomeus' },
-                        { name: 'Kyoto' },
-                        { name: 'Jörgen' },
-                        { name: 'Pratkvarn' },
-                        { name: 'Pelle' },
-                        { name: 'Lars' },
-                        { name: 'Göran' },
-                        { name: 'Långtnamnsomingenbordeha' },
-                        { name: 'Svanslös' },
-                        { name: 'Svansfull' },
-                        { name: 'Stor Person' },
-                        { name: 'Adam' },
-                        { name: 'Tim' },
-                      ];
-                      setGameState(gameState);
+                    hideBackground
+                    withCloseButton
+                    onBlur={() => {
+                      if (
+                        gameState.players.length === selectedCharacters.length
+                      ) {
+                        const bluffs = gameState.generateDemonBluffs();
+                        gameState.demonBluffs = bluffs;
+                        setGameState(gameState);
+                        setTab('grimoire');
+                      }
                     }}
                   >
-                    Populate lobby
-                  </Button>
+                    <DrawCharacters
+                      characters={selectedCharacters}
+                      startGame={(players) => {
+                        gameState.players = players;
+                        setGameState(gameState);
+                      }}
+                    />
+                  </Modal>
                 </div>
               </>
             )}
@@ -272,6 +277,10 @@ const BloodOnTheClocktowerElement = () => {
           <NightOrder
             players={gameState.players}
             allCharacters={getAllCharacters(edition)}
+            setCurrentPlayerIndex={(idx) => {
+              setCurrentPlayerIndex(idx);
+              setModalOpen(true);
+            }}
           />
         )}
         {tab === 'info-tokens' && (

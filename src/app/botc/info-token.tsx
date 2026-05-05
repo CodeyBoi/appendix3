@@ -11,29 +11,36 @@ import {
 import CharacterTokenSelector from './character-token-selector';
 import { cn } from 'utils/class-names';
 import CharacterToken from './character-token';
+import ActionIcon from 'components/input/action-icon';
+import { IconCirclePlus2 } from '@tabler/icons-react';
 
 interface InfoTokenProps {
-  text: string;
+  text?: string;
   className?: string;
-  characters: CharacterId[];
-  allCharacters: CharacterId[];
+  characters?: CharacterId[];
+  allCharacters?: CharacterId[];
+  initialCharacters?: CharacterId[];
   demonBluffs?: CharacterId[];
   setDemonBluffs?: (arg0: CharacterId[]) => void;
 }
 
 const InfoToken = ({
-  text,
+  text = '',
   className = '',
-  characters,
-  allCharacters,
+  characters = [],
+  allCharacters = [],
+  initialCharacters,
   demonBluffs,
   setDemonBluffs,
 }: InfoTokenProps) => {
   const [isSelectingCharacterToken, setIsSelectingCharacterToken] =
     useState(false);
   const [characterTokens, _setCharacterTokens] = useState<CharacterId[]>(
-    demonBluffs ?? [],
+    demonBluffs ?? initialCharacters ?? [],
   );
+
+  const showAddCharacterTokenButton =
+    characters.length > 0 && allCharacters.length > 0;
 
   const setCharacterTokens = (v: CharacterId[]) => {
     _setCharacterTokens(v);
@@ -54,18 +61,34 @@ const InfoToken = ({
   return (
     <div
       className={cn(
-        'flex flex-col items-center rounded border p-12 text-white shadow-md',
+        'relative flex flex-col items-center rounded border p-12 text-white shadow-md',
         className,
       )}
     >
       {!isSelectingCharacterToken && (
         <>
-          <h3 className='text-wrap text-center'>{text}</h3>
+          {showAddCharacterTokenButton && (
+            <div className='absolute right-2 top-2'>
+              <ActionIcon
+                onClick={() => {
+                  setIsSelectingCharacterToken(true);
+                }}
+              >
+                <IconCirclePlus2 />
+              </ActionIcon>
+            </div>
+          )}
+          <h2 className='text-wrap scale-75 text-center lg:scale-100'>
+            {text}
+          </h2>
           <div className='h-4' />
-          <div className='flex w-1/2 flex-wrap justify-center gap-4'>
+          <div className='flex w-full flex-wrap justify-center gap-4 lg:w-1/2'>
             {characterTokens.length > 0 &&
               characterTokens.map((id, i) => (
-                <div key={text + id} className='w-1/3'>
+                <div
+                  key={text + id}
+                  className={cn('w-32', characterTokens.length > 1 && 'w-24')}
+                >
                   <CharacterToken
                     characterId={id}
                     onClick={() => {
@@ -78,25 +101,14 @@ const InfoToken = ({
               firstCharacterToken &&
               CHARACTERS[firstCharacterToken].description}
           </div>
-          <div className='h-4' />
-          <div className='flex gap-2'>
-            <Button
-              compact
-              onClick={() => {
-                setIsSelectingCharacterToken(true);
-              }}
-            >
-              Add character token
-            </Button>
-          </div>
         </>
       )}
       {isSelectingCharacterToken && (
         <>
-          <h3>
+          <h2 className='scale-75 lg:scale-100'>
             Add character token
             {demonBluffs && ' (Showing good characters not in play)'}
-          </h3>
+          </h2>
           <div className='h-2' />
           <CharacterTokenSelector
             characters={characters.filter(filterFunc)}
