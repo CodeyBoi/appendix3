@@ -143,7 +143,7 @@ const findSelectionError = (
     Partial<Record<CharacterId, number>> = initObject(CHARACTER_TYPES, 0);
   const addOutsiders = (n: number) => {
     // Don't modify if number of outsiders would go below 0
-    if (res['outsiders'] + n < 0) {
+    if (res['outsiders'] + numberOfCharacters['outsiders'] + n < 0) {
       return;
     }
     res['outsiders'] = res['outsiders'] + n;

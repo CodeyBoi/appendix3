@@ -10,8 +10,9 @@ import Switch from 'components/input/switch';
 import Divider from 'components/divider';
 import CharacterTokenSelector from './character-token-selector';
 import InfoToken from './info-token';
+import TextInput from 'components/input/text-input';
 
-type SelectMode = 'none' | 'character' | 'player' | 'showToken';
+type SelectMode = 'none' | 'character' | 'player' | 'showToken' | 'name';
 
 interface BotcActionsModalProps {
   open: boolean;
@@ -40,21 +41,27 @@ const BotcActionsModal = ({
   const [selectMode, setSelectMode] = useState<SelectMode>('none');
   const [showAllReminders, setShowAllReminders] = useState(false);
   const [addMultipleReminders, setAddMultipleReminders] = useState(false);
+  const [playerName, setPlayerName] = useState('');
 
   const characters = players.map((p) => p.characterId);
   const characterSet = new Set(characters);
   const reminderTokens = useMemo(
     () =>
-      (showAllReminders
-        ? allCharacters
-        : allCharacters.filter((id) => characterSet.has(id))
-      ).flatMap(
-        (id) =>
-          CHARACTERS[id].reminderTokens?.map((reminderText) => ({
-            characterId: id,
-            message: reminderText,
-          })) ?? [],
-      ),
+      [
+        { characterId: 'good', message: 'Is Good' },
+        { characterId: 'evil', message: 'Is Evil' },
+      ].concat(
+        (showAllReminders
+          ? allCharacters
+          : allCharacters.filter((id) => characterSet.has(id))
+        ).flatMap(
+          (id) =>
+            CHARACTERS[id].reminderTokens?.map((reminderText) => ({
+              characterId: id,
+              message: reminderText,
+            })) ?? [],
+        ),
+      ) as Reminder[],
     [showAllReminders, allCharacters, characterSet],
   );
 
@@ -95,6 +102,8 @@ const BotcActionsModal = ({
           ? 'Replace Character Token'
           : selectMode === 'showToken'
           ? 'Show token'
+          : selectMode === 'name'
+          ? 'Set player name'
           : ''
       }
       withCloseButton
@@ -111,11 +120,12 @@ const BotcActionsModal = ({
       {selectMode !== 'showToken' && character.description}
       {selectMode === 'none' && (
         <div className='flex flex-col gap-2'>
-          <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
-            <Button fullWidth onClick={killOrRevivePlayer}>
+          <div className='grid grid-cols-2 gap-x-4 gap-y-2'>
+            <Button compact fullWidth onClick={killOrRevivePlayer}>
               {player.isAlive ? 'Kill' : 'Revive'}
             </Button>
             <Button
+              compact
               fullWidth
               onClick={() => {
                 setSelectMode('character');
@@ -124,12 +134,23 @@ const BotcActionsModal = ({
               Replace
             </Button>
             <Button
+              compact
               fullWidth
               onClick={() => {
                 setSelectMode('showToken');
               }}
             >
               Show
+            </Button>
+            <Button
+              compact
+              fullWidth
+              onClick={() => {
+                setPlayerName(player.name ?? '');
+                setSelectMode('name');
+              }}
+            >
+              Set name
             </Button>
           </div>
           <Divider />
@@ -159,32 +180,6 @@ const BotcActionsModal = ({
                 ))}
             </div>
           </div>
-          {player.reminders.length > 0 && (
-            <div className='px-2'>
-              <h4>Added reminders (click to remove)</h4>
-              <div className='flex flex-wrap gap-4'>
-                {player.reminders.map((reminder, i) => (
-                  <div
-                    key={`player:${playerIndex}${reminder.characterId}${reminder.message}`}
-                    className='min-w-[64px]'
-                  >
-                    <ReminderToken
-                      characterId={reminder.characterId}
-                      text={reminder.message}
-                      onClick={() => {
-                        const newPlayers = players.slice();
-                        newPlayers[playerIndex]?.reminders.splice(i, 1);
-                        setPlayers(newPlayers);
-                        if (!addMultipleReminders) {
-                          setOpen(false);
-                        }
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
           <div className='h-2' />
           <div className='flex flex-col gap-4 md:flex-row'>
             <Switch
@@ -198,6 +193,27 @@ const BotcActionsModal = ({
               onChange={setAddMultipleReminders}
             />
           </div>
+          <div className='h-2' />
+          <Button
+            className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white'
+            color='transparent'
+            compact
+            fullWidth
+            onClick={() => {
+              if (
+                confirm(
+                  `Are you sure you want to remove ${character.name}${
+                    player.name ? ` (${player.name})` : ''
+                  }?`,
+                )
+              ) {
+                setPlayers(players.toSpliced(playerIndex, 1));
+                setOpen(false);
+              }
+            }}
+          >
+            Remove character token
+          </Button>
         </div>
       )}
       {selectMode === 'character' && (
@@ -225,6 +241,31 @@ const BotcActionsModal = ({
           characters={characters}
           allCharacters={allCharacters}
         />
+      )}
+      {selectMode === 'name' && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const newPlayers = players.slice();
+            const p = newPlayers[playerIndex];
+            if (!p) {
+              throw new Error('Error when setting player name');
+            }
+            p.name = playerName;
+            setPlayers(newPlayers);
+            setPlayerName('');
+            setOpen(false);
+          }}
+          className='flex items-center justify-center gap-2 rounded p-2'
+        >
+          <TextInput
+            onChange={setPlayerName}
+            value={playerName}
+            label='Player name'
+            autoFocus
+          />
+          <Button type='submit'>Done</Button>
+        </form>
       )}
     </Modal>
   );

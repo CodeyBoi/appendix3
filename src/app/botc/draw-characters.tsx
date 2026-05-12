@@ -52,13 +52,14 @@ const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
         initialCharacters={[characterId]}
       />
       <form
-        onSubmit={() => {
+        onSubmit={(e) => {
+          e.preventDefault();
           const newPlayers = players.slice();
           newPlayers.push(
             new BotcPlayer({
               name: playerName,
               characterId,
-              index: newPlayers.length,
+              id: newPlayers.length,
             }),
           );
           setPlayerName('');

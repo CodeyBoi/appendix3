@@ -1451,7 +1451,7 @@ export const CHARACTERS = Object.entries(_characters).reduce(
 );
 
 export interface Reminder {
-  characterId: CharacterId;
+  characterId: CharacterId | 'good' | 'evil';
   message: string;
 }
 

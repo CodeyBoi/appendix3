@@ -39,7 +39,7 @@ export class BotcGame {
   assignCharacters(characters: CharacterId[]) {
     this.players = zip(shuffle(characters.slice()), this.lobby).map(
       ([characterId, player], index) =>
-        new BotcPlayer({ ...player, characterId, index }),
+        new BotcPlayer({ ...player, characterId, id: index }),
     );
   }
 
@@ -103,7 +103,7 @@ const getNeighbours = (
 export class BotcPlayer {
   name?: string;
   characterId: CharacterId;
-  index: number;
+  id: number;
   alignment: Alignment;
   corpsId?: string;
   reminders: Reminder[];
@@ -117,17 +117,17 @@ export class BotcPlayer {
     name,
     corpsId,
     characterId,
-    index,
+    id,
   }: {
     name?: string;
     corpsId?: string;
     characterId: CharacterId;
-    index: number;
+    id: number;
   }) {
     this.name = name;
     this.corpsId = corpsId;
     this.characterId = characterId;
-    this.index = index;
+    this.id = id;
     this.reminders = [];
     this.automaticReminders = [];
     this.alignment = getDefaultAlignment(characterId);
@@ -149,7 +149,7 @@ export class BotcPlayer {
     players: BotcPlayer[],
     filter: (p: BotcPlayer) => boolean = () => true,
   ) {
-    return getNeighbours(players, this.index, filter);
+    return getNeighbours(players, this.id, filter);
   }
 
   addAutomaticReminders(game: BotcGame) {
