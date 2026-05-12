@@ -25,6 +25,7 @@ import TextInput from 'components/input/text-input';
 import Modal from 'components/modal';
 import { shuffle } from 'utils/array';
 import DrawCharacters from './draw-characters';
+import { cn } from 'utils/class-names';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -115,165 +116,173 @@ const BloodOnTheClocktowerElement = () => {
             tab={tab}
           />
         </span>
-        {tab === 'setup' && (
-          <div className='flex max-w-full flex-col gap-y-2'>
-            <div className='max-w-md'>
-              <Select
-                label='Edition'
-                options={EDITIONS.map((e) => ({
-                  value: e.id,
-                  label: e.name,
-                })).concat([{ value: 'custom', label: 'Custom Script' }])}
-                onChange={(v) => {
-                  setGameState(
-                    new BotcGame({
-                      edition:
-                        EDITIONS.find((edition) => edition.id === v) ??
-                        CUSTOM_EDITION,
-                    }),
-                  );
-                }}
-                value={gameState.edition.id}
-              />
-            </div>
-            {gameState.edition.id === 'custom' && (
-              <div className='flex flex-col gap-4'>
-                <div className='flex flex-wrap gap-x-4'>
-                  <TextInput
-                    label='Script URL'
-                    icon={<IconScript />}
-                    onChange={(value) => {
-                      setCustomScriptUrl(value);
-                      setCustomScriptUrlError('');
-                    }}
-                    value={customScriptUrl}
-                    error={customScriptUrlError}
-                  />
-                  <div className='flex gap-4'>
-                    <Button
-                      className='mt-2'
-                      disabled={!customScriptUrl}
-                      onClick={() => {
-                        if (customScriptUrl) {
-                          const edition = urlToEdition(customScriptUrl);
-                          if (!edition) {
-                            setCustomScriptUrlError('Invalid script URL/JSON');
-                            return;
-                          }
-                          setGameState(
-                            new BotcGame({
-                              edition,
-                            }),
-                          );
-                          setCustomScriptUrl('');
-                          setCustomScriptUrlError('');
-                        }
-                      }}
-                    >
-                      Import
-                    </Button>
-                    <Button
-                      className='mt-2'
-                      disabled={!customScriptUrl && allCharacters.length === 0}
-                      onClick={() => {
-                        setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
-                        setCustomScriptUrl('');
-                      }}
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
-                {allCharacters.length > 0 && (
-                  <h4>Loaded script: {edition.name}</h4>
-                )}
-              </div>
-            )}
-            {allCharacters.length > 0 && (
-              <>
-                <Button href={toPocketGrimoireUrl(edition)} target='_blank'>
-                  Character Sheet
-                  <IconExternalLink />
-                </Button>
-                <BotcCharacterSelectTable
-                  edition={edition}
-                  onSelectedCharactersChange={(characters) => {
-                    setSelectedCharacters(characters);
+        <div
+          className={cn(
+            'flex max-w-full flex-col gap-y-2',
+            tab !== 'setup' && 'hidden',
+          )}
+        >
+          <div className='max-w-md'>
+            <Select
+              label='Edition'
+              options={EDITIONS.map((e) => ({
+                value: e.id,
+                label: e.name,
+              })).concat([{ value: 'custom', label: 'Custom Script' }])}
+              onChange={(v) => {
+                setGameState(
+                  new BotcGame({
+                    edition:
+                      EDITIONS.find((edition) => edition.id === v) ??
+                      CUSTOM_EDITION,
+                  }),
+                );
+              }}
+              value={gameState.edition.id}
+            />
+          </div>
+          {gameState.edition.id === 'custom' && (
+            <div className='flex flex-col gap-4'>
+              <div className='flex flex-wrap gap-x-4'>
+                <TextInput
+                  label='Script URL'
+                  icon={<IconScript />}
+                  onChange={(value) => {
+                    setCustomScriptUrl(value);
+                    setCustomScriptUrlError('');
                   }}
+                  value={customScriptUrl}
+                  error={customScriptUrlError}
                 />
-                <div className='flex justify-end gap-2 lg:flex-row'>
+                <div className='flex gap-4'>
                   <Button
+                    className='mt-2'
+                    disabled={!customScriptUrl}
                     onClick={() => {
-                      if (
-                        confirm(
-                          'This will reset everything to a clean slate. Are you sure?',
-                        )
-                      ) {
-                        setGameState(newGameState);
+                      if (customScriptUrl) {
+                        const edition = urlToEdition(customScriptUrl);
+                        if (!edition) {
+                          setCustomScriptUrlError('Invalid script URL/JSON');
+                          return;
+                        }
+                        setGameState(
+                          new BotcGame({
+                            edition,
+                          }),
+                        );
+                        setCustomScriptUrl('');
+                        setCustomScriptUrlError('');
                       }
+                    }}
+                  >
+                    Import
+                  </Button>
+                  <Button
+                    className='mt-2'
+                    disabled={!customScriptUrl && allCharacters.length === 0}
+                    onClick={() => {
+                      setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
+                      setCustomScriptUrl('');
                     }}
                   >
                     Reset
                   </Button>
-                  <Modal
-                    title='Draw characters'
-                    target={
-                      <Button
-                        onClick={() => {
-                          setSelectedCharacters(
-                            shuffle(selectedCharacters.slice()),
-                          );
-                        }}
-                        disabled={
-                          selectedCharacters.length === 0 &&
-                          'Select some characters first'
-                        }
-                      >
-                        Draw characters
-                      </Button>
-                    }
-                    hideBackground
-                    withCloseButton
-                    onBlur={() => {
-                      if (
-                        gameState.players.length === selectedCharacters.length
-                      ) {
-                        const bluffs = gameState.generateDemonBluffs();
-                        gameState.demonBluffs = bluffs;
-                        setGameState(gameState);
-                        setTab('grimoire');
-                      }
-                    }}
-                  >
-                    <DrawCharacters
-                      characters={selectedCharacters}
-                      startGame={(players) => {
-                        gameState.players = players;
-                        setGameState(gameState);
-                      }}
-                    />
-                  </Modal>
                 </div>
-              </>
-            )}
-          </div>
-        )}
-        {tab === 'grimoire' && (
-          <div className='flex justify-center rounded border shadow-md'>
-            <Grimoire
-              players={gameState.players}
-              setPlayers={(players) => {
-                gameState.players = players;
-                setGameState(gameState);
-              }}
-              setCurrentPlayerIndex={(idx) => {
-                setCurrentPlayerIndex(idx);
-                setModalOpen(true);
-              }}
-            />
-          </div>
-        )}
-        {tab === 'night-order' && (
+              </div>
+              {allCharacters.length > 0 && (
+                <h4>Loaded script: {edition.name}</h4>
+              )}
+            </div>
+          )}
+          {allCharacters.length > 0 && (
+            <>
+              <Button href={toPocketGrimoireUrl(edition)} target='_blank'>
+                Character Sheet
+                <IconExternalLink />
+              </Button>
+              <BotcCharacterSelectTable
+                edition={edition}
+                onSelectedCharactersChange={(characters) => {
+                  setSelectedCharacters(characters);
+                }}
+              />
+              <div className='flex justify-end gap-2 lg:flex-row'>
+                <Button
+                  onClick={() => {
+                    if (
+                      confirm(
+                        'This will reset everything to a clean slate. Are you sure?',
+                      )
+                    ) {
+                      setGameState(newGameState);
+                    }
+                  }}
+                >
+                  Reset
+                </Button>
+                <Modal
+                  title='Draw characters'
+                  target={
+                    <Button
+                      onClick={() => {
+                        setSelectedCharacters(
+                          shuffle(selectedCharacters.slice()),
+                        );
+                      }}
+                      disabled={
+                        selectedCharacters.length === 0 &&
+                        'Select some characters first'
+                      }
+                    >
+                      Draw characters
+                    </Button>
+                  }
+                  hideBackground
+                  withCloseButton
+                  stayOpenOnBackgroundClicked
+                  onBlur={() => {
+                    if (
+                      gameState.players.length === selectedCharacters.length
+                    ) {
+                      const bluffs = gameState.generateDemonBluffs();
+                      gameState.demonBluffs = bluffs;
+                      setGameState(gameState);
+                      setTab('grimoire');
+                    }
+                  }}
+                >
+                  <DrawCharacters
+                    characters={selectedCharacters}
+                    startGame={(players) => {
+                      gameState.players = players;
+                      setGameState(gameState);
+                    }}
+                  />
+                </Modal>
+              </div>
+            </>
+          )}
+        </div>
+        <div
+          className={cn(
+            'flex justify-center rounded border shadow-md',
+            tab !== 'grimoire' && 'hidden',
+          )}
+        >
+          <Grimoire
+            players={gameState.players}
+            setPlayers={(players) => {
+              gameState.players = players;
+              setGameState(gameState);
+            }}
+            setCurrentPlayerIndex={(idx) => {
+              setCurrentPlayerIndex(idx);
+              setModalOpen(true);
+            }}
+            scriptCharacters={allCharacters}
+          />
+        </div>
+        <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder
             players={gameState.players}
             allCharacters={getAllCharacters(edition)}
@@ -282,8 +291,8 @@ const BloodOnTheClocktowerElement = () => {
               setModalOpen(true);
             }}
           />
-        )}
-        {tab === 'info-tokens' && (
+        </span>
+        <span className={cn(tab !== 'info-tokens' && 'hidden')}>
           <InfoTokenList
             chosenCharacters={gameState.charactersInPlay()}
             allCharacters={gameState.characters()}
@@ -293,7 +302,7 @@ const BloodOnTheClocktowerElement = () => {
               setGameState(gameState);
             }}
           />
-        )}
+        </span>
       </div>
     </>
   );

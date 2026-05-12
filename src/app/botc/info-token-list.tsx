@@ -75,8 +75,9 @@ const InfoTokenList = ({
           setModalOpen(false);
           setActiveTokenIndex(undefined);
         }}
-        withCloseButton
         hideBackground
+        withCloseButton
+        stayOpenOnBackgroundClicked
       >
         {INFO_TOKENS.map((token, i) => (
           <div

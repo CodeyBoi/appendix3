@@ -1,5 +1,6 @@
 import { cn } from 'utils/class-names';
 import {
+  Alignment,
   CharacterId,
   CHARACTERS,
   getDefaultAlignment,
@@ -7,15 +8,26 @@ import {
 } from './characters';
 
 interface ReminderTokenProps {
-  characterId: CharacterId;
+  characterId: CharacterId | 'good' | 'evil';
   text: string;
   onClick?: () => void;
 }
 
+const ALIGNMENT_IMG_SRCS: Record<Alignment, string> = {
+  good: '/botc/good.webp',
+  evil: '/botc/evil.webp',
+};
+const isCharacterId = (id: CharacterId | 'good' | 'evil'): id is CharacterId =>
+  id !== 'good' && id !== 'evil';
+
 const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
-  const character = CHARACTERS[characterId];
-  const defaultAlignment = getDefaultAlignment(character.id);
-  const imgSrc = getImagePathFromId(characterId);
+  const isCharacter = isCharacterId(characterId);
+  const character = isCharacter ? CHARACTERS[characterId] : undefined;
+  const defaultAlignment =
+    isCharacter && character ? getDefaultAlignment(character.id) : characterId;
+  const imgSrc = isCharacter
+    ? getImagePathFromId(characterId)
+    : ALIGNMENT_IMG_SRCS[characterId];
   return (
     <div
       className={cn(
@@ -32,22 +44,24 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
         src={imgSrc}
         loading='lazy'
       />
-      <svg viewBox='0 0 150 150' className='absolute'>
-        <path
-          d='M 13 75 C 13 0, 138 0, 138 75'
-          id='top-curve'
-          fill='transparent'
-        />
-        <text className='translate-y-2' textAnchor='middle' fontSize={22}>
-          <textPath
-            className='fill-white stroke-white stroke-1'
-            startOffset='50%'
-            href='#top-curve'
-          >
-            {character.name}
-          </textPath>
-        </text>
-      </svg>
+      {character && (
+        <svg viewBox='0 0 150 150' className='absolute'>
+          <path
+            d='M 13 75 C 13 0, 138 0, 138 75'
+            id='top-curve'
+            fill='transparent'
+          />
+          <text className='translate-y-2' textAnchor='middle' fontSize={22}>
+            <textPath
+              className='fill-white stroke-white stroke-1'
+              startOffset='50%'
+              href='#top-curve'
+            >
+              {character.name}
+            </textPath>
+          </text>
+        </svg>
+      )}
       <svg viewBox='0 0 150 150' className='absolute'>
         <path
           d='M 13 75 C 13 160, 138 160, 138 75'

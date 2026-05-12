@@ -92,7 +92,13 @@ const InfoToken = ({
                   <CharacterToken
                     characterId={id}
                     onClick={() => {
-                      setCharacterTokens(characterTokens.toSpliced(i, 1));
+                      if (
+                        confirm(
+                          'Do you want to remove this character info token?',
+                        )
+                      ) {
+                        setCharacterTokens(characterTokens.toSpliced(i, 1));
+                      }
                     }}
                   />
                 </div>

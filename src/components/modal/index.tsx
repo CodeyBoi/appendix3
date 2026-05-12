@@ -17,6 +17,7 @@ interface ModalProps {
   withCloseButton?: boolean;
   startsOpen?: boolean;
   hideBackground?: boolean;
+  stayOpenOnBackgroundClicked?: boolean;
 }
 
 const Modal = ({
@@ -30,6 +31,7 @@ const Modal = ({
   withCloseButton = false,
   startsOpen = false,
   hideBackground = false,
+  stayOpenOnBackgroundClicked = false,
 }: ModalProps) => {
   const [open, setOpenValue] = useState(startsOpen);
 
@@ -98,7 +100,9 @@ const Modal = ({
           hideBackground && 'bg-neutral-500',
         )}
         onClick={() => {
-          setOpen(false);
+          if (!stayOpenOnBackgroundClicked) {
+            setOpen(false);
+          }
         }}
       />
     </div>
