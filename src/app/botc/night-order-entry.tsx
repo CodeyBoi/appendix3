@@ -7,12 +7,14 @@ interface NightOrderEntryProps {
   imagePath?: string;
   text: string;
   muted?: boolean;
+  topRightText?: string;
 }
 
 const NightOrderEntry = ({
   characterId,
   text,
   muted = false,
+  topRightText,
   ...props
 }: NightOrderEntryProps) => {
   const characterName = characterId ? CHARACTERS[characterId].name : props.name;
@@ -25,6 +27,8 @@ const NightOrderEntry = ({
     ? getImagePathFromId(characterId)
     : props.imagePath;
 
+  console.log({ topRightText });
+
   return (
     <div
       className={cn(
@@ -32,7 +36,7 @@ const NightOrderEntry = ({
         muted && 'opacity-50',
       )}
     >
-      <div className='flex gap-4'>
+      <div className='flex items-center gap-4'>
         {imgPath && (
           <img
             className={cn(
@@ -43,7 +47,7 @@ const NightOrderEntry = ({
             src={imgPath}
           />
         )}
-        <div className={cn(imgPath && 'mt-3')}>
+        <div className={cn('grow', imgPath && 'mt-3')}>
           <h4>
             {characterName}{' '}
             {props.name && characterId && (
@@ -53,6 +57,11 @@ const NightOrderEntry = ({
             )}
           </h4>
         </div>
+        {topRightText && (
+          <div className='translate-y-px whitespace-nowrap text-xs font-thin lg:text-sm'>
+            {topRightText}
+          </div>
+        )}
       </div>
       <span className='text-sm'>{text}</span>
     </div>

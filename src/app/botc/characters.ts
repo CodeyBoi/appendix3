@@ -1470,7 +1470,7 @@ interface NightAbility {
   ) => BotcPlayer[];
 }
 
-interface NightOrderAbility {
+export interface NightOrderAbility {
   id: CharacterId;
   description: string;
   ability?: NightAbility;
