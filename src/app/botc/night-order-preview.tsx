@@ -31,9 +31,6 @@ const getNightOrderEntry = ({
   } else {
     const otherNightsEntry =
       otherNights[(index - firstNight.length) % otherNights.length];
-    if (!otherNightsEntry) {
-      throw new Error('Other night order list is empty');
-    }
     return {
       night: 2 + Math.floor((index - firstNight.length) / otherNights.length),
       entry: otherNightsEntry,
@@ -77,6 +74,10 @@ const NightOrderPreview = ({
     otherNights: allNightOrders.otherNights,
   });
 
+  if (!entry) {
+    return null;
+  }
+
   return (
     <div className='flex gap-2'>
       <ActionIcon
@@ -88,7 +89,7 @@ const NightOrderPreview = ({
       >
         <IconChevronLeft />
       </ActionIcon>
-      <div className='grow'>
+      <div className='grow text-xs lg:text-sm'>
         <NightOrderEntry
           name={
             entry.name ??

@@ -185,6 +185,7 @@ const BloodOnTheClocktowerElement = () => {
                     disabled={!customScriptUrl && allCharacters.length === 0}
                     onClick={() => {
                       setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
+                      setSelectedCharacters([]);
                       setCustomScriptUrl('');
                     }}
                   >
@@ -289,8 +290,8 @@ const BloodOnTheClocktowerElement = () => {
             players={gameState.players}
             allCharacters={gameState.characters()}
           />
+          <div className='h-32' />
         </div>
-        <div className='h-32' />
         <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder
             players={gameState.players}
