@@ -22,7 +22,7 @@ import InfoTokenList from './info-token-list';
 import Tabs from 'components/input/tabs';
 import { useSearchParams } from 'next/navigation';
 import TextInput from 'components/input/text-input';
-import Modal from 'components/modal';
+import Modal, { ModalBackgroundColor } from 'components/modal';
 import { shuffle } from 'utils/array';
 import DrawCharacters from './draw-characters';
 import { cn } from 'utils/class-names';
@@ -85,6 +85,8 @@ const BloodOnTheClocktowerElement = () => {
   );
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [drawCharactersBgColor, setDrawCharactersBgColor] =
+    useState<ModalBackgroundColor>('red');
 
   const edition = gameState.edition;
 
@@ -237,6 +239,7 @@ const BloodOnTheClocktowerElement = () => {
                       Draw characters
                     </Button>
                   }
+                  bgColor={drawCharactersBgColor}
                   hideBackground
                   withCloseButton
                   stayOpenOnBackgroundClicked
@@ -257,6 +260,7 @@ const BloodOnTheClocktowerElement = () => {
                       gameState.players = players;
                       setGameState(gameState);
                     }}
+                    setModalBgColor={setDrawCharactersBgColor}
                   />
                 </Modal>
               </div>

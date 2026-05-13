@@ -6,12 +6,23 @@ import ActionIcon from 'components/input/action-icon';
 import { ReactNode, useEffect, useState } from 'react';
 import { cn } from 'utils/class-names';
 
+export type ModalBackgroundColor = 'white' | 'red' | 'blue' | 'green';
+
+const BG_COLOR_CLASSES: Record<ModalBackgroundColor, string> = {
+  white: 'bg-white dark:bg-darkBg',
+  red: 'bg-red-600 text-white',
+  blue: 'bg-blue-500 text-white',
+  green: 'bg-green-500 text-white',
+};
+
 interface ModalProps {
   open?: boolean;
   target?: ReactNode;
   children: ReactNode;
   title?: ReactNode;
+  bgColor?: ModalBackgroundColor;
   className?: string;
+  modalClassName?: string;
   onFocus?: () => void;
   onBlur?: () => void;
   withCloseButton?: boolean;
@@ -28,6 +39,7 @@ const Modal = ({
   className,
   onFocus,
   onBlur,
+  bgColor = 'white',
   withCloseButton = false,
   startsOpen = false,
   hideBackground = false,
@@ -65,8 +77,9 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-0 z-20 mt-20 max-h-[80vh] min-w-[90vw] -translate-x-1/2 overflow-y-auto rounded bg-white p-4 transition-opacity dark:bg-darkBg xl:min-w-[720px]',
+          'fixed left-1/2 top-0 z-20 mt-20 max-h-[80vh] min-w-[90vw] -translate-x-1/2 overflow-y-auto rounded p-4 transition-opacity xl:min-w-[720px]',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
+          BG_COLOR_CLASSES[bgColor],
         )}
       >
         <div className='flex flex-col gap-4'>
@@ -74,6 +87,9 @@ const Modal = ({
             <h3 className='grow'>{title}</h3>
             {withCloseButton && (
               <ActionIcon
+                className={cn(
+                  ['red', 'blue'].includes(bgColor) && 'text-white',
+                )}
                 variant='subtle'
                 onClick={() => {
                   setOpen(false);

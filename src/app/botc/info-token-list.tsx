@@ -3,7 +3,7 @@
 import Button from 'components/input/button';
 import { CharacterId } from './characters';
 import { useState } from 'react';
-import Modal from 'components/modal';
+import Modal, { ModalBackgroundColor } from 'components/modal';
 import InfoToken from './info-token';
 
 interface InfoTokenListProps {
@@ -13,48 +13,55 @@ interface InfoTokenListProps {
   setDemonBluffs: (arg0: CharacterId[]) => void;
 }
 
-const INFO_TOKENS = [
+const INFO_TOKENS: { text: string; color: ModalBackgroundColor }[] = [
   {
     text: 'This is the Demon',
-    className: 'bg-red-700',
+    color: 'red',
   },
   {
     text: 'These are your Minions',
-    className: 'bg-red-700',
+    color: 'red',
   },
   {
     text: 'These are your Demon bluffs',
-    className: 'bg-blue-500',
+    color: 'blue',
   },
   {
     text: 'This character selected you',
-    className: 'bg-blue-500',
+    color: 'blue',
   },
   {
     text: 'These characters are NOT in play',
-    className: 'bg-blue-500',
+    color: 'blue',
   },
   {
     text: 'These characters are in play',
-    className: 'bg-blue-500',
+    color: 'blue',
   },
   {
     text: 'You are',
-    className: 'bg-green-500',
+    color: 'green',
   },
   {
     text: 'This person is',
-    className: 'bg-green-500',
+    color: 'green',
   },
   {
     text: 'Use your ability?',
-    className: 'bg-green-500',
+    color: 'green',
   },
   {
     text: 'Are you sure?',
-    className: 'bg-green-500',
+    color: 'green',
   },
 ];
+
+const BUTTON_BG: Record<ModalBackgroundColor, string> = {
+  red: 'bg-red-600',
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  white: 'bg-red-600',
+};
 
 const InfoTokenList = ({
   chosenCharacters,
@@ -66,11 +73,14 @@ const InfoTokenList = ({
     number | undefined
   >();
   const [modalOpen, setModalOpen] = useState(false);
+  const infoToken =
+    activeTokenIndex !== undefined ? INFO_TOKENS[activeTokenIndex] : undefined;
   return (
     <>
       <Modal
         title='Info token'
         open={modalOpen}
+        bgColor={infoToken?.color}
         onBlur={() => {
           setModalOpen(false);
           setActiveTokenIndex(undefined);
@@ -86,7 +96,6 @@ const InfoTokenList = ({
           >
             <InfoToken
               text={token.text}
-              className={token.className}
               characters={chosenCharacters}
               allCharacters={allCharacters}
               demonBluffs={
@@ -103,7 +112,7 @@ const InfoTokenList = ({
         {INFO_TOKENS.map((token, i) => (
           <Button
             key={token.text}
-            className={token.className}
+            className={BUTTON_BG[token.color]}
             fullWidth
             onClick={() => {
               setActiveTokenIndex(i);

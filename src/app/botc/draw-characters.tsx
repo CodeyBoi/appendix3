@@ -5,13 +5,19 @@ import InfoToken from './info-token';
 import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import { cn } from 'utils/class-names';
+import { ModalBackgroundColor } from 'components/modal';
 
 interface DrawCharactersProps {
   characters: CharacterId[];
   startGame: (players: BotcPlayer[]) => void;
+  setModalBgColor: (color: ModalBackgroundColor) => void;
 }
 
-const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
+const DrawCharacters = ({
+  characters,
+  startGame,
+  setModalBgColor,
+}: DrawCharactersProps) => {
   const [characterIndex, setCharacterIndex] = useState<number | null>(null);
   const [players, setPlayers] = useState<BotcPlayer[]>([]);
   const [playerName, setPlayerName] = useState('');
@@ -31,10 +37,13 @@ const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
             }
             setCharacterIndex(i);
             setPickedNumbers(new Set(pickedNumbers).add(i));
+            setModalBgColor(
+              getDefaultAlignment(cid) === 'good' ? 'blue' : 'red',
+            );
           }}
           className={cn(
-            'flex h-20 w-20 flex-col justify-center rounded-full bg-red-600 p-8 text-center text-4xl font-bold text-white lg:h-24 lg:w-24 lg:text-5xl',
-            pickedNumbers.has(i) ? 'opacity-25' : 'hover:cursor-pointer',
+            'flex h-20 w-20 flex-col justify-center rounded-full bg-white p-8 text-center text-4xl font-bold text-red-600 lg:h-24 lg:w-24 lg:text-5xl',
+            pickedNumbers.has(i) ? 'opacity-50' : 'hover:cursor-pointer',
           )}
         >
           {(i + 1).toString()}
@@ -43,14 +52,7 @@ const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
     </div>
   ) : (
     <div className='flex flex-col'>
-      <InfoToken
-        className={
-          getDefaultAlignment(characterId) === 'good'
-            ? 'bg-blue-500'
-            : 'bg-red-600'
-        }
-        initialCharacters={[characterId]}
-      />
+      <InfoToken initialCharacters={[characterId]} />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -64,6 +66,7 @@ const DrawCharacters = ({ characters, startGame }: DrawCharactersProps) => {
           );
           setPlayerName('');
           setCharacterIndex(null);
+          setModalBgColor('red');
           if (pickedNumbers.size >= characters.length) {
             startGame(newPlayers);
           } else {

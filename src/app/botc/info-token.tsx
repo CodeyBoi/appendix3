@@ -61,7 +61,7 @@ const InfoToken = ({
   return (
     <div
       className={cn(
-        'relative flex flex-col items-center rounded border px-2 py-12 text-white shadow-md lg:p-12',
+        'relative flex flex-col items-center px-2 py-8 text-white lg:p-8',
         className,
       )}
     >
@@ -81,7 +81,7 @@ const InfoToken = ({
           <h2 className='text-wrap scale-75 text-center lg:scale-100'>
             {text}
           </h2>
-          <div className='h-4' />
+          <div className='h-2' />
           <div className='flex w-full flex-wrap justify-center gap-4 lg:w-1/2'>
             {characterTokens.length > 0 &&
               characterTokens.map((id, i) => (
