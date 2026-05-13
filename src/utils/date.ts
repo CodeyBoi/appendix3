@@ -86,13 +86,17 @@ const parseGigTime = (date: Date, time: string) => {
   // `time` is a string describing a time of day in Swedish time
   // Only consider the first two characters (incase `time` is '21:15ish')
   const [hour = NaN, minute = NaN] = time
-    .split(/[:.]/)
+    .replace(/[^0-9:.;-]/g, '')
+    .split(/[:.;-]/)
     .map((s) => parseInt(s.slice(0, 2)));
-  if (isNaN(hour) || isNaN(minute)) {
+  if (isNaN(hour)) {
     return undefined;
   }
   const dateTime = new Date(date);
-  dateTime.setUTCHours(hour - getSwedenHourOffset(dateTime), minute);
+  dateTime.setUTCHours(
+    hour - getSwedenHourOffset(dateTime),
+    isNaN(minute) ? 0 : minute,
+  );
   return dateTime;
 };
 

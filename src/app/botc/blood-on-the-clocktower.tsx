@@ -26,6 +26,7 @@ import Modal, { ModalBackgroundColor } from 'components/modal';
 import { shuffle } from 'utils/array';
 import DrawCharacters from './draw-characters';
 import { cn } from 'utils/class-names';
+import NightOrderPreview from './night-order-preview';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -268,24 +269,28 @@ const BloodOnTheClocktowerElement = () => {
           )}
         </div>
         <div
-          className={cn(
-            'flex justify-center rounded border shadow-md',
-            tab !== 'grimoire' && 'hidden',
-          )}
+          className={cn('flex flex-col gap-2', tab !== 'grimoire' && 'hidden')}
         >
-          <Grimoire
+          <div className='flex justify-center rounded border shadow-md'>
+            <Grimoire
+              players={gameState.players}
+              setPlayers={(players) => {
+                gameState.players = players;
+                setGameState(gameState);
+              }}
+              setCurrentPlayerIndex={(idx) => {
+                setCurrentPlayerIndex(idx);
+                setModalOpen(true);
+              }}
+              scriptCharacters={allCharacters}
+            />
+          </div>
+          <NightOrderPreview
             players={gameState.players}
-            setPlayers={(players) => {
-              gameState.players = players;
-              setGameState(gameState);
-            }}
-            setCurrentPlayerIndex={(idx) => {
-              setCurrentPlayerIndex(idx);
-              setModalOpen(true);
-            }}
-            scriptCharacters={allCharacters}
+            allCharacters={gameState.characters()}
           />
         </div>
+        <div className='h-32' />
         <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder
             players={gameState.players}

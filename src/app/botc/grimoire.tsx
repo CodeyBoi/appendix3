@@ -69,7 +69,7 @@ const Grimoire = ({
           defaultShowAll
         />
       </Modal>
-      <div className='relative h-[80vh] w-full lg:h-[900px]'>
+      <div className='relative h-[72vh] w-full lg:h-[900px]'>
         <div className='absolute right-2 top-2 flex items-center gap-2'>
           {moveMode && (
             <h6 className='text-neutral-500'>
