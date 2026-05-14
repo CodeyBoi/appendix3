@@ -1,13 +1,14 @@
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import NightOrderEntry from './night-order-entry';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
 
 interface NightOrderPreviewProps {
   players: BotcPlayer[];
-  allCharacters: CharacterId[];
+  nightOrderIndex: number;
+  setNightOrderIndex: (n: number) => void;
 }
 
 interface NightOrderAbility {
@@ -40,9 +41,9 @@ const getNightOrderEntry = ({
 
 const NightOrderPreview = ({
   players,
-  allCharacters,
+  nightOrderIndex,
+  setNightOrderIndex,
 }: NightOrderPreviewProps) => {
-  const [nightOrderIndex, setNightOrderIndex] = useState(0);
   const isTeensyville = players.length < 7;
 
   const allNightOrders = useMemo(() => {
@@ -66,7 +67,7 @@ const NightOrderPreview = ({
         gameCharactersSet.has(id),
       ),
     };
-  }, [allCharacters]);
+  }, [players]);
 
   const { entry, night } = getNightOrderEntry({
     index: nightOrderIndex,

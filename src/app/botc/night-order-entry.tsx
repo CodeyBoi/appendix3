@@ -27,15 +27,8 @@ const NightOrderEntry = ({
     ? getImagePathFromId(characterId)
     : props.imagePath;
 
-  console.log({ topRightText });
-
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-2 border-b px-2 py-1',
-        muted && 'opacity-50',
-      )}
-    >
+    <div className={cn('flex flex-col gap-2 px-2 py-1', muted && 'opacity-50')}>
       <div className='flex items-center gap-4'>
         {imgPath && (
           <img

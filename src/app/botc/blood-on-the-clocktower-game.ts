@@ -1,4 +1,4 @@
-import { chooseRandom, shuffle, zip } from 'utils/array';
+import { chooseRandom, shuffle } from 'utils/array';
 import {
   Alignment,
   CHARACTER_TYPES,
@@ -12,18 +12,15 @@ import {
 
 export class BotcGame {
   edition: Edition;
-  lobby: { name: string; corpsId?: string }[];
   players: BotcPlayer[];
   demonBluffs: CharacterId[];
 
   constructor(initial: {
     edition: Edition;
-    lobby?: { name: string; corpsId?: string }[];
     players?: BotcPlayer[];
     demonBluffs?: CharacterId[];
   }) {
     this.edition = initial.edition;
-    this.lobby = initial.lobby ?? [];
     this.players = initial.players ?? [];
     this.demonBluffs = initial.demonBluffs ?? [];
   }
@@ -37,9 +34,8 @@ export class BotcGame {
   }
 
   assignCharacters(characters: CharacterId[]) {
-    this.players = zip(shuffle(characters.slice()), this.lobby).map(
-      ([characterId, player], index) =>
-        new BotcPlayer({ ...player, characterId, id: index }),
+    this.players = shuffle(characters.slice()).map(
+      (characterId, index) => new BotcPlayer({ characterId, id: index }),
     );
   }
 
