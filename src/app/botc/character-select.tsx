@@ -20,6 +20,12 @@ import { useState } from 'react';
 import Button from 'components/input/button';
 import React from 'react';
 
+interface BotcCharacterSelectProps {
+  edition: Edition;
+  selectedCharacters: CharacterId[];
+  onSelectedCharactersChange: (selectedCharacters: CharacterId[]) => void;
+}
+
 const getNumberOfCharacters = (
   players: number,
   selectedCharacters: CharacterId[] = [],
@@ -203,23 +209,20 @@ const findSelectionError = (
   return res;
 };
 
-interface BotcCharacterSelectProps {
-  edition: Edition;
-  onSelectedCharactersChange: (selectedCharacters: CharacterId[]) => void;
-}
-
 const BotcCharacterSelect = ({
   edition,
+  selectedCharacters,
   onSelectedCharactersChange,
 }: BotcCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
   const [numberOfPlayers, setNumberOfPlayers] = useState(7);
-  const [selectedCharacters, _setSelectedCharacters] = useState<CharacterId[]>(
-    [],
-  );
-  const setSelectedCharacters = (c: CharacterId[]) => {
-    onSelectedCharactersChange(c);
-    _setSelectedCharacters(c);
+  const [allowDuplicateCharacters, _setAllowDuplicateCharacters] =
+    useState(false);
+  const setAllowDuplicateCharacters = (allow: boolean) => {
+    if (!allow) {
+      onSelectedCharactersChange(Array.from(new Set(selectedCharacters)));
+    }
+    _setAllowDuplicateCharacters(allow);
   };
 
   const numberOfCharacters = getNumberOfCharacters(
@@ -280,15 +283,17 @@ const BotcCharacterSelect = ({
       <Switch
         label='Show character abilities'
         value={showDescriptions}
-        onChange={() => {
-          setShowDescriptions(!showDescriptions);
-        }}
+        onChange={setShowDescriptions}
       />
-      <Switch label='Allow duplicate characters' />
+      <Switch
+        label='Allow duplicate characters'
+        value={allowDuplicateCharacters}
+        onChange={setAllowDuplicateCharacters}
+      />
       <div className='flex gap-2'>
         <Button
           onClick={() => {
-            setSelectedCharacters(
+            onSelectedCharactersChange(
               selectRandom(edition, getNumberOfCharacters(numberOfPlayers)),
             );
           }}
@@ -297,7 +302,7 @@ const BotcCharacterSelect = ({
         </Button>
         <Button
           onClick={() => {
-            setSelectedCharacters([]);
+            onSelectedCharactersChange([]);
           }}
         >
           Clear selection
@@ -343,11 +348,15 @@ const BotcCharacterSelect = ({
                     <div
                       key={id}
                       className={cn(
-                        'border px-2 py-1 hover:cursor-pointer',
+                        'border px-2 py-1',
+                        !allowDuplicateCharacters && 'hover:cursor-pointer',
                         subtleBorder,
                         selectedCharacters.includes(id) && bgShade,
                       )}
                       onClick={() => {
+                        if (allowDuplicateCharacters) {
+                          return;
+                        }
                         const newSelected = selectedCharacters.slice();
                         const idx = newSelected.findIndex((c) => c === id);
                         if (idx !== -1) {
@@ -355,7 +364,7 @@ const BotcCharacterSelect = ({
                         } else {
                           newSelected.push(id);
                         }
-                        setSelectedCharacters(newSelected);
+                        onSelectedCharactersChange(newSelected);
                       }}
                     >
                       <BotcCharacterPanel
@@ -364,6 +373,28 @@ const BotcCharacterSelect = ({
                         description={description}
                         showDescription={showDescriptions}
                       />
+                      {allowDuplicateCharacters && (
+                        <input
+                          className='w-full border'
+                          type='number'
+                          min={0}
+                          defaultValue={
+                            selectedCharacters.filter((c) => c === id).length
+                          }
+                          onChange={(e) => {
+                            // Filter out all entries of the id and add back the desired amount
+                            const val = e.currentTarget.valueAsNumber;
+                            const newSelectedCharacters =
+                              selectedCharacters.filter(
+                                (characterId) => characterId !== id,
+                              );
+                            for (let i = 0; i < val; i++) {
+                              newSelectedCharacters.push(id);
+                            }
+                            onSelectedCharactersChange(newSelectedCharacters);
+                          }}
+                        />
+                      )}
                     </div>
                   ))}
               </div>

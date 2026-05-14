@@ -45,12 +45,12 @@ const BotcActionsModal = ({
 
   const characters = players.map((p) => p.characterId);
   const characterSet = new Set(characters);
+  const charactersNotInPlay = allCharacters.filter(
+    (characterId) => !characterSet.has(characterId),
+  );
   const reminderTokens = useMemo(
     () =>
-      [
-        { characterId: 'good', message: 'Is Good' },
-        { characterId: 'evil', message: 'Is Evil' },
-      ].concat(
+      (
         (showAllReminders
           ? allCharacters
           : allCharacters.filter((id) => characterSet.has(id))
@@ -60,8 +60,11 @@ const BotcActionsModal = ({
               characterId: id,
               message: reminderText,
             })) ?? [],
-        ),
-      ) as Reminder[],
+        ) as Reminder[]
+      ).concat([
+        { characterId: 'good', message: 'Is Good' },
+        { characterId: 'evil', message: 'Is Evil' },
+      ]),
     [showAllReminders, allCharacters, characterSet],
   );
 
@@ -156,11 +159,11 @@ const BotcActionsModal = ({
           <Divider />
           <div className='flex flex-col gap-2 px-2'>
             <h4>Add Reminder</h4>
-            <div className='flex flex-wrap gap-4'>
+            <div className='grid grid-cols-4 gap-2 md:flex md:flex-wrap'>
               {reminderTokens
                 .filter(filterReminderTokens)
                 .map(({ characterId, message }) => (
-                  <div key={characterId + message} className='min-w-[64px]'>
+                  <div key={characterId + message} className='w-full md:w-20'>
                     <ReminderToken
                       onClick={() => {
                         const newPlayers = players.slice();
@@ -218,7 +221,7 @@ const BotcActionsModal = ({
       )}
       {selectMode === 'character' && (
         <CharacterTokenSelector
-          characters={players.map((p) => p.characterId)}
+          characters={charactersNotInPlay}
           allCharacters={allCharacters}
           onChange={(id) => {
             const newPlayers = players.slice();
@@ -231,7 +234,6 @@ const BotcActionsModal = ({
             setPlayers(newPlayers);
             setOpen(false);
           }}
-          defaultShowAll
         />
       )}
       {selectMode === 'showToken' && (

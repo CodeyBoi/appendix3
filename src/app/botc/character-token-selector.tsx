@@ -35,7 +35,7 @@ const CharacterTokenSelector = ({
         ))}
       </div>
       <Switch
-        label='Show characters not in play'
+        label='Show all characters'
         value={showAllCharacters}
         onChange={setShowAllCharacters}
       />

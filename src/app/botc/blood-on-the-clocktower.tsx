@@ -16,7 +16,7 @@ import {
 } from './characters';
 import NightOrder from './night-order';
 import Grimoire from './grimoire';
-import { BotcGame } from './blood-on-the-clocktower-game';
+import { BotcGame, BotcPlayer } from './blood-on-the-clocktower-game';
 import BotcActionsModal from './actions-modal';
 import InfoTokenList from './info-token-list';
 import Tabs from 'components/input/tabs';
@@ -62,6 +62,27 @@ const BloodOnTheClocktowerElement = () => {
   const setGameState = (state: BotcGame) => {
     _setGameState(new BotcGame(state));
     localStorage.setItem('botcGameState', JSON.stringify(state));
+  };
+
+  const [nightOrderIndex, _setNightOrderIndex] = useState(() => {
+    const storageValue = localStorage.getItem('botcNightOrderIndex');
+    if (storageValue === null) {
+      localStorage.setItem('botcNightOrderIndex', '0');
+      return 0;
+    } else {
+      return parseInt(storageValue);
+    }
+  });
+  const setNightOrderIndex = (n: number) => {
+    _setNightOrderIndex(n);
+    localStorage.setItem('botcNightOrderIndex', n.toString());
+  };
+
+  const startGame = (players: BotcPlayer[]) => {
+    gameState.players = players;
+    gameState.demonBluffs = gameState.generateDemonBluffs();
+    setGameState(gameState);
+    setNightOrderIndex(0);
   };
 
   const searchParams = useSearchParams();
@@ -144,6 +165,20 @@ const BloodOnTheClocktowerElement = () => {
               value={gameState.edition.id}
             />
           </div>
+          <Button
+            onClick={() => {
+              if (
+                confirm(
+                  'This will reset everything to a clean slate. Are you sure?',
+                )
+              ) {
+                setSelectedCharacters([]);
+                setGameState(newGameState);
+              }
+            }}
+          >
+            Clear cache
+          </Button>
           {gameState.edition.id === 'custom' && (
             <div className='flex flex-col gap-4'>
               <div className='flex flex-wrap gap-x-4'>
@@ -165,7 +200,9 @@ const BloodOnTheClocktowerElement = () => {
                       if (customScriptUrl) {
                         const edition = urlToEdition(customScriptUrl);
                         if (!edition) {
-                          setCustomScriptUrlError('Invalid script URL/JSON');
+                          setCustomScriptUrlError(
+                            'Can only parse either raw JSON or a Pocket Grimoire character sheet link.',
+                          );
                           return;
                         }
                         setGameState(
@@ -206,23 +243,18 @@ const BloodOnTheClocktowerElement = () => {
               </Button>
               <BotcCharacterSelectTable
                 edition={edition}
-                onSelectedCharactersChange={(characters) => {
-                  setSelectedCharacters(characters);
-                }}
+                selectedCharacters={selectedCharacters}
+                onSelectedCharactersChange={setSelectedCharacters}
               />
               <div className='flex justify-end gap-2 lg:flex-row'>
                 <Button
                   onClick={() => {
-                    if (
-                      confirm(
-                        'This will reset everything to a clean slate. Are you sure?',
-                      )
-                    ) {
-                      setGameState(newGameState);
-                    }
+                    gameState.assignCharacters(selectedCharacters);
+                    startGame(gameState.players);
+                    setTab('grimoire');
                   }}
                 >
-                  Reset
+                  Add all to Grimoire
                 </Button>
                 <Modal
                   title='Draw characters'
@@ -258,10 +290,7 @@ const BloodOnTheClocktowerElement = () => {
                 >
                   <DrawCharacters
                     characters={selectedCharacters}
-                    startGame={(players) => {
-                      gameState.players = players;
-                      setGameState(gameState);
-                    }}
+                    startGame={startGame}
                     setModalBgColor={setDrawCharactersBgColor}
                   />
                 </Modal>
@@ -269,28 +298,31 @@ const BloodOnTheClocktowerElement = () => {
             </>
           )}
         </div>
+        {}
+
         <div
-          className={cn('flex flex-col gap-2', tab !== 'grimoire' && 'hidden')}
+          className={cn(
+            'mb-16 flex flex-col justify-center divide-y rounded border shadow-md',
+            tab !== 'grimoire' && 'hidden',
+          )}
         >
-          <div className='flex justify-center rounded border shadow-md'>
-            <Grimoire
-              players={gameState.players}
-              setPlayers={(players) => {
-                gameState.players = players;
-                setGameState(gameState);
-              }}
-              setCurrentPlayerIndex={(idx) => {
-                setCurrentPlayerIndex(idx);
-                setModalOpen(true);
-              }}
-              scriptCharacters={allCharacters}
-            />
-          </div>
+          <Grimoire
+            players={gameState.players}
+            setPlayers={(players) => {
+              gameState.players = players;
+              setGameState(gameState);
+            }}
+            setCurrentPlayerIndex={(idx) => {
+              setCurrentPlayerIndex(idx);
+              setModalOpen(true);
+            }}
+            scriptCharacters={allCharacters}
+          />
           <NightOrderPreview
             players={gameState.players}
-            allCharacters={gameState.characters()}
+            nightOrderIndex={nightOrderIndex}
+            setNightOrderIndex={setNightOrderIndex}
           />
-          <div className='h-32' />
         </div>
         <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder

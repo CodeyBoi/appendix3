@@ -48,7 +48,7 @@ const NightOrder = ({
   }
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col divide-y'>
       {!isTeensyville && showFirstNight && (
         <>
           <NightOrderEntry

@@ -77,7 +77,7 @@ const Modal = ({
       {target}
       <div
         className={cn(
-          'fixed left-1/2 top-0 z-20 mt-20 max-h-[80vh] min-w-[90vw] -translate-x-1/2 overflow-y-auto rounded p-4 transition-opacity xl:min-w-[720px]',
+          'fixed left-1/2 top-0 z-20 mt-[68px] max-h-[86vh] min-w-[95vw] -translate-x-1/2 overflow-y-auto rounded p-4 transition-opacity xl:min-w-[720px]',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
           BG_COLOR_CLASSES[bgColor],
         )}
