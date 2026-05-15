@@ -1,3 +1,4 @@
+import { IconFileCheck } from '@tabler/icons-react';
 import {
   Alignment,
   CharacterId,
@@ -15,6 +16,7 @@ interface CharacterTokenProps {
   dead?: boolean;
   onClick?: () => void;
   alignment?: Alignment;
+  hasVoteToken?: boolean;
 }
 
 const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(({ id }) => id));
@@ -26,6 +28,7 @@ const CharacterToken = ({
   dead = false,
   onClick = () => {},
   alignment = characterId ? getDefaultAlignment(characterId) : undefined,
+  hasVoteToken = false,
 }: CharacterTokenProps) => {
   const character = characterId ? CHARACTERS[characterId] : undefined;
   const hasLeftLeaf = characterId && FIRST_NIGHT_CHARACTERS.has(characterId);
@@ -67,6 +70,14 @@ const CharacterToken = ({
       )}
       {hasRightLeaf && (
         <img className='absolute h-full w-full' src='/botc/leaf-right.webp' />
+      )}
+      {dead && hasVoteToken && (
+        <IconFileCheck
+          stroke={2}
+          color='white'
+          size={56}
+          className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+        />
       )}
       {character && (
         <>
