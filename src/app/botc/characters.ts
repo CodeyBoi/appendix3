@@ -1,4 +1,4 @@
-import { BotcPlayer } from './blood-on-the-clocktower-game';
+import { BotcPlayer, BotcPlayers } from './blood-on-the-clocktower-game';
 
 export const MIN_PLAYERS = 5;
 export const MAX_PLAYERS = 15;
@@ -2353,3 +2353,195 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: 'Change the Leviathan Day reminder for the next day.',
   },
 ] as const;
+
+type StartOfGameAbility = ({
+  players,
+  playerId,
+  playerIndex,
+  scriptCharacters,
+}: {
+  players: BotcPlayers;
+  playerId: number;
+  playerIndex: number;
+  scriptCharacters: CharacterId[];
+}) => BotcPlayers;
+
+export const START_OF_GAME_ABILITIES: Partial<
+  Record<CharacterId, StartOfGameAbility>
+> = {
+  washerwoman: ({ players, playerId }) => {
+    const knownPlayer = players.chooseRandom({
+      characterType: 'townsfolk',
+      excludeId: playerId,
+    });
+    if (!knownPlayer) {
+      console.error(
+        'No Townsfolk in player roster when setting up Washerwoman',
+      );
+      return players;
+    }
+    knownPlayer.reminders.push({
+      characterId: 'washerwoman',
+      message: 'Townsfolk',
+    });
+
+    const wrongPlayer = players.chooseRandom({
+      excludeIds: [playerId, knownPlayer.id],
+    });
+    if (!wrongPlayer) {
+      console.error('No other players in roster when setting up Washerwoman');
+      return players;
+    }
+    wrongPlayer.reminders.push({
+      characterId: 'washerwoman',
+      message: 'Wrong',
+    });
+
+    return players;
+  },
+
+  librarian: ({ players, playerId }) => {
+    const knownPlayer = players.chooseRandom({
+      characterType: 'outsiders',
+      excludeId: playerId,
+    });
+    if (!knownPlayer) {
+      console.warn('No Outsider in player roster when setting up Librarian');
+      return players;
+    }
+    knownPlayer.reminders.push({
+      characterId: 'librarian',
+      message: 'Outsider',
+    });
+
+    const wrongPlayer = players.chooseRandom({
+      excludeIds: [playerId, knownPlayer.id],
+    });
+    if (!wrongPlayer) {
+      console.error('No other players in roster when setting up Librarian');
+      return players;
+    }
+    wrongPlayer.reminders.push({
+      characterId: 'librarian',
+      message: 'Wrong',
+    });
+
+    return players;
+  },
+
+  investigator: ({ players, playerId }) => {
+    const knownPlayer = players.chooseRandom({
+      characterType: 'minions',
+      excludeId: playerId,
+    });
+    if (!knownPlayer) {
+      console.warn('No Minion in player roster when setting up Investigator');
+      return players;
+    }
+    knownPlayer.reminders.push({
+      characterId: 'investigator',
+      message: 'Minion',
+    });
+
+    const wrongPlayer = players.chooseRandom({
+      excludeIds: [playerId, knownPlayer.id],
+    });
+    if (!wrongPlayer) {
+      console.error('No other players in roster when setting up Investigator');
+      return players;
+    }
+    wrongPlayer.reminders.push({
+      characterId: 'investigator',
+      message: 'Wrong',
+    });
+
+    return players;
+  },
+
+  fortuneteller: ({ players, playerId }) => {
+    const redHerring = players.chooseRandom({
+      alignment: 'good',
+      excludeId: playerId,
+    });
+    if (!redHerring) {
+      console.error(
+        'No other Good players in roster when setting up Fortune Teller',
+      );
+      return players;
+    }
+    redHerring.reminders.push({
+      characterId: 'fortuneteller',
+      message: 'Red herring',
+    });
+    return players;
+  },
+
+  grandmother: ({ players, playerId }) => {
+    const grandchild = players.chooseRandom({
+      alignment: 'good',
+      excludeId: playerId,
+    });
+    if (!grandchild) {
+      console.error('No other Good player found when setting up Grandmother');
+      return players;
+    }
+    grandchild.reminders.push({
+      characterId: 'grandmother',
+      message: 'Grandchild',
+    });
+
+    return players;
+  },
+
+  eviltwin: ({ players, playerId }) => {
+    const twin = players.chooseRandom({
+      alignment: 'good',
+      excludeId: playerId,
+    });
+    if (!twin) {
+      console.error('No opposing player found when setting up Evil Twin');
+      return players;
+    }
+    twin.reminders.push({ characterId: 'eviltwin', message: 'Twin' });
+
+    return players;
+  },
+
+  nodashii: ({ players, playerIndex }) => {
+    for (
+      let i = playerIndex + 1;
+      i !== playerIndex;
+      i = (i + 1) % players.length
+    ) {
+      const player = players[i];
+      if (!player) {
+        console.error(
+          "Out of boundaries error when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)",
+        );
+        return players;
+      }
+      if (player.isCharacterType('townsfolk')) {
+        player.reminders.push({ characterId: 'nodashii', message: 'Poisoned' });
+        break;
+      }
+    }
+    for (
+      let i = (playerIndex + (players.length - 1)) % players.length;
+      i !== playerIndex;
+      i = (i + (players.length - 1)) % players.length
+    ) {
+      const player = players[i];
+      if (!player) {
+        console.error(
+          "Out of boundaries error when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)",
+        );
+        return players;
+      }
+      if (player.isCharacterType('townsfolk')) {
+        player.reminders.push({ characterId: 'nodashii', message: 'Poisoned' });
+        break;
+      }
+    }
+    return players;
+  },
+};

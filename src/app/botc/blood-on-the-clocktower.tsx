@@ -79,8 +79,7 @@ const BloodOnTheClocktowerElement = () => {
   };
 
   const startGame = (players: BotcPlayer[]) => {
-    gameState.players = players;
-    gameState.demonBluffs = gameState.generateDemonBluffs();
+    gameState.startGame({ players });
     setGameState(gameState);
     setNightOrderIndex(0);
   };
@@ -337,7 +336,7 @@ const BloodOnTheClocktowerElement = () => {
         <span className={cn(tab !== 'info-tokens' && 'hidden')}>
           <InfoTokenList
             chosenCharacters={gameState.charactersInPlay()}
-            allCharacters={gameState.characters()}
+            allCharacters={gameState.scriptCharacters()}
             demonBluffs={gameState.demonBluffs}
             setDemonBluffs={(demonBluffs) => {
               gameState.demonBluffs = demonBluffs;

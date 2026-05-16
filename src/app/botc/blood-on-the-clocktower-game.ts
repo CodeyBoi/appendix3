@@ -8,6 +8,7 @@ import {
   getDefaultAlignment,
   getType,
   Reminder,
+  START_OF_GAME_ABILITIES,
 } from './characters';
 
 export class BotcGame {
@@ -25,7 +26,26 @@ export class BotcGame {
     this.demonBluffs = initial.demonBluffs ?? [];
   }
 
-  characters() {
+  startGame({ players: playersArg }: { players: BotcPlayer[] }) {
+    const scriptCharacters = this.scriptCharacters();
+    let players = BotcPlayers.fromArray(playersArg.slice());
+    playersArg.forEach((player, i) => {
+      const startOfGameAbility = START_OF_GAME_ABILITIES[player.characterId];
+      if (startOfGameAbility) {
+        players = startOfGameAbility({
+          players,
+          playerId: player.id,
+          playerIndex: i,
+          scriptCharacters,
+        });
+      }
+    });
+
+    this.players = players;
+    this.demonBluffs = this.generateDemonBluffs();
+  }
+
+  scriptCharacters() {
     return CHARACTER_TYPES.flatMap((t) => this.edition[t]);
   }
 
@@ -166,5 +186,131 @@ export class BotcPlayer {
         break;
       }
     }
+  }
+
+  isGood(): boolean {
+    const getIsGood = () => {
+      switch (this.characterId) {
+        case 'spy': {
+          return true;
+        }
+        case 'recluse': {
+          return false;
+        }
+        case 'badomen': {
+          return false;
+        }
+        default: {
+          return this.alignment === 'good';
+        }
+      }
+    };
+    const registersAsOppositeAlignment =
+      this.reminders.find(
+        (reminder) =>
+          reminder.characterId === 'glykon' &&
+          reminder.message === 'Snake bite',
+      ) !== undefined;
+    return registersAsOppositeAlignment ? !getIsGood() : getIsGood();
+  }
+
+  isEvil(): boolean {
+    const getIsEvil = () => {
+      switch (this.characterId) {
+        case 'spy': {
+          return false;
+        }
+        case 'recluse': {
+          return true;
+        }
+        case 'badomen': {
+          return true;
+        }
+        default: {
+          return this.alignment === 'evil';
+        }
+      }
+    };
+    const registersAsOppositeAlignment =
+      this.reminders.find(
+        (reminder) =>
+          reminder.characterId === 'glykon' &&
+          reminder.message === 'Snake bite',
+      ) !== undefined;
+    return registersAsOppositeAlignment ? !getIsEvil() : getIsEvil();
+  }
+
+  isCharacterType(characterType: CharacterType): boolean {
+    const thisType = getType(this.characterId);
+    if (thisType === 'travellers') {
+      return thisType === characterType;
+    }
+
+    switch (this.characterId) {
+      case 'spy': {
+        return characterType === 'townsfolk' || characterType === 'outsiders';
+      }
+      case 'recluse': {
+        return characterType === 'minions' || characterType === 'demons';
+      }
+      case 'spartacus': {
+        return characterType === 'townsfolk';
+      }
+      default: {
+        return thisType === characterType;
+      }
+    }
+  }
+}
+
+export class BotcPlayers extends Array<BotcPlayer> {
+  constructor(players: BotcPlayer[] = []) {
+    super();
+    Object.setPrototypeOf(this, BotcPlayers.prototype);
+    for (const player of players) {
+      this.push(player);
+    }
+  }
+
+  static fromArray(players: BotcPlayer[]) {
+    return new BotcPlayers(players);
+  }
+
+  // Needed to have map, filter, etc. return an ordinary Array instead of BotcPlayers
+  static get [Symbol.species]() {
+    return Array;
+  }
+
+  chooseRandom({
+    characterType,
+    alignment,
+    excludeId,
+    excludeIds = [],
+    excludeIndex,
+    excludeIndexes = [],
+  }: {
+    characterType?: CharacterType;
+    alignment?: Alignment;
+    excludeId?: number;
+    excludeIds?: number[];
+    excludeIndex?: number;
+    excludeIndexes?: number[];
+  }) {
+    const excludeIdSet = new Set(excludeIds);
+    if (excludeId !== undefined) {
+      excludeIdSet.add(excludeId);
+    }
+    const excludeIndexSet = new Set(excludeIndexes);
+    if (excludeIndex !== undefined) {
+      excludeIndexSet.add(excludeIndex);
+    }
+    const filterFunc = (p: BotcPlayer, i: number) =>
+      !excludeIdSet.has(p.id) &&
+      !excludeIndexSet.has(i) &&
+      (characterType === undefined || p.isCharacterType(characterType)) &&
+      (alignment === undefined ||
+        (alignment === 'good' ? p.isGood() : p.isEvil()));
+
+    return chooseRandom(this.filter(filterFunc));
   }
 }

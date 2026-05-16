@@ -73,6 +73,10 @@ const BotcActionsModal = ({
     const player = newPlayers[playerIndex];
     if (!player) throw new Error('Invalid playerIndex when killing player');
     player.isAlive = !player.isAlive;
+    // Restore vote token if player was killed
+    if (!player.isAlive) {
+      player.hasVoteToken = true;
+    }
     setOpen(false);
     setPlayers(newPlayers);
   };
@@ -123,10 +127,10 @@ const BotcActionsModal = ({
       {selectMode !== 'showToken' && character.description}
       {selectMode === 'none' && (
         <div className='flex flex-col gap-2'>
+          <Button compact fullWidth onClick={killOrRevivePlayer}>
+            {player.isAlive ? 'Kill' : 'Revive'}
+          </Button>
           <div className='grid grid-cols-2 gap-x-4 gap-y-2'>
-            <Button compact fullWidth onClick={killOrRevivePlayer}>
-              {player.isAlive ? 'Kill' : 'Revive'}
-            </Button>
             <Button
               compact
               fullWidth
@@ -154,6 +158,26 @@ const BotcActionsModal = ({
               }}
             >
               Set name
+            </Button>
+            <Button
+              compact
+              fullWidth
+              disabled={
+                player.isAlive ? 'Player must be dead to use vote token' : false
+              }
+              onClick={() => {
+                const newPlayers = players.slice();
+                const player = newPlayers[playerIndex];
+                if (!player)
+                  throw new Error(
+                    'Invalid playerIndex when using/giving vote token',
+                  );
+                player.hasVoteToken = !player.hasVoteToken;
+                setOpen(false);
+                setPlayers(newPlayers);
+              }}
+            >
+              {player.hasVoteToken ? 'Use vote token' : 'Give vote token'}
             </Button>
           </div>
           <Divider />
