@@ -1101,6 +1101,7 @@ const _characters = {
     name: 'Acrobat',
     description:
       'Each night*, choose a player: if they are or become drunk or poisoned tonight, you die.',
+    reminderTokens: ['Partner'],
   },
   alchemist: {
     name: 'Alchemist',
@@ -1451,7 +1452,7 @@ export const CHARACTERS = Object.entries(_characters).reduce(
 );
 
 export interface Reminder {
-  characterId: CharacterId | 'good' | 'evil';
+  characterId?: CharacterId | Alignment;
   message: string;
 }
 
@@ -1504,7 +1505,7 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'philosopher',
     description:
-      "The Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the out-of-play character token with the Philosopher token. Or, if the character is in play, place the drunk marker by that player and the Not the Philosopher token by the Philosopher.",
+      "The Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the Philosopher token with the chosen character. If the character is in play, place the Drunk marker by that player.",
   },
   {
     id: 'alchemist',
@@ -1611,7 +1612,7 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'devilsadvocate',
     description:
-      "The Devil's Advocate points to a living player. That player survives execution tomorrow.",
+      "The Devil's Advocate points to a living player. Mark that player with the 'Safe from execution' token; that player survives execution tomorrow.",
   },
   {
     id: 'eviltwin',
@@ -1621,12 +1622,12 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'witch',
     description:
-      'The Witch points to a player. If that player nominates tomorrow they die immediately.',
+      "The Witch points to a player. Mark that player with the 'Cursed' token; if that player nominates tomorrow they die immediately.",
   },
   {
     id: 'cerenovus',
     description:
-      "The Cerenovus points to a player, then to a character on their sheet. Wake that player. Show the 'This character selected you' card, then the Cerenovus token. Show the selected character token. If the player is not mad about being that character tomorrow, they can be executed.",
+      "The Cerenovus points to a player, then to a character on their sheet. Mark that player with the 'Mad' token. Wake that player. Show the 'This character selected you' card, then the Cerenovus token. Show the selected character token. If the player is not mad about being that character tomorrow, they can be executed.",
   },
   {
     id: 'fearmonger',
@@ -1641,7 +1642,8 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   { id: 'mezepheles', description: 'Show the Mezepheles their secret word.' },
   {
     id: 'pukka',
-    description: 'The Pukka points to a player. That player is poisoned.',
+    description:
+      "The Pukka points to a player. Mark the chosen player with the 'Poisoned' token; that player is poisoned.",
   },
   {
     id: 'cleopatra',
@@ -1958,22 +1960,22 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'devilsadvocate',
     description:
-      "The Devil's Advocate points to a living player, different from the previous night. That player survives execution tomorrow.",
+      "The Devil's Advocate points to a living player, different from the previous night. Move the 'Safe from execution' token to the chosen player; that player survives execution tomorrow.",
   },
   {
     id: 'witch',
     description:
-      'If there are 4 or more players alive: The Witch points to a player. If that player nominates tomorrow they die immediately.',
+      "If there are 4 or more players alive: The Witch points to a player. Move the 'Cursed' token to the chosen player; if that player nominates tomorrow they die immediately.",
   },
   {
     id: 'cerenovus',
     description:
-      "The Cerenovus points to a player, then to a character on their sheet. Wake that player. Show the 'This character selected you' card, then the Cerenovus token. Show the selected character token. If the player is not mad about being that character tomorrow, they can be executed.",
+      "The Cerenovus points to a player, then to a character on their sheet. Mark that player with the 'Mad' token. Wake that player. Show the 'This character selected you' card with the Cerenovus token. Show the selected character token. If the player is not mad about being that character tomorrow, they can be executed.",
   },
   {
     id: 'pithag',
     description:
-      "The Pit-Hag points to a player and a character on the sheet. If this character is not in play, wake that player and show them the 'You are' card and the relevant character token. If the character is in play, nothing happens.",
+      "The Pit-Hag points to a player and a character on the sheet. If this character is not in play, exchange the chosen player's character token with the chosen character token, then wake that player and show them the 'You are' card and their new character token. If the character is in play, nothing happens.",
   },
   {
     id: 'fearmonger',
@@ -2034,7 +2036,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'pukka',
     description:
-      'The Pukka points to a player. That player is poisoned. The previously poisoned player dies.',
+      "The Pukka points to a player. Kill the player with the 'Poisoned' token, and then move the token to the chosen player; that player is poisoned.\n\n(If the Pukka is poisoned, do not move the 'Poisoned' token and do not kill any players.)",
   },
   {
     id: 'shabaloth',
@@ -2044,7 +2046,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'po',
     description:
-      "If the Po chose no-one the previous night: The Po points to three players. Otherwise: The Po either shows the 'no' head signal , or points to a player. Chosen players die",
+      "If the Po chose no-one the previous night: The Po points to three players. Otherwise: The Po either shows the 'no' head signal, or points to a player. Chosen players die",
   },
   {
     id: 'fanggu',
@@ -2196,7 +2198,11 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description:
       "If the Barber died today: Wake the Demon. Show the 'This character selected you' card, then Barber token. The Demon either shows a 'no' head signal, or points to 2 players. If they chose players: Swap the character tokens. Wake each player. Show 'You are', then their new character token.",
   },
-  { id: 'sweetheart', description: 'Choose a player that is drunk.' },
+  {
+    id: 'sweetheart',
+    description:
+      "If the Sweetheart died today: Choose a player and mark them with the 'Drunk' token; that player is drunk from now on.",
+  },
   {
     id: 'sage',
     description:
@@ -2542,6 +2548,19 @@ export const START_OF_GAME_ABILITIES: Partial<
         break;
       }
     }
+    return players;
+  },
+
+  sculptor: ({ players, playerId }) => {
+    const sculpture = players.chooseRandom({ excludeId: playerId });
+    if (!sculpture) {
+      console.error(
+        'No other player found when setting up Sculpture for Sculptor',
+      );
+      return players;
+    }
+    sculpture.reminders.push({ characterId: 'sculptor', message: 'Sculpture' });
+
     return players;
   },
 };

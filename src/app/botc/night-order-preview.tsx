@@ -17,6 +17,37 @@ interface NightOrderAbility {
   description: string;
 }
 
+const CARDINALS: Record<number, string> = {
+  1: 'First',
+  2: 'Second',
+  3: 'Third',
+  4: 'Fourth',
+  5: 'Fifth',
+  6: 'Sixth',
+  7: 'Seventh',
+  8: 'Eighth',
+  9: 'Ninth',
+  10: 'Tenth',
+  11: 'Eleventh',
+  12: 'Twelveth',
+  13: 'Thirteenth',
+  14: 'Fourteenth',
+  15: 'Fifteenth',
+  16: 'Sixteenth',
+  17: 'Seventeenth',
+  18: 'Eighteenth',
+  19: 'Nineteenth',
+  20: 'Twentieth',
+};
+
+const formatCardinal = (index: number) => CARDINALS[index] ?? `${index}th`;
+
+const DAYTIME_ENTRY = {
+  name: 'Daytime',
+  description:
+    "It's a new day! Open for discussion, then open for nominations and hold votes for executions.",
+};
+
 const getNightOrderEntry = ({
   index,
   firstNight,
@@ -25,16 +56,30 @@ const getNightOrderEntry = ({
   index: number;
   firstNight: NightOrderAbility[];
   otherNights: NightOrderAbility[];
-}) => {
+}): { night: number; entry?: NightOrderAbility } => {
   const firstNightEntry = firstNight[index];
   if (firstNightEntry) {
     return { night: 1, entry: firstNightEntry };
+  } else if (index === firstNight.length) {
+    return { night: 1, entry: DAYTIME_ENTRY };
   } else {
-    const otherNightsEntry =
-      otherNights[(index - firstNight.length) % otherNights.length];
+    const modIndex = (index - firstNight.length - 1) % (otherNights.length + 1);
+    if (modIndex === otherNights.length) {
+      return {
+        night:
+          2 +
+          Math.floor(
+            (index - firstNight.length - 1) / (otherNights.length + 1),
+          ),
+        entry: DAYTIME_ENTRY,
+      };
+    }
+    const otherNightsEntry = otherNights[modIndex];
     return {
-      night: 2 + Math.floor((index - firstNight.length) / otherNights.length),
-      entry: otherNightsEntry,
+      night:
+        2 +
+        Math.floor((index - firstNight.length - 1) / (otherNights.length + 1)),
+      entry: otherNightsEntry as NightOrderAbility,
     };
   }
 };
@@ -104,10 +149,13 @@ const NightOrderPreview = ({
           muted={
             entry.name !== 'Demon' &&
             entry.name !== 'Minions' &&
+            entry.name !== 'Daytime' &&
             players.find((p) => p.characterId === entry.id && p.isAlive) ===
               undefined
           }
-          topRightText={`Night ${night}`}
+          topRightText={`${formatCardinal(night)} ${
+            entry.name === 'Daytime' ? 'day' : 'night'
+          }`}
         />
       </div>
       <ActionIcon

@@ -127,8 +127,12 @@ const BloodOnTheClocktowerElement = () => {
         allCharacters={allCharacters}
       />
       <div className='flex flex-col gap-2 lg:max-w-3xl'>
-        <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
-        <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
+        {tab === 'setup' && (
+          <>
+            <h2 className='hidden lg:block'>Bleck on the Corpstower</h2>
+            <h3 className='lg:hidden'>Bleck on the Corpstower</h3>
+          </>
+        )}
         <span className='text-sm'>
           <Tabs
             defaultTab='setup'
@@ -160,6 +164,7 @@ const BloodOnTheClocktowerElement = () => {
                       CUSTOM_EDITION,
                   }),
                 );
+                setSelectedCharacters([]);
               }}
               value={gameState.edition.id}
             />
