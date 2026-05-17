@@ -144,7 +144,11 @@ const Grimoire = ({
                 .map((reminder, reminderIndex) => (
                   <div
                     className='absolute w-[10%] min-w-[52px] -translate-x-1/2 -translate-y-1/2 transition-all hover:scale-105 hover:cursor-pointer'
-                    key={key + reminder.characterId + reminder.message}
+                    key={
+                      key +
+                      (reminder.characterId ?? 'reminder') +
+                      reminder.message
+                    }
                     style={{
                       left: toPercent(
                         (point.left - 0.5) * (1 - (reminderIndex + 1.6) / 5.5) +
@@ -158,13 +162,15 @@ const Grimoire = ({
                     }}
                     onClick={() => {
                       if (
-                        confirm('Do you want to remove this reminder token?')
+                        confirm(
+                          `Are you sure you want to remove the "${reminder.message}" reminder token?`,
+                        )
                       ) {
                         const newPlayer = players[playerIndex];
                         if (!newPlayer) {
                           throw new Error(
                             'Error when removing reminder token from player ' +
-                              reminderIndex.toString(),
+                              playerIndex.toString(),
                           );
                         }
                         newPlayer.reminders = newPlayer.reminders.toSpliced(

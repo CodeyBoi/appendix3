@@ -276,9 +276,17 @@ export class BotcPlayers extends Array<BotcPlayer> {
     return new BotcPlayers(players);
   }
 
-  // Needed to have map, filter, etc. return an ordinary Array instead of BotcPlayers
+  // Needed to have map, filter, etc. return an ordinary Array (i.e. BotcPlayer[]) instead of BotcPlayers
   static get [Symbol.species]() {
     return Array;
+  }
+
+  get(index: number) {
+    const player = this[index % this.length];
+    if (!player) {
+      throw new Error('Used `get` on an empty BotcPlayers object');
+    }
+    return player;
   }
 
   chooseRandom({

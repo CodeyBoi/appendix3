@@ -43,9 +43,12 @@ const InfoToken = ({
     characters.length > 0 && allCharacters.length > 0;
 
   const setCharacterTokens = (v: CharacterId[]) => {
-    _setCharacterTokens(v);
+    const sortedList = allCharacters.filter((characterId) =>
+      v.includes(characterId),
+    );
+    _setCharacterTokens(sortedList);
     if (demonBluffs !== undefined && setDemonBluffs !== undefined) {
-      setDemonBluffs(v);
+      setDemonBluffs(sortedList);
     }
   };
 

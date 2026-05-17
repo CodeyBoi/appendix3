@@ -17,6 +17,7 @@ interface CharacterTokenProps {
   onClick?: () => void;
   alignment?: Alignment;
   hasVoteToken?: boolean;
+  highlight?: boolean;
 }
 
 const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(({ id }) => id));
@@ -29,6 +30,7 @@ const CharacterToken = ({
   onClick = () => {},
   alignment = characterId ? getDefaultAlignment(characterId) : undefined,
   hasVoteToken = false,
+  highlight = false,
 }: CharacterTokenProps) => {
   const character = characterId ? CHARACTERS[characterId] : undefined;
   const hasLeftLeaf = characterId && FIRST_NIGHT_CHARACTERS.has(characterId);
@@ -47,6 +49,10 @@ const CharacterToken = ({
       className={cn(
         'relative mt-1 aspect-square w-full rounded-full bg-[repeat] bg-[url(/botc/token-noise.webp)] bg-auto text-center shadow-md transition-all hover:scale-105 hover:cursor-pointer',
         dead && 'grayscale',
+        highlight &&
+          `shadow-xl ${
+            alignment === 'evil' ? 'shadow-red-300' : 'shadow-blue-400'
+          }`,
       )}
       onClick={onClick}
     >

@@ -8,7 +8,7 @@ import {
 } from './characters';
 
 interface ReminderTokenProps {
-  characterId: CharacterId | 'good' | 'evil';
+  characterId?: CharacterId | 'good' | 'evil';
   text: string;
   onClick?: () => void;
 }
@@ -17,17 +17,20 @@ const ALIGNMENT_IMG_SRCS: Record<Alignment, string> = {
   good: '/botc/good.webp',
   evil: '/botc/evil.webp',
 };
-const isCharacterId = (id: CharacterId | 'good' | 'evil'): id is CharacterId =>
-  id !== 'good' && id !== 'evil';
+const isCharacterId = (id?: CharacterId | 'good' | 'evil'): id is CharacterId =>
+  id !== 'good' && id !== 'evil' && id !== undefined;
 
 const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
   const isCharacter = isCharacterId(characterId);
   const character = isCharacter ? CHARACTERS[characterId] : undefined;
   const defaultAlignment =
     isCharacter && character ? getDefaultAlignment(character.id) : characterId;
-  const imgSrc = isCharacter
-    ? getImagePathFromId(characterId)
-    : ALIGNMENT_IMG_SRCS[characterId];
+  const imgSrc =
+    characterId === undefined
+      ? undefined
+      : isCharacter
+      ? getImagePathFromId(characterId)
+      : ALIGNMENT_IMG_SRCS[characterId];
   return (
     <div
       className={cn(
@@ -36,14 +39,16 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
       )}
       onClick={onClick}
     >
-      <img
-        className={cn(
-          'absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2',
-          imgSrc.includes('Fall_of_Rome') && 'scale-75',
-        )}
-        src={imgSrc}
-        loading='lazy'
-      />
+      {imgSrc !== undefined && (
+        <img
+          className={cn(
+            'absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2',
+            imgSrc.includes('Fall_of_Rome') && 'scale-75',
+          )}
+          src={imgSrc}
+          loading='lazy'
+        />
+      )}
       {character && (
         <svg viewBox='0 0 150 150' className='absolute'>
           <path

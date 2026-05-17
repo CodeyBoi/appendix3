@@ -1,9 +1,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CharacterId, CHARACTERS, Reminder } from './characters';
+import {
+  CharacterId,
+  CHARACTERS,
+  getDefaultAlignment,
+  Reminder,
+} from './characters';
 import ReminderToken from './reminder-token';
-import Modal from 'components/modal';
+import Modal, { ModalBackgroundColor } from 'components/modal';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import Button from 'components/input/button';
 import Switch from 'components/input/switch';
@@ -12,7 +17,13 @@ import CharacterTokenSelector from './character-token-selector';
 import InfoToken from './info-token';
 import TextInput from 'components/input/text-input';
 
-type SelectMode = 'none' | 'character' | 'player' | 'showToken' | 'name';
+type SelectMode =
+  | 'none'
+  | 'character'
+  | 'player'
+  | 'showToken'
+  | 'name'
+  | 'customReminderTokenForm';
 
 interface BotcActionsModalProps {
   open: boolean;
@@ -41,7 +52,8 @@ const BotcActionsModal = ({
   const [selectMode, setSelectMode] = useState<SelectMode>('none');
   const [showAllReminders, setShowAllReminders] = useState(false);
   const [addMultipleReminders, setAddMultipleReminders] = useState(false);
-  const [playerName, setPlayerName] = useState('');
+  const [formText, setFormText] = useState('');
+  const [bgColor, setBgColor] = useState<ModalBackgroundColor>('white');
 
   const characters = players.map((p) => p.characterId);
   const characterSet = new Set(characters);
@@ -64,6 +76,7 @@ const BotcActionsModal = ({
       ).concat([
         { characterId: 'good', message: 'Is Good' },
         { characterId: 'evil', message: 'Is Evil' },
+        { message: 'Custom reminder' },
       ]),
     [showAllReminders, allCharacters, characterSet],
   );
@@ -108,9 +121,11 @@ const BotcActionsModal = ({
           : selectMode === 'character'
           ? 'Replace Character Token'
           : selectMode === 'showToken'
-          ? 'Show token'
+          ? 'Info token'
           : selectMode === 'name'
           ? 'Set player name'
+          : selectMode === 'customReminderTokenForm'
+          ? 'Create reminder token'
           : ''
       }
       withCloseButton
@@ -121,8 +136,10 @@ const BotcActionsModal = ({
       }}
       onBlur={() => {
         setOpen(false);
+        setBgColor('white');
       }}
       hideBackground={selectMode === 'showToken'}
+      bgColor={bgColor}
     >
       {selectMode !== 'showToken' && character.description}
       {selectMode === 'none' && (
@@ -145,15 +162,20 @@ const BotcActionsModal = ({
               fullWidth
               onClick={() => {
                 setSelectMode('showToken');
+                setBgColor(
+                  getDefaultAlignment(player.characterId) === 'evil'
+                    ? 'red'
+                    : 'blue',
+                );
               }}
             >
-              Show
+              Show token
             </Button>
             <Button
               compact
               fullWidth
               onClick={() => {
-                setPlayerName(player.name ?? '');
+                setFormText(player.name ?? '');
                 setSelectMode('name');
               }}
             >
@@ -187,9 +209,17 @@ const BotcActionsModal = ({
               {reminderTokens
                 .filter(filterReminderTokens)
                 .map(({ characterId, message }) => (
-                  <div key={characterId + message} className='w-full md:w-20'>
+                  <div
+                    key={(characterId ?? 'reminder') + message}
+                    className='w-full md:w-20'
+                  >
                     <ReminderToken
                       onClick={() => {
+                        if (message === 'Custom reminder') {
+                          setFormText('');
+                          setSelectMode('customReminderTokenForm');
+                          return;
+                        }
                         const newPlayers = players.slice();
                         newPlayers[playerIndex]?.reminders.push({
                           characterId,
@@ -262,7 +292,6 @@ const BotcActionsModal = ({
       )}
       {selectMode === 'showToken' && (
         <InfoToken
-          className={player.alignment === 'good' ? 'bg-blue-500' : 'bg-red-600'}
           initialCharacters={[player.characterId]}
           characters={characters}
           allCharacters={allCharacters}
@@ -277,20 +306,58 @@ const BotcActionsModal = ({
             if (!p) {
               throw new Error('Error when setting player name');
             }
-            p.name = playerName;
+            p.name = formText;
             setPlayers(newPlayers);
-            setPlayerName('');
+            setFormText('');
             setOpen(false);
           }}
           className='flex items-center justify-center gap-2 rounded p-2'
         >
           <TextInput
-            onChange={setPlayerName}
-            value={playerName}
+            onChange={setFormText}
+            value={formText}
             label='Player name'
             autoFocus
           />
           <Button type='submit'>Done</Button>
+        </form>
+      )}
+      {selectMode === 'customReminderTokenForm' && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          className='flex flex-col items-center justify-center gap-4 rounded p-2'
+        >
+          <TextInput
+            onChange={setFormText}
+            value={formText}
+            label='Token text'
+            autoFocus
+          />
+          <div className='flex flex-wrap justify-center gap-4'>
+            {allCharacters.map((id) => (
+              <div key={'createCustomReminder:' + id} className='min-w-[80px]'>
+                <ReminderToken
+                  characterId={id}
+                  text={formText}
+                  onClick={() => {
+                    const newPlayers = players.slice();
+                    const p = newPlayers[playerIndex];
+                    if (!p) {
+                      throw new Error(
+                        'Error when creating custom reminder token',
+                      );
+                    }
+                    p.reminders.push({ characterId: id, message: formText });
+                    setPlayers(newPlayers);
+                    setFormText('');
+                    setOpen(false);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </form>
       )}
     </Modal>
