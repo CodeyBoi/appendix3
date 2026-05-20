@@ -27,13 +27,24 @@ const NightOrderEntry = ({
     ? getImagePathFromId(characterId)
     : props.imagePath;
 
+  const nameElement = (
+    <>
+      {characterName}{' '}
+      {props.name && characterId && (
+        <span className='text-xs font-light text-neutral-500'>
+          ({props.name})
+        </span>
+      )}
+    </>
+  );
+
   return (
     <div className={cn('flex flex-col gap-2 px-2 py-1', muted && 'opacity-50')}>
       <div className='flex items-center gap-4'>
         {imgPath && (
           <img
             className={cn(
-              'relative z-0 h-12 w-12 scale-150',
+              'relative z-0 h-12 w-12 lg:scale-150',
               imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
             )}
             loading='lazy'
@@ -41,14 +52,8 @@ const NightOrderEntry = ({
           />
         )}
         <div className={cn('grow', imgPath && 'mt-3')}>
-          <h4>
-            {characterName}{' '}
-            {props.name && characterId && (
-              <span className='text-xs font-light text-neutral-500'>
-                ({props.name})
-              </span>
-            )}
-          </h4>
+          <h4 className='hidden lg:block'>{nameElement}</h4>
+          <h5 className='lg:hidden'>{nameElement}</h5>
         </div>
         {topRightText && (
           <div className='translate-y-px whitespace-nowrap text-xs font-thin lg:text-sm'>
