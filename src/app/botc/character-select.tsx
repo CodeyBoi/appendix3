@@ -95,7 +95,9 @@ const selectRandom = (
   edition: Edition,
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
-  const isCharacterType = (typeOrId: string): typeOrId is CharacterType =>
+  const isCharacterType = (
+    typeOrId: CharacterType | CharacterId,
+  ): typeOrId is CharacterType =>
     (CHARACTER_TYPES as readonly string[]).includes(typeOrId);
 
   const selected: CharacterId[] = [];
@@ -105,9 +107,10 @@ const selectRandom = (
   }
 
   // Correct errors if characters which change character amounts are picked
-  for (const [typeOrId, diff] of Object.entries(
+  for (const [typeOrIdArg, diff] of Object.entries(
     findSelectionError(selected, numberOfCharacters),
   )) {
+    const typeOrId = typeOrIdArg as CharacterType | CharacterId;
     if (diff === 0) {
       continue;
     }

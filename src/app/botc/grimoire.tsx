@@ -7,7 +7,6 @@ import ReminderToken from './reminder-token';
 import React, { useState } from 'react';
 import ActionIcon from 'components/input/action-icon';
 import { IconArrowsMove, IconCirclePlus2 } from '@tabler/icons-react';
-import { cn } from 'utils/class-names';
 import Modal from 'components/modal';
 import CharacterTokenSelector from './character-token-selector';
 import { CharacterId } from './characters';
@@ -36,6 +35,9 @@ const Grimoire = ({
   const [moveMode, setMoveMode] = useState(false);
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<
     number | undefined
+  >();
+  const [draggedReminder, setDraggedReminder] = useState<
+    { playerIndex: number; reminderIndex: number } | undefined
   >();
   const [addCharacterModalOpen, setAddCharacterModalOpen] = useState(false);
   const points = getOvalPoints(players.length);
@@ -99,14 +101,30 @@ const Grimoire = ({
           return (
             <React.Fragment key={key}>
               <div
-                className={cn(
-                  'absolute w-[18%] min-w-[72px] -translate-x-1/2 -translate-y-1/2',
-                  playerIndex === selectedTokenIndex &&
-                    'rounded-full shadow-xl',
-                )}
+                className='absolute w-[18%] min-w-[72px] -translate-x-1/2 -translate-y-1/2'
                 style={{
                   left: toPercent(point.left),
                   top: toPercent(point.top),
+                }}
+                onDragEnter={() => {
+                  if (!draggedReminder) {
+                    return;
+                  }
+                  const srcPlayer = players[draggedReminder.playerIndex];
+                  if (!srcPlayer) {
+                    return;
+                  }
+                  const reminders = srcPlayer.reminders.splice(
+                    draggedReminder.reminderIndex,
+                    1,
+                  );
+                  for (const reminder of reminders) {
+                    player.reminders.push(reminder);
+                  }
+                  setDraggedReminder({
+                    playerIndex,
+                    reminderIndex: player.reminders.length - 1,
+                  });
                 }}
               >
                 <CharacterToken
@@ -114,6 +132,7 @@ const Grimoire = ({
                   characterId={player.characterId}
                   dead={!player.isAlive}
                   hasVoteToken={player.hasVoteToken}
+                  highlight={playerIndex === selectedTokenIndex}
                   onClick={() => {
                     if (moveMode) {
                       if (selectedTokenIndex === undefined) {
@@ -184,6 +203,12 @@ const Grimoire = ({
                         );
                         setPlayers(newPlayers);
                       }
+                    }}
+                    onDragStart={() => {
+                      setDraggedReminder({
+                        playerIndex,
+                        reminderIndex,
+                      });
                     }}
                   >
                     <ReminderToken

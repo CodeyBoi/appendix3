@@ -37,6 +37,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
         'relative aspect-square w-full rounded-full shadow-md hover:cursor-pointer',
         defaultAlignment === 'good' ? 'bg-blue-900' : 'bg-red-900',
       )}
+      draggable
       onClick={onClick}
     >
       {imgSrc !== undefined && (

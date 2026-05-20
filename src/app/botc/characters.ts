@@ -2347,7 +2347,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'chambermaid',
     description:
-      'The Chambermaid points to two players. Show the number signal (0, 1, 2, …) for how many of those players wake tonight for their ability.',
+      'The Chambermaid points to two players. Show the number signal (0, 1, 2) for how many of those players wake tonight for their ability.',
   },
   {
     id: 'mathematician',
@@ -2515,14 +2515,14 @@ export const START_OF_GAME_ABILITIES: Partial<
 
   nodashii: ({ players, playerIndex }) => {
     for (
-      let i = playerIndex + 1;
+      let i = (playerIndex + 1) % players.length;
       i !== playerIndex;
       i = (i + 1) % players.length
     ) {
       const player = players[i];
       if (!player) {
         console.error(
-          "Out of boundaries error when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)",
+          `Out of boundaries error (with index ${i}, increasing) when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)`,
         );
         return players;
       }
@@ -2539,7 +2539,7 @@ export const START_OF_GAME_ABILITIES: Partial<
       const player = players[i];
       if (!player) {
         console.error(
-          "Out of boundaries error when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)",
+          `Out of boundaries error (with index ${i}, decreasing) when setting up No Dashii (this shouldn't happen as boundaries are checked in a for loop)`,
         );
         return players;
       }
