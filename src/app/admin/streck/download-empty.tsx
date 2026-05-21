@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import Button from 'components/input/button';
 import { IconDownload } from '@tabler/icons-react';
 import { downloadXLSX } from 'utils/xlsx';
-import { sortCorps } from 'utils/corps';
+import { sortCorpsByName } from 'utils/corps';
 
 interface Item {
   name: string;
@@ -130,7 +130,7 @@ const generateStreckList = (activeCorps: ActiveCorps[], items: Item[]) => {
 
   // Write corps row by row
   let rowIndex = headerRow + 1;
-  for (const corps of activeCorps.sort(sortCorps)) {
+  for (const corps of activeCorps.sort(sortCorpsByName)) {
     const row = sheet.getRow(rowIndex);
     row.values = [
       corps.number
