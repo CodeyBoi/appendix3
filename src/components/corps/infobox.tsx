@@ -2,6 +2,7 @@
 
 import { IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
+import Button from 'components/input/button';
 import Loading from 'components/loading';
 import Modal from 'components/modal';
 import { useRouter } from 'next/navigation';
@@ -42,6 +43,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
 
   const [showAllStreaks, setShowAllStreaks] = useState(false);
   const [newNickName, setNewNickName] = useState('');
+  const [nickNameModalOpen, setNickNameModalOpen] = useState(false);
 
   const mutation = api.corps.changeNickname.useMutation({
     onSuccess: async () => {
@@ -86,7 +88,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
 
   const joinedAt =
     (firstGigDate?.getTime() ?? Number.MAX_VALUE) <
-      (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
+    (firstRehearsalDate?.getTime() ?? Number.MAX_VALUE)
       ? firstGigDate
       : firstRehearsalDate;
 
@@ -122,10 +124,12 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
 
   const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setNickNameModalOpen(false);
     mutation.mutate({
       corpsId: id,
-      nickname: newNickName,
+      nickname: newNickName.trim(),
     });
+    setNewNickName(newNickName.trim());
   };
 
   return (
@@ -135,13 +139,21 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
           {corpsName}
           {!!number && self.id !== id && (
             <Modal
-              title='Byt smeknamn'
+              title={lang(`Byt smeknamn`, 'Change nickname')}
               withCloseButton
               target={
                 <ActionIcon variant='subtle'>
                   <IconPencil />
                 </ActionIcon>
               }
+              onFocus={() => {
+                setNickNameModalOpen(true);
+                setNewNickName(corps.nickName ?? '');
+              }}
+              onBlur={() => {
+                setNickNameModalOpen(false);
+              }}
+              open={nickNameModalOpen}
             >
               <form
                 className='flex flex-col gap-2'
@@ -149,6 +161,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
               >
                 <div className='flex w-full gap-2'>
                   <input
+                    autoFocus
                     placeholder='Nytt smeknamn'
                     value={newNickName}
                     onChange={(e) => {
@@ -158,12 +171,20 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
                     type='text'
                     className='grow rounded border border-gray-300 bg-white p-2 dark:border-gray-700'
                   />
-                  <button
+                  <Button
                     type='submit'
+                    disabled={
+                      mutation.isLoading || newNickName === corps.nickName
+                    }
                     className='rounded bg-red-600 p-2 text-white hover:bg-red-700'
+                    onClick={() => {
+                      setNickNameModalOpen(false);
+                    }}
                   >
-                    {lang('Spara', 'Submit')}
-                  </button>
+                    {mutation.isLoading
+                      ? lang('Sparar...', 'Submitting...')
+                      : lang('Spara', 'Submit')}
+                  </Button>
                 </div>
               </form>
             </Modal>
@@ -182,10 +203,11 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       <div className='h-1.5' />
       <div className='text-sm font-light'>
         {joinedAt && joinedMsg} {instrumentsMsg}{' '}
-        {lang(
-          'Deras längsta spelningsstreak är ',
-          'Their longest gig streak is ',
-        )}{' '}
+        {allTimeStreak.maxStreak >= 3 &&
+          lang(
+            'Deras längsta spelningsstreak är ',
+            'Their longest gig streak is ',
+          )}
         <span
           onClick={() => {
             setShowAllStreaks(!showAllStreaks);
