@@ -70,12 +70,21 @@ const CharacterToken = ({
         className='absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2'
         src='/botc/clockface.webp'
         loading='lazy'
+        draggable={false}
       />
       {hasLeftLeaf && (
-        <img className='absolute h-full w-full' src='/botc/leaf-left.webp' />
+        <img
+          className='absolute h-full w-full'
+          src='/botc/leaf-left.webp'
+          draggable={false}
+        />
       )}
       {hasRightLeaf && (
-        <img className='absolute h-full w-full' src='/botc/leaf-right.webp' />
+        <img
+          className='absolute h-full w-full'
+          src='/botc/leaf-right.webp'
+          draggable={false}
+        />
       )}
       {dead && hasVoteToken && (
         <IconFileCheck
@@ -94,6 +103,7 @@ const CharacterToken = ({
             )}
             src={getImagePathFromId(character.id)}
             loading='lazy'
+            draggable={false}
           />
           <svg viewBox='0 0 150 150'>
             <path

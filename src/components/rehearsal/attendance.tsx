@@ -7,7 +7,6 @@ import React from 'react';
 import SelectCorps from 'components/select-corps';
 import RehearsalCheckbox from 'components/rehearsal/checkbox';
 import { api } from 'trpc/react';
-
 interface RehearsalAttendanceProps {
   rehearsal: Rehearsal;
 }

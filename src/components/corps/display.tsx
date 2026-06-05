@@ -3,9 +3,18 @@
 import Popover from 'components/popover';
 import CorpsInfobox from './infobox';
 import { useState } from 'react';
-import { displayName, displayNumber, fullName } from 'utils/corps';
+import {
+  displayName,
+  displayNumber,
+  fullName,
+  numberAndFullName,
+} from 'utils/corps';
 
-type NameFormat = 'nickname' | 'number-only' | 'full-name';
+type NameFormat =
+  | 'nickname'
+  | 'number-only'
+  | 'full-name'
+  | 'number-and-full-name';
 
 interface Corps {
   id: string;
@@ -30,6 +39,8 @@ const getName = (corps: Corps, nameFormat: NameFormat) => {
     return corps.number === null && corps.bNumber === null
       ? 'p.e. ' + corps.lastName.trim()
       : displayNumber(corps);
+  } else if (nameFormat === 'number-and-full-name') {
+    return numberAndFullName(corps);
   } else {
     return fullName(corps);
   }

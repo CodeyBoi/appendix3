@@ -53,7 +53,7 @@ export const rehearsalRouter = router({
           },
         },
         orderBy: {
-          date: 'asc',
+          date: 'desc',
         },
       });
       return rehearsals.map((rehearsal) => ({

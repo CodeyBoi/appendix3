@@ -33,7 +33,10 @@ const Entry = ({
   return (
     <>
       <td>
-        <CorpsDisplay corps={corps} />
+        <CorpsDisplay
+          corps={corps}
+          nameFormat={showAdminTools ? 'number-and-full-name' : 'nickname'}
+        />
       </td>
       {showAdminTools && (
         <>
