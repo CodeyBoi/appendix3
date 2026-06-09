@@ -161,7 +161,6 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
               >
                 <div className='flex w-full gap-2'>
                   <input
-                    autoFocus
                     placeholder='Nytt smeknamn'
                     value={newNickName}
                     onChange={(e) => {
