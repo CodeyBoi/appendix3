@@ -410,3 +410,29 @@ model BotcPlayer {
   corps   Corps       @relation(fields: [corpsId], references: [id], onDelete: Cascade)
   session BotcSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
+
+model RankingEntry {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  rankings Ranking[]
+  results  RankingResult[]
+}
+
+model Ranking {
+  id      Int             @id @default(autoincrement())
+  entries RankingEntry[]
+  results RankingResult[]
+}
+
+model RankingResult {
+  entryAId  Int
+  aWon      Boolean
+  entryBId  Int
+  bWon      Boolean
+  rankingId Int
+
+  entryA  RankingEntry @relation(fields: [entryAId], references: [id], onDelete: Cascade)
+  entryB  RankingEntry @relation(fields: [entryBId], references: [id], onDelete: Cascade)
+  ranking Ranking      @relation(fields: [rankingId], references: [id], onDelete: Cascade)
+}
