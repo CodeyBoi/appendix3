@@ -3,7 +3,7 @@
 import Burger from 'components/burger';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
-import { isJuly } from 'utils/date';
+import { isJuly, isPrideMonth } from 'utils/date';
 
 interface NavbarButtonProps {
   children: ReactNode;
@@ -28,7 +28,13 @@ const NavbarButton = ({
         onClick={() => {
           setOpen(!open);
         }}
-        variant={isJuly(currentDate) ? 'burger' : 'normal'}
+        variant={
+          isPrideMonth(currentDate)
+            ? 'pride'
+            : isJuly(currentDate)
+            ? 'burger'
+            : 'normal'
+        }
       />
       <div
         className={
