@@ -10,7 +10,6 @@ import GigMenuContent from './menu-content';
 import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
 import { lang } from 'utils/language';
-import Time from 'components/time';
 import Countdown from 'components/countdown';
 
 dayjs.locale('sv');
@@ -130,25 +129,8 @@ const GigCard = async ({
               <>
                 {gig.signupEnd && (
                   <div className='pr-2 text-right text-xs italic leading-normal'>
-                    {lang('Anmälan stänger', 'Signup closes')}{' '}
-                    {Date.now() + 1000 * 60 * 60 > gig.signupEnd.getTime() ? (
-                      <>
-                        {lang('om ', 'in ')}
-                        <br />
-                        <Countdown end={gig.signupEnd} />
-                      </>
-                    ) : (
-                      <Time
-                        date={gig.signupEnd}
-                        options={{
-                          year: 'numeric',
-                          month: 'numeric',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric',
-                        }}
-                      />
-                    )}
+                    {lang('Anmälan stänger om ', 'Signup closes in ')}
+                    <Countdown end={gig.signupEnd} />
                   </div>
                 )}
                 <GigSignupBox
@@ -173,17 +155,8 @@ const GigCard = async ({
             )}
             {isBeforeSignup && gig.signupStart && (
               <div className='pr-2 text-right text-xs italic leading-normal'>
-                {lang('Anmälan öppnar ', 'Signup opens ')}
-                <Time
-                  date={gig.signupStart}
-                  options={{
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                  }}
-                />
+                {lang('Anmälan öppnar om ', 'Signup opens in ')}
+                <Countdown end={gig.signupStart} />
               </div>
             )}
             {isAfterSignup && gig.signupEnd && !gigHasBeen && (

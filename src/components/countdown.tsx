@@ -7,67 +7,81 @@ import { lang } from 'utils/language';
 interface CountdownProps {
   end: Date;
   className?: string;
+  currentDate?: Date;
 }
 
-const genTimeMsg = (secs: number) => {
-  let msg = '';
-  const days = Math.floor(secs / (1000 * 60 * 60 * 24));
+const genTimeMsg = (mSecs: number) => {
+  const days = Math.floor(mSecs / (1000 * 60 * 60 * 24));
   if (days > 0) {
-    msg += `${days} dag${days === 1 ? '' : 'ar'} `;
+    return `${days} dag${days === 1 ? '' : 'ar'} `;
   }
-  const hours = Math.floor((secs / (1000 * 60 * 60)) % 24);
+  const hours = Math.floor((mSecs / (1000 * 60 * 60)) % 24);
   if (hours > 0) {
-    msg += `${hours} timm${hours === 1 ? 'e' : 'ar'} `;
+    return `${hours} timm${hours === 1 ? 'e' : 'ar'} `;
   }
-  const minutes = Math.floor((secs / (1000 * 60)) % 60);
+  const minutes = Math.floor((mSecs / (1000 * 60)) % 60);
   if (minutes > 0) {
-    msg += `${minutes} minut${minutes === 1 ? '' : 'er'} `;
+    return `${minutes} minut${minutes === 1 ? '' : 'er'} `;
   }
-  if (msg.length > 0) {
-    msg += 'och ';
-  }
-  const seconds = Math.floor((secs / 1000) % 60);
-  msg += `${seconds} sekund${seconds === 1 ? '' : 'er'}`;
-  return msg;
+  const seconds = Math.floor((mSecs / 1000) % 60);
+  return `${seconds} sekund${seconds === 1 ? '' : 'er'}`;
 };
 
-const genTimeMsgEn = (secs: number) => {
-  let msg = '';
-  const days = Math.floor(secs / (1000 * 60 * 60 * 24));
+const genTimeMsgEn = (mSecs: number) => {
+  const days = Math.floor(mSecs / (1000 * 60 * 60 * 24));
   if (days > 0) {
-    msg += `${days} day${days === 1 ? '' : 's'} `;
+    return `${days} day${days === 1 ? '' : 's'} `;
   }
-  const hours = Math.floor((secs / (1000 * 60 * 60)) % 24);
+  const hours = Math.floor((mSecs / (1000 * 60 * 60)) % 24);
   if (hours > 0) {
-    msg += `${hours} hour${hours === 1 ? '' : 's'} `;
+    return `${hours} hour${hours === 1 ? '' : 's'} `;
   }
-  const minutes = Math.floor((secs / (1000 * 60)) % 60);
+  const minutes = Math.floor((mSecs / (1000 * 60)) % 60);
   if (minutes > 0) {
-    msg += `${minutes} minute${minutes === 1 ? '' : 's'} `;
+    return `${minutes} minute${minutes === 1 ? '' : 's'} `;
   }
-  if (msg.length > 0) {
-    msg += 'and ';
-  }
-  const seconds = Math.floor((secs / 1000) % 60);
-  msg += `${seconds} second${seconds === 1 ? '' : 's'}`;
-  return msg;
+  const seconds = Math.floor((mSecs / 1000) % 60);
+  return `${seconds} second${seconds === 1 ? '' : 's'}`;
 };
 
-const Countdown = ({ end, className }: CountdownProps) => {
+const getTimeToNextUpdate = (mSecs: number) => {
+  if (mSecs < 1000 * 60) {
+    return mSecs % 1000;
+  } else if (mSecs < 1000 * 60 * 60) {
+    return mSecs % (1000 * 60);
+  } else if (mSecs < 1000 * 60 * 60 * 24) {
+    return mSecs % (1000 * 60 * 60);
+  } else {
+    return mSecs % (1000 * 60 * 60 * 24);
+  }
+};
+
+const Countdown = ({
+  end,
+  className,
+  currentDate = new Date(),
+}: CountdownProps) => {
   const router = useRouter();
-  const [timeLeft, setTimeLeft] = useState(
-    end.getTime() - new Date().getTime(),
-  );
+  const startDuration = end.getTime() - currentDate.getTime();
+  const [timeLeft, setTimeLeft] = useState(startDuration);
   const [refreshed, setRefreshed] = useState(false);
 
+  const updateFunc = () => {
+    const now = new Date().getTime();
+    const newTimeLeft = Math.max(0, end.getTime() - now);
+    setTimeLeft(newTimeLeft);
+    if (now > end.getTime()) {
+      return;
+    }
+    setTimeout(
+      updateFunc,
+      getTimeToNextUpdate(Math.max(0, end.getTime() - new Date().getTime())),
+    );
+  };
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft(Math.max(0, end.getTime() - new Date().getTime()));
-    }, 100);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [end]);
+    updateFunc();
+  }, []);
 
   useEffect(() => {
     if (!refreshed && timeLeft <= 0) {

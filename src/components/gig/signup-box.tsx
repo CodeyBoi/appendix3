@@ -8,6 +8,7 @@ import Select from 'components/input/select';
 import FormLoadingOverlay from 'components/form-loading-overlay';
 import { aprilFoolsInstrumentLabel, isAprilFools } from 'utils/date';
 import Wheel from 'components/wheel';
+import { useRouter } from 'next/navigation';
 
 interface Signup {
   status: { value: string };
@@ -49,11 +50,13 @@ const GigSignupBox = ({
   currentDate = new Date(),
 }: GigSignupBoxProps) => {
   const utils = trpc.useUtils();
+  const router = useRouter();
 
   const addSignup = trpc.gig.addSignup.useMutation({
     onSuccess: async () => {
       await utils.gig.getSignup.invalidate({ gigId, corpsId });
       await utils.gig.getSignups.invalidate({ gigId });
+      router.refresh();
       setSubmitting(false);
     },
   });
