@@ -219,6 +219,26 @@ export const gigRouter = router({
           },
         ],
       });
+
+      // Do a full resort if there exists at least two gigs on the same date where
+      // one has meetup defined and the other one doesn't.
+      const gigWithMeetupDateSet = new Set(
+        res.flatMap((gig) => (gig.meetup.trim() ? [gig.date.getTime()] : [])),
+      );
+      for (const gig of res) {
+        if (
+          !gig.meetup.trim() &&
+          gigWithMeetupDateSet.has(gig.date.getTime())
+        ) {
+          res.sort(
+            (a, b) =>
+              getGigCalenderDates(a).start.getTime() -
+              getGigCalenderDates(b).start.getTime(),
+          );
+          break;
+        }
+      }
+
       return res;
     }),
 
@@ -801,9 +821,6 @@ export const gigRouter = router({
       const { error, value } = ics.createEvents(
         gigs.flatMap((gig) => {
           const gigTime = getGigCalenderDates(gig);
-          if (!gigTime) {
-            return [];
-          }
           return [
             {
               title: gig.title,
