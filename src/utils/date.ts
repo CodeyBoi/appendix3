@@ -56,9 +56,11 @@ export const startOperatingYear = 2010;
 export const isAprilFools = (date: Date) =>
   date.getMonth() === 3 && date.getDate() === 1;
 
-export const isChristmas = (date: Date) => date.getMonth() === 11;
+export const isPrideMonth = (date: Date) => date.getMonth() === 5;
 
 export const isJuly = (date: Date) => date.getMonth() === 6;
+
+export const isChristmas = (date: Date) => date.getMonth() === 11;
 
 export const isAppendixBirthday = (date: Date) =>
   date.getMonth() === 0 && date.getDate() === 17;
