@@ -235,6 +235,9 @@ export const gigRouter = router({
               getGigCalenderDates(a).start.getTime() -
               getGigCalenderDates(b).start.getTime(),
           );
+          if (dateOrder === 'desc') {
+            res.reverse();
+          }
           break;
         }
       }
