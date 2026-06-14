@@ -197,6 +197,12 @@ export const gigRouter = router({
               corpsId: true,
             },
           },
+          signups: {
+            where: {
+              corpsId,
+              attended: true,
+            },
+          },
         },
         where: {
           date: {
@@ -230,19 +236,30 @@ export const gigRouter = router({
           !gig.meetup.trim() &&
           gigWithMeetupDateSet.has(gig.date.getTime())
         ) {
-          res.sort(
-            (a, b) =>
-              getGigCalenderDates(a).start.getTime() -
-              getGigCalenderDates(b).start.getTime(),
-          );
-          if (dateOrder === 'desc') {
-            res.reverse();
+          if (dateOrder === 'asc') {
+            res.sort(
+              (a, b) =>
+                getGigCalenderDates(a).start.getTime() -
+                getGigCalenderDates(b).start.getTime(),
+            );
+          } else {
+            res.sort(
+              (a, b) =>
+                getGigCalenderDates(b).start.getTime() -
+                getGigCalenderDates(a).start.getTime(),
+            );
           }
           break;
         }
       }
 
-      return res;
+      console.log(res);
+
+      return res.map((gig) => ({
+        ...gig,
+        signups: undefined,
+        attended: gig.signups.length > 0,
+      }));
     }),
 
   upsert: restrictedProcedure('manageGigs')
@@ -669,7 +686,7 @@ export const gigRouter = router({
       if (!corpsId) {
         throw new Error('Not logged in');
       }
-      return ctx.prisma.gig.findMany({
+      const res = await ctx.prisma.gig.findMany({
         where: {
           signups: {
             some: {
@@ -694,6 +711,8 @@ export const gigRouter = router({
           },
         ],
       });
+
+      return res.map((gig) => ({ ...gig, attended: true }));
     }),
 
   getChristmasConcert: protectedProcedure
