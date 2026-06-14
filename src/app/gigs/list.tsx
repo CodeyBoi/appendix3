@@ -1,3 +1,4 @@
+import { IconCheck } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { api } from 'trpc/server';
@@ -60,11 +61,18 @@ const GigList = async ({ year, tab }: GigListProps) => {
               </h3>
             )}
             <Link href={`/gig/${gig.id}`} key={gig.id}>
-              <div className='flex cursor-pointer items-center gap-2 py-1 pl-2 hover:bg-red-300/5'>
+              <div className='flex cursor-pointer items-start gap-2 py-1 pl-2 hover:bg-red-300/5'>
                 <div className='w-6 shrink-0 text-right'>
                   {gigDate.toString() + ':' + numberSuffix(gigDate)}
                 </div>
-                {gig.title.trim() + (gig.countsPositively ? '*' : '')}
+                <span className='grow'>
+                  {gig.title.trim() + (gig.countsPositively ? '*' : '')}
+                </span>
+                {tab === 'all' && gig.attended && (
+                  <div className='w-6'>
+                    <IconCheck className='text-red-600' />
+                  </div>
+                )}
               </div>
             </Link>
           </Fragment>
