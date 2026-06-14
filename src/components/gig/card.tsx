@@ -5,7 +5,7 @@ import Datebox from 'components/gig/datebox';
 import GigSignupBox from 'components/gig/signup-box';
 import { api } from 'trpc/server';
 import { Gig as PrismaGig } from '@prisma/client';
-import { IconDotsVertical } from '@tabler/icons-react';
+import { IconDotsVertical, IconExternalLink } from '@tabler/icons-react';
 import GigMenuContent from './menu-content';
 import ActionIcon from 'components/input/action-icon';
 import Popover from 'components/popover';
@@ -27,6 +27,26 @@ interface GigCardProps {
 
 const isGig = (gig: Gig | GigId): gig is Gig => {
   return typeof gig !== 'string';
+};
+
+const PLACE_NAMES = [
+  'Malmö',
+  'Lomma',
+  'Bjärred',
+  'Jönköping',
+  'Linköping',
+  'Uppsala',
+  'Hjärup',
+];
+
+const constructMapsUrl = (location: string) => {
+  const loc =
+    PLACE_NAMES.find((place) => location.includes(' ' + place)) === undefined
+      ? `${location}, Lund`
+      : location;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    loc,
+  )}`;
 };
 
 const GigCard = async ({
@@ -104,14 +124,22 @@ const GigCard = async ({
           </Popover>
         </div>
         <div className='flex flex-col justify-between lg:flex-row'>
-          <Link className='grow' href={`/gig/${gig.id}`}>
-            <div className='flex grow cursor-pointer items-center space-x-4'>
+          <div className='grow'>
+            <div className='flex grow items-center space-x-4'>
               <Datebox date={dayjs(gig.date)} />
               <div className='text-xs leading-normal'>
                 <i>{gig.type.name}</i>
                 <br />
-                {!!gig.location && gig.location}
-                {!!gig.location && <br />}
+                {!!gig.location.trim() && (
+                  <Link
+                    className='flex items-center gap-1'
+                    target='_blank'
+                    href={constructMapsUrl(gig.location.trim())}
+                  >
+                    {gig.location}
+                    <IconExternalLink width={12} height={12} />
+                  </Link>
+                )}
                 {gig.price !== 0 && lang('Pris: ', 'Price: ')}
                 {gig.price !== 0 && gig.price.toString()}
                 {gig.price !== 0 && lang(' kr', ' SEK')}
@@ -123,7 +151,7 @@ const GigCard = async ({
                 {gig.start}
               </div>
             </div>
-          </Link>
+          </div>
           <div className='flex w-full flex-col lg:w-56'>
             {!isBeforeSignup && !isAfterSignup && !gigHasBeen && (
               <>
