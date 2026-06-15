@@ -111,6 +111,7 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
               <th className='px-1 text-center'>
                 {lang('Närvaro', 'Attendance')}
               </th>
+              <th className='px-1 text-center'>{lang('Rep', 'Reh.')}</th>
             </tr>
           </thead>
           <tbody className='divide-y divide-solid text-sm dark:border-neutral-700'>
@@ -123,6 +124,9 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                   ? `+${stat.positiveGigsAttended}`
                   : ''
               }`;
+              const bothRehearsals =
+                stat.orchestraRehearsalAttendance +
+                stat.balletRehearsalAttendance;
               return (
                 <React.Fragment key={stat.id}>
                   <tr>
@@ -143,6 +147,9 @@ const StatisticsTable = async ({ start, end }: StatisticsTableProps) => {
                     <td className='text-center'>{points}</td>
                     <td className='text-center'>
                       {`${Math.ceil(stat.attendance * 100)}%`}
+                    </td>
+                    <td className='text-center'>
+                      {`${Math.ceil(bothRehearsals * 100)}%`}
                     </td>
                   </tr>
                 </React.Fragment>

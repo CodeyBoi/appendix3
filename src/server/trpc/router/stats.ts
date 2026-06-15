@@ -92,14 +92,104 @@ export const statsRouter = router({
           firstName;
       `;
 
-      const res = await ctx.prisma.$transaction([
+      const orchestraRehearsalCountQuery = ctx.prisma.rehearsal.count({
+        where: {
+          type: {
+            name: 'Orkesterrepa',
+          },
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+      });
+      const orchestraRehearsalStatsQuery = ctx.prisma.corpsRehearsal.groupBy({
+        by: ['corpsId'],
+        where: {
+          rehearsal: {
+            type: {
+              name: 'Orkesterrepa',
+            },
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        _count: {
+          rehearsalId: true,
+        },
+        having: {
+          rehearsalId: {
+            _count: {
+              gt: 0,
+            },
+          },
+        },
+      });
+
+      const balletRehearsalCountQuery = ctx.prisma.rehearsal.count({
+        where: {
+          type: {
+            name: 'Balettrepa',
+          },
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+      });
+      const balletRehearsalStatsQuery = ctx.prisma.corpsRehearsal.groupBy({
+        by: ['corpsId'],
+        where: {
+          rehearsal: {
+            type: {
+              name: 'Balettrepa',
+            },
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        _count: {
+          rehearsalId: true,
+        },
+        having: {
+          rehearsalId: {
+            _count: {
+              gt: 0,
+            },
+          },
+        },
+      });
+
+      const res = await Promise.all([
         nbrOfGigsQuery,
         positivelyCountedGigsQuery,
         corpsStatsQuery,
+        orchestraRehearsalCountQuery,
+        orchestraRehearsalStatsQuery,
+        balletRehearsalCountQuery,
+        balletRehearsalStatsQuery,
       ]);
       const totalGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const corpsIds = res[2].map((corps) => corps.id);
+
+      const orchestraRehearsalCount = res[3];
+      const balletRehearsalCount = res[5];
+
+      const orchestraRehearsalAttendance = toMap(
+        res[4],
+        (s) => s.corpsId,
+        (s) => s._count.rehearsalId / orchestraRehearsalCount,
+      );
+      const balletRehearsalAttendance = toMap(
+        res[6],
+        (s) => s.corpsId,
+        (s) => s._count.rehearsalId / balletRehearsalCount,
+      );
 
       const corpsStats = toMap(
         res[2],
@@ -114,6 +204,10 @@ export const statsRouter = router({
               corps.maxPossibleGigs === 0
                 ? 1.0
                 : corps.gigsAttended / corps.maxPossibleGigs,
+            orchestraRehearsalAttendance:
+              orchestraRehearsalAttendance.get(corps.id) ?? 0.0,
+            balletRehearsalAttendance:
+              balletRehearsalAttendance.get(corps.id) ?? 0.0,
           };
         },
       );
