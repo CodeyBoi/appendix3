@@ -5,6 +5,7 @@ import ActionIcon from 'components/input/action-icon';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import Modal from 'components/modal';
+import useLanguage from 'hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
@@ -32,6 +33,7 @@ const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
 const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   const router = useRouter();
   const utils = api.useUtils();
+  const { language } = useLanguage();
   const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
   const { data: self } = api.corps.getSelf.useQuery(undefined, {
     enabled: open,
@@ -122,8 +124,16 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       ? corpsNameTemp.slice(0, 25) + corpsNameTemp.slice(25).replace(' ', '\n')
       : corpsNameTemp;
 
+  const changeNicknameMsg =
+    language === 'sv'
+      ? 'Detta smeknamnet kommer att visas för alla på Blindtarmen och det kommer synas att det är du som ändrat det.\n\nLovar du att det är rimligt och inte kränkande?'
+      : 'This nickname will be displayed to everyone at Appendix and it will be shown that you are the one that changed it.\n\nDo you promise that it is reasonable and not offensive?';
+
   const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!confirm(changeNicknameMsg)) {
+      return false;
+    }
     setNickNameModalOpen(false);
     mutation.mutate({
       corpsId: id,
@@ -176,9 +186,6 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
                       mutation.isLoading || newNickName === corps.nickName
                     }
                     className='rounded bg-red-600 p-2 text-white hover:bg-red-700'
-                    onClick={() => {
-                      setNickNameModalOpen(false);
-                    }}
                   >
                     {mutation.isLoading
                       ? lang('Sparar...', 'Submitting...')
@@ -201,20 +208,27 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       </div>
       <div className='h-1.5' />
       <div className='text-sm font-light'>
-        {joinedAt && joinedMsg} {instrumentsMsg}{' '}
-        {allTimeStreak.maxStreak >= 3 &&
-          lang(
-            'Deras längsta spelningsstreak är ',
-            'Their longest gig streak is ',
-          )}
-        <span
-          onClick={() => {
-            setShowAllStreaks(!showAllStreaks);
-          }}
-        >
-          {`${allTimeStreak.maxStreak}🔥`}
-        </span>
-        {showAllStreaks ? ' (' + allTimeStreak.streaks.join(', ') + ')' : ''}.
+        {joinedAt && joinedMsg} {instrumentsMsg}
+        {allTimeStreak.maxStreak >= 3 && (
+          <>
+            {' '}
+            {lang(
+              'Deras längsta spelningsstreak är ',
+              'Their longest gig streak is ',
+            )}
+            <span
+              onClick={() => {
+                setShowAllStreaks(!showAllStreaks);
+              }}
+            >
+              {`${allTimeStreak.maxStreak}🔥`}
+            </span>
+            {showAllStreaks
+              ? ' (' + allTimeStreak.streaks.join(', ') + ')'
+              : ''}
+            .
+          </>
+        )}
       </div>
     </div>
   );
