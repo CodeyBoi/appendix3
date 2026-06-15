@@ -94,6 +94,7 @@ export const statsRouter = router({
 
       const orchestraRehearsalCountQuery = ctx.prisma.rehearsal.count({
         where: {
+          countsPositively: false,
           type: {
             name: 'Orkesterrepa',
           },
@@ -130,6 +131,7 @@ export const statsRouter = router({
 
       const balletRehearsalCountQuery = ctx.prisma.rehearsal.count({
         where: {
+          countsPositively: false,
           type: {
             name: 'Balettrepa',
           },
