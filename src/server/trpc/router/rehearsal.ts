@@ -61,6 +61,7 @@ export const rehearsalRouter = router({
         title: rehearsal.title,
         date: rehearsal.date,
         type: rehearsal.type.name,
+        countsPositively: rehearsal.countsPositively,
       }));
     }),
 

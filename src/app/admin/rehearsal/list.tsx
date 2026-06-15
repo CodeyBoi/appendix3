@@ -7,6 +7,7 @@ interface Rehearsal {
   id: string;
   date: Date;
   title: string;
+  countsPositively: boolean;
 }
 interface RehearsalsProps {
   rehearsals: Rehearsal[];
@@ -20,7 +21,10 @@ const RehearsalListTable = ({ rehearsals }: RehearsalsProps) => {
           <div className='rounded border p-4 shadow-md dark:border-neutral-800'>
             <div className='flex gap-4'>
               <div>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</div>
-              <div>{rehearsal.title}</div>
+              <div>
+                {rehearsal.title}
+                {rehearsal.countsPositively ? '*' : ''}
+              </div>
             </div>
           </div>
         </Link>
