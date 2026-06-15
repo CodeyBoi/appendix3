@@ -18,6 +18,7 @@ type GigId = string;
 type Gig = PrismaGig & {
   type: { name: string };
   hiddenFor: { corpsId: string }[];
+  missingInstruments?: Record<string, number>;
 };
 
 interface GigCardProps {
@@ -37,9 +38,12 @@ const PLACE_NAMES = [
   'Linköping',
   'Uppsala',
   'Hjärup',
+  'Vellinge',
+  'Limhamn',
 ];
 
-const constructMapsUrl = (location: string) => {
+const constructGoogleMapsUrl = (location: string) => {
+  // Add ", Lund" to end of query if no city could be found
   const loc =
     PLACE_NAMES.find((place) => location.includes(' ' + place)) === undefined
       ? `${location}, Lund`
@@ -134,7 +138,7 @@ const GigCard = async ({
                   <Link
                     className='flex items-center gap-1'
                     target='_blank'
-                    href={constructMapsUrl(gig.location.trim())}
+                    href={constructGoogleMapsUrl(gig.location.trim())}
                   >
                     {gig.location}
                     <IconExternalLink width={12} height={12} />
