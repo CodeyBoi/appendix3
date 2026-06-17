@@ -23,10 +23,7 @@ const SORTING_FUNCTIONS: Record<
   name: sortCorps,
   points: (a, b) => a.gigsAttended - b.gigsAttended,
   rehearsals: (a, b) =>
-    a.orchestraRehearsalAttendance +
-    a.balletRehearsalAttendance -
-    b.orchestraRehearsalAttendance -
-    b.balletRehearsalAttendance,
+    a.rehearsalAttendance.total - b.rehearsalAttendance.total,
 };
 
 type StreakEmoji = [number, string];
@@ -93,7 +90,7 @@ const StatisticsTable = ({
   ) : (
     <table className='divide-y divide-solid dark:border-neutral-700'>
       <thead>
-        <tr className='text-xs'>
+        <tr className='text-[10px]'>
           <th
             className='select-none text-left hover:cursor-pointer hover:underline'
             onClick={() => {
@@ -104,7 +101,7 @@ const StatisticsTable = ({
             {sortBy === 'name' && orderIcon}
           </th>
           <th
-            className='select-none px-1 text-center hover:cursor-pointer hover:underline'
+            className='select-none px-0.5 text-center hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('points');
             }}
@@ -113,7 +110,7 @@ const StatisticsTable = ({
             {sortBy === 'points' && orderIcon}
           </th>
           <th
-            className='select-none px-1 text-center hover:cursor-pointer hover:underline'
+            className='select-none px-0.5 text-center hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('attendance');
             }}
@@ -122,7 +119,7 @@ const StatisticsTable = ({
             {sortBy === 'attendance' && orderIcon}
           </th>
           <th
-            className='select-none px-1 text-center hover:cursor-pointer hover:underline'
+            className='select-none px-0.5 text-center hover:cursor-pointer hover:underline'
             onClick={() => {
               setSort('rehearsals');
             }}
@@ -140,12 +137,10 @@ const StatisticsTable = ({
           const points = `${stat.gigsAttended - stat.positiveGigsAttended}${
             stat.positiveGigsAttended > 0 ? `+${stat.positiveGigsAttended}` : ''
           }`;
-          const bothRehearsals =
-            stat.orchestraRehearsalAttendance + stat.balletRehearsalAttendance;
           return (
             <React.Fragment key={stat.id}>
               <tr>
-                <td className='flex gap-2 py-1'>
+                <td className='flex gap-2 px-0.5 py-1'>
                   <CorpsDisplay corps={stat} />
                   <span className='whitespace-nowrap'>
                     {streak >= 3 &&
@@ -159,12 +154,12 @@ const StatisticsTable = ({
                     )}
                   </span>
                 </td>
-                <td className='text-center'>{points}</td>
-                <td className='text-center'>
+                <td className='px-0.5 text-center'>{points}</td>
+                <td className='px-0.5 text-center'>
                   {`${Math.ceil(stat.attendance * 100)}%`}
                 </td>
-                <td className='text-center'>
-                  {`${Math.ceil(bothRehearsals * 100)}%`}
+                <td className='px-0.5 text-center'>
+                  {`${Math.ceil(stat.rehearsalAttendance.total * 100)}%`}
                 </td>
               </tr>
             </React.Fragment>
