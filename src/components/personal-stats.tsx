@@ -92,6 +92,7 @@ const encouragements = [
 
 interface PersonalStatsProps {
   operatingYear?: number;
+  corpsId?: string;
 }
 
 const hash = (str: string) => {
@@ -110,9 +111,10 @@ const getEncouragement = (corpsId1: string, corpsId2: string) => {
 
 const PersonalStats = ({
   operatingYear = getOperatingYear(),
+  corpsId,
 }: PersonalStatsProps) => {
   const { data: self } = trpc.corps.getSelf.useQuery();
-  const { data: pentagon } = trpc.stats.getPentagon.useQuery();
+  const { data: pentagon } = trpc.stats.getPentagon.useQuery({ corpsId });
 
   const statPoints = useMemo(
     () => [

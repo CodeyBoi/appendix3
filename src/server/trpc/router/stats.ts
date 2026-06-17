@@ -231,6 +231,96 @@ export const statsRouter = router({
       return ret;
     }),
 
+  getSummary: protectedProcedure
+    .input(
+      z
+        .object({
+          corpsId: z.string().cuid().optional(),
+          start: z.date().optional(),
+          end: z.date().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const {
+        corpsId = ctx.session.user.corps.id,
+        start,
+        end = dayjs().add(1, 'year').toDate(),
+      } = input ?? {};
+
+      const where = {
+        date: { gte: start, lte: end },
+        signups: { some: { attended: true } },
+        points: { gt: 0 },
+      };
+
+      const nbrOfGigsQuery = ctx.prisma.gig.aggregate({
+        _sum: { points: true },
+        where,
+      });
+      const positivelyCountedGigsQuery = ctx.prisma.gig.aggregate({
+        _sum: { points: true },
+        where: {
+          ...where,
+          countsPositively: true,
+        },
+      });
+
+      const ordinaryGigsAttendedQuery = ctx.prisma.gig.aggregate({
+        _sum: { points: true },
+        where: {
+          ...where,
+          countsPositively: false,
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+      });
+      const positiveGigPointsQuery = ctx.prisma.gig.aggregate({
+        _sum: { points: true },
+        where: {
+          ...where,
+          countsPositively: true,
+          signups: {
+            some: {
+              corpsId,
+              attended: true,
+            },
+          },
+        },
+      });
+
+      const res = await Promise.all([
+        nbrOfGigsQuery,
+        positivelyCountedGigsQuery,
+        ordinaryGigsAttendedQuery,
+        positiveGigPointsQuery,
+      ]);
+      const totalGigs = res[0]._sum.points ?? 0;
+      const positivelyCountedGigs = res[1]._sum.points ?? 0;
+      const ordinaryGigsAttended = res[2]._sum.points ?? 0;
+      const positiveGigsAttended = res[3]._sum.points ?? 0;
+
+      return {
+        gigs: {
+          ordinary: totalGigs - positivelyCountedGigs,
+          positive: positivelyCountedGigs,
+          total: totalGigs,
+        },
+        gigsAttended: {
+          ordinary: ordinaryGigsAttended,
+          positive: positiveGigsAttended,
+          total: ordinaryGigsAttended + positiveGigsAttended,
+          attendance:
+            (ordinaryGigsAttended + positiveGigsAttended) /
+            (totalGigs - positivelyCountedGigs + positiveGigsAttended),
+        },
+      };
+    }),
+
   getManyPoints: protectedProcedure
     .input(z.object({ corpsIds: z.array(z.string()).optional() }).optional())
     .query(async ({ ctx, input }) => {
