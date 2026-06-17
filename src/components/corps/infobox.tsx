@@ -17,7 +17,7 @@ import { lang } from 'utils/language';
 interface CorpsInfoboxProps {
   id: string;
   open: boolean;
-  operatingYear: number;
+  operatingYear?: number;
 }
 
 const DEFAULT_COURAGE_MESSAGE = {
