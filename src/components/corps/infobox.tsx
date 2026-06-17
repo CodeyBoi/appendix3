@@ -11,12 +11,50 @@ import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { filterNone } from 'utils/array';
 import { numberAndFullName } from 'utils/corps';
+import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
 
 interface CorpsInfoboxProps {
   id: string;
   open: boolean;
+  operatingYear: number;
 }
+
+const DEFAULT_COURAGE_MESSAGE = {
+  lowerLimit: 0.0,
+  message: 'skräckslagen',
+  messageEn: 'terrified',
+};
+const COURAGE_MESSAGES: {
+  lowerLimit: number;
+  message: string;
+  messageEn: string;
+}[] = [
+  {
+    lowerLimit: 2.4,
+    message: 'fullkomligt galen',
+    messageEn: 'insanely reckless',
+  },
+  { lowerLimit: 2.05, message: 'galen', messageEn: 'reckless' },
+  { lowerLimit: 1.98, message: 'smått galen', messageEn: 'slightly reckless' },
+  { lowerLimit: 1.87, message: 'dumdristig', messageEn: 'fearless' },
+  { lowerLimit: 1.75, message: 'våghalsig', messageEn: 'daring' },
+  { lowerLimit: 1.65, message: 'orädd', messageEn: 'bold' },
+  { lowerLimit: 1.55, message: 'djärv', messageEn: 'courageous' },
+  { lowerLimit: 1.45, message: 'modig', messageEn: 'brave' },
+  { lowerLimit: 1.38, message: 'väldigt lagom', messageEn: 'very ordinary' },
+  { lowerLimit: 1.3, message: 'självsäker', messageEn: 'confident' },
+  { lowerLimit: 1.2, message: 'eftertänksam', messageEn: 'cautious' },
+  { lowerLimit: 1.1, message: 'försiktig', messageEn: 'careful' },
+  { lowerLimit: 1.0, message: 'välförberedd', messageEn: 'well prepared' },
+  { lowerLimit: 0.87, message: 'smått feg', messageEn: 'slightly timid' },
+  { lowerLimit: 0.67, message: 'feg', messageEn: 'timid' },
+  DEFAULT_COURAGE_MESSAGE,
+];
+
+const getCourageMessage = (courage: number) =>
+  COURAGE_MESSAGES.find(({ lowerLimit }) => lowerLimit <= courage) ??
+  DEFAULT_COURAGE_MESSAGE;
 
 const genOtherInstrumentsString = (instruments: string[]) => {
   const instrumentsLower = instruments.map((i) => i.toLowerCase());
@@ -30,7 +68,11 @@ const genOtherInstrumentsString = (instruments: string[]) => {
 // A list of "instruments" which should have the prefix "är"
 const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
 
-const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
+const CorpsInfobox = ({
+  id,
+  open,
+  operatingYear = getOperatingYear(),
+}: CorpsInfoboxProps) => {
   const router = useRouter();
   const utils = api.useUtils();
   const { language } = useLanguage();
@@ -40,6 +82,12 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
   });
   const { data: allTimeStreak } = api.stats.getAllTimeStreak.useQuery(
     { corpsId: id },
+    { enabled: open },
+  );
+
+  const { start, end } = calcOperatingYearInterval(operatingYear);
+  const { data: summary } = api.stats.getSummary.useQuery(
+    { corpsId: id, start, end },
     { enabled: open },
   );
 
@@ -54,7 +102,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     },
   });
 
-  if (!corps || !self || !allTimeStreak) {
+  if (!corps || !self || !allTimeStreak || !summary) {
     return (
       <Loading
         msg={
@@ -128,6 +176,13 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
     language === 'sv'
       ? 'Detta smeknamnet kommer att visas för alla på Blindtarmen och det kommer synas att det är du som ändrat det.\n\nLovar du att det är rimligt och inte kränkande?'
       : 'This nickname will be displayed to everyone at Appendix and it will be shown that you are the one that changed it.\n\nDo you promise that it is reasonable and not offensive?';
+
+  const courageMessage =
+    language === 'sv'
+      ? `Kan anses ${getCourageMessage(summary.courageQuotient).message}.`
+      : `Can be considered ${
+          getCourageMessage(summary.courageQuotient).messageEn
+        }.`;
 
   const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -209,6 +264,7 @@ const CorpsInfobox = ({ id, open }: CorpsInfoboxProps) => {
       <div className='h-1.5' />
       <div className='text-sm font-light'>
         {joinedAt && joinedMsg} {instrumentsMsg}
+        {summary.gigsAttended.total >= 3 && <> {courageMessage}</>}
         {allTimeStreak.maxStreak >= 3 && (
           <>
             {' '}

@@ -206,10 +206,13 @@ export const statsRouter = router({
               corps.maxPossibleGigs === 0
                 ? 1.0
                 : corps.gigsAttended / corps.maxPossibleGigs,
-            orchestraRehearsalAttendance:
-              orchestraRehearsalAttendance.get(corps.id) ?? 0.0,
-            balletRehearsalAttendance:
-              balletRehearsalAttendance.get(corps.id) ?? 0.0,
+            rehearsalAttendance: {
+              orchestra: orchestraRehearsalAttendance.get(corps.id) ?? 0.0,
+              ballet: balletRehearsalAttendance.get(corps.id) ?? 0.0,
+              total:
+                (orchestraRehearsalAttendance.get(corps.id) ?? 0.0) +
+                (balletRehearsalAttendance.get(corps.id) ?? 0.0),
+            },
           };
         },
       );
@@ -293,16 +296,32 @@ export const statsRouter = router({
         },
       });
 
+      const rehearsalsAttendedQuery = ctx.prisma.corpsRehearsal.count({
+        where: {
+          rehearsal: {
+            date: {
+              gte: start,
+              lte: end,
+            },
+          },
+          corps: {
+            id: corpsId,
+          },
+        },
+      });
+
       const res = await Promise.all([
         nbrOfGigsQuery,
         positivelyCountedGigsQuery,
         ordinaryGigsAttendedQuery,
         positiveGigPointsQuery,
+        rehearsalsAttendedQuery,
       ]);
       const totalGigs = res[0]._sum.points ?? 0;
       const positivelyCountedGigs = res[1]._sum.points ?? 0;
       const ordinaryGigsAttended = res[2]._sum.points ?? 0;
       const positiveGigsAttended = res[3]._sum.points ?? 0;
+      const rehearsalsAttended = res[4];
 
       return {
         gigs: {
@@ -318,6 +337,9 @@ export const statsRouter = router({
             (ordinaryGigsAttended + positiveGigsAttended) /
             (totalGigs - positivelyCountedGigs + positiveGigsAttended),
         },
+        rehearsalsAttended,
+        courageQuotient:
+          (ordinaryGigsAttended + positiveGigsAttended) / rehearsalsAttended,
       };
     }),
 
