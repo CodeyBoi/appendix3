@@ -58,7 +58,7 @@ export const rehearsalRouter = router({
       });
       return rehearsals.map((rehearsal) => ({
         id: rehearsal.id,
-        title: rehearsal.title,
+        title: rehearsal.title.trim(),
         date: rehearsal.date,
         type: rehearsal.type.name,
         countsPositively: rehearsal.countsPositively,
@@ -78,7 +78,7 @@ export const rehearsalRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, title, date, typeId, countsPositively } = input;
       const data = {
-        title,
+        title: title.trim(),
         date,
         type: {
           connect: { id: typeId },

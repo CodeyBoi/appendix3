@@ -22,7 +22,7 @@ const RehearsalListTable = ({ rehearsals }: RehearsalsProps) => {
             <div className='flex gap-4'>
               <div>{dayjs(rehearsal.date).format('YYYY-MM-DD')}</div>
               <div>
-                {rehearsal.title}
+                {rehearsal.title.trim()}
                 {rehearsal.countsPositively ? '*' : ''}
               </div>
             </div>
