@@ -32,11 +32,15 @@ const COURAGE_MESSAGES: {
 }[] = [
   {
     lowerLimit: 2.4,
-    message: 'fullkomligt galen',
+    message: 'fullkomligt vårdslös',
     messageEn: 'insanely reckless',
   },
-  { lowerLimit: 2.05, message: 'galen', messageEn: 'reckless' },
-  { lowerLimit: 1.98, message: 'smått galen', messageEn: 'slightly reckless' },
+  { lowerLimit: 2.05, message: 'vårdslös', messageEn: 'reckless' },
+  {
+    lowerLimit: 1.98,
+    message: 'smått vårdslös',
+    messageEn: 'slightly reckless',
+  },
   { lowerLimit: 1.87, message: 'dumdristig', messageEn: 'fearless' },
   { lowerLimit: 1.75, message: 'våghalsig', messageEn: 'daring' },
   { lowerLimit: 1.65, message: 'orädd', messageEn: 'bold' },
@@ -45,11 +49,10 @@ const COURAGE_MESSAGES: {
   { lowerLimit: 1.38, message: 'väldigt lagom', messageEn: 'very ordinary' },
   { lowerLimit: 1.3, message: 'självsäker', messageEn: 'confident' },
   { lowerLimit: 1.2, message: 'eftertänksam', messageEn: 'cautious' },
-  { lowerLimit: 1.1, message: 'försiktig', messageEn: 'careful' },
-  { lowerLimit: 1.0, message: 'välförberedd', messageEn: 'well prepared' },
-  { lowerLimit: 0.87, message: 'smått feg', messageEn: 'slightly timid' },
-  { lowerLimit: 0.67, message: 'feg', messageEn: 'timid' },
-  DEFAULT_COURAGE_MESSAGE,
+  { lowerLimit: 1.1, message: 'välförberedd', messageEn: 'well prepared' },
+  { lowerLimit: 1.0, message: 'försiktig', messageEn: 'careful' },
+  { lowerLimit: 0.87, message: 'smått blygsam', messageEn: 'slightly timid' },
+  { lowerLimit: 0.67, message: 'blygsam', messageEn: 'timid' },
 ];
 
 const getCourageMessage = (courage: number) =>
@@ -264,7 +267,9 @@ const CorpsInfobox = ({
       <div className='h-1.5' />
       <div className='text-sm font-light'>
         {joinedAt && joinedMsg} {instrumentsMsg}
-        {summary.gigsAttended.total >= 3 && <> {courageMessage}</>}
+        {summary.gigsAttended.total >= 2 && summary.rehearsalsAttended >= 2 && (
+          <> {courageMessage}</>
+        )}
         {allTimeStreak.maxStreak >= 3 && (
           <>
             {' '}
