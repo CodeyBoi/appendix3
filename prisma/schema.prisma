@@ -185,9 +185,10 @@ model Gig {
 }
 
 model GigType {
-  id   Int    @id
-  name String @unique
-  gigs Gig[]
+  id     Int    @id
+  name   String @unique
+  nameEn String
+  gigs   Gig[]
 }
 
 model GigSignup {

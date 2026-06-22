@@ -138,6 +138,7 @@ export const gigRouter = router({
           type: {
             select: {
               name: true,
+              nameEn: true,
             },
           },
           hiddenFor: {
@@ -190,6 +191,7 @@ export const gigRouter = router({
           type: {
             select: {
               name: true,
+              nameEn: true,
             },
           },
           hiddenFor: {
@@ -285,24 +287,27 @@ export const gigRouter = router({
         checkbox1: z.string().optional(),
         checkbox2: z.string().optional(),
         hiddenFor: z.array(z.string()).optional(),
+        sendAlert: z.boolean().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { sendAlert = false, ...gigData } = input;
+
       await ctx.prisma.hiddenGig.deleteMany({
         where: {
-          gigId: input.gigId,
+          gigId: gigData.gigId,
         },
       });
       const { gigId, ...data } = {
-        ...input,
+        ...gigData,
         hiddenFor: {
-          create: input.hiddenFor?.map((corpsId) => ({
+          create: gigData.hiddenFor?.map((corpsId) => ({
             corpsId,
           })),
         },
         type: {
           connect: {
-            name: input.type,
+            name: gigData.type,
           },
         },
       };
@@ -315,6 +320,7 @@ export const gigRouter = router({
           type: {
             select: {
               name: true,
+              nameEn: true,
             },
           },
           hiddenFor: {
@@ -334,6 +340,7 @@ export const gigRouter = router({
             type: {
               select: {
                 name: true,
+                nameEn: true,
               },
             },
             hiddenFor: {
@@ -344,7 +351,9 @@ export const gigRouter = router({
           },
           data,
         });
-        await sendChangedGigMeetupAlert(gig, existingGig);
+        if (sendAlert) {
+          await sendChangedGigMeetupAlert(gig, existingGig);
+        }
         return gig;
       }
 
@@ -353,6 +362,7 @@ export const gigRouter = router({
           type: {
             select: {
               name: true,
+              nameEn: true,
             },
           },
           hiddenFor: {
@@ -363,7 +373,9 @@ export const gigRouter = router({
         },
         data,
       });
-      await sendNewGigAlert(gig);
+      if (sendAlert) {
+        await sendNewGigAlert(gig);
+      }
       return gig;
     }),
 
@@ -789,6 +801,7 @@ export const gigRouter = router({
           type: {
             select: {
               name: true,
+              nameEn: true,
             },
           },
         },

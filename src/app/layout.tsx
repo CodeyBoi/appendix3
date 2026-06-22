@@ -62,7 +62,7 @@ const RootLayout = async ({
 
   return (
     <html
-      lang='sv'
+      lang={language}
       className={cn(
         bahnschrift.variable,
         castelar.variable,

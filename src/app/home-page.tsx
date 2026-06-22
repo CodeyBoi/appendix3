@@ -38,7 +38,7 @@ const makeGigList = async (currentDate: Date) => {
 
   let lastMonth = -1;
   const gigsByMonth = gigs.reduce<
-    (Gig & { type: { name: string } } & {
+    (Gig & { type: { name: string; nameEn: string } } & {
       hiddenFor: { corpsId: string }[];
     })[][]
   >((acc, gig) => {
