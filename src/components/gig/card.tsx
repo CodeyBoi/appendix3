@@ -16,7 +16,7 @@ dayjs.locale('sv');
 
 type GigId = string;
 type Gig = PrismaGig & {
-  type: { name: string };
+  type: { name: string; nameEn: string };
   hiddenFor: { corpsId: string }[];
   missingInstruments?: Record<string, number>;
 };
@@ -41,6 +41,22 @@ const PLACE_NAMES = [
   'Vellinge',
   'Limhamn',
 ];
+
+const SIGNUP_OPTION_YES = {
+  label: lang('Ja', 'Yes'),
+  value: 'Ja',
+  color: 'green',
+};
+const SIGNUP_OPTION_NO = {
+  label: lang('Nej', 'No'),
+  value: 'Nej',
+  color: 'var(--corps-red)',
+};
+const SIGNUP_OPTION_MAYBE = {
+  label: lang('Kanske', 'Maybe'),
+  value: 'Kanske',
+  color: 'orange',
+};
 
 const constructGoogleMapsUrl = (location: string) => {
   // Add ", Lund" to end of query if no city could be found
@@ -89,22 +105,6 @@ const GigCard = async ({
     id: i.instrument.id,
   }));
 
-  const SIGNUP_OPTION_YES = {
-    label: lang('Ja', 'Yes'),
-    value: 'Ja',
-    color: 'green',
-  };
-  const SIGNUP_OPTION_NO = {
-    label: lang('Nej', 'No'),
-    value: 'Nej',
-    color: 'var(--corps-red)',
-  };
-  const SIGNUP_OPTION_MAYBE = {
-    label: lang('Kanske', 'Maybe'),
-    value: 'Kanske',
-    color: 'orange',
-  };
-
   const allowMaybe = !gig.signupEnd && [2, 3, 4].includes(gig.typeId);
 
   return (
@@ -132,7 +132,7 @@ const GigCard = async ({
             <div className='flex grow items-center space-x-4'>
               <Datebox date={dayjs(gig.date)} />
               <div className='text-xs leading-normal'>
-                <i>{gig.type.name}</i>
+                <i>{lang(gig.type.name, gig.type.nameEn)}</i>
                 <br />
                 {!!gig.location.trim() && (
                   <Link

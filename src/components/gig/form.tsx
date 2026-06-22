@@ -44,6 +44,7 @@ const initialValues = {
   checkbox1: '',
   checkbox2: '',
   hiddenFor: [] as string[],
+  sendAlert: true,
 };
 type FormValues = typeof initialValues;
 
@@ -73,6 +74,7 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
           ...gig,
           type: gig.type.name,
           hiddenFor: gig.hiddenFor.map((c) => c.corpsId),
+          sendAlert: true,
         },
     validate: {
       title: (title) => (title ? null : 'Titel måste vara ifylld'),
@@ -244,11 +246,11 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
                   setHideFor(!hideFor);
                 }}
               >
-                {lang('Dölj spelning för corps...', 'Hide gig from corps...')}{' '}
+                Dölj spelning för corps...
               </Button>
             )}
           </div>
-          <div className='flex space-x-4 whitespace-nowrap'>
+          <div className='flex flex-col gap-x-4 gap-y-2 whitespace-nowrap lg:flex-row'>
             <Checkbox
               label='Allmän spelning?'
               {...form.getInputProps('isPublic', { type: 'checkbox' })}
@@ -256,6 +258,12 @@ const GigForm = ({ gig, gigTypes }: GigFormProps) => {
             <Checkbox
               label='Räknas positivt?'
               {...form.getInputProps('countsPositively', {
+                type: 'checkbox',
+              })}
+            />
+            <Checkbox
+              label='Skicka notis?'
+              {...form.getInputProps('sendAlert', {
                 type: 'checkbox',
               })}
             />
