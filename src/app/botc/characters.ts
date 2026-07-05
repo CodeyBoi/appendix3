@@ -352,8 +352,7 @@ const ABBREVIATIONS: Record<string, string> = {
   custom: 'carousel',
 };
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
-const fallOfRomeBaseImgUrl =
-  'https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/<NAME>_fall_of_rome.png';
+const fallOfRomeBaseImgUrl = 'botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
 export const getImagePathFromId = (id: CharacterId) => {
   if (getEdition(id).includes('fall-of-rome')) {
     // Centurion, Glykon and High Priest are stored at <name>1
@@ -2577,6 +2576,32 @@ export const START_OF_GAME_ABILITIES: Partial<
       return players;
     }
     sculpture.reminders.push({ characterId: 'sculptor', message: 'Sculpture' });
+
+    return players;
+  },
+
+  vestalvirgin: ({ players, playerId }) => {
+    const learns = players.chooseRandom({ excludeId: playerId });
+    if (!learns) {
+      console.error('No other player found when setting up Vestal Virgin');
+      return players;
+    }
+    learns.reminders.push({ characterId: 'vestalvirgin', message: 'Learns' });
+
+    return players;
+  },
+
+  winemaker: ({ players, playerIndex }) => {
+    const winemaker = players[playerIndex];
+    if (!winemaker) {
+      console.error("Couldn't find Winemaker when setting up Winemaker");
+      return players;
+    }
+    const reminderText = Math.random() < 0.5 ? 'Odd' : 'Even';
+    winemaker.reminders.push({
+      characterId: 'winemaker',
+      message: reminderText,
+    });
 
     return players;
   },

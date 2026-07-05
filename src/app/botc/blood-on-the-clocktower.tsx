@@ -252,6 +252,10 @@ const BloodOnTheClocktowerElement = () => {
               />
               <div className='flex justify-end gap-2 lg:flex-row'>
                 <Button
+                  disabled={
+                    selectedCharacters.length === 0 &&
+                    'Select some characters first'
+                  }
                   onClick={() => {
                     gameState.assignCharacters(selectedCharacters);
                     startGame(gameState.players);
