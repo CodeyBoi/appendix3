@@ -107,9 +107,10 @@ const selectRandom = (
   }
 
   // Correct errors if characters which change character amounts are picked
-  for (const [typeOrIdArg, diff] of Object.entries(
+  const selectionError = Object.entries(
     findSelectionError(selected, numberOfCharacters),
-  )) {
+  );
+  for (const [typeOrIdArg, diff] of selectionError) {
     const typeOrId = typeOrIdArg as CharacterType | CharacterId;
     if (diff === 0) {
       continue;
@@ -332,6 +333,9 @@ const BotcCharacterSelect = ({
           : isEvil(characterType)
           ? 'bg-red-600/20'
           : 'bg-neutral-500/20';
+        if (edition[characterType].length === 0) {
+          return null;
+        }
         return (
           <React.Fragment key={edition.id + characterType}>
             <div className={cn('flex flex-col rounded border-2', border)}>

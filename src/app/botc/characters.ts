@@ -123,6 +123,22 @@ export const EDITIONS: readonly Edition[] = [
     ],
   },
   {
+    id: 'fall-of-rome-teensyville',
+    name: 'Fall of Rome - Teensyville',
+    townsfolk: [
+      'sculptor',
+      'trumpeter',
+      'standardbearer',
+      'centurion',
+      'blacksmith',
+      'scholar',
+    ],
+    outsiders: ['spartacus', 'badomen'],
+    minions: ['haruspex', 'augur'],
+    demons: ['cleopatra', 'crassus'],
+    travellers: [],
+  },
+  {
     id: 'carousel',
     name: 'Carousel',
     townsfolk: [
@@ -339,7 +355,7 @@ const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<ED
 const fallOfRomeBaseImgUrl =
   'https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/<NAME>_fall_of_rome.png';
 export const getImagePathFromId = (id: CharacterId) => {
-  if (getEdition(id) === 'fall-of-rome') {
+  if (getEdition(id).includes('fall-of-rome')) {
     // Centurion, Glykon and High Priest are stored at <name>1
     const name = ['centurion', 'glykon', 'highpriest'].includes(id)
       ? `${id}1`
@@ -363,6 +379,7 @@ export const EDITION_IDS = [
   'bad-moon-rising',
   'sects-and-violets',
   'fall-of-rome',
+  'fall-of-rome-teensyville',
   'carousel',
   'custom',
 ] as const;

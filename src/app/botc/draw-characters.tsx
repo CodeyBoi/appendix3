@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import { CharacterId, getDefaultAlignment } from './characters';
 import InfoToken from './info-token';
@@ -22,6 +22,12 @@ const DrawCharacters = ({
   const [players, setPlayers] = useState<BotcPlayer[]>([]);
   const [playerName, setPlayerName] = useState('');
   const [pickedNumbers, setPickedNumbers] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    setPlayers([]);
+    setPickedNumbers(new Set());
+  }, [characters]);
+
   const characterId =
     characterIndex !== null && characters[characterIndex] !== undefined
       ? characters[characterIndex]
