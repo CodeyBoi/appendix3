@@ -11,7 +11,6 @@ import {
   Edition,
   EDITIONS,
   getAllCharacters,
-  toPocketGrimoireUrl,
   urlToEdition,
 } from './characters';
 import NightOrder from './night-order';
@@ -187,7 +186,7 @@ const BloodOnTheClocktowerElement = () => {
             <div className='flex flex-col gap-4'>
               <div className='flex flex-wrap gap-x-4'>
                 <TextInput
-                  label='Script URL'
+                  label='Script URL/JSON'
                   icon={<IconScript />}
                   onChange={(value) => {
                     setCustomScriptUrl(value);
@@ -200,12 +199,12 @@ const BloodOnTheClocktowerElement = () => {
                   <Button
                     className='mt-2'
                     disabled={!customScriptUrl}
-                    onClick={() => {
+                    onClick={async () => {
                       if (customScriptUrl) {
-                        const edition = urlToEdition(customScriptUrl);
+                        const edition = await urlToEdition(customScriptUrl);
                         if (!edition) {
                           setCustomScriptUrlError(
-                            'Can only parse either raw JSON or a Pocket Grimoire character sheet link.',
+                            'Can only parse either raw JSON, a Botcscripts JSON link, or a Pocket Grimoire character sheet link.',
                           );
                           return;
                         }
@@ -214,6 +213,7 @@ const BloodOnTheClocktowerElement = () => {
                             edition,
                           }),
                         );
+                        setSelectedCharacters([]);
                         setCustomScriptUrl('');
                         setCustomScriptUrlError('');
                       }
@@ -241,7 +241,14 @@ const BloodOnTheClocktowerElement = () => {
           )}
           {allCharacters.length > 0 && (
             <>
-              <Button href={toPocketGrimoireUrl(edition)} target='_blank'>
+              <Button
+                href={`/botc/sheet?name=${encodeURIComponent(
+                  edition.name,
+                )}&characters=${encodeURIComponent(
+                  getAllCharacters(edition).join(','),
+                )}`}
+                target='_blank'
+              >
                 Character Sheet
                 <IconExternalLink />
               </Button>
