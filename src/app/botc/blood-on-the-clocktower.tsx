@@ -45,6 +45,23 @@ const CUSTOM_EDITION: Edition = {
 };
 const newGameState = new BotcGame({ edition: TROUBLE_BREWING });
 
+const getCustomScripts = () => {
+  return JSON.parse(
+    localStorage.getItem('botcCustomScripts') ?? '[]',
+  ) as Edition[];
+};
+
+const addCustomScript = (edition: Edition) => {
+  const customScripts = getCustomScripts();
+  const newId = edition.name.toLowerCase().trim().replaceAll(' ', '-');
+  const idx = customScripts.findIndex((edition) => edition.id === newId);
+  if (idx !== -1) {
+    customScripts.splice(idx, 1);
+  }
+  customScripts.push({ ...edition, id: newId });
+  localStorage.setItem('botcCustomScripts', JSON.stringify(customScripts));
+};
+
 const BloodOnTheClocktowerElement = () => {
   const [gameState, _setGameState] = useState<BotcGame>(() => {
     const savedStateString = localStorage.getItem('botcGameState');
@@ -112,6 +129,8 @@ const BloodOnTheClocktowerElement = () => {
 
   const allCharacters = useMemo(() => getAllCharacters(edition), [edition]);
 
+  const customScripts = getCustomScripts();
+
   return (
     <>
       <BotcActionsModal
@@ -154,18 +173,26 @@ const BloodOnTheClocktowerElement = () => {
               options={EDITIONS.map((e) => ({
                 value: e.id,
                 label: e.name,
-              })).concat([{ value: 'custom', label: 'Custom Script' }])}
+              }))
+                .concat(
+                  customScripts.map((edition) => ({
+                    value: edition.id,
+                    label: edition.name,
+                  })),
+                )
+                .concat([{ value: 'custom', label: 'New Custom Script...' }])}
               onChange={(v) => {
                 setGameState(
                   new BotcGame({
                     edition:
                       EDITIONS.find((edition) => edition.id === v) ??
+                      customScripts.find((edition) => edition.id === v) ??
                       CUSTOM_EDITION,
                   }),
                 );
                 setSelectedCharacters([]);
               }}
-              value={gameState.edition.id}
+              value={edition.id}
             />
           </div>
           <Button
@@ -216,6 +243,7 @@ const BloodOnTheClocktowerElement = () => {
                         setSelectedCharacters([]);
                         setCustomScriptUrl('');
                         setCustomScriptUrlError('');
+                        addCustomScript(edition);
                       }
                     }}
                   >

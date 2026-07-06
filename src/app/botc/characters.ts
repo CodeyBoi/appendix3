@@ -13,7 +13,7 @@ export const CHARACTER_TYPES = [
 export type CharacterType = (typeof CHARACTER_TYPES)[number];
 
 export interface Edition {
-  id: EditionId;
+  id: string;
   name: string;
   townsfolk: CharacterId[];
   outsiders: CharacterId[];
@@ -238,8 +238,8 @@ const _EDITION_MAP = EDITIONS.reduce((acc, edition) => {
     acc.set(characterId, edition.id);
   }
   return acc;
-}, new Map<CharacterId, EditionId>());
-export const getEdition = (id: CharacterId): EditionId =>
+}, new Map<CharacterId, string>());
+export const getEdition = (id: CharacterId): string =>
   _EDITION_MAP.get(id) ?? 'custom';
 
 export type Alignment = 'good' | 'evil';
@@ -274,7 +274,7 @@ const parsePocketGrimoireUrl = (url: string): Edition => {
   const searchParams = new URLSearchParams(url.split('?')[1]);
   const name =
     searchParams.get('name')?.replaceAll('+', ' ') ?? 'Unknown Script';
-  const id = 'custom';
+  const id = name.trim().toLowerCase().replaceAll(' ', '-');
   const characterIds = searchParams.get('characters')?.split(',') ?? [];
   const characters = characterIds.reduce<Record<CharacterType, CharacterId[]>>(
     (acc, id) => {
@@ -307,7 +307,6 @@ interface BotcMetadata {
 type BotcScriptsJsonData = [BotcMetadata, ...{ id: CharacterId }[]];
 const parseBotcScriptsJson = (data: BotcScriptsJsonData) => {
   const [meta, ...characters] = data;
-  const id = meta.id;
   const name = meta.name;
   const edition = characters.reduce<Edition>(
     (acc, character) => {
@@ -315,7 +314,7 @@ const parseBotcScriptsJson = (data: BotcScriptsJsonData) => {
       return acc;
     },
     {
-      id: id as EditionId,
+      id: name.toLowerCase().trim().replaceAll(' ', '-'),
       name,
       townsfolk: [],
       outsiders: [],
@@ -331,7 +330,6 @@ const jsonToEdition = (json: string) => {
   const [meta, ...characters]: [BotcMetadata, ...CharacterId[]] = JSON.parse(
     json,
   ) as [BotcMetadata, ...CharacterId[]];
-  const id = meta.id;
   const name = meta.name;
   const edition = characters.reduce<Edition>(
     (acc, id) => {
@@ -339,7 +337,7 @@ const jsonToEdition = (json: string) => {
       return acc;
     },
     {
-      id: id as EditionId,
+      id: name.toLowerCase().trim().replaceAll(' ', '-'),
       name,
       townsfolk: [],
       outsiders: [],
@@ -369,7 +367,7 @@ export const urlToEdition = async (url: string): Promise<Edition | null> => {
   }
   return {
     ...edition,
-    id: 'custom',
+    id: edition.name.trim().toLowerCase().replaceAll(' ', '-'),
   };
 };
 
