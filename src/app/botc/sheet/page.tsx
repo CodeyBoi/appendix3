@@ -42,30 +42,35 @@ const BotcSheetPage = ({
   return (
     <div className='flex flex-col gap-2'>
       <h2 className='font-castelar'>{decodeURIComponent(name)}</h2>
-      {CHARACTER_TYPES.map((characterType) => (
-        <div
-          key={edition[characterType].join(',')}
-          className='flex flex-col gap-2'
-        >
-          <details open>
-            <summary className='font-castelar text-lg'>{characterType}</summary>
-            <div className='grid grid-cols-2'>
-              {edition[characterType]
-                .map((characterId) => CHARACTERS[characterId])
-                .map(({ id, name, description }) => (
-                  <div key={id} className='px-2 py-1'>
-                    <BotcCharacterPanel
-                      name={name}
-                      imgSrc={getImagePathFromId(id)}
-                      description={description}
-                      showDescription
-                    />
-                  </div>
-                ))}
-            </div>
-          </details>
-        </div>
-      ))}
+      {CHARACTER_TYPES.map((characterType) => {
+        const characters = edition[characterType];
+        if (characters.length <= 0) {
+          return null;
+        }
+        return (
+          <div key={characters.join(',')} className='flex flex-col gap-2'>
+            <details open>
+              <summary className='font-castelar text-lg'>
+                {characterType}
+              </summary>
+              <div className='grid grid-cols-2'>
+                {characters
+                  .map((characterId) => CHARACTERS[characterId])
+                  .map(({ id, name, description }) => (
+                    <div key={id} className='px-2 py-1'>
+                      <BotcCharacterPanel
+                        name={name}
+                        imgSrc={getImagePathFromId(id)}
+                        description={description}
+                        showDescription
+                      />
+                    </div>
+                  ))}
+              </div>
+            </details>
+          </div>
+        );
+      })}
       <div className='h-6' />
       <div className='flex justify-center'>
         <Modal
