@@ -41,7 +41,7 @@ const BotcSheetPage = ({
   );
   return (
     <div className='flex flex-col gap-2'>
-      <h2 className='font-castelar'>{decodeURIComponent(name)}</h2>
+      <h4 className='font-castelar'>{decodeURIComponent(name)}</h4>
       {CHARACTER_TYPES.map((characterType) => {
         const characters = edition[characterType];
         if (characters.length <= 0) {
@@ -53,7 +53,7 @@ const BotcSheetPage = ({
               <summary className='font-castelar text-lg'>
                 {characterType}
               </summary>
-              <div className='grid grid-cols-2'>
+              <div className='grid grid-cols-1 lg:grid-cols-2 '>
                 {characters
                   .map((characterId) => CHARACTERS[characterId])
                   .map(({ id, name, description }) => (
