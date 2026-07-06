@@ -38,6 +38,7 @@
     "next": "^13.5.5",
     "next-auth": "^4.12.3",
     "qrcode-js-package": "^1.0.4",
+    "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.54.2",

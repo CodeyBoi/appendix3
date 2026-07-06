@@ -263,9 +263,9 @@ export const getDefaultAlignment = (id: CharacterId): Alignment => {
   }
 };
 
-const pocketGrimoireBaseUrl = 'https://www.pocketgrimoire.co.uk/en_GB/sheet';
+const POCKET_GRIMOIRE_BASE_URL = 'https://www.pocketgrimoire.co.uk/en_GB/sheet';
 export const toPocketGrimoireUrl = (edition: Edition) =>
-  `${pocketGrimoireBaseUrl}?name=${edition.name.replaceAll(
+  `${POCKET_GRIMOIRE_BASE_URL}?name=${edition.name.replaceAll(
     ' ',
     '+',
   )}&characters=${encodeURIComponent(getAllCharacters(edition).join(','))}`;
@@ -297,12 +297,37 @@ const parsePocketGrimoireUrl = (url: string): Edition => {
   };
 };
 
+const BOTC_SCRIPTS_BASE_URL = 'https://www.botcscripts.com';
+interface BotcMetadata {
+  id: string;
+  author: string;
+  name: string;
+}
+
+type BotcScriptsJsonData = [BotcMetadata, ...{ id: CharacterId }[]];
+const parseBotcScriptsJson = (data: BotcScriptsJsonData) => {
+  const [meta, ...characters] = data;
+  const id = meta.id;
+  const name = meta.name;
+  const edition = characters.reduce<Edition>(
+    (acc, character) => {
+      acc[getType(character.id)].push(character.id);
+      return acc;
+    },
+    {
+      id: id as EditionId,
+      name,
+      townsfolk: [],
+      outsiders: [],
+      minions: [],
+      demons: [],
+      travellers: [],
+    },
+  );
+  return edition;
+};
+
 const jsonToEdition = (json: string) => {
-  interface BotcMetadata {
-    id: string;
-    author: string;
-    name: string;
-  }
   const [meta, ...characters]: [BotcMetadata, ...CharacterId[]] = JSON.parse(
     json,
   ) as [BotcMetadata, ...CharacterId[]];
@@ -326,15 +351,19 @@ const jsonToEdition = (json: string) => {
   return edition;
 };
 
-export const urlToEdition = (url: string): Edition | null => {
-  const parseUrl = (url: string) => {
+export const urlToEdition = async (url: string): Promise<Edition | null> => {
+  const parseUrl = async (url: string) => {
     if (url.startsWith('[{"id":"')) {
       return jsonToEdition(url);
-    } else if (url.startsWith(pocketGrimoireBaseUrl)) {
+    } else if (url.includes(POCKET_GRIMOIRE_BASE_URL)) {
       return parsePocketGrimoireUrl(url);
+    } else if (url.includes(BOTC_SCRIPTS_BASE_URL)) {
+      return parseBotcScriptsJson(
+        (await (await fetch(url)).json()) as BotcScriptsJsonData,
+      );
     }
   };
-  const edition = parseUrl(url);
+  const edition = await parseUrl(url);
   if (!edition) {
     return null;
   }
