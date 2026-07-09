@@ -7,7 +7,7 @@ import {
   Edition,
   getImagePathFromId,
   getType,
-  isFallOfRomeCharacter,
+  getWikiLink,
 } from '../characters';
 import Modal from 'components/modal';
 import Button from 'components/input/button';
@@ -58,17 +58,12 @@ const BotcSheetPage = ({
                 {characters
                   .map((characterId) => CHARACTERS[characterId])
                   .map(({ id, name, description }) => {
-                    const wikiLink = isFallOfRomeCharacter(id)
-                      ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
-                      : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
-                          name.replaceAll(' ', '_'),
-                        )}`;
                     return (
                       <div key={id} className='px-2 py-1'>
                         <BotcCharacterPanel
                           name={name}
                           imgSrc={getImagePathFromId(id)}
-                          imgLink={wikiLink}
+                          imgLink={getWikiLink(id)}
                           description={description}
                           showDescription
                         />

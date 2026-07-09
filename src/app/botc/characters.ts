@@ -402,6 +402,13 @@ export const getImagePathFromId = (id: CharacterId) => {
   }
 };
 
+export const getWikiLink = (id: CharacterId) =>
+  isFallOfRomeCharacter(id)
+    ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
+    : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
+        CHARACTERS[id].name.replaceAll(' ', '_'),
+      )}`;
+
 export const EDITION_IDS = [
   'trouble-brewing',
   'bad-moon-rising',

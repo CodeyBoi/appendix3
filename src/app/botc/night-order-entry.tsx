@@ -1,5 +1,11 @@
 import { cn } from 'utils/class-names';
-import { CharacterId, CHARACTERS, getImagePathFromId } from './characters';
+import {
+  CharacterId,
+  CHARACTERS,
+  getImagePathFromId,
+  getWikiLink,
+} from './characters';
+import Link from 'next/link';
 
 interface NightOrderEntryProps {
   characterId?: CharacterId;
@@ -38,18 +44,30 @@ const NightOrderEntry = ({
     </>
   );
 
+  const imgElement = imgPath ? (
+    <img
+      className={cn(
+        'relative z-0 h-12 w-12 lg:scale-150',
+        imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
+      )}
+      loading='lazy'
+      src={imgPath}
+    />
+  ) : null;
+
   return (
     <div className={cn('flex flex-col gap-2 px-2 py-1', muted && 'opacity-50')}>
       <div className='flex items-center gap-4'>
-        {imgPath && (
-          <img
-            className={cn(
-              'relative z-0 h-12 w-12 lg:scale-150',
-              imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
+        {imgElement && (
+          <>
+            {characterId ? (
+              <Link href={getWikiLink(characterId)} target='_blank'>
+                {imgElement}
+              </Link>
+            ) : (
+              imgElement
             )}
-            loading='lazy'
-            src={imgPath}
-          />
+          </>
         )}
         <div className={cn('grow', imgPath && 'mt-3')}>
           <h4 className='hidden lg:block'>{nameElement}</h4>
