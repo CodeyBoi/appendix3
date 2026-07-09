@@ -1269,7 +1269,7 @@ const _characters = {
       'You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.',
   },
   poppygrower: {
-    name: 'Poppygrower',
+    name: 'Poppy Grower',
     description:
       'Minions & Demons do not know each other. If you die, they learn who each other are that night.',
   },
