@@ -378,10 +378,12 @@ const ABBREVIATIONS: Record<string, string> = {
   carousel: 'carousel',
   custom: 'carousel',
 };
+export const isFallOfRomeCharacter = (id: CharacterId) =>
+  getEdition(id).includes('fall-of-rome');
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
-const fallOfRomeBaseImgUrl = 'botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
+const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
 export const getImagePathFromId = (id: CharacterId) => {
-  if (getEdition(id).includes('fall-of-rome')) {
+  if (isFallOfRomeCharacter(id)) {
     // Centurion, Glykon and High Priest are stored at <name>1
     const name = ['centurion', 'glykon', 'highpriest'].includes(id)
       ? `${id}1`

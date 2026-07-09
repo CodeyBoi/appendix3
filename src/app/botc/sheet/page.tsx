@@ -7,6 +7,7 @@ import {
   Edition,
   getImagePathFromId,
   getType,
+  isFallOfRomeCharacter,
 } from '../characters';
 import Modal from 'components/modal';
 import Button from 'components/input/button';
@@ -49,23 +50,31 @@ const BotcSheetPage = ({
         }
         return (
           <div key={characters.join(',')} className='flex flex-col gap-2'>
-            <details open>
-              <summary className='font-castelar text-lg'>
+            <details open={characterType !== 'travellers'}>
+              <summary className='font-castelar text-lg hover:cursor-pointer'>
                 {characterType}
               </summary>
-              <div className='grid grid-cols-1 lg:grid-cols-2 '>
+              <div className='grid grid-cols-1 lg:grid-cols-2'>
                 {characters
                   .map((characterId) => CHARACTERS[characterId])
-                  .map(({ id, name, description }) => (
-                    <div key={id} className='px-2 py-1'>
-                      <BotcCharacterPanel
-                        name={name}
-                        imgSrc={getImagePathFromId(id)}
-                        description={description}
-                        showDescription
-                      />
-                    </div>
-                  ))}
+                  .map(({ id, name, description }) => {
+                    const wikiLink = isFallOfRomeCharacter(id)
+                      ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
+                      : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
+                          name.replaceAll(' ', '_'),
+                        )}`;
+                    return (
+                      <div key={id} className='px-2 py-1'>
+                        <BotcCharacterPanel
+                          name={name}
+                          imgSrc={getImagePathFromId(id)}
+                          imgLink={wikiLink}
+                          description={description}
+                          showDescription
+                        />
+                      </div>
+                    );
+                  })}
               </div>
             </details>
           </div>
