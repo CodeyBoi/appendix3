@@ -284,16 +284,18 @@ const BotcCharacterSelect = ({
           )}
         </tbody>
       </table>
-      <Switch
-        label='Show character abilities'
-        value={showDescriptions}
-        onChange={setShowDescriptions}
-      />
-      <Switch
-        label='Allow duplicate characters'
-        value={allowDuplicateCharacters}
-        onChange={setAllowDuplicateCharacters}
-      />
+      <div className='flex flex-col gap-2 md:flex-row'>
+        <Switch
+          label='Show character abilities'
+          value={showDescriptions}
+          onChange={setShowDescriptions}
+        />
+        <Switch
+          label='Allow duplicate characters'
+          value={allowDuplicateCharacters}
+          onChange={setAllowDuplicateCharacters}
+        />
+      </div>
       <div className='flex gap-2'>
         <Button
           onClick={() => {
