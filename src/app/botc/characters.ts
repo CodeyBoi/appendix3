@@ -298,42 +298,38 @@ const parsePocketGrimoireUrl = (url: string): Edition => {
 };
 
 const BOTC_SCRIPTS_BASE_URL = 'https://www.botcscripts.com';
+type BotcScriptJsonEntry = BotcMetadata | { id: CharacterId } | CharacterId;
+type BotcScriptJsonCharacterEntry = { id: CharacterId } | CharacterId;
 interface BotcMetadata {
   id: string;
   author: string;
   name: string;
 }
+const isCharacterId = (data: BotcScriptJsonEntry): data is CharacterId =>
+  typeof data === 'string';
+// const isCharacter = (data: BotcScriptJsonEntry): data is { id: CharacterId } =>
+//   typeof data !== 'string' && 'id' in data && !('name' in data);
+const isMetadata = (data: BotcScriptJsonEntry): data is BotcMetadata =>
+  typeof data !== 'string' && 'name' in data;
 
-type BotcScriptsJsonData = [BotcMetadata, ...{ id: CharacterId }[]];
-const parseBotcScriptsJson = (data: BotcScriptsJsonData) => {
-  const [meta, ...characters] = data;
-  const name = meta.name;
+const getCharacterIdFromJsonEntry = (data: BotcScriptJsonEntry) =>
+  isCharacterId(data) ? data : (data.id as CharacterId);
+
+type BotcScriptsJsonData = [
+  BotcMetadata | BotcScriptJsonCharacterEntry,
+  ...BotcScriptJsonCharacterEntry[],
+];
+const jsonToEdition = (data: BotcScriptsJsonData) => {
+  console.log({ data });
+  const firstElement = data[0];
+  const name = isMetadata(firstElement) ? firstElement.name : '';
+  const characters = data.slice(
+    isMetadata(firstElement) ? 1 : 0,
+  ) as BotcScriptJsonCharacterEntry[];
   const edition = characters.reduce<Edition>(
     (acc, character) => {
-      acc[getType(character.id)].push(character.id);
-      return acc;
-    },
-    {
-      id: name.toLowerCase().trim().replaceAll(' ', '-'),
-      name,
-      townsfolk: [],
-      outsiders: [],
-      minions: [],
-      demons: [],
-      travellers: [],
-    },
-  );
-  return edition;
-};
-
-const jsonToEdition = (json: string) => {
-  const [meta, ...characters]: [BotcMetadata, ...CharacterId[]] = JSON.parse(
-    json,
-  ) as [BotcMetadata, ...CharacterId[]];
-  const name = meta.name;
-  const edition = characters.reduce<Edition>(
-    (acc, id) => {
-      acc[getType(id)].push(id);
+      const characterId = getCharacterIdFromJsonEntry(character);
+      acc[getType(characterId)].push(characterId);
       return acc;
     },
     {
@@ -351,12 +347,12 @@ const jsonToEdition = (json: string) => {
 
 export const urlToEdition = async (url: string): Promise<Edition | null> => {
   const parseUrl = async (url: string) => {
-    if (url.startsWith('[{"id":"')) {
-      return jsonToEdition(url);
+    if (url.startsWith('[{"id":')) {
+      return jsonToEdition(JSON.parse(url) as BotcScriptsJsonData);
     } else if (url.includes(POCKET_GRIMOIRE_BASE_URL)) {
       return parsePocketGrimoireUrl(url);
     } else if (url.includes(BOTC_SCRIPTS_BASE_URL)) {
-      return parseBotcScriptsJson(
+      return jsonToEdition(
         (await (await fetch(url)).json()) as BotcScriptsJsonData,
       );
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import { IconExternalLink, IconScript } from '@tabler/icons-react';
+import { IconExternalLink, IconScript, IconTrash } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
 import { Metadata } from 'next';
@@ -59,6 +59,15 @@ const addCustomScript = (edition: Edition) => {
     customScripts.splice(idx, 1);
   }
   customScripts.push({ ...edition, id: newId });
+  localStorage.setItem('botcCustomScripts', JSON.stringify(customScripts));
+};
+
+const removeCustomScript = (id: string) => {
+  const customScripts = getCustomScripts();
+  const idx = customScripts.findIndex((edition) => edition.id === id);
+  if (idx !== -1) {
+    customScripts.splice(idx, 1);
+  }
   localStorage.setItem('botcCustomScripts', JSON.stringify(customScripts));
 };
 
@@ -130,6 +139,8 @@ const BloodOnTheClocktowerElement = () => {
   const allCharacters = useMemo(() => getAllCharacters(edition), [edition]);
 
   const customScripts = getCustomScripts();
+  const isCustomEdition =
+    customScripts.find((script) => script.id === edition.id) !== undefined;
 
   return (
     <>
@@ -167,7 +178,7 @@ const BloodOnTheClocktowerElement = () => {
             tab !== 'setup' && 'hidden',
           )}
         >
-          <div className='max-w-md'>
+          <div className='flex max-w-lg gap-2'>
             <Select
               label='Edition'
               options={EDITIONS.map((e) => ({
@@ -194,6 +205,25 @@ const BloodOnTheClocktowerElement = () => {
               }}
               value={edition.id}
             />
+            {isCustomEdition && (
+              <div className='translate-y-1.5'>
+                <Button
+                  onClick={() => {
+                    if (confirm(`Do you want to remove '${edition.name}'?`)) {
+                      removeCustomScript(edition.id);
+                      setGameState(
+                        new BotcGame({
+                          edition: EDITIONS[0] ?? CUSTOM_EDITION,
+                        }),
+                      );
+                    }
+                  }}
+                >
+                  <IconTrash />
+                  Remove
+                </Button>
+              </div>
+            )}
           </div>
           <Button
             onClick={() => {
@@ -228,37 +258,39 @@ const BloodOnTheClocktowerElement = () => {
                     disabled={!customScriptUrl}
                     onClick={async () => {
                       if (customScriptUrl) {
-                        const edition = await urlToEdition(customScriptUrl);
-                        if (!edition) {
+                        const newCustomScript =
+                          await urlToEdition(customScriptUrl);
+                        if (!newCustomScript) {
                           setCustomScriptUrlError(
                             'Can only parse either raw JSON, a Botcscripts JSON link, or a Pocket Grimoire character sheet link.',
                           );
                           return;
                         }
+                        setCustomScriptUrlError('');
+                        const newScriptName = prompt(
+                          'Custom script name:',
+                          newCustomScript.name,
+                        );
+                        if (!newScriptName) {
+                          return;
+                        }
+                        newCustomScript.name = newScriptName;
+                        newCustomScript.id = newScriptName
+                          .trim()
+                          .toLowerCase()
+                          .replaceAll(' ', '-');
                         setGameState(
                           new BotcGame({
-                            edition,
+                            edition: newCustomScript,
                           }),
                         );
+                        addCustomScript(newCustomScript);
                         setSelectedCharacters([]);
                         setCustomScriptUrl('');
-                        setCustomScriptUrlError('');
-                        addCustomScript(edition);
                       }
                     }}
                   >
                     Import
-                  </Button>
-                  <Button
-                    className='mt-2'
-                    disabled={!customScriptUrl && allCharacters.length === 0}
-                    onClick={() => {
-                      setGameState(new BotcGame({ edition: CUSTOM_EDITION }));
-                      setSelectedCharacters([]);
-                      setCustomScriptUrl('');
-                    }}
-                  >
-                    Reset
                   </Button>
                 </div>
               </div>
@@ -341,8 +373,6 @@ const BloodOnTheClocktowerElement = () => {
             </>
           )}
         </div>
-        {}
-
         <div
           className={cn(
             'mb-16 flex flex-col justify-center divide-y rounded border shadow-md',
@@ -367,6 +397,44 @@ const BloodOnTheClocktowerElement = () => {
             setNightOrderIndex={setNightOrderIndex}
           />
         </div>
+        {gameState.players.find((player) => player.name !== undefined) ===
+          undefined && (
+          <div className='flex justify-center'>
+            <Modal
+              title='Draw characters'
+              target={
+                <Button
+                  onClick={() => {
+                    setSelectedCharacters(
+                      gameState.players.map((player) => player.characterId),
+                    );
+                  }}
+                >
+                  Assign characters (fixed order)
+                </Button>
+              }
+              bgColor={drawCharactersBgColor}
+              hideBackground
+              withCloseButton
+              stayOpenOnBackgroundClicked
+              onBlur={() => {
+                if (gameState.players.length === selectedCharacters.length) {
+                  const bluffs = gameState.generateDemonBluffs();
+                  gameState.demonBluffs = bluffs;
+                  setGameState(gameState);
+                  setTab('grimoire');
+                }
+              }}
+            >
+              <DrawCharacters
+                characters={selectedCharacters}
+                startGame={startGame}
+                setModalBgColor={setDrawCharactersBgColor}
+                fixedCharacterOrder
+              />
+            </Modal>
+          </div>
+        )}
         <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder
             players={gameState.players}
