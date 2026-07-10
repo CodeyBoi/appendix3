@@ -399,7 +399,12 @@ const BloodOnTheClocktowerElement = () => {
         </div>
         {gameState.players.find((player) => player.name !== undefined) ===
           undefined && (
-          <div className='flex justify-center'>
+          <div
+            className={cn(
+              'flex justify-center',
+              tab !== 'grimoire' && 'hidden',
+            )}
+          >
             <Modal
               title='Draw characters'
               target={
