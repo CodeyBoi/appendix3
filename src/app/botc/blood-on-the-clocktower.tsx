@@ -373,8 +373,6 @@ const BloodOnTheClocktowerElement = () => {
             </>
           )}
         </div>
-        {}
-
         <div
           className={cn(
             'mb-16 flex flex-col justify-center divide-y rounded border shadow-md',
@@ -399,6 +397,44 @@ const BloodOnTheClocktowerElement = () => {
             setNightOrderIndex={setNightOrderIndex}
           />
         </div>
+        {gameState.players.find((player) => player.name !== undefined) ===
+          undefined && (
+          <div className='flex justify-center'>
+            <Modal
+              title='Draw characters'
+              target={
+                <Button
+                  onClick={() => {
+                    setSelectedCharacters(
+                      gameState.players.map((player) => player.characterId),
+                    );
+                  }}
+                >
+                  Assign characters (fixed order)
+                </Button>
+              }
+              bgColor={drawCharactersBgColor}
+              hideBackground
+              withCloseButton
+              stayOpenOnBackgroundClicked
+              onBlur={() => {
+                if (gameState.players.length === selectedCharacters.length) {
+                  const bluffs = gameState.generateDemonBluffs();
+                  gameState.demonBluffs = bluffs;
+                  setGameState(gameState);
+                  setTab('grimoire');
+                }
+              }}
+            >
+              <DrawCharacters
+                characters={selectedCharacters}
+                startGame={startGame}
+                setModalBgColor={setDrawCharactersBgColor}
+                fixedCharacterOrder
+              />
+            </Modal>
+          </div>
+        )}
         <span className={cn(tab !== 'night-order' && 'hidden')}>
           <NightOrder
             players={gameState.players}
