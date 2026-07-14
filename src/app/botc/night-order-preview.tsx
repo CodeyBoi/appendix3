@@ -1,9 +1,10 @@
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
-import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
+import { CharacterId } from './characters';
+import { getNightOrder } from './night-order';
 
 interface NightOrderPreviewProps {
   players: BotcPlayer[];
@@ -56,7 +57,7 @@ const getNightOrderEntry = ({
   index: number;
   firstNight: NightOrderAbility[];
   otherNights: NightOrderAbility[];
-}): { night: number; entry?: NightOrderAbility } => {
+}): { night: number; entry: NightOrderAbility } => {
   const firstNightEntry = firstNight[index];
   if (firstNightEntry) {
     return { night: 1, entry: firstNightEntry };
@@ -92,7 +93,7 @@ const NightOrderPreview = ({
   const isTeensyville = players.length < 7;
 
   const allNightOrders = useMemo(() => {
-    const gameCharactersSet = new Set(players.map((p) => p.characterId));
+    const nightOrder = getNightOrder(players.map((p) => p.characterId));
     return {
       firstNight: (isTeensyville
         ? ([] as NightOrderAbility[])
@@ -107,10 +108,8 @@ const NightOrderPreview = ({
                 'Wake the Demon, show them their minions and their 3 bluffs (characters not in play).',
             },
           ]
-      ).concat(FIRST_NIGHT_TEXT.filter(({ id }) => gameCharactersSet.has(id))),
-      otherNights: OTHER_NIGHTS_TEXT.filter(({ id }) =>
-        gameCharactersSet.has(id),
-      ),
+      ).concat(nightOrder.firstNight),
+      otherNights: nightOrder.otherNights,
     };
   }, [players]);
 
@@ -120,9 +119,39 @@ const NightOrderPreview = ({
     otherNights: allNightOrders.otherNights,
   });
 
-  if (!entry) {
-    return null;
-  }
+  const [previousReminder, setPreviousReminder] = useState({ entry, night });
+
+  const characterIds = players.map((p) => p.characterId).join('::');
+
+  useEffect(() => {
+    setPreviousReminder(
+      getNightOrderEntry({
+        index: nightOrderIndex,
+        firstNight: allNightOrders.firstNight,
+        otherNights: allNightOrders.otherNights,
+      }),
+    );
+  }, [nightOrderIndex]);
+
+  useEffect(() => {
+    for (let i = 0; i < 516; i++) {
+      const nightAbility = getNightOrderEntry({
+        index: i,
+        firstNight: allNightOrders.firstNight,
+        otherNights: allNightOrders.otherNights,
+      });
+      if (nightAbility.night > previousReminder.night) {
+        break;
+      } else if (
+        nightAbility.night === previousReminder.night &&
+        nightAbility.entry.id === previousReminder.entry.id &&
+        nightAbility.entry.description === previousReminder.entry.description
+      ) {
+        setNightOrderIndex(i);
+        break;
+      }
+    }
+  }, [characterIds]);
 
   return (
     <div className='flex gap-2'>

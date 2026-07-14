@@ -255,8 +255,6 @@ export const gigRouter = router({
         }
       }
 
-      console.log(res);
-
       return res.map((gig) => ({
         ...gig,
         signups: undefined,

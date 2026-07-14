@@ -3,10 +3,8 @@ import {
   Alignment,
   CharacterId,
   CHARACTERS,
-  FIRST_NIGHT_TEXT,
   getDefaultAlignment,
   getImagePathFromId,
-  OTHER_NIGHTS_TEXT,
 } from './characters';
 import { cn } from 'utils/class-names';
 
@@ -20,9 +18,6 @@ interface CharacterTokenProps {
   highlight?: boolean;
 }
 
-const FIRST_NIGHT_CHARACTERS = new Set(FIRST_NIGHT_TEXT.map(({ id }) => id));
-const OTHER_NIGHT_CHARACTERS = new Set(OTHER_NIGHTS_TEXT.map(({ id }) => id));
-
 const CharacterToken = ({
   playerName,
   characterId,
@@ -33,8 +28,8 @@ const CharacterToken = ({
   highlight = false,
 }: CharacterTokenProps) => {
   const character = characterId ? CHARACTERS[characterId] : undefined;
-  const hasLeftLeaf = characterId && FIRST_NIGHT_CHARACTERS.has(characterId);
-  const hasRightLeaf = characterId && OTHER_NIGHT_CHARACTERS.has(characterId);
+  const hasLeftLeaf = character?.nightReminders.first !== undefined;
+  const hasRightLeaf = character?.nightReminders.other !== undefined;
 
   const imgPath = character ? getImagePathFromId(character.id) : undefined;
   const nameColor =

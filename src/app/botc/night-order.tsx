@@ -1,7 +1,7 @@
 import Select from 'components/input/select';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import NightOrderEntry from './night-order-entry';
-import { CharacterId, FIRST_NIGHT_TEXT, OTHER_NIGHTS_TEXT } from './characters';
+import { CharacterId, CHARACTERS } from './characters';
 import Switch from 'components/input/switch';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import { cn } from 'utils/class-names';
@@ -12,9 +12,41 @@ interface NightOrderProps {
   setCurrentPlayerIndex: (n: number) => void;
 }
 
+export const getNightOrder = (characterIds: CharacterId[]) => {
+  const characters = characterIds.map((id) => CHARACTERS[id]);
+  return {
+    firstNight: characters
+      .flatMap((character) =>
+        character.nightReminders.first
+          ? [
+              {
+                ...character.nightReminders.first,
+                id: character.id,
+                description: character.nightReminders.first.text,
+              },
+            ]
+          : [],
+      )
+      .sort((a, b) => a.index - b.index),
+    otherNights: characters
+      .flatMap((character) =>
+        character.nightReminders.other
+          ? [
+              {
+                ...character.nightReminders.other,
+                id: character.id,
+                description: character.nightReminders.other.text,
+              },
+            ]
+          : [],
+      )
+      .sort((a, b) => a.index - b.index),
+  };
+};
+
 const NightOrder = ({
   players,
-  allCharacters,
+  allCharacters: allCharacterIds,
   setCurrentPlayerIndex,
 }: NightOrderProps) => {
   const [showFirstNight, setShowFirstNight] = useState(true);
@@ -23,15 +55,7 @@ const NightOrder = ({
 
   const isTeensyville = players.length < 7;
 
-  const allNightOrders = useMemo(() => {
-    const allCharactersSet = new Set(allCharacters);
-    return {
-      firstNight: FIRST_NIGHT_TEXT.filter(({ id }) => allCharactersSet.has(id)),
-      otherNights: OTHER_NIGHTS_TEXT.filter(({ id }) =>
-        allCharactersSet.has(id),
-      ),
-    };
-  }, [allCharacters]);
+  const allNightOrders = getNightOrder(allCharacterIds);
 
   const gameCharacters = players.map((p) => p.characterId);
   const deadCharacters = players

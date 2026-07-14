@@ -60,7 +60,7 @@ const BotcActionsModal = ({
   const charactersNotInPlay = allCharacters.filter(
     (characterId) => !characterSet.has(characterId),
   );
-  const reminderTokens = useMemo(
+  const reminderTokensInitial = useMemo(
     () =>
       (
         (showAllReminders
@@ -73,11 +73,21 @@ const BotcActionsModal = ({
               message: reminderText,
             })) ?? [],
         ) as Reminder[]
-      ).concat([
-        { characterId: 'good', message: 'Is Good' },
-        { characterId: 'evil', message: 'Is Evil' },
-        { message: 'Custom reminder' },
-      ]),
+      )
+        .concat(
+          allCharacters.flatMap(
+            (id) =>
+              CHARACTERS[id].reminderTokensGlobal?.map((reminderText) => ({
+                characterId: id,
+                message: reminderText,
+              })) ?? [],
+          ),
+        )
+        .concat([
+          { characterId: 'good', message: 'Is Good' },
+          { characterId: 'evil', message: 'Is Evil' },
+          { message: 'Custom reminder' },
+        ]),
     [showAllReminders, allCharacters, characterSet],
   );
 
@@ -112,6 +122,28 @@ const BotcActionsModal = ({
 
     return true;
   };
+
+  const intermediateReminderTokens = reminderTokensInitial.slice();
+  if (!showAllReminders) {
+    for (const usedReminder of players.flatMap((player) => player.reminders)) {
+      const index = intermediateReminderTokens.findIndex(
+        (reminder) =>
+          reminder.characterId === usedReminder.characterId &&
+          reminder.message === usedReminder.message,
+      );
+      if (index !== -1) {
+        intermediateReminderTokens.splice(index, 1);
+      }
+    }
+  }
+  const reminderTokens = intermediateReminderTokens.filter(
+    (reminder, index, list) =>
+      list.findIndex(
+        (otherReminder) =>
+          reminder.characterId === otherReminder.characterId &&
+          reminder.message === otherReminder.message,
+      ) === index,
+  );
 
   return (
     <Modal

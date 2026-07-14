@@ -320,7 +320,6 @@ type BotcScriptsJsonData = [
   ...BotcScriptJsonCharacterEntry[],
 ];
 const jsonToEdition = (data: BotcScriptsJsonData) => {
-  console.log({ data });
   const firstElement = data[0];
   const name = isMetadata(firstElement) ? firstElement.name : '';
   const characters = data.slice(
@@ -398,13 +397,6 @@ export const getImagePathFromId = (id: CharacterId) => {
   }
 };
 
-export const getWikiLink = (id: CharacterId) =>
-  isFallOfRomeCharacter(id)
-    ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
-    : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
-        CHARACTERS[id].name.replaceAll(' ', '_'),
-      )}`;
-
 export const EDITION_IDS = [
   'trouble-brewing',
   'bad-moon-rising',
@@ -430,14 +422,21 @@ export interface BotcCharacter {
   name: string;
   description: string;
   reminderTokens?: readonly string[];
+  reminderTokensGlobal?: readonly string[];
   setupFunction?: (players: BotcPlayer[]) => BotcPlayer[];
+  team: CharacterType;
+  image?: [string, string];
+  nightReminders: {
+    first?: {
+      text: string;
+      index: number;
+    };
+    other?: {
+      text: string;
+      index: number;
+    };
+  };
 }
-
-// const chooseRandom = (players: BOTCPlayer[], filter: (player: BOTCPlayer) => boolean) => {
-//   const validPlayers = players.filter(filter)
-//   if (validPlayers.length === 0) throw new Error('Error when choosing random from ' + JSON.stringify(players));
-//   return validPlayers[Math.floor(Math.random() * validPlayers.length)]
-// }
 
 const _characters = {
   // Trouble Brewing - Townsfolk
@@ -524,6 +523,7 @@ const _characters = {
     name: 'Drunk',
     description:
       'You do not know you are the Drunk. You think you are a Townsfolk character, but you are not.',
+    reminderTokensGlobal: ['Is the Drunk'],
   },
   recluse: {
     name: 'Recluse',
@@ -663,7 +663,7 @@ const _characters = {
   tealady: {
     name: 'Tea Lady',
     description: "If both your alive neighbors are good, they can't die.",
-    reminderTokens: ['Cannot die'],
+    reminderTokens: ['Cannot die', 'Cannot die'],
   },
   pacifist: {
     name: 'Pacifist',
@@ -743,13 +743,13 @@ const _characters = {
     name: 'Shabaloth',
     description:
       'Each night*, choose 2 players: they die. A dead player you chose last night might be regurgitated.',
-    reminderTokens: ['Killed by', 'Alive'],
+    reminderTokens: ['Killed by', 'Killed by', 'Alive'],
   },
   po: {
     name: 'Po',
     description:
       'Each night*, you may choose a player: they die. If your last choice was no-one, choose 3 players tonight.',
-    reminderTokens: ['Killed by', '3 attacks'],
+    reminderTokens: ['Killed by', 'Killed by', 'Killed by', '3 attacks'],
   },
 
   // Bad Moon Rising - Travellers
@@ -801,17 +801,32 @@ const _characters = {
     name: 'Mathematician',
     description:
       "Each night, you learn how many players’ abilities worked abnormally (since dawn) due to another character's ability.",
-    reminderTokens: ['Worked abnormally'],
+    reminderTokens: [
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+      'Worked abnormally',
+    ],
   },
   flowergirl: {
     name: 'Flowergirl',
     description: 'Each night*, you learn if a Demon voted today.',
-    reminderTokens: ['Demon voted', 'Demon not voted'],
+    reminderTokens: ['Demon voted'],
   },
   towncrier: {
     name: 'Town Crier',
     description: 'Each night*, you learn if a Minion nominated today.',
-    reminderTokens: ['Minion has nominated', 'Minion has not nominated'],
+    reminderTokens: ['Minion has nominated'],
   },
   oracle: {
     name: 'Oracle',
@@ -844,7 +859,7 @@ const _characters = {
     name: 'Juggler',
     description:
       "On your 1st day, publicly guess up to 5 players' characters. That night, you learn how many you got correct.",
-    reminderTokens: ['Correct'],
+    reminderTokens: ['Correct', 'Correct', 'Correct', 'Correct', 'Correct'],
   },
   sage: {
     name: 'Sage',
@@ -937,7 +952,7 @@ const _characters = {
     name: 'Harlot',
     description:
       'Each night*, choose a living player: if they agree, you learn their character, but you both might die.',
-    reminderTokens: ['Killed by'],
+    reminderTokens: ['Killed by', 'Killed by'],
   },
   butcher: {
     name: 'Butcher',
@@ -972,7 +987,7 @@ const _characters = {
     name: 'Physician',
     description:
       'Each night, choose two players (not yourself): they are sober, healthy & get true info tonight. The 1st time the Demon kills one, you learn the Demon type.',
-    reminderTokens: ['Patient', '1st Demon'],
+    reminderTokens: ['Patient', 'Patient', '1st Demon'],
   },
   legionary: {
     name: 'Legionary',
@@ -983,7 +998,16 @@ const _characters = {
     name: 'Trumpeter',
     description:
       'Each night*, you learn how many evil players publicly claimed to be Spartacus today.',
-    reminderTokens: ['Evil claim'],
+    reminderTokens: [
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+      'Evil claim',
+    ],
   },
   mortician: {
     name: 'Mortician',
@@ -1019,7 +1043,7 @@ const _characters = {
     name: 'Actor',
     description:
       "Once per game, during the day, publicly guess 3 players' character types (not yourself, 1 guess per type). That night, you learn how many you got correct.",
-    reminderTokens: ['Correct', 'Incorrect', 'No ability'],
+    reminderTokens: ['Correct', 'Correct', 'Correct', 'No ability'],
   },
   blacksmith: {
     name: 'Blacksmith',
@@ -1057,7 +1081,17 @@ const _characters = {
     name: 'Bad Omen',
     description:
       'You do not know you are a Bad Omen. You think you are a Townsfolk, but you receive false information. You might register as evil, even if dead.',
-    reminderTokens: ['Is the Bad Omen'],
+    reminderTokensGlobal: [
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+    ],
   },
 
   // Fall of Rome - Minions
@@ -1071,7 +1105,28 @@ const _characters = {
     name: 'Haruspex',
     description:
       'Each night, choose a player: you learn their character. The 1st player you choose twice in this way, dies. [+Spartacus]',
-    reminderTokens: ['Foretold', "Can't kill"],
+    reminderTokens: [
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Foretold',
+      'Dead',
+      "Can't kill",
+    ],
   },
   glykon: {
     name: 'Glykon',
@@ -1083,7 +1138,6 @@ const _characters = {
     name: 'Augur',
     description:
       'If a Townsfolk nominates you, they immediately become a Bad Omen.',
-    reminderTokens: ['Is a Bad Omen'],
   },
 
   // Fall of Rome - Demons
@@ -1091,7 +1145,7 @@ const _characters = {
     name: 'Cleopatra',
     description:
       "Each night, choose two players: if they nominate tomorrow, they die that night. Each day, if a good player (Travellers don't count) does not nominate, evil wins.",
-    reminderTokens: ['Chosen by', 'Killed by'],
+    reminderTokens: ['Chosen by', 'Chosen by', 'Killed by', 'Killed by'],
   },
   crassus: {
     name: 'Crassus',
@@ -1490,14 +1544,6 @@ const _characters = {
 } as const;
 
 export type CharacterId = keyof typeof _characters;
-
-export const CHARACTERS = Object.entries(_characters).reduce(
-  (acc, [id, val]) => {
-    acc[id as CharacterId] = { ...val, id: id as CharacterId };
-    return acc;
-  },
-  {} as Record<CharacterId, BotcCharacter>,
-);
 
 export interface Reminder {
   characterId?: CharacterId | Alignment;
@@ -2638,3 +2684,45 @@ export const START_OF_GAME_ABILITIES: Partial<
     return players;
   },
 };
+
+export const CHARACTERS = Object.entries(_characters).reduce(
+  (acc, [id, val]) => {
+    const firstNightReminderIndex = FIRST_NIGHT_TEXT.findIndex(
+      (r) => r.id === id,
+    );
+    const otherNightReminderIndex = OTHER_NIGHTS_TEXT.findIndex(
+      (r) => r.id === id,
+    );
+    const firstNightReminder = FIRST_NIGHT_TEXT[firstNightReminderIndex];
+    const otherNightReminder = OTHER_NIGHTS_TEXT[otherNightReminderIndex];
+    const nightReminders: BotcCharacter['nightReminders'] = {
+      first: firstNightReminder
+        ? {
+            text: firstNightReminder.description,
+            index: firstNightReminderIndex,
+          }
+        : undefined,
+      other: otherNightReminder
+        ? {
+            text: otherNightReminder.description,
+            index: otherNightReminderIndex,
+          }
+        : undefined,
+    };
+    acc[id as CharacterId] = {
+      ...val,
+      id: id as CharacterId,
+      team: getType(id as CharacterId),
+      nightReminders,
+    };
+    return acc;
+  },
+  {} as Record<CharacterId, BotcCharacter>,
+);
+
+export const getWikiLink = (id: CharacterId) =>
+  isFallOfRomeCharacter(id)
+    ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
+    : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
+        CHARACTERS[id].name.replaceAll(' ', '_'),
+      )}`;

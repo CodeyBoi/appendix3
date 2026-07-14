@@ -28,7 +28,6 @@ const DrawCharacters = ({
   useEffect(() => {
     setPlayers([]);
     setPickedNumbers(new Set());
-    console.log(characters);
   }, [characters]);
 
   const characterId =
