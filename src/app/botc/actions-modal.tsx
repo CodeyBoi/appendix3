@@ -88,7 +88,7 @@ const BotcActionsModal = ({
           { characterId: 'evil', message: 'Is Evil' },
           { message: 'Custom reminder' },
         ]),
-    [showAllReminders, allCharacters, characterSet],
+    [showAllReminders, allCharacters.join('::')],
   );
 
   const killOrRevivePlayer = () => {
@@ -272,7 +272,7 @@ const BotcActionsModal = ({
           <div className='h-2' />
           <div className='flex flex-col gap-4 md:flex-row'>
             <Switch
-              label='Show tokens not in play'
+              label='Show all tokens'
               value={showAllReminders}
               onChange={setShowAllReminders}
             />

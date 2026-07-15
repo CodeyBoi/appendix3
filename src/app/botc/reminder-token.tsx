@@ -4,7 +4,6 @@ import {
   CharacterId,
   CHARACTERS,
   getDefaultAlignment,
-  getImagePathFromId,
 } from './characters';
 
 interface ReminderTokenProps {
@@ -29,7 +28,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
     characterId === undefined
       ? undefined
       : isCharacter
-      ? getImagePathFromId(characterId)
+      ? character?.image?.[0]
       : ALIGNMENT_IMG_SRCS[characterId];
   return (
     <div

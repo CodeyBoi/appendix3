@@ -3,7 +3,7 @@ import ActionIcon from 'components/input/action-icon';
 import { useEffect, useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
-import { CharacterId } from './characters';
+import { CharacterId, isDroisoned } from './characters';
 import { getNightOrder } from './night-order';
 
 interface NightOrderPreviewProps {
@@ -92,8 +92,9 @@ const NightOrderPreview = ({
 }: NightOrderPreviewProps) => {
   const isTeensyville = players.length < 7;
 
+  const characters = players.map((p) => p.characterId);
   const allNightOrders = useMemo(() => {
-    const nightOrder = getNightOrder(players.map((p) => p.characterId));
+    const nightOrder = getNightOrder(characters);
     return {
       firstNight: (isTeensyville
         ? ([] as NightOrderAbility[])
@@ -111,17 +112,15 @@ const NightOrderPreview = ({
       ).concat(nightOrder.firstNight),
       otherNights: nightOrder.otherNights,
     };
-  }, [players]);
+  }, [characters.toSorted().join('::')]);
 
-  const { entry, night } = getNightOrderEntry({
-    index: nightOrderIndex,
-    firstNight: allNightOrders.firstNight,
-    otherNights: allNightOrders.otherNights,
-  });
-
-  const [previousReminder, setPreviousReminder] = useState({ entry, night });
-
-  const characterIds = players.map((p) => p.characterId).join('::');
+  const [reminder, setPreviousReminder] = useState(
+    getNightOrderEntry({
+      index: nightOrderIndex,
+      firstNight: allNightOrders.firstNight,
+      otherNights: allNightOrders.otherNights,
+    }),
+  );
 
   useEffect(() => {
     setPreviousReminder(
@@ -140,18 +139,31 @@ const NightOrderPreview = ({
         firstNight: allNightOrders.firstNight,
         otherNights: allNightOrders.otherNights,
       });
-      if (nightAbility.night > previousReminder.night) {
+      if (nightAbility.night > reminder.night) {
         break;
       } else if (
-        nightAbility.night === previousReminder.night &&
-        nightAbility.entry.id === previousReminder.entry.id &&
-        nightAbility.entry.description === previousReminder.entry.description
+        nightAbility.night === reminder.night &&
+        nightAbility.entry.id === reminder.entry.id &&
+        nightAbility.entry.description === reminder.entry.description
       ) {
         setNightOrderIndex(i);
         break;
       }
     }
-  }, [characterIds]);
+  }, [
+    players
+      .map((p) => p.characterId)
+      .sort()
+      .join('::'),
+  ]);
+
+  const currentPlayers = players
+    .filter((player) => player.characterId === reminder.entry.id)
+    .map((player) => ({ name: player.name, isDroisoned: isDroisoned(player) }));
+  const isAnyCurrentPlayerDroisoned =
+    currentPlayers.find((player) => player.isDroisoned) !== undefined;
+  const areAllCurrentPlayersDroisoned =
+    currentPlayers.find((player) => !player.isDroisoned) === undefined;
 
   return (
     <div className='flex gap-2'>
@@ -167,24 +179,38 @@ const NightOrderPreview = ({
       <div className='grow text-xs lg:text-sm'>
         <NightOrderEntry
           name={
-            entry.name ??
-            players
-              .filter((p) => p.characterId === entry.id)
+            reminder.entry.name ??
+            currentPlayers
+              .filter((p) => p.name?.trim())
               .map((p) => p.name)
               .join(', ')
           }
-          characterId={entry.id}
-          text={entry.description}
+          characterId={reminder.entry.id}
+          text={reminder.entry.description}
           muted={
-            entry.name !== 'Demon' &&
-            entry.name !== 'Minions' &&
-            entry.name !== 'Daytime' &&
-            players.find((p) => p.characterId === entry.id && p.isAlive) ===
-              undefined
+            reminder.entry.name !== 'Demon' &&
+            reminder.entry.name !== 'Minions' &&
+            reminder.entry.name !== 'Daytime' &&
+            players.find(
+              (p) => p.characterId === reminder.entry.id && p.isAlive,
+            ) === undefined
           }
-          topRightText={`${formatCardinal(night)} ${
-            entry.name === 'Daytime' ? 'day' : 'night'
+          topRightText={`${formatCardinal(reminder.night)} ${
+            reminder.entry.name === 'Daytime' ? 'day' : 'night'
           }`}
+          warnings={
+            currentPlayers.length === 0
+              ? []
+              : currentPlayers.length === 1
+              ? isAnyCurrentPlayerDroisoned
+                ? ['This player is drunk/poisoned']
+                : []
+              : areAllCurrentPlayersDroisoned
+              ? ['These players are all drunk/poisoned']
+              : isAnyCurrentPlayerDroisoned
+              ? ['Some of these players are drunk/poisoned']
+              : []
+          }
         />
       </div>
       <ActionIcon

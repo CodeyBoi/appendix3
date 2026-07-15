@@ -375,9 +375,10 @@ const ABBREVIATIONS: Record<string, string> = {
 };
 export const isFallOfRomeCharacter = (id: CharacterId) =>
   getEdition(id).includes('fall-of-rome');
+
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
 const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
-export const getImagePathFromId = (id: CharacterId) => {
+const getImagePathFromId = (id: CharacterId) => {
   if (isFallOfRomeCharacter(id)) {
     // Centurion, Glykon and High Priest are stored at <name>1
     const name = ['centurion', 'glykon', 'highpriest'].includes(id)
@@ -2709,10 +2710,12 @@ export const CHARACTERS = Object.entries(_characters).reduce(
           }
         : undefined,
     };
+    const imgPath = getImagePathFromId(id as CharacterId);
     acc[id as CharacterId] = {
       ...val,
       id: id as CharacterId,
       team: getType(id as CharacterId),
+      image: [imgPath, imgPath],
       nightReminders,
     };
     return acc;
@@ -2726,3 +2729,9 @@ export const getWikiLink = (id: CharacterId) =>
     : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
         CHARACTERS[id].name.replaceAll(' ', '_'),
       )}`;
+
+export const isDroisoned = (player: BotcPlayer) =>
+  player.reminders.find((reminder) => {
+    const text = reminder.message.toLowerCase();
+    return text.includes('drunk') || text.includes('poisoned');
+  });

@@ -13,7 +13,9 @@ interface NightOrderProps {
 }
 
 export const getNightOrder = (characterIds: CharacterId[]) => {
-  const characters = characterIds.map((id) => CHARACTERS[id]);
+  const characters = characterIds
+    .filter((id, i) => i === characterIds.indexOf(id))
+    .map((id) => CHARACTERS[id]);
   return {
     firstNight: characters
       .flatMap((character) =>
@@ -106,6 +108,7 @@ const NightOrder = ({
             <NightOrderEntry
               name={players
                 .filter((p) => p.characterId === id)
+                .filter((p) => p.name?.trim())
                 .map((p) => p.name)
                 .join(', ')}
               muted={
