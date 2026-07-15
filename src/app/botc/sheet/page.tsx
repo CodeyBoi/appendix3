@@ -5,7 +5,6 @@ import {
   CharacterId,
   CHARACTERS,
   Edition,
-  getImagePathFromId,
   getType,
   getWikiLink,
 } from '../characters';
@@ -57,12 +56,12 @@ const BotcSheetPage = ({
               <div className='grid grid-cols-1 lg:grid-cols-2'>
                 {characters
                   .map((characterId) => CHARACTERS[characterId])
-                  .map(({ id, name, description }) => {
+                  .map(({ id, name, description, image }) => {
                     return (
                       <div key={id} className='px-2 py-1'>
                         <BotcCharacterPanel
                           name={name}
-                          imgSrc={getImagePathFromId(id)}
+                          imgSrc={image?.[0] ?? ''}
                           imgLink={getWikiLink(id)}
                           description={description}
                           showDescription

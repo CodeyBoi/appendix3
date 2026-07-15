@@ -1,11 +1,7 @@
 import { cn } from 'utils/class-names';
-import {
-  CharacterId,
-  CHARACTERS,
-  getImagePathFromId,
-  getWikiLink,
-} from './characters';
+import { CharacterId, CHARACTERS, getWikiLink } from './characters';
 import Link from 'next/link';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 interface NightOrderEntryProps {
   characterId?: CharacterId;
@@ -14,6 +10,7 @@ interface NightOrderEntryProps {
   text: string;
   muted?: boolean;
   topRightText?: string;
+  warnings?: string[];
 }
 
 const NightOrderEntry = ({
@@ -21,17 +18,17 @@ const NightOrderEntry = ({
   text,
   muted = false,
   topRightText,
+  warnings = [],
   ...props
 }: NightOrderEntryProps) => {
-  const characterName = characterId ? CHARACTERS[characterId].name : props.name;
+  const character = characterId ? CHARACTERS[characterId] : undefined;
+  const characterName = character?.name ?? props.name;
 
   if (!characterName || !text) {
     return null;
   }
 
-  const imgPath = characterId
-    ? getImagePathFromId(characterId)
-    : props.imagePath;
+  const imgPath = character?.image ? character.image[0] : props.imagePath;
 
   const nameElement = (
     <>
@@ -69,9 +66,25 @@ const NightOrderEntry = ({
             )}
           </>
         )}
-        <div className={cn('grow', imgPath && 'mt-3')}>
+        <div
+          className={cn(
+            'flex grow flex-col',
+            imgPath && warnings.length === 0 && 'mt-3',
+          )}
+        >
           <h4 className='hidden lg:block'>{nameElement}</h4>
           <h5 className='lg:hidden'>{nameElement}</h5>
+          <div className='flex flex-col gap-2'>
+            {warnings.map((msg) => (
+              <div
+                key={msg}
+                className='flex items-center gap-1 text-xs font-thin text-red-600'
+              >
+                <IconAlertCircle size={16} />
+                {msg}
+              </div>
+            ))}
+          </div>
         </div>
         {topRightText && (
           <div className='translate-y-px whitespace-nowrap text-xs font-thin lg:text-sm'>

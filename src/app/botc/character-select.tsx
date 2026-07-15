@@ -9,7 +9,6 @@ import {
   CHARACTERS,
   CharacterType,
   Edition,
-  getImagePathFromId,
   isEvil,
   isGood,
   MAX_PLAYERS,
@@ -353,7 +352,7 @@ const BotcCharacterSelect = ({
               <div className='grid grid-cols-2 lg:grid-cols-4'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
-                  .map(({ id, name, description }) => (
+                  .map(({ id, name, description, image }) => (
                     <div
                       key={id}
                       className={cn(
@@ -378,7 +377,7 @@ const BotcCharacterSelect = ({
                     >
                       <BotcCharacterPanel
                         name={name}
-                        imgSrc={getImagePathFromId(id)}
+                        imgSrc={image?.[0] ?? ''}
                         description={description}
                         showDescription={showDescriptions}
                       />

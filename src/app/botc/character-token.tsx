@@ -4,7 +4,6 @@ import {
   CharacterId,
   CHARACTERS,
   getDefaultAlignment,
-  getImagePathFromId,
 } from './characters';
 import { cn } from 'utils/class-names';
 
@@ -31,7 +30,7 @@ const CharacterToken = ({
   const hasLeftLeaf = character?.nightReminders.first !== undefined;
   const hasRightLeaf = character?.nightReminders.other !== undefined;
 
-  const imgPath = character ? getImagePathFromId(character.id) : undefined;
+  const imgPath = character?.image?.[0];
   const nameColor =
     alignment === 'good'
       ? 'bg-blue-500'
@@ -96,7 +95,7 @@ const CharacterToken = ({
               'absolute h-full w-full',
               imgPath?.includes('Fall_of_Rome') && 'scale-75',
             )}
-            src={getImagePathFromId(character.id)}
+            src={imgPath}
             loading='lazy'
             draggable={false}
           />
