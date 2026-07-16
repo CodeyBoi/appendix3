@@ -44,8 +44,10 @@ const Switch = ({
   }, [value]);
 
   const handleClick = () => {
-    onChange?.(!checked);
-    setChecked(!checked);
+    const changed = onChange?.(!checked);
+    if (changed) {
+      setChecked(!checked);
+    }
   };
 
   return (
