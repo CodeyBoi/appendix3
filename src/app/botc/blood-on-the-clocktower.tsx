@@ -26,6 +26,8 @@ import { shuffle } from 'utils/array';
 import DrawCharacters from './draw-characters';
 import { cn } from 'utils/class-names';
 import NightOrderPreview from './night-order-preview';
+import ActionIcon from 'components/input/action-icon';
+import Tooltip from 'components/tooltip';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -224,7 +226,7 @@ const BloodOnTheClocktowerElement = () => {
             />
             {isCustomEdition && (
               <div className='translate-y-1.5'>
-                <Button
+                <ActionIcon
                   onClick={() => {
                     if (confirm(`Do you want to remove '${edition.name}'?`)) {
                       removeCustomScript(edition.id);
@@ -237,8 +239,7 @@ const BloodOnTheClocktowerElement = () => {
                   }}
                 >
                   <IconTrash />
-                  Remove
-                </Button>
+                </ActionIcon>
               </div>
             )}
           </div>
@@ -426,15 +427,20 @@ const BloodOnTheClocktowerElement = () => {
             <Modal
               title='Draw characters'
               target={
-                <Button
-                  onClick={() => {
-                    setSelectedCharacters(
-                      gameState.players.map((player) => player.characterId),
-                    );
-                  }}
+                <Tooltip
+                  text='Starts at "First" and goes clockwise'
+                  position='top'
                 >
-                  Assign characters (starts at "First" and goes clockwise)
-                </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedCharacters(
+                        gameState.players.map((player) => player.characterId),
+                      );
+                    }}
+                  >
+                    Assign characters
+                  </Button>
+                </Tooltip>
               }
               bgColor={drawCharactersBgColor}
               hideBackground
