@@ -15,7 +15,7 @@ import {
   MIN_PLAYERS,
 } from './characters';
 import BotcCharacterPanel from './character-panel';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'components/input/button';
 import React from 'react';
 
@@ -275,13 +275,17 @@ const findSelectionError = (
   return res;
 };
 
+const NUMBER_OF_PLAYERS_KEY = 'botcNumberOfPlayers';
+
 const BotcCharacterSelect = ({
   edition,
   selectedCharacters,
   onSelectedCharactersChange,
 }: BotcCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
-  const [numberOfPlayers, setNumberOfPlayers] = useState(7);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(() =>
+    parseInt(localStorage.getItem(NUMBER_OF_PLAYERS_KEY) ?? '7'),
+  );
   const [allowDuplicateCharacters, _setAllowDuplicateCharacters] =
     useState(false);
   const setAllowDuplicateCharacters = (allow: boolean) => {
@@ -290,6 +294,10 @@ const BotcCharacterSelect = ({
     }
     _setAllowDuplicateCharacters(allow);
   };
+
+  useEffect(() => {
+    localStorage.setItem(NUMBER_OF_PLAYERS_KEY, numberOfPlayers.toString());
+  }, [numberOfPlayers]);
 
   const numberOfCharacters = getNumberOfCharacters(
     numberOfPlayers,

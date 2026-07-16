@@ -40,6 +40,8 @@ const Grimoire = ({
   >();
   const [addCharacterModalOpen, setAddCharacterModalOpen] = useState(false);
   const points = getOvalPoints(players.length);
+  const arePlayerNotAssigned =
+    players.find((player) => player.name !== undefined) === undefined;
   return (
     <>
       <Modal
@@ -156,6 +158,13 @@ const Grimoire = ({
                     }
                   }}
                 />
+                {arePlayerNotAssigned && playerIndex === 0 && (
+                  <div className='absolute top-1/2 flex w-full justify-center'>
+                    <h3 className='-translate-y-1/2 rounded bg-red-600 px-2 py-1 text-center text-white shadow-md'>
+                      First
+                    </h3>
+                  </div>
+                )}
               </div>
               {player.reminders
                 .concat(player.automaticReminders)

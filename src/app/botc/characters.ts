@@ -2781,8 +2781,10 @@ export const getWikiLink = (id: CharacterId) =>
         CHARACTERS[id].name.replaceAll(' ', '_'),
       )}`;
 
+const checkDroisoned = (reminder: Reminder) => {
+  const text = reminder.message.toLowerCase();
+  return text.includes('drunk') || text.includes('poisoned');
+};
 export const isDroisoned = (player: BotcPlayer) =>
-  player.reminders.find((reminder) => {
-    const text = reminder.message.toLowerCase();
-    return text.includes('drunk') || text.includes(' name: playe.namerisoned');
-  });
+  (player.reminders.find(checkDroisoned) ??
+    player.automaticReminders.find(checkDroisoned)) !== undefined;

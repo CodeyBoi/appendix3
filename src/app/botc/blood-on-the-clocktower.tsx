@@ -342,7 +342,8 @@ const BloodOnTheClocktowerElement = () => {
                   }
                   onClick={() => {
                     gameState.assignCharacters(selectedCharacters);
-                    startGame(gameState.players);
+                    setGameState(gameState);
+                    setNightOrderIndex(0);
                     setTab('grimoire');
                   }}
                 >
@@ -432,7 +433,7 @@ const BloodOnTheClocktowerElement = () => {
                     );
                   }}
                 >
-                  Assign characters (fixed order)
+                  Assign characters (starts at "First" and goes clockwise)
                 </Button>
               }
               bgColor={drawCharactersBgColor}
