@@ -206,7 +206,7 @@ const NightOrderPreview = ({
               ? []
               : currentPlayers.length === 1
               ? isAnyCurrentPlayerDroisoned
-                ? ['This player is drunk/poisoned']
+                ? ['Drunk/Poisoned']
                 : []
               : areAllCurrentPlayersDroisoned
               ? ['These players are all drunk/poisoned']

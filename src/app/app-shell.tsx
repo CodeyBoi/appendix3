@@ -21,7 +21,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
       <div className='fixed top-14 w-72 flex-none max-lg:hidden'>
         <NavbarContent />
       </div>
-      <main className='p-6 lg:ml-72'>{children}</main>
+      <main className='p-3 lg:ml-72 lg:p-6'>{children}</main>
     </>
   );
 };
