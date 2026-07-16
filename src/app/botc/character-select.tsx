@@ -391,59 +391,70 @@ const BotcCharacterSelect = ({
               <div className='grid grid-cols-2 lg:grid-cols-4'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
-                  .map(({ id, name, description, image }) => (
-                    <div
-                      key={id}
-                      className={cn(
-                        'border px-2 py-1',
-                        !allowDuplicateCharacters && 'hover:cursor-pointer',
-                        subtleBorder,
-                        selectedCharacters.includes(id) && bgShade,
-                      )}
-                      onClick={() => {
-                        if (allowDuplicateCharacters) {
-                          return;
-                        }
-                        const newSelected = selectedCharacters.slice();
-                        const idx = newSelected.findIndex((c) => c === id);
-                        if (idx !== -1) {
-                          newSelected.splice(idx, 1);
-                        } else {
-                          newSelected.push(id);
-                        }
-                        onSelectedCharactersChange(newSelected);
-                      }}
-                    >
-                      <BotcCharacterPanel
-                        name={name}
-                        imgSrc={image?.[0] ?? ''}
-                        description={description}
-                        showDescription={showDescriptions}
-                      />
-                      {allowDuplicateCharacters && (
-                        <input
-                          className='w-full border'
-                          type='number'
-                          min={0}
-                          defaultValue={
-                            selectedCharacters.filter((c) => c === id).length
+                  .map(
+                    ({
+                      id,
+                      name,
+                      description,
+                      image,
+                      cannotBeSelected = false,
+                    }) => (
+                      <div
+                        key={id}
+                        className={cn(
+                          'border px-2 py-1',
+                          !allowDuplicateCharacters &&
+                            !cannotBeSelected &&
+                            'hover:cursor-pointer',
+                          subtleBorder,
+                          selectedCharacters.includes(id) && bgShade,
+                          cannotBeSelected && 'opacity-50 grayscale',
+                        )}
+                        onClick={() => {
+                          if (allowDuplicateCharacters || cannotBeSelected) {
+                            return;
                           }
-                          onChange={(e) => {
-                            // Filter out all entries of the id and add back the desired amount
-                            const val = e.currentTarget.valueAsNumber;
-                            const newSelectedCharacters =
-                              selectedCharacters.filter(
-                                (characterId) => characterId !== id,
-                              );
-                            for (let i = 0; i < val; i++) {
-                              newSelectedCharacters.push(id);
-                            }
-                            onSelectedCharactersChange(newSelectedCharacters);
-                          }}
+                          const newSelected = selectedCharacters.slice();
+                          const idx = newSelected.findIndex((c) => c === id);
+                          if (idx !== -1) {
+                            newSelected.splice(idx, 1);
+                          } else {
+                            newSelected.push(id);
+                          }
+                          onSelectedCharactersChange(newSelected);
+                        }}
+                      >
+                        <BotcCharacterPanel
+                          name={name}
+                          imgSrc={image?.[0] ?? ''}
+                          description={description}
+                          showDescription={showDescriptions}
                         />
-                      )}
-                    </div>
-                  ))}
+                        {allowDuplicateCharacters && !cannotBeSelected && (
+                          <input
+                            className='w-full border'
+                            type='number'
+                            min={0}
+                            defaultValue={
+                              selectedCharacters.filter((c) => c === id).length
+                            }
+                            onChange={(e) => {
+                              // Filter out all entries of the id and add back the desired amount
+                              const val = e.currentTarget.valueAsNumber;
+                              const newSelectedCharacters =
+                                selectedCharacters.filter(
+                                  (characterId) => characterId !== id,
+                                );
+                              for (let i = 0; i < val; i++) {
+                                newSelectedCharacters.push(id);
+                              }
+                              onSelectedCharactersChange(newSelectedCharacters);
+                            }}
+                          />
+                        )}
+                      </div>
+                    ),
+                  )}
               </div>
             </div>
             <div className='h-2' />

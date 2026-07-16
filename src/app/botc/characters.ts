@@ -437,6 +437,7 @@ export interface BotcCharacter {
       index: number;
     };
   };
+  cannotBeSelected?: boolean;
 }
 
 const _characters = {
@@ -525,6 +526,7 @@ const _characters = {
     description:
       'You do not know you are the Drunk. You think you are a Townsfolk character, but you are not.',
     reminderTokensGlobal: ['Is the Drunk'],
+    cannotBeSelected: true,
   },
   recluse: {
     name: 'Recluse',
@@ -1101,6 +1103,7 @@ const _characters = {
       'Is the Bad Omen',
       'Is the Bad Omen',
     ],
+    cannotBeSelected: true,
   },
 
   // Fall of Rome - Minions
@@ -1167,6 +1170,7 @@ const _characters = {
     description:
       'You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. The 1st Hannibal to die, becomes good. [+1 Hannibal]',
     reminderTokens: ['Is Hannibal', 'Killed by'],
+    cannotBeSelected: true,
   },
   caesar: {
     name: 'Caesar',
@@ -1441,6 +1445,7 @@ const _characters = {
     name: 'Marionette',
     description:
       'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
+    cannotBeSelected: true,
   },
   mezepheles: {
     name: 'Mezepheles',
