@@ -133,6 +133,9 @@ const NightOrderPreview = ({
   }, [nightOrderIndex]);
 
   useEffect(() => {
+    if (nightOrderIndex === 0) {
+      return;
+    }
     for (let i = 0; i < 516; i++) {
       const nightAbility = getNightOrderEntry({
         index: i,

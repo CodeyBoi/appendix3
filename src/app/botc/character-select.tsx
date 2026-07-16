@@ -15,7 +15,7 @@ import {
   MIN_PLAYERS,
 } from './characters';
 import BotcCharacterPanel from './character-panel';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'components/input/button';
 import React from 'react';
 
@@ -55,11 +55,16 @@ const getNumberOfCharacters = (
   return res;
 };
 
-const generateCharacterRow = (
-  character: CharacterType,
-  selectedColumn: number,
-  onClick: (n: number) => void,
-) => {
+const CharacterCountTableRow = ({
+  character,
+  selectedColumn,
+  onClick,
+}: {
+  character: CharacterType;
+  selectedColumn?: number;
+  onClick?: (n: number) => void;
+}) => {
+  const pointerOnHover = onClick !== undefined;
   const color = isGood(character) ? 'text-blue-500' : 'text-red-600';
   return (
     <tr className={color} key={character + 'amount'}>
@@ -75,18 +80,76 @@ const generateCharacterRow = (
         <td
           key={character + n.toString()}
           className={cn(
-            'border-x hover:cursor-pointer',
+            'border-x',
             n === selectedColumn && 'bg-red-600/20',
             character === 'demons' && 'border-b',
+            pointerOnHover && 'hover:cursor-pointer',
           )}
           onClick={() => {
-            onClick(n);
+            onClick?.(n);
           }}
         >
           {getNumberOfCharacters(n)[character]}
         </td>
       ))}
     </tr>
+  );
+};
+
+interface CharacterCountTableProps {
+  numberOfPlayers?: number;
+  onChange?: (n: number) => void;
+}
+
+export const CharacterCountTable = ({
+  numberOfPlayers,
+  onChange,
+}: CharacterCountTableProps) => {
+  const pointerOnHover = onChange !== undefined;
+  return (
+    <table className='w-min text-center text-xs lg:text-lg'>
+      <tbody>
+        <tr className='font-bold'>
+          <td className='border-x border-t'>Players</td>
+          {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
+            <td
+              className={cn(
+                'border-x border-t px-1 lg:px-2',
+                n === numberOfPlayers && 'bg-red-600/20',
+                pointerOnHover && 'hover:cursor-pointer',
+              )}
+              key={`CharacterCountHeader-${n}`}
+              onClick={() => {
+                onChange?.(n);
+              }}
+            >
+              {n}
+            </td>
+          ))}
+          <td
+            className={cn(
+              'border-x border-t px-1',
+              15 === numberOfPlayers && 'bg-red-600/20',
+              pointerOnHover && 'hover:cursor-pointer',
+            )}
+            onClick={() => {
+              onChange?.(15);
+            }}
+          >
+            {MAX_PLAYERS}+
+          </td>
+        </tr>
+
+        {CHARACTER_TYPES.slice(0, -1).map((t) => (
+          <CharacterCountTableRow
+            key={`CharacterCountTable-${t}`}
+            character={t}
+            selectedColumn={numberOfPlayers}
+            onClick={onChange}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 };
 
@@ -212,13 +275,17 @@ const findSelectionError = (
   return res;
 };
 
+const NUMBER_OF_PLAYERS_KEY = 'botcNumberOfPlayers';
+
 const BotcCharacterSelect = ({
   edition,
   selectedCharacters,
   onSelectedCharactersChange,
 }: BotcCharacterSelectProps) => {
   const [showDescriptions, setShowDescriptions] = useState(true);
-  const [numberOfPlayers, setNumberOfPlayers] = useState(7);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(() =>
+    parseInt(localStorage.getItem(NUMBER_OF_PLAYERS_KEY) ?? '7'),
+  );
   const [allowDuplicateCharacters, _setAllowDuplicateCharacters] =
     useState(false);
   const setAllowDuplicateCharacters = (allow: boolean) => {
@@ -227,6 +294,10 @@ const BotcCharacterSelect = ({
     }
     _setAllowDuplicateCharacters(allow);
   };
+
+  useEffect(() => {
+    localStorage.setItem(NUMBER_OF_PLAYERS_KEY, numberOfPlayers.toString());
+  }, [numberOfPlayers]);
 
   const numberOfCharacters = getNumberOfCharacters(
     numberOfPlayers,
@@ -247,42 +318,10 @@ const BotcCharacterSelect = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      <table className='w-min text-center text-xs lg:text-lg'>
-        <tbody>
-          <tr className='font-bold'>
-            <td className='border-x border-t'>Players</td>
-            {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
-              <td
-                className={cn(
-                  'border-x border-t px-1 hover:cursor-pointer lg:px-2',
-                  n === numberOfPlayers && 'bg-red-600/20',
-                )}
-                key={n}
-                onClick={() => {
-                  setNumberOfPlayers(n);
-                }}
-              >
-                {n}
-              </td>
-            ))}
-            <td
-              className={cn(
-                'border-x border-t px-1 hover:cursor-pointer',
-                15 === numberOfPlayers && 'bg-red-600/20',
-              )}
-              onClick={() => {
-                setNumberOfPlayers(15);
-              }}
-            >
-              {MAX_PLAYERS}+
-            </td>
-          </tr>
-
-          {CHARACTER_TYPES.slice(0, -1).map((t) =>
-            generateCharacterRow(t, numberOfPlayers, setNumberOfPlayers),
-          )}
-        </tbody>
-      </table>
+      <CharacterCountTable
+        numberOfPlayers={numberOfPlayers}
+        onChange={setNumberOfPlayers}
+      />
       <div className='flex flex-col gap-2 md:flex-row'>
         <Switch
           label='Show character abilities'
@@ -352,59 +391,70 @@ const BotcCharacterSelect = ({
               <div className='grid grid-cols-2 lg:grid-cols-4'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
-                  .map(({ id, name, description, image }) => (
-                    <div
-                      key={id}
-                      className={cn(
-                        'border px-2 py-1',
-                        !allowDuplicateCharacters && 'hover:cursor-pointer',
-                        subtleBorder,
-                        selectedCharacters.includes(id) && bgShade,
-                      )}
-                      onClick={() => {
-                        if (allowDuplicateCharacters) {
-                          return;
-                        }
-                        const newSelected = selectedCharacters.slice();
-                        const idx = newSelected.findIndex((c) => c === id);
-                        if (idx !== -1) {
-                          newSelected.splice(idx, 1);
-                        } else {
-                          newSelected.push(id);
-                        }
-                        onSelectedCharactersChange(newSelected);
-                      }}
-                    >
-                      <BotcCharacterPanel
-                        name={name}
-                        imgSrc={image?.[0] ?? ''}
-                        description={description}
-                        showDescription={showDescriptions}
-                      />
-                      {allowDuplicateCharacters && (
-                        <input
-                          className='w-full border'
-                          type='number'
-                          min={0}
-                          defaultValue={
-                            selectedCharacters.filter((c) => c === id).length
+                  .map(
+                    ({
+                      id,
+                      name,
+                      description,
+                      image,
+                      cannotBeSelected = false,
+                    }) => (
+                      <div
+                        key={id}
+                        className={cn(
+                          'border px-2 py-1',
+                          !allowDuplicateCharacters &&
+                            !cannotBeSelected &&
+                            'hover:cursor-pointer',
+                          subtleBorder,
+                          selectedCharacters.includes(id) && bgShade,
+                          cannotBeSelected && 'opacity-50 grayscale',
+                        )}
+                        onClick={() => {
+                          if (allowDuplicateCharacters || cannotBeSelected) {
+                            return;
                           }
-                          onChange={(e) => {
-                            // Filter out all entries of the id and add back the desired amount
-                            const val = e.currentTarget.valueAsNumber;
-                            const newSelectedCharacters =
-                              selectedCharacters.filter(
-                                (characterId) => characterId !== id,
-                              );
-                            for (let i = 0; i < val; i++) {
-                              newSelectedCharacters.push(id);
-                            }
-                            onSelectedCharactersChange(newSelectedCharacters);
-                          }}
+                          const newSelected = selectedCharacters.slice();
+                          const idx = newSelected.findIndex((c) => c === id);
+                          if (idx !== -1) {
+                            newSelected.splice(idx, 1);
+                          } else {
+                            newSelected.push(id);
+                          }
+                          onSelectedCharactersChange(newSelected);
+                        }}
+                      >
+                        <BotcCharacterPanel
+                          name={name}
+                          imgSrc={image?.[0] ?? ''}
+                          description={description}
+                          showDescription={showDescriptions}
                         />
-                      )}
-                    </div>
-                  ))}
+                        {allowDuplicateCharacters && !cannotBeSelected && (
+                          <input
+                            className='w-full border'
+                            type='number'
+                            min={0}
+                            defaultValue={
+                              selectedCharacters.filter((c) => c === id).length
+                            }
+                            onChange={(e) => {
+                              // Filter out all entries of the id and add back the desired amount
+                              const val = e.currentTarget.valueAsNumber;
+                              const newSelectedCharacters =
+                                selectedCharacters.filter(
+                                  (characterId) => characterId !== id,
+                                );
+                              for (let i = 0; i < val; i++) {
+                                newSelectedCharacters.push(id);
+                              }
+                              onSelectedCharactersChange(newSelectedCharacters);
+                            }}
+                          />
+                        )}
+                      </div>
+                    ),
+                  )}
               </div>
             </div>
             <div className='h-2' />

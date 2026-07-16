@@ -338,7 +338,7 @@ const BotcActionsModal = ({
             if (!p) {
               throw new Error('Error when setting player name');
             }
-            p.name = formText;
+            p.name = formText.trim() ? formText.trim() : undefined;
             setPlayers(newPlayers);
             setFormText('');
             setOpen(false);

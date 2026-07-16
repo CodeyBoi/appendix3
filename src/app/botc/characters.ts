@@ -437,6 +437,7 @@ export interface BotcCharacter {
       index: number;
     };
   };
+  cannotBeSelected?: boolean;
 }
 
 const _characters = {
@@ -525,6 +526,7 @@ const _characters = {
     description:
       'You do not know you are the Drunk. You think you are a Townsfolk character, but you are not.',
     reminderTokensGlobal: ['Is the Drunk'],
+    cannotBeSelected: true,
   },
   recluse: {
     name: 'Recluse',
@@ -927,13 +929,21 @@ const _characters = {
     name: 'Vigormortis',
     description:
       'Each night*, choose a player: they die. Minions you kill keep their ability & poison 1 Townsfolk neighbor. [-1 Outsider]',
-    reminderTokens: ['Killed by', 'Has ability', 'Poisoned'],
+    reminderTokens: [
+      'Killed by',
+      'Has ability',
+      'Has ability',
+      'Has ability',
+      'Poisoned',
+      'Poisoned',
+      'Poisoned',
+    ],
   },
   nodashii: {
     name: 'No Dashii',
     description:
       'Each night*, choose a player: they die. Your 2 Townsfolk neighbors are poisoned.',
-    reminderTokens: ['Killed by', 'Poisoned'],
+    reminderTokens: ['Killed by', 'Poisoned', 'Poisoned'],
   },
   vortox: {
     name: 'Vortox',
@@ -1070,7 +1080,7 @@ const _characters = {
     name: 'Winemaker',
     description:
       'Your Townsfolk neighbours are drunk, but every other night, you are drunk until dusk, even if you are dead.',
-    reminderTokens: ['Odd', 'Even'],
+    reminderTokens: ['Odd', 'Even', 'Drunk', 'Drunk'],
   },
   spartacus: {
     name: 'Spartacus',
@@ -1093,6 +1103,7 @@ const _characters = {
       'Is the Bad Omen',
       'Is the Bad Omen',
     ],
+    cannotBeSelected: true,
   },
 
   // Fall of Rome - Minions
@@ -1159,6 +1170,7 @@ const _characters = {
     description:
       'You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. The 1st Hannibal to die, becomes good. [+1 Hannibal]',
     reminderTokens: ['Is Hannibal', 'Killed by'],
+    cannotBeSelected: true,
   },
   caesar: {
     name: 'Caesar',
@@ -1433,6 +1445,7 @@ const _characters = {
     name: 'Marionette',
     description:
       'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
+    cannotBeSelected: true,
   },
   mezepheles: {
     name: 'Mezepheles',
@@ -2682,6 +2695,49 @@ export const START_OF_GAME_ABILITIES: Partial<
       message: reminderText,
     });
 
+    if (reminderText === 'Odd') {
+      for (
+        let i = (playerIndex + 1) % players.length;
+        i !== playerIndex;
+        i = (i + 1) % players.length
+      ) {
+        const player = players[i];
+        if (!player) {
+          console.error(
+            `Out of boundaries error (with index ${i}, increasing) when setting up Winemaker (this shouldn't happen as boundaries are checked in a for loop)`,
+          );
+          return players;
+        }
+        if (player.isCharacterType('townsfolk')) {
+          player.reminders.push({
+            characterId: 'winemaker',
+            message: 'Drunk',
+          });
+          break;
+        }
+      }
+      for (
+        let i = (playerIndex + (players.length - 1)) % players.length;
+        i !== playerIndex;
+        i = (i + (players.length - 1)) % players.length
+      ) {
+        const player = players[i];
+        if (!player) {
+          console.error(
+            `Out of boundaries error (with index ${i}, decreasing) when setting up Winemaker (this shouldn't happen as boundaries are checked in a for loop)`,
+          );
+          return players;
+        }
+        if (player.isCharacterType('townsfolk')) {
+          player.reminders.push({
+            characterId: 'winemaker',
+            message: 'Drunk',
+          });
+          break;
+        }
+      }
+    }
+
     return players;
   },
 };
@@ -2730,8 +2786,10 @@ export const getWikiLink = (id: CharacterId) =>
         CHARACTERS[id].name.replaceAll(' ', '_'),
       )}`;
 
+const checkDroisoned = (reminder: Reminder) => {
+  const text = reminder.message.toLowerCase();
+  return text.includes('drunk') || text.includes('poisoned');
+};
 export const isDroisoned = (player: BotcPlayer) =>
-  player.reminders.find((reminder) => {
-    const text = reminder.message.toLowerCase();
-    return text.includes('drunk') || text.includes('poisoned');
-  });
+  (player.reminders.find(checkDroisoned) ??
+    player.automaticReminders.find(checkDroisoned)) !== undefined;

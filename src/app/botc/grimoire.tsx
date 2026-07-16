@@ -20,10 +20,9 @@ interface GrimoireProps {
 
 const getOvalPoints = (n: number) =>
   range(n).map((i) => {
-    const t = (2.0 * i * Math.PI) / n - Math.PI / 2.0;
+    const t = (2.0 * i * Math.PI) / n - Math.PI * (1.5 - 1 / n);
     return { left: 0.5 + 0.4 * Math.cos(t), top: 0.5 + 0.42 * Math.sin(t) };
   });
-
 const toPercent = (v: number) => `${Math.floor(v * 100)}%`;
 
 const Grimoire = ({
@@ -41,6 +40,8 @@ const Grimoire = ({
   >();
   const [addCharacterModalOpen, setAddCharacterModalOpen] = useState(false);
   const points = getOvalPoints(players.length);
+  const arePlayerNotAssigned =
+    players.find((player) => player.name !== undefined) === undefined;
   return (
     <>
       <Modal
@@ -157,6 +158,13 @@ const Grimoire = ({
                     }
                   }}
                 />
+                {arePlayerNotAssigned && playerIndex === 0 && (
+                  <div className='absolute top-1/2 flex w-full justify-center'>
+                    <h3 className='-translate-y-1/2 rounded bg-red-600 px-2 py-1 text-center text-white shadow-md'>
+                      First
+                    </h3>
+                  </div>
+                )}
               </div>
               {player.reminders
                 .concat(player.automaticReminders)
