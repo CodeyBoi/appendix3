@@ -44,7 +44,7 @@ const NightOrderEntry = ({
   const imgElement = imgPath ? (
     <img
       className={cn(
-        'relative z-0 h-12 w-12 lg:scale-150',
+        'relative z-0 h-12 w-12 scale-150',
         imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
       )}
       loading='lazy'
@@ -72,6 +72,11 @@ const NightOrderEntry = ({
             imgPath && warnings.length === 0 && 'mt-3',
           )}
         >
+          {topRightText && (
+            <div className='whitespace-nowrap text-xs font-thin opacity-50 lg:hidden'>
+              {topRightText}
+            </div>
+          )}
           <h4 className='hidden lg:block'>{nameElement}</h4>
           <h5 className='lg:hidden'>{nameElement}</h5>
           <div className='flex flex-col gap-2'>
@@ -87,7 +92,7 @@ const NightOrderEntry = ({
           </div>
         </div>
         {topRightText && (
-          <div className='translate-y-px whitespace-nowrap text-xs font-thin lg:text-sm'>
+          <div className='hidden translate-y-px whitespace-nowrap text-sm font-thin opacity-50 lg:block'>
             {topRightText}
           </div>
         )}
