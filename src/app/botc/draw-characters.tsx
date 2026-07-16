@@ -72,7 +72,7 @@ const DrawCharacters = ({
           const newPlayers = players.slice();
           newPlayers.push(
             new BotcPlayer({
-              name: playerName,
+              name: playerName.trim() ? playerName.trim() : undefined,
               characterId,
               id: newPlayers.length,
             }),

@@ -4,7 +4,7 @@ import { IconExternalLink, IconScript, IconTrash } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
 import { Metadata } from 'next';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BotcCharacterSelectTable from './character-select';
 import {
   CharacterId,
@@ -33,6 +33,10 @@ export const metadata: Metadata = {
 
 type Tab = 'setup' | 'grimoire' | 'night-order' | 'info-tokens';
 
+const BOTC_GAME_STATE_KEY = 'botcGameState';
+const BOTC_CUSTOM_SCRIPTS_KEY = 'botcCustomScripts';
+const BOTC_NIGHT_ORDER_INDEX_KEY = 'botcNightOrderIndex';
+
 const TROUBLE_BREWING = EDITIONS[0] as Edition;
 const CUSTOM_EDITION: Edition = {
   name: 'Custom Script',
@@ -47,7 +51,7 @@ const newGameState = new BotcGame({ edition: TROUBLE_BREWING });
 
 const getCustomScripts = () => {
   return JSON.parse(
-    localStorage.getItem('botcCustomScripts') ?? '[]',
+    localStorage.getItem(BOTC_CUSTOM_SCRIPTS_KEY) ?? '[]',
   ) as Edition[];
 };
 
@@ -59,7 +63,7 @@ const addCustomScript = (edition: Edition) => {
     customScripts.splice(idx, 1);
   }
   customScripts.push({ ...edition, id: newId });
-  localStorage.setItem('botcCustomScripts', JSON.stringify(customScripts));
+  localStorage.setItem(BOTC_CUSTOM_SCRIPTS_KEY, JSON.stringify(customScripts));
 };
 
 const removeCustomScript = (id: string) => {
@@ -68,12 +72,12 @@ const removeCustomScript = (id: string) => {
   if (idx !== -1) {
     customScripts.splice(idx, 1);
   }
-  localStorage.setItem('botcCustomScripts', JSON.stringify(customScripts));
+  localStorage.setItem(BOTC_CUSTOM_SCRIPTS_KEY, JSON.stringify(customScripts));
 };
 
 const BloodOnTheClocktowerElement = () => {
   const [gameState, _setGameState] = useState<BotcGame>(() => {
-    const savedStateString = localStorage.getItem('botcGameState');
+    const savedStateString = localStorage.getItem(BOTC_GAME_STATE_KEY);
     if (savedStateString) {
       const savedState = new BotcGame(
         JSON.parse(savedStateString) as InstanceType<typeof BotcGame>,
@@ -86,13 +90,12 @@ const BloodOnTheClocktowerElement = () => {
 
   const setGameState = (state: BotcGame) => {
     _setGameState(new BotcGame(state));
-    localStorage.setItem('botcGameState', JSON.stringify(state));
   };
 
   const [nightOrderIndex, _setNightOrderIndex] = useState(() => {
-    const storageValue = localStorage.getItem('botcNightOrderIndex');
+    const storageValue = localStorage.getItem(BOTC_NIGHT_ORDER_INDEX_KEY);
     if (storageValue === null) {
-      localStorage.setItem('botcNightOrderIndex', '0');
+      localStorage.setItem(BOTC_NIGHT_ORDER_INDEX_KEY, '0');
       return 0;
     } else {
       return parseInt(storageValue);
@@ -100,8 +103,21 @@ const BloodOnTheClocktowerElement = () => {
   });
   const setNightOrderIndex = (n: number) => {
     _setNightOrderIndex(n);
-    localStorage.setItem('botcNightOrderIndex', n.toString());
+    localStorage.setItem(BOTC_NIGHT_ORDER_INDEX_KEY, n.toString());
   };
+
+  // Save game state after some delay to improve instant performance, as JSON.stringify might be slow
+  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (saveTimeout !== null) {
+      clearTimeout(saveTimeout);
+    }
+    const timeout = setTimeout(() => {
+      localStorage.setItem(BOTC_GAME_STATE_KEY, JSON.stringify(gameState));
+      setSaveTimeout(null);
+    }, 250);
+    setSaveTimeout(timeout);
+  }, [gameState]);
 
   const startGame = (players: BotcPlayer[]) => {
     gameState.startGame({ players });
@@ -202,6 +218,7 @@ const BloodOnTheClocktowerElement = () => {
                   }),
                 );
                 setSelectedCharacters([]);
+                setNightOrderIndex(0);
               }}
               value={edition.id}
             />

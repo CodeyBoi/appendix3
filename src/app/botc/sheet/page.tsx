@@ -5,12 +5,15 @@ import {
   CharacterId,
   CHARACTERS,
   Edition,
-  getType,
   getWikiLink,
+  isEvil,
+  isGood,
 } from '../characters';
 import Modal from 'components/modal';
 import Button from 'components/input/button';
 import { IconQrcode } from '@tabler/icons-react';
+import { CharacterCountTable } from '../character-select';
+import { cn } from 'utils/class-names';
 
 interface BotcSheetPageProps {
   searchParams: {
@@ -26,7 +29,8 @@ const BotcSheetPage = ({
   const characters = decodeURIComponent(charactersProp).split(',');
   const edition = characters.reduce<Edition>(
     (acc, id) => {
-      acc[getType(id as CharacterId)].push(id as CharacterId);
+      const character = CHARACTERS[id as CharacterId];
+      acc[character.team].push(id as CharacterId);
       return acc;
     },
     {
@@ -41,16 +45,42 @@ const BotcSheetPage = ({
   );
   return (
     <div className='flex flex-col gap-2'>
-      <h4 className='font-castelar'>{decodeURIComponent(name)}</h4>
+      <h3 className='hidden font-castelar lg:block'>
+        {decodeURIComponent(name)}
+      </h3>
+      <h4 className='font-castelar lg:hidden'>{decodeURIComponent(name)}</h4>
       {CHARACTER_TYPES.map((characterType) => {
         const characters = edition[characterType];
         if (characters.length <= 0) {
           return null;
         }
+        const border = isGood(characterType)
+          ? 'border-blue-500'
+          : isEvil(characterType)
+          ? 'border-red-600'
+          : 'border-neutral-500';
+        const subtleBorder = isGood(characterType)
+          ? 'border-blue-500/30'
+          : isEvil(characterType)
+          ? 'border-red-600/30'
+          : 'border-neutral-500/30';
+        const bg = isGood(characterType)
+          ? 'bg-blue-500'
+          : isEvil(characterType)
+          ? 'bg-red-600'
+          : 'bg-neutral-500';
         return (
           <div key={characters.join(',')} className='flex flex-col gap-2'>
-            <details open={characterType !== 'travellers'}>
-              <summary className='font-castelar text-lg hover:cursor-pointer'>
+            <details
+              className={cn('flex flex-col rounded border-2', border)}
+              open={characterType !== 'travellers'}
+            >
+              <summary
+                className={cn(
+                  'pl-1 font-castelar text-lg text-white hover:cursor-pointer',
+                  bg,
+                )}
+              >
                 {characterType}
               </summary>
               <div className='grid grid-cols-1 lg:grid-cols-2'>
@@ -58,7 +88,10 @@ const BotcSheetPage = ({
                   .map((characterId) => CHARACTERS[characterId])
                   .map(({ id, name, description, image }) => {
                     return (
-                      <div key={id} className='px-2 py-1'>
+                      <div
+                        key={id}
+                        className={cn('border px-2 py-1', subtleBorder)}
+                      >
                         <BotcCharacterPanel
                           name={name}
                           imgSrc={image?.[0] ?? ''}
@@ -74,7 +107,9 @@ const BotcSheetPage = ({
           </div>
         );
       })}
-      <div className='h-6' />
+      <div className='flex justify-center'>
+        <CharacterCountTable />
+      </div>
       <div className='flex justify-center'>
         <Modal
           title='Share Character Sheet'

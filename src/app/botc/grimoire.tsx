@@ -20,10 +20,9 @@ interface GrimoireProps {
 
 const getOvalPoints = (n: number) =>
   range(n).map((i) => {
-    const t = (2.0 * i * Math.PI) / n - Math.PI / 2.0;
+    const t = (2.0 * i * Math.PI) / n - Math.PI * (1.5 - 1 / n);
     return { left: 0.5 + 0.4 * Math.cos(t), top: 0.5 + 0.42 * Math.sin(t) };
   });
-
 const toPercent = (v: number) => `${Math.floor(v * 100)}%`;
 
 const Grimoire = ({

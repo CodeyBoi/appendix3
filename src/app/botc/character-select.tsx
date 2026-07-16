@@ -55,11 +55,16 @@ const getNumberOfCharacters = (
   return res;
 };
 
-const generateCharacterRow = (
-  character: CharacterType,
-  selectedColumn: number,
-  onClick: (n: number) => void,
-) => {
+const CharacterCountTableRow = ({
+  character,
+  selectedColumn,
+  onClick,
+}: {
+  character: CharacterType;
+  selectedColumn?: number;
+  onClick?: (n: number) => void;
+}) => {
+  const pointerOnHover = onClick !== undefined;
   const color = isGood(character) ? 'text-blue-500' : 'text-red-600';
   return (
     <tr className={color} key={character + 'amount'}>
@@ -75,18 +80,76 @@ const generateCharacterRow = (
         <td
           key={character + n.toString()}
           className={cn(
-            'border-x hover:cursor-pointer',
+            'border-x',
             n === selectedColumn && 'bg-red-600/20',
             character === 'demons' && 'border-b',
+            pointerOnHover && 'hover:cursor-pointer',
           )}
           onClick={() => {
-            onClick(n);
+            onClick?.(n);
           }}
         >
           {getNumberOfCharacters(n)[character]}
         </td>
       ))}
     </tr>
+  );
+};
+
+interface CharacterCountTableProps {
+  numberOfPlayers?: number;
+  onChange?: (n: number) => void;
+}
+
+export const CharacterCountTable = ({
+  numberOfPlayers,
+  onChange,
+}: CharacterCountTableProps) => {
+  const pointerOnHover = onChange !== undefined;
+  return (
+    <table className='w-min text-center text-xs lg:text-lg'>
+      <tbody>
+        <tr className='font-bold'>
+          <td className='border-x border-t'>Players</td>
+          {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
+            <td
+              className={cn(
+                'border-x border-t px-1 lg:px-2',
+                n === numberOfPlayers && 'bg-red-600/20',
+                pointerOnHover && 'hover:cursor-pointer',
+              )}
+              key={`CharacterCountHeader-${n}`}
+              onClick={() => {
+                onChange?.(n);
+              }}
+            >
+              {n}
+            </td>
+          ))}
+          <td
+            className={cn(
+              'border-x border-t px-1',
+              15 === numberOfPlayers && 'bg-red-600/20',
+              pointerOnHover && 'hover:cursor-pointer',
+            )}
+            onClick={() => {
+              onChange?.(15);
+            }}
+          >
+            {MAX_PLAYERS}+
+          </td>
+        </tr>
+
+        {CHARACTER_TYPES.slice(0, -1).map((t) => (
+          <CharacterCountTableRow
+            key={`CharacterCountTable-${t}`}
+            character={t}
+            selectedColumn={numberOfPlayers}
+            onClick={onChange}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 };
 
@@ -247,42 +310,10 @@ const BotcCharacterSelect = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      <table className='w-min text-center text-xs lg:text-lg'>
-        <tbody>
-          <tr className='font-bold'>
-            <td className='border-x border-t'>Players</td>
-            {range(MIN_PLAYERS, MAX_PLAYERS).map((n) => (
-              <td
-                className={cn(
-                  'border-x border-t px-1 hover:cursor-pointer lg:px-2',
-                  n === numberOfPlayers && 'bg-red-600/20',
-                )}
-                key={n}
-                onClick={() => {
-                  setNumberOfPlayers(n);
-                }}
-              >
-                {n}
-              </td>
-            ))}
-            <td
-              className={cn(
-                'border-x border-t px-1 hover:cursor-pointer',
-                15 === numberOfPlayers && 'bg-red-600/20',
-              )}
-              onClick={() => {
-                setNumberOfPlayers(15);
-              }}
-            >
-              {MAX_PLAYERS}+
-            </td>
-          </tr>
-
-          {CHARACTER_TYPES.slice(0, -1).map((t) =>
-            generateCharacterRow(t, numberOfPlayers, setNumberOfPlayers),
-          )}
-        </tbody>
-      </table>
+      <CharacterCountTable
+        numberOfPlayers={numberOfPlayers}
+        onChange={setNumberOfPlayers}
+      />
       <div className='flex flex-col gap-2 md:flex-row'>
         <Switch
           label='Show character abilities'

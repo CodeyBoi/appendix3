@@ -927,13 +927,21 @@ const _characters = {
     name: 'Vigormortis',
     description:
       'Each night*, choose a player: they die. Minions you kill keep their ability & poison 1 Townsfolk neighbor. [-1 Outsider]',
-    reminderTokens: ['Killed by', 'Has ability', 'Poisoned'],
+    reminderTokens: [
+      'Killed by',
+      'Has ability',
+      'Has ability',
+      'Has ability',
+      'Poisoned',
+      'Poisoned',
+      'Poisoned',
+    ],
   },
   nodashii: {
     name: 'No Dashii',
     description:
       'Each night*, choose a player: they die. Your 2 Townsfolk neighbors are poisoned.',
-    reminderTokens: ['Killed by', 'Poisoned'],
+    reminderTokens: ['Killed by', 'Poisoned', 'Poisoned'],
   },
   vortox: {
     name: 'Vortox',
@@ -1070,7 +1078,7 @@ const _characters = {
     name: 'Winemaker',
     description:
       'Your Townsfolk neighbours are drunk, but every other night, you are drunk until dusk, even if you are dead.',
-    reminderTokens: ['Odd', 'Even'],
+    reminderTokens: ['Odd', 'Even', 'Drunk', 'Drunk'],
   },
   spartacus: {
     name: 'Spartacus',
@@ -2682,6 +2690,49 @@ export const START_OF_GAME_ABILITIES: Partial<
       message: reminderText,
     });
 
+    if (reminderText === 'Odd') {
+      for (
+        let i = (playerIndex + 1) % players.length;
+        i !== playerIndex;
+        i = (i + 1) % players.length
+      ) {
+        const player = players[i];
+        if (!player) {
+          console.error(
+            `Out of boundaries error (with index ${i}, increasing) when setting up Winemaker (this shouldn't happen as boundaries are checked in a for loop)`,
+          );
+          return players;
+        }
+        if (player.isCharacterType('townsfolk')) {
+          player.reminders.push({
+            characterId: 'winemaker',
+            message: 'Drunk',
+          });
+          break;
+        }
+      }
+      for (
+        let i = (playerIndex + (players.length - 1)) % players.length;
+        i !== playerIndex;
+        i = (i + (players.length - 1)) % players.length
+      ) {
+        const player = players[i];
+        if (!player) {
+          console.error(
+            `Out of boundaries error (with index ${i}, decreasing) when setting up Winemaker (this shouldn't happen as boundaries are checked in a for loop)`,
+          );
+          return players;
+        }
+        if (player.isCharacterType('townsfolk')) {
+          player.reminders.push({
+            characterId: 'winemaker',
+            message: 'Drunk',
+          });
+          break;
+        }
+      }
+    }
+
     return players;
   },
 };
@@ -2733,5 +2784,5 @@ export const getWikiLink = (id: CharacterId) =>
 export const isDroisoned = (player: BotcPlayer) =>
   player.reminders.find((reminder) => {
     const text = reminder.message.toLowerCase();
-    return text.includes('drunk') || text.includes('poisoned');
+    return text.includes('drunk') || text.includes(' name: playe.namerisoned');
   });
