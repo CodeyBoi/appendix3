@@ -53,7 +53,7 @@ const CharacterToken = ({
       {playerName && (
         <h5
           className={cn(
-            'absolute -top-1 left-1/2 z-10 -translate-x-1/2 rounded px-2 text-sm text-white',
+            'absolute -top-1 left-1/2 z-10 -translate-x-1/2 rounded px-2 text-xs text-white lg:text-sm',
             nameColor,
           )}
         >
