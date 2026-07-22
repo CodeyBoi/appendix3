@@ -147,7 +147,9 @@ const BloodOnTheClocktowerElement = () => {
   const [selectedCharacters, setSelectedCharacters] = useState<CharacterId[]>(
     [],
   );
-  const [modalOpen, setModalOpen] = useState(false);
+  const [actionsModalOpen, setActionsModalOpen] = useState(false);
+  const [drawCharactersModalOpen, setDrawCharactersModalOpen] = useState(false);
+  const [isGardener, setIsGardener] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [drawCharactersBgColor, setDrawCharactersBgColor] =
     useState<ModalBackgroundColor>('red');
@@ -163,8 +165,8 @@ const BloodOnTheClocktowerElement = () => {
   return (
     <>
       <BotcActionsModal
-        open={modalOpen}
-        setOpen={setModalOpen}
+        open={actionsModalOpen}
+        setOpen={setActionsModalOpen}
         playerIndex={currentPlayerIndex}
         players={gameState.players}
         setPlayers={(players) => {
@@ -173,6 +175,44 @@ const BloodOnTheClocktowerElement = () => {
         }}
         allCharacters={allCharacters}
       />
+      <Modal
+        title='Draw characters'
+        bgColor={drawCharactersBgColor}
+        hideBackground
+        withCloseButton
+        stayOpenOnBackgroundClicked
+        open={drawCharactersModalOpen}
+        onFocus={() => {
+          gameState.players = [];
+          setGameState(gameState);
+        }}
+        onBlur={() => {
+          if (gameState.players.length === selectedCharacters.length) {
+            const bluffs = gameState.generateDemonBluffs();
+            gameState.demonBluffs = bluffs;
+            setGameState(gameState);
+            setTab('grimoire');
+            setDrawCharactersModalOpen(false);
+          } else {
+            if (
+              !confirm(
+                "You haven't assigned all characters yet. Are you sure you want to cancel?",
+              )
+            ) {
+              return false;
+            } else {
+              setTab('setup');
+            }
+          }
+        }}
+      >
+        <DrawCharacters
+          characters={selectedCharacters}
+          startGame={startGame}
+          setModalBgColor={setDrawCharactersBgColor}
+          fixedCharacterOrder={isGardener}
+        />
+      </Modal>
       <div className='flex flex-col gap-2 lg:max-w-3xl'>
         {tab === 'setup' && (
           <>
@@ -350,44 +390,19 @@ const BloodOnTheClocktowerElement = () => {
                 >
                   Add all to Grimoire
                 </Button>
-                <Modal
-                  title='Draw characters'
-                  target={
-                    <Button
-                      onClick={() => {
-                        setSelectedCharacters(
-                          shuffle(selectedCharacters.slice()),
-                        );
-                      }}
-                      disabled={
-                        selectedCharacters.length === 0 &&
-                        'Select some characters first'
-                      }
-                    >
-                      Draw characters
-                    </Button>
-                  }
-                  bgColor={drawCharactersBgColor}
-                  hideBackground
-                  withCloseButton
-                  stayOpenOnBackgroundClicked
-                  onBlur={() => {
-                    if (
-                      gameState.players.length === selectedCharacters.length
-                    ) {
-                      const bluffs = gameState.generateDemonBluffs();
-                      gameState.demonBluffs = bluffs;
-                      setGameState(gameState);
-                      setTab('grimoire');
-                    }
+                <Button
+                  onClick={() => {
+                    setSelectedCharacters(shuffle(selectedCharacters.slice()));
+                    setIsGardener(false);
+                    setDrawCharactersModalOpen(true);
                   }}
+                  disabled={
+                    selectedCharacters.length === 0 &&
+                    'Select some characters first'
+                  }
                 >
-                  <DrawCharacters
-                    characters={selectedCharacters}
-                    startGame={startGame}
-                    setModalBgColor={setDrawCharactersBgColor}
-                  />
-                </Modal>
+                  Draw characters
+                </Button>
               </div>
             </>
           )}
@@ -406,7 +421,7 @@ const BloodOnTheClocktowerElement = () => {
             }}
             setCurrentPlayerIndex={(idx) => {
               setCurrentPlayerIndex(idx);
-              setModalOpen(true);
+              setActionsModalOpen(true);
             }}
             scriptCharacters={allCharacters}
           />
@@ -420,48 +435,23 @@ const BloodOnTheClocktowerElement = () => {
           undefined && (
           <div
             className={cn(
-              'flex justify-center',
+              'flex w-full justify-center',
               tab !== 'grimoire' && 'hidden',
             )}
           >
-            <Modal
-              title='Draw characters'
-              target={
-                <Tooltip
-                  text='Starts at "First" and goes clockwise'
-                  position='top'
-                >
-                  <Button
-                    onClick={() => {
-                      setSelectedCharacters(
-                        gameState.players.map((player) => player.characterId),
-                      );
-                    }}
-                  >
-                    Assign characters
-                  </Button>
-                </Tooltip>
-              }
-              bgColor={drawCharactersBgColor}
-              hideBackground
-              withCloseButton
-              stayOpenOnBackgroundClicked
-              onBlur={() => {
-                if (gameState.players.length === selectedCharacters.length) {
-                  const bluffs = gameState.generateDemonBluffs();
-                  gameState.demonBluffs = bluffs;
-                  setGameState(gameState);
-                  setTab('grimoire');
-                }
-              }}
-            >
-              <DrawCharacters
-                characters={selectedCharacters}
-                startGame={startGame}
-                setModalBgColor={setDrawCharactersBgColor}
-                fixedCharacterOrder
-              />
-            </Modal>
+            <Tooltip text='Starts at "First" and goes clockwise' position='top'>
+              <Button
+                onClick={() => {
+                  setSelectedCharacters(
+                    gameState.players.map((player) => player.characterId),
+                  );
+                  setIsGardener(true);
+                  setDrawCharactersModalOpen(true);
+                }}
+              >
+                Assign characters (from first)
+              </Button>
+            </Tooltip>
           </div>
         )}
         <span className={cn(tab !== 'night-order' && 'hidden')}>
@@ -470,7 +460,7 @@ const BloodOnTheClocktowerElement = () => {
             allCharacters={getAllCharacters(edition)}
             setCurrentPlayerIndex={(idx) => {
               setCurrentPlayerIndex(idx);
-              setModalOpen(true);
+              setActionsModalOpen(true);
             }}
           />
         </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import Switch from 'components/input/switch';
-import { initObject, range, shuffle } from 'utils/array';
+import { chooseRandom, initObject, range, shuffle } from 'utils/array';
 import { cn } from 'utils/class-names';
 import {
   CHARACTER_TYPES,
@@ -204,7 +204,31 @@ const selectRandom = (
     }
   }
 
-  return shuffle(selected);
+  const selectedSet = new Set(selected);
+  // Change characters which don't know who they are (e.g. Drunk) to a "disguise"
+  const result = selected.map((characterId) => {
+    const character = CHARACTERS[characterId];
+    if (character.cannotBeSelected) {
+      const validDisguises =
+        character.disguisedAs?.flatMap((characterType) =>
+          edition[characterType].filter(
+            (characterId) =>
+              !selectedSet.has(characterId) &&
+              !CHARACTERS[characterId].cannotBeSelected,
+          ),
+        ) ?? [];
+      const disguise = chooseRandom(validDisguises);
+      if (!disguise) {
+        throw new Error(`Couldn't find a valid disguise for ${characterId}`);
+      }
+      selectedSet.add(disguise);
+      return disguise;
+    } else {
+      return characterId;
+    }
+  });
+
+  return shuffle(result);
 };
 
 const findSelectionError = (
@@ -294,6 +318,9 @@ const BotcCharacterSelect = ({
     }
     _setAllowDuplicateCharacters(allow);
   };
+  const [_disguises, _setDisguises] = useState<
+    { characterId: CharacterId; disguisedAs: CharacterId }[]
+  >([]);
 
   useEffect(() => {
     localStorage.setItem(NUMBER_OF_PLAYERS_KEY, numberOfPlayers.toString());

@@ -24,7 +24,7 @@ interface ModalProps {
   className?: string;
   modalClassName?: string;
   onFocus?: () => void;
-  onBlur?: () => void;
+  onBlur?: (() => void) | (() => boolean);
   withCloseButton?: boolean;
   startsOpen?: boolean;
   hideBackground?: boolean;
@@ -51,7 +51,12 @@ const Modal = ({
     if (onFocus && value && !open) {
       onFocus();
     } else if (onBlur && !value && open) {
-      onBlur();
+      const res = onBlur();
+      // You can prevent modal from closing by returning false in onBlur
+      if (res === false) {
+        setOpenValue(true);
+        return;
+      }
     }
     setOpenValue(value);
   };
