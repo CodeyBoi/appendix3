@@ -438,6 +438,7 @@ export interface BotcCharacter {
     };
   };
   cannotBeSelected?: boolean;
+  disguisedAs?: readonly CharacterType[];
 }
 
 const _characters = {
@@ -527,6 +528,7 @@ const _characters = {
       'You do not know you are the Drunk. You think you are a Townsfolk character, but you are not.',
     reminderTokensGlobal: ['Is the Drunk'],
     cannotBeSelected: true,
+    disguisedAs: ['townsfolk'],
   },
   recluse: {
     name: 'Recluse',
@@ -1092,18 +1094,9 @@ const _characters = {
     name: 'Bad Omen',
     description:
       'You do not know you are a Bad Omen. You think you are a Townsfolk, but you receive false information. You might register as evil, even if dead.',
-    reminderTokensGlobal: [
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-      'Is the Bad Omen',
-    ],
+    reminderTokensGlobal: ['Is the Bad Omen'],
     cannotBeSelected: true,
+    disguisedAs: ['townsfolk'],
   },
 
   // Fall of Rome - Minions
@@ -1150,6 +1143,17 @@ const _characters = {
     name: 'Augur',
     description:
       'If a Townsfolk nominates you, they immediately become a Bad Omen.',
+    reminderTokens: [
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+      'Is the Bad Omen',
+    ],
   },
 
   // Fall of Rome - Demons
@@ -1169,14 +1173,20 @@ const _characters = {
     name: 'Hannibal',
     description:
       'You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. The 1st Hannibal to die, becomes good. [+1 Hannibal]',
-    reminderTokens: ['Is Hannibal', 'Killed by'],
+    globalReminderTokens: [
+      'Is Hannibal',
+      'Is Hannibal',
+      'Killed by',
+      'Killed by',
+    ],
     cannotBeSelected: true,
+    disguisedAs: ['townsfolk', 'outsiders'],
   },
   caesar: {
     name: 'Caesar',
     description:
       'Each night*, choose a player: they die. The 1st time an evil player dies by execution, that night, choose an additional player: they die.',
-    reminderTokens: ['Betrayal', 'Kill used', 'Killed by'],
+    reminderTokens: ['Betrayal', 'Kill used', 'Killed by', 'Killed by'],
   },
 
   // Fall of Rome - Travellers
@@ -1446,6 +1456,7 @@ const _characters = {
     description:
       'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
     cannotBeSelected: true,
+    disguisedAs: ['townsfolk', 'outsiders'],
   },
   mezepheles: {
     name: 'Mezepheles',
