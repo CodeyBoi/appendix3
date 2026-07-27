@@ -3,7 +3,12 @@ import ActionIcon from 'components/input/action-icon';
 import { useEffect, useMemo, useState } from 'react';
 import NightOrderEntry from './night-order-entry';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
-import { CharacterId, isDroisoned } from './characters';
+import {
+  CharacterId,
+  getType,
+  isDroisoned,
+  isGlobalDroisoned,
+} from './characters';
 import { getNightOrder } from './night-order';
 
 interface NightOrderPreviewProps {
@@ -160,13 +165,17 @@ const NightOrderPreview = ({
       .join('::'),
   ]);
 
+  const isGlobalDroison =
+    reminder.entry.id && isGlobalDroisoned(getType(reminder.entry.id), players);
   const currentPlayers = players
     .filter((player) => player.characterId === reminder.entry.id)
     .map((player) => ({ name: player.name, isDroisoned: isDroisoned(player) }));
   const isAnyCurrentPlayerDroisoned =
-    currentPlayers.find((player) => player.isDroisoned) !== undefined;
+    currentPlayers.find((player) => player.isDroisoned) !== undefined ||
+    isGlobalDroison;
   const areAllCurrentPlayersDroisoned =
-    currentPlayers.find((player) => !player.isDroisoned) === undefined;
+    currentPlayers.find((player) => !player.isDroisoned) === undefined ||
+    isGlobalDroison;
 
   return (
     <div className='flex gap-2'>
@@ -205,7 +214,7 @@ const NightOrderPreview = ({
             currentPlayers.length === 0
               ? []
               : currentPlayers.length === 1
-              ? isAnyCurrentPlayerDroisoned
+              ? areAllCurrentPlayersDroisoned || isAnyCurrentPlayerDroisoned
                 ? ['Drunk/Poisoned']
                 : []
               : areAllCurrentPlayersDroisoned

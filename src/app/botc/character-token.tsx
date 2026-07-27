@@ -29,6 +29,10 @@ const CharacterToken = ({
   const character = characterId ? CHARACTERS[characterId] : undefined;
   const hasLeftLeaf = character?.nightReminders.first !== undefined;
   const hasRightLeaf = character?.nightReminders.other !== undefined;
+  const shouldBeUpsideDown =
+    alignment && characterId
+      ? getDefaultAlignment(characterId) !== alignment
+      : false;
 
   const imgPath = character?.image?.[0];
   const nameColor =
@@ -60,59 +64,61 @@ const CharacterToken = ({
           {playerName}
         </h5>
       )}
-      <img
-        className='absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2'
-        src='/botc/clockface.webp'
-        loading='lazy'
-        draggable={false}
-      />
-      {hasLeftLeaf && (
+      <span className={cn(shouldBeUpsideDown && 'rotate-180')}>
         <img
-          className='absolute h-full w-full'
-          src='/botc/leaf-left.webp'
+          className='absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2'
+          src='/botc/clockface.webp'
+          loading='lazy'
           draggable={false}
         />
-      )}
-      {hasRightLeaf && (
-        <img
-          className='absolute h-full w-full'
-          src='/botc/leaf-right.webp'
-          draggable={false}
-        />
-      )}
-      {dead && hasVoteToken && (
-        <IconFileCheck
-          stroke={2}
-          color='white'
-          size={56}
-          className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
-        />
-      )}
-      {character && (
-        <>
+        {hasLeftLeaf && (
           <img
-            className={cn(
-              'absolute h-full w-full',
-              imgPath?.includes('Fall_of_Rome') && 'scale-75',
-            )}
-            src={imgPath}
-            loading='lazy'
+            className='absolute h-full w-full'
+            src='/botc/leaf-left.webp'
             draggable={false}
           />
-          <svg viewBox='0 0 150 150'>
-            <path
-              d='M 13 75 C 13 160, 138 160, 138 75'
-              id='curve'
-              fill='transparent'
+        )}
+        {hasRightLeaf && (
+          <img
+            className='absolute h-full w-full'
+            src='/botc/leaf-right.webp'
+            draggable={false}
+          />
+        )}
+        {dead && hasVoteToken && (
+          <IconFileCheck
+            stroke={2}
+            color='white'
+            size={56}
+            className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+          />
+        )}
+        {character && (
+          <>
+            <img
+              className={cn(
+                'absolute h-full w-full',
+                imgPath?.includes('Fall_of_Rome') && 'scale-75',
+              )}
+              src={imgPath}
+              loading='lazy'
+              draggable={false}
             />
-            <text textAnchor='middle'>
-              <textPath startOffset='50%' href='#curve'>
-                {character.name}
-              </textPath>
-            </text>
-          </svg>
-        </>
-      )}
+            <svg viewBox='0 0 150 150'>
+              <path
+                d='M 13 75 C 13 160, 138 160, 138 75'
+                id='curve'
+                fill='transparent'
+              />
+              <text textAnchor='middle'>
+                <textPath startOffset='50%' href='#curve'>
+                  {character.name}
+                </textPath>
+              </text>
+            </svg>
+          </>
+        )}
+      </span>
     </div>
   );
 };

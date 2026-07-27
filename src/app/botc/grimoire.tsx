@@ -129,6 +129,7 @@ const Grimoire = ({
                 }}
               >
                 <CharacterToken
+                  alignment='evil'
                   playerName={player.name}
                   characterId={player.characterId}
                   dead={!player.isAlive}
@@ -163,9 +164,9 @@ const Grimoire = ({
                     <h3 className='hidden -translate-y-1/2 rounded bg-red-600 px-2 py-1 text-center text-white shadow-md lg:block'>
                       First
                     </h3>
-                    <h4 className='-translate-y-1/2 rounded bg-red-600 px-2 py-1 text-center text-white shadow-md lg:hidden'>
+                    <h5 className='-translate-y-1/2 rounded bg-red-600 px-2 py-1 text-center text-white shadow-md lg:hidden'>
                       First
-                    </h4>
+                    </h5>
                   </div>
                 )}
               </div>
