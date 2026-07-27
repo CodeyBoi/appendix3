@@ -409,9 +409,10 @@ const jsonToEdition = (data: BotcScriptsJsonData) => {
   return edition;
 };
 
+const JSON_REGEX = /^\s*\[\s*{\s*"id"\s*:/;
 export const urlToEdition = async (url: string): Promise<Edition | null> => {
   const parseUrl = async (url: string) => {
-    if (url.startsWith('[{"id":')) {
+    if (JSON_REGEX.test(url)) {
       return jsonToEdition(JSON.parse(url) as BotcScriptsJsonData);
     } else if (url.includes(POCKET_GRIMOIRE_BASE_URL)) {
       return parsePocketGrimoireUrl(url);

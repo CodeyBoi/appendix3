@@ -163,6 +163,40 @@ const BloodOnTheClocktowerElement = () => {
   const isCustomEdition =
     customScripts.find((script) => script.id === edition.id) !== undefined;
 
+  const importCustomScript = async (
+    scriptData: string,
+    defaultName?: string,
+  ) => {
+    const newCustomScript = await urlToEdition(scriptData);
+    if (!newCustomScript) {
+      setCustomScriptUrlError(
+        'Can only parse either raw JSON, a Botcscripts JSON link, or a Pocket Grimoire character sheet link.',
+      );
+      return;
+    }
+    setCustomScriptUrlError('');
+    const newScriptName = prompt(
+      'Custom script name:',
+      defaultName ?? newCustomScript.name,
+    );
+    if (!newScriptName) {
+      return;
+    }
+    newCustomScript.name = newScriptName;
+    newCustomScript.id = newScriptName
+      .trim()
+      .toLowerCase()
+      .replaceAll(' ', '-');
+    setGameState(
+      new BotcGame({
+        edition: newCustomScript,
+      }),
+    );
+    addCustomScript(newCustomScript);
+    setSelectedCharacters([]);
+    setCustomScriptUrl('');
+  };
+
   return (
     <>
       <BotcActionsModal
@@ -318,37 +352,9 @@ const BloodOnTheClocktowerElement = () => {
                   <Button
                     className='mt-2'
                     disabled={!customScriptUrl}
-                    onClick={async () => {
+                    onClick={() => {
                       if (customScriptUrl) {
-                        const newCustomScript =
-                          await urlToEdition(customScriptUrl);
-                        if (!newCustomScript) {
-                          setCustomScriptUrlError(
-                            'Can only parse either raw JSON, a Botcscripts JSON link, or a Pocket Grimoire character sheet link.',
-                          );
-                          return;
-                        }
-                        setCustomScriptUrlError('');
-                        const newScriptName = prompt(
-                          'Custom script name:',
-                          newCustomScript.name,
-                        );
-                        if (!newScriptName) {
-                          return;
-                        }
-                        newCustomScript.name = newScriptName;
-                        newCustomScript.id = newScriptName
-                          .trim()
-                          .toLowerCase()
-                          .replaceAll(' ', '-');
-                        setGameState(
-                          new BotcGame({
-                            edition: newCustomScript,
-                          }),
-                        );
-                        addCustomScript(newCustomScript);
-                        setSelectedCharacters([]);
-                        setCustomScriptUrl('');
+                        void importCustomScript(customScriptUrl);
                       }
                     }}
                   >
@@ -356,9 +362,32 @@ const BloodOnTheClocktowerElement = () => {
                   </Button>
                 </div>
               </div>
-              {allCharacters.length > 0 && (
-                <h4>Loaded script: {edition.name}</h4>
-              )}
+              <div className='flex flex-wrap gap-x-4'>
+                <label htmlFor='custom-script-file-input'>
+                  <h4>Upload custom script file:</h4>
+                </label>
+                <input
+                  id='custom-script-file-input'
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) {
+                      throw new Error('Error when uploading script file');
+                    }
+                    const json = await file.text();
+                    const name = file.name
+                      .replaceAll('.json', '')
+                      .replaceAll('_', ' ')
+                      .replaceAll('-', ' ')
+                      .trim();
+                    void importCustomScript(json, name);
+                  }}
+                  type='file'
+                  accept='application/json'
+                />
+                {allCharacters.length > 0 && (
+                  <h4>Loaded script: {edition.name}</h4>
+                )}
+              </div>
             </div>
           )}
           {allCharacters.length > 0 && (
