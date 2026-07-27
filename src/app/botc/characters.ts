@@ -123,22 +123,6 @@ export const EDITIONS: readonly Edition[] = [
     ],
   },
   {
-    id: 'fall-of-rome-teensyville',
-    name: 'Fall of Rome - Teensyville',
-    townsfolk: [
-      'sculptor',
-      'trumpeter',
-      'standardbearer',
-      'centurion',
-      'blacksmith',
-      'scholar',
-    ],
-    outsiders: ['spartacus', 'badomen'],
-    minions: ['haruspex', 'augur'],
-    demons: ['cleopatra', 'crassus'],
-    travellers: [],
-  },
-  {
     id: 'carousel',
     name: 'Carousel',
     townsfolk: [
@@ -218,6 +202,87 @@ export const EDITIONS: readonly Edition[] = [
     travellers: ['gangster', 'gnome'],
   },
 ] as const;
+
+export const CAROUSEL_EDITIONS: readonly Edition[] = [
+  {
+    id: 'catfishing',
+    name: 'Catfishing',
+    townsfolk: [
+      'balloonist',
+      'cannibal',
+      'chef',
+      'dreamer',
+      'fortuneteller',
+      'gambler',
+      'grandmother',
+      'philosopher',
+      'ravenkeeper',
+      'savant',
+      'snakecharmer',
+      'amnesiac',
+      'investigator',
+    ],
+    outsiders: ['drunk', 'lunatic', 'mutant', 'recluse', 'sweetheart'],
+    minions: ['cerenovus', 'godfather', 'pithag', 'widow'],
+    demons: ['vigormortis', 'fanggu', 'imp'],
+    travellers: [],
+  },
+  {
+    id: 'devout-theists',
+    name: 'Devout Theists',
+    townsfolk: [
+      'noble',
+      'chef',
+      'pixie',
+      'highpriestess',
+      'mathematician',
+      'flowergirl',
+      'savant',
+      'amnesiac',
+      'juggler',
+      'fisherman',
+      'farmer',
+      'magician',
+      'cannibal',
+    ],
+    outsiders: ['puzzlemaster', 'klutz', 'golem', 'snitch'],
+    minions: ['widow', 'goblin', 'psychopath', 'marionette'],
+    demons: ['lleech', 'fanggu', 'kazali', 'legion'],
+    travellers: [],
+  },
+  {
+    id: 'nobody-fucking-move',
+    name: 'Nobody Fucking Move',
+    townsfolk: [
+      'snakecharmer',
+      'alsaahir',
+      'slayer',
+      'philosopher',
+      'alchemist',
+      'virgin',
+    ],
+    outsiders: ['klutz', 'heretic', 'damsel'],
+    minions: ['psychopath', 'goblin', 'boomdandy'],
+    demons: ['pukka', 'vortox'],
+    travellers: [],
+  },
+  {
+    id: 'fall-of-rome-teensyville',
+    name: 'Fall of Rome - Teensyville',
+    townsfolk: [
+      'sculptor',
+      'trumpeter',
+      'standardbearer',
+      'centurion',
+      'blacksmith',
+      'scholar',
+    ],
+    outsiders: ['spartacus', 'badomen'],
+    minions: ['haruspex', 'augur'],
+    demons: ['cleopatra', 'crassus'],
+    travellers: [],
+  },
+];
 
 export const getAllCharacters = (edition: Edition) =>
   CHARACTER_TYPES.flatMap((t) => edition[t]);
@@ -313,7 +378,7 @@ const isMetadata = (data: BotcScriptJsonEntry): data is BotcMetadata =>
   typeof data !== 'string' && 'name' in data;
 
 const getCharacterIdFromJsonEntry = (data: BotcScriptJsonEntry) =>
-  isCharacterId(data) ? data : (data.id as CharacterId);
+  isCharacterId(data) ? data : (data.id.replaceAll('_', '') as CharacterId);
 
 type BotcScriptsJsonData = [
   BotcMetadata | BotcScriptJsonCharacterEntry,
@@ -663,7 +728,7 @@ const _characters = {
     name: 'Minstrel',
     description:
       'When a Minion dies by execution, all other players (except Travellers) are drunk until dusk tomorrow.',
-    reminderTokens: ['Everyone drunk'],
+    reminderTokens: ['Everyone is drunk'],
   },
   tealady: {
     name: 'Tea Lady',
@@ -853,6 +918,7 @@ const _characters = {
     description:
       'Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk.',
     reminderTokens: ['Drunk'],
+    reminderTokensGlobal: ['Is the Philosopher'],
   },
   artist: {
     name: 'Artist',
@@ -1076,7 +1142,7 @@ const _characters = {
     name: 'The Twins',
     description:
       'You start knowing a player: if either of you are executed, all Townsfolk are drunk until dusk tomorrow.',
-    reminderTokens: ['Townsfolk drunk', 'Twin'],
+    reminderTokens: ['Townsfolk are drunk', 'Twin'],
   },
   winemaker: {
     name: 'Winemaker',
@@ -1088,6 +1154,16 @@ const _characters = {
     name: 'Spartacus',
     description:
       "If an evil player guesses you (once), your team loses. You might register as a Townsfolk; each day, if you did not publicly claim to be Spartacus, you don't.",
+    reminderTokensGlobal: [
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+      'Claimed Spartacus',
+    ],
     reminderTokens: ['Guess used'],
   },
   badomen: {
@@ -1173,7 +1249,7 @@ const _characters = {
     name: 'Hannibal',
     description:
       'You think you are a good character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. The 1st Hannibal to die, becomes good. [+1 Hannibal]',
-    globalReminderTokens: [
+    reminderTokensGlobal: [
       'Is Hannibal',
       'Is Hannibal',
       'Killed by',
@@ -1232,6 +1308,7 @@ const _characters = {
     name: 'Alchemist',
     description:
       'You have a Minion ability. When using this, the Storyteller may prompt you to choose differently.',
+    reminderTokensGlobal: ['Is the Alchemist'],
   },
   alsaahir: {
     name: 'Alsaahir',
@@ -1242,6 +1319,7 @@ const _characters = {
     name: 'Amnesiac',
     description:
       'You do not know what your ability is. Each day, privately guess what it is: you learn how accurate you are.',
+    reminderTokens: ['1', '2', '3'],
   },
   atheist: {
     name: 'Atheist',
@@ -1252,21 +1330,25 @@ const _characters = {
     name: 'Balloonist',
     description:
       'Each night, you learn a player of a different character type than last night. [+0 or +1 Outsider]',
+    reminderTokens: ['Know'],
   },
   banshee: {
     name: 'Banshee',
     description:
       'If the Demon kills you, all players learn this. From now on, you may nominate twice per day and vote twice per nomination.',
+    reminderTokens: ['Has ability'],
   },
   bountyhunter: {
     name: 'Bounty Hunter',
     description:
       'You start knowing 1 evil player. If the player you know dies, you learn another evil player tonight. [1 Townsfolk is evil]',
+    reminderTokens: ['Know'],
   },
   cannibal: {
     name: 'Cannibal',
     description:
       'You have the ability of the recently killed executee. If they are evil, you are poisoned until a good player dies by execution.',
+    reminderTokens: ['Executed recently', 'Poisoned'],
   },
   choirboy: {
     name: 'Choirboy',
@@ -1282,6 +1364,7 @@ const _characters = {
     name: 'Engineer',
     description:
       'Once per game, at night, choose which Minions or which Demon is in play.',
+    reminderTokens: ['No ability'],
   },
   farmer: {
     name: 'Farmer',
@@ -1292,6 +1375,7 @@ const _characters = {
     name: 'Fisherman',
     description:
       'Once per game, during the day, visit the Storyteller for some advice to help your team win.',
+    reminderTokens: ['No ability'],
   },
   general: {
     name: 'General',
@@ -1307,6 +1391,7 @@ const _characters = {
     name: 'Huntsman',
     description:
       'Once per game, at night, choose a living player: the Damsel, if chosen, becomes a not-in-play Townsfolk. [+the Damsel]',
+    reminderTokens: ['No ability'],
   },
   king: {
     name: 'King',
@@ -1316,11 +1401,13 @@ const _characters = {
   knight: {
     name: 'Knight',
     description: 'You start knowing 2 players that are not the Demon.',
+    reminderTokens: ['Know', 'Know'],
   },
   lycanthrope: {
     name: 'Lycanthrope',
     description:
       'Each night*, choose an alive player. If good, they die & the Demon doesn’t kill tonight. One good player registers as evil.',
+    reminderTokens: ['Faux Paw', 'Killed by'],
   },
   magician: {
     name: 'Magician',
@@ -1331,30 +1418,40 @@ const _characters = {
     name: 'Nightwatchman',
     description:
       'Once per game, at night, choose a player: they learn you are the Nightwatchman.',
+    reminderTokens: ['No ability'],
   },
   noble: {
     name: 'Noble',
     description: 'You start knowing 3 players, 1 and only 1 of which is evil.',
+    reminderTokens: ['Know', 'Know', 'Know'],
   },
   pixie: {
     name: 'Pixie',
     description:
       'You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.',
+    reminderTokens: ['Mad as'],
   },
   poppygrower: {
     name: 'Poppy Grower',
     description:
       'Minions & Demons do not know each other. If you die, they learn who each other are that night.',
+    reminderTokens: ['Evil wakes'],
   },
   princess: {
     name: 'Princess',
     description:
       "On your 1st day, if you nominated & executed a player, the Demon doesn't kill tonight.",
+    reminderTokens: ["Doesn't kill"],
   },
   preacher: {
     name: 'Preacher',
     description:
       'Each night, choose a player: a Minion, if chosen, learns this. All chosen Minions have no ability.',
+    reminderTokens: [
+      'Ability disabled',
+      'Ability disabled',
+      'Ability disabled',
+    ],
   },
   shugenja: {
     name: 'Shugenja',
@@ -1364,11 +1461,13 @@ const _characters = {
   steward: {
     name: 'Steward',
     description: 'You start knowing 1 good player.',
+    reminderTokens: ['Know'],
   },
   villageidiot: {
     name: 'Village Idiot',
     description:
       'Each night, choose a player: you learn their alignment. [+0 to +2 Village Idiots. 1 of the extras is drunk]',
+    reminderTokens: ['Drunk'],
   },
 
   // Carousel - Outsiders
@@ -1376,11 +1475,13 @@ const _characters = {
     name: 'Damsel',
     description:
       'All Minions know a Damsel is in play. If a Minion publicly guesses you (once), your team loses.',
+    reminderTokens: ['Guess used'],
   },
   golem: {
     name: 'Golem',
     description:
       'You may only nominate once per game. When you do, if the nominee is not the Demon, they die.',
+    reminderTokens: ['May not nominate'],
   },
   heretic: {
     name: 'Heretic',
@@ -1395,6 +1496,7 @@ const _characters = {
     name: 'Hatter',
     description:
       'If you died today or tonight, the Minion & Demon players may choose new Minion & Demon characters to be.',
+    reminderTokens: ['Tea party tonight'],
   },
   ogre: {
     name: 'Ogre',
@@ -1404,6 +1506,7 @@ const _characters = {
   plaguedoctor: {
     name: 'Plague Doctor',
     description: 'When you die, the Storyteller gains a Minion ability.',
+    reminderTokens: ['Storyteller ability'],
   },
   politician: {
     name: 'Politician',
@@ -1414,6 +1517,7 @@ const _characters = {
     name: 'Puzzlemaster',
     description:
       '1 player is drunk, even if you die. If you guess (once) who it is, learn the Demon player, but guess wrong & get false info.',
+    reminderTokens: ['Drunk'],
   },
   snitch: {
     name: 'Snitch',
@@ -1430,6 +1534,7 @@ const _characters = {
     name: 'Boffin',
     description:
       'The Demon (even if drunk or poisoned) has a not-in-play good character’s ability. You both know which.',
+    reminderTokens: ['Is the Demon'],
   },
   boomdandy: {
     name: 'Boomdandy',
@@ -1440,21 +1545,25 @@ const _characters = {
     name: 'Fearmonger',
     description:
       'Each night, choose a player: if you nominate & execute them, their team loses. All players know if you choose a new player.',
+    reminderTokens: ['Fear'],
   },
   goblin: {
     name: 'Goblin',
     description:
       'If you publicly claim to be the Goblin when nominated & are executed that day, your team wins.',
+    reminderTokens: ['Claimed'],
   },
   harpy: {
     name: 'Harpy',
     description:
       'Each night, choose 2 players: tomorrow, the 1st player is mad that the 2nd is evil, or one or both might die.',
+    reminderTokens: ['Mad', '2nd'],
   },
   marionette: {
     name: 'Marionette',
     description:
       'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
+    reminderTokensGlobal: ['Is the Marionette'],
     cannotBeSelected: true,
     disguisedAs: ['townsfolk', 'outsiders'],
   },
@@ -1462,16 +1571,19 @@ const _characters = {
     name: 'Mezepheles',
     description:
       'You start knowing a secret word. The 1st good player to say this word becomes evil that night.',
+    reminderTokens: ['Turns evil'],
   },
   organgrinder: {
     name: 'Organ Grinder',
     description:
       'All players keep their eyes closed when voting and the vote tally is secret. Each night, choose if you are drunk until dusk.',
+    reminderTokens: ['Drunk'],
   },
   summoner: {
     name: 'Summoner',
     description:
       'You get 3 bluffs. On the 3rd night, choose a player: they become an evil Demon of your choice. [No Demon]',
+    reminderTokens: ['Night 1', 'Night 2', 'Night 3'],
   },
   psychopath: {
     name: 'Psychopath',
@@ -1487,16 +1599,19 @@ const _characters = {
     name: 'Widow',
     description:
       'On your 1st night, look at the Grimoire & choose a player: they are poisoned. 1 good player knows a Widow is in play.',
+    reminderTokens: ['Know', 'Poisoned'],
   },
   wizard: {
     name: 'Wizard',
     description:
       'Once per game, choose to make a wish. If granted, it might have a price & leave a clue as to its nature.',
+    reminderTokens: ['Wish used'],
   },
   xaan: {
     name: 'Xaan',
     description:
       'On night X, all Townsfolk are poisoned until dusk. [X Outsiders]',
+    reminderTokens: ['Townsfolk are poisoned'],
   },
   wraith: {
     name: 'Wraith',
@@ -1509,53 +1624,70 @@ const _characters = {
     name: 'Riot',
     description:
       'On day 3, Minions become Riot & nominees die but nominate an alive player immediately. This must happen.',
+    reminderTokens: ['Killed by'],
   },
   alhadikhia: {
     name: 'Al-Hadikhia',
     description:
       'Each night*, you may choose 3 players (all players learn who): each silently chooses to live or die, but if all live, all die.',
+    reminderTokens: ['Killed by', 'Killed by', 'Killed by', '1', '2', '3'],
   },
   kazali: {
     name: 'Kazali',
     description:
       'Each night*, choose a player: they die. [You choose which players are which Minions. -? to +? Outsiders]',
+    reminderTokens: ['Killed by'],
   },
   legion: {
     name: 'Legion',
     description:
       'Each night*, a player might die. Executions fail if only evil voted. You register as a Minion too. [Most players are Legion]',
+    reminderTokens: ['Killed by'],
   },
   leviathan: {
     name: 'Leviathan',
     description:
       'If more than 1 good player is executed, evil wins. All players know you are in play. After day 5, evil wins.',
+    reminderTokens: ['Good player executed'],
   },
   lilmonsta: {
     name: "Lil'Monsta",
     description: `Each night, Minions choose who babysits Lil' Monsta & "is the Demon". Each night*, a player might die. [+1 Minion]`,
+    reminderTokens: ['Killed by', 'Is the Demon'],
   },
   lleech: {
     name: 'Lleech',
     description:
       'Each night*, choose a player: they die. You start by choosing a player: they are poisoned. You die if & only if they are dead.',
+    reminderTokens: ['Killed by', 'Poisoned'],
   },
   lordoftyphon: {
     name: 'Lord of Typhon',
     description:
       'Each night*, choose a player: they die. [Evil characters are in a line. You are in the middle. +1 Minion. -? to +? Outsiders]',
+    reminderTokens: ['Killed by'],
   },
   ojo: {
     name: 'Ojo',
     description:
       'Each night*, choose a character: they die. If they are not in play, the Storyteller chooses who dies.',
+    reminderTokens: ['Killed by'],
   },
   yaggababble: {
     name: 'Yaggababble',
     description:
       'You start knowing a secret phrase. For each time you said it publicly today, a player might die.',
+    reminderTokens: ['Killed by', 'Said phrase'],
   },
 
   // Carousel - Travellers
+  cacklejack: {
+    name: 'Cacklejack',
+    description:
+      'Each day, choose a player; a different player changes character tonight.',
+    reminderTokens: ['Not me'],
+  },
+
   gangster: {
     name: 'Gangster',
     description:
@@ -1565,6 +1697,7 @@ const _characters = {
     name: 'Gnome',
     description:
       'All players start knowing a player of your alignment. You may choose to kill anyone who nominates them.',
+    reminderTokens: ['Amigo'],
   },
 } as const;
 
@@ -1954,6 +2087,11 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'wraith',
     description: 'Wake the Wraith whenever other evil players wake.',
+  },
+  {
+    id: 'cacklejack',
+    description:
+      "Replace any player's character token (except the player with the 'Not me' reminder token) with a different character token. Wake that player, show the 'You are' info token and their new character token, then put them to sleep.",
   },
   {
     id: 'philosopher',
@@ -2804,3 +2942,22 @@ const checkDroisoned = (reminder: Reminder) => {
 export const isDroisoned = (player: BotcPlayer) =>
   (player.reminders.find(checkDroisoned) ??
     player.automaticReminders.find(checkDroisoned)) !== undefined;
+
+export const isGlobalDroisoned = (
+  characterType: CharacterType,
+  players: BotcPlayer[],
+) => {
+  const reminders = players.flatMap((player) =>
+    player.reminders.concat(player.automaticReminders),
+  );
+
+  return (
+    reminders.find((reminder) => {
+      const msg = reminder.message.toLowerCase();
+      return (
+        (msg.includes(characterType) || msg.includes('everyone')) &&
+        (msg.includes('drunk') || msg.includes('poisoned'))
+      );
+    }) !== undefined
+  );
+};

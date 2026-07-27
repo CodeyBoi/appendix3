@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { useEffect, useMemo, useState } from 'react';
 import BotcCharacterSelectTable from './character-select';
 import {
+  CAROUSEL_EDITIONS,
   CharacterId,
   Edition,
   EDITIONS,
@@ -239,10 +240,11 @@ const BloodOnTheClocktowerElement = () => {
           <div className='flex max-w-lg gap-2'>
             <Select
               label='Edition'
-              options={EDITIONS.map((e) => ({
-                value: e.id,
-                label: e.name,
-              }))
+              options={EDITIONS.concat(CAROUSEL_EDITIONS)
+                .map((e) => ({
+                  value: e.id,
+                  label: e.name,
+                }))
                 .concat(
                   customScripts.map((edition) => ({
                     value: edition.id,
@@ -254,7 +256,9 @@ const BloodOnTheClocktowerElement = () => {
                 setGameState(
                   new BotcGame({
                     edition:
-                      EDITIONS.find((edition) => edition.id === v) ??
+                      EDITIONS.concat(CAROUSEL_EDITIONS).find(
+                        (edition) => edition.id === v,
+                      ) ??
                       customScripts.find((edition) => edition.id === v) ??
                       CUSTOM_EDITION,
                   }),
