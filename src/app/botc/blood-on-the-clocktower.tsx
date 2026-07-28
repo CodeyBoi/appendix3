@@ -12,6 +12,7 @@ import {
   Edition,
   EDITIONS,
   getAllCharacters,
+  NpcId,
   urlToEdition,
 } from './characters';
 import NightOrder from './night-order';
@@ -39,6 +40,7 @@ type Tab = 'setup' | 'grimoire' | 'night-order' | 'info-tokens';
 const BOTC_GAME_STATE_KEY = 'botcGameState';
 const BOTC_CUSTOM_SCRIPTS_KEY = 'botcCustomScripts';
 const BOTC_NIGHT_ORDER_INDEX_KEY = 'botcNightOrderIndex';
+const BOTC_NPCS_KEY = 'botcNpcs';
 
 const TROUBLE_BREWING = EDITIONS[0] as Edition;
 const CUSTOM_EDITION: Edition = {
@@ -162,6 +164,13 @@ const BloodOnTheClocktowerElement = () => {
   const customScripts = getCustomScripts();
   const isCustomEdition =
     customScripts.find((script) => script.id === edition.id) !== undefined;
+
+  const [selectedNpcs, _setSelectedNpcs] = useState<NpcId[]>(
+    () => JSON.parse(localStorage.getItem(BOTC_NPCS_KEY) ?? '[]') as NpcId[],
+  );
+  useEffect(() => {
+    localStorage.setItem(BOTC_NPCS_KEY, JSON.stringify(selectedNpcs));
+  }, [selectedNpcs]);
 
   const importCustomScript = async (
     scriptData: string,

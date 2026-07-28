@@ -20,6 +20,7 @@ export interface Edition {
   minions: CharacterId[];
   demons: CharacterId[];
   travellers: CharacterId[];
+  npcs?: NpcId[];
 }
 
 export const EDITIONS: readonly Edition[] = [
@@ -265,6 +266,7 @@ export const CAROUSEL_EDITIONS: readonly Edition[] = [
     minions: ['psychopath', 'goblin', 'boomdandy'],
     demons: ['pukka', 'vortox'],
     travellers: [],
+    npcs: ['duchess', 'sentinel'],
   },
   {
     id: 'fall-of-rome-teensyville',
@@ -404,6 +406,7 @@ const jsonToEdition = (data: BotcScriptsJsonData) => {
       minions: [],
       demons: [],
       travellers: [],
+      npcs: [],
     },
   );
   return edition;
@@ -1703,6 +1706,185 @@ const _characters = {
 } as const;
 
 export type CharacterId = keyof typeof _characters;
+
+export const _npcs = {
+  // Fabled
+  duchess: {
+    name: 'Duchess',
+    description: `Each day, 3 players may choose to visit you. At night*, each visitor learns how many visitors are evil, but 1 gets false info.`,
+    reminderTokens: ['Visitor', 'Visitor', 'False info'],
+  },
+  fibbin: {
+    name: 'Fibbin',
+    description: `Once per game, 1 good player might get incorrect information.`,
+    reminderTokens: ['Got incorrect info'],
+  },
+  fiddler: {
+    name: 'Fiddler',
+    description: `Once per game, the Demon secretly chooses an opposing player: all players choose which of these 2 players win.`,
+  },
+  ferryman: {
+    name: 'Ferryman',
+    description: `On the final day, all dead players regain their vote token.`,
+  },
+  doomsayer: {
+    name: 'Doomsayer',
+    description: `If 4 or more players live, each living player may publicly choose (once per game) that a player of their own alignment dies.`,
+  },
+  spiritofivory: {
+    name: 'Spirit of Ivory',
+    description: `There can't be more than 1 extra evil player.`,
+    reminderTokens: ['No more evil'],
+  },
+  sentinel: {
+    name: 'Sentinel',
+    description: `There might be 1 extra or 1 fewer Outsider in play.`,
+  },
+  toymaker: {
+    name: 'Toymaker',
+    description: `The Demon may choose not to attack & must do this at least once per game. Evil players get normal starting info.`,
+    reminderTokens: ['Final night: No attack'],
+  },
+  buddhist: {
+    name: 'Buddhist',
+    description: `For the first 2 minutes of each day, veteran players may not talk.`,
+  },
+  hellslibrarian: {
+    name: "Hell's Librarian",
+    description: `Something bad might happen to whoever talks when the Storyteller has asked for silence.`,
+    reminderTokens: ['Something bad'],
+  },
+  angel: {
+    name: 'Angel',
+    description: `Something bad might happen to whoever is most responsible for the death of a new player.`,
+    reminderTokens: [
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Protected',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+      'Something bad',
+    ],
+  },
+  deusexfiasco: {
+    name: 'Deus ex Fiasco',
+    description: `At least once per game, the Storyteller will make a mistake, correct it, and publicly admit to it.`,
+    reminderTokens: ['Whoopsie'],
+  },
+  revolutionary: {
+    name: 'Revolutionary',
+    description: `2 neighboring players are known to be the same alignment. Once per game, 1 of them registers falsely.`,
+    reminderTokens: ['Aligned', 'Aligned', 'Register falsely?'],
+  },
+
+  // Lorics
+  zenomancer: {
+    name: 'Zenomancer',
+    description: `One or more players each have a goal. When achieved, that player learns a piece of true info.`,
+    reminderTokens: [
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+      'Goal',
+    ],
+  },
+  godofug: {
+    name: 'God of Ug',
+    description: `One Ug hat. When wear Ug hat, must speak one sound at a time but vote twice. If fail, pass Ug hat.`,
+    reminderTokens: ['Hat'],
+  },
+  ventriloquist: {
+    name: 'Ventriloquist',
+    description: `If a player is mad as a fresh character during their nomination, they might not die if executed today.`,
+    reminderTokens: [
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+      'Mad',
+    ],
+  },
+  gardener: {
+    name: 'Gardener',
+    description: `The Storyteller assigns all players' characters.`,
+  },
+  pope: {
+    name: 'Pope',
+    description: `There are duplicate good characters in play. They might also be bluffs.`,
+  },
+  hindu: {
+    name: 'Hindu',
+    description: `The first 4 players to die are immediately reincarnated as Travellers of the same alignment.`,
+  },
+  knaves: {
+    name: 'Knaves',
+    description: `There are 2 Storytellers: one lies & one tells the truth. Once per game, at dusk, they might switch.`,
+  },
+  tor: {
+    name: 'Tor',
+    description: `Players don't know their character or alignment. They learn them when they die.`,
+  },
+  stormcatcher: {
+    name: 'Storm Catcher',
+    description: `Name a good character. If in play, they can only die by execution, but evil players learn which player it is.`,
+    reminderTokens: ['Stormcaught'],
+  },
+  bigwig: {
+    name: 'Big Wig',
+    description: `Each nominee chooses a player: until voting, only they may speak & they are mad the nominee is good or they might die.`,
+  },
+  bootlegger: {
+    name: 'Bootlegger',
+    description: `This script has homebrew characters or rules.`,
+  },
+} as const;
+
+export type NpcId = keyof typeof _npcs;
 
 export interface Reminder {
   characterId?: CharacterId | Alignment;
