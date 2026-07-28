@@ -4,7 +4,7 @@ import { api } from 'trpc/server';
 import { detailedName, sortCorps } from 'utils/corps';
 import { hashString } from 'utils/hash';
 import KillerWordForm from './word-form';
-import KillerAddPlayer from 'app/admin/killer/add-player';
+import KillerAddPlayer from 'app/(authenticated)/admin/killer/add-player';
 import Countdown from 'components/countdown';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Button from 'components/input/button';

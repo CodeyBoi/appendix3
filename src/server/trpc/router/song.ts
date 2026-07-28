@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { protectedProcedure, restrictedProcedure, router } from '../trpc';
+import {
+  protectedProcedure,
+  publicProcedure,
+  restrictedProcedure,
+  router,
+} from '../trpc';
 import dayjs from 'dayjs';
 import { Context } from '../context';
 
@@ -55,7 +60,7 @@ const generateVarnamoMarathon = async (ctx: Context) => {
 };
 
 export const songRouter = router({
-  get: protectedProcedure
+  get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
@@ -127,7 +132,7 @@ export const songRouter = router({
       });
     }),
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     const songs = await ctx.prisma.song.findMany({
       select: {
         id: true,
@@ -144,7 +149,7 @@ export const songRouter = router({
     return songs;
   }),
 
-  increaseViewCount: protectedProcedure
+  increaseViewCount: publicProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ input, ctx }) => {
       const { id = '' } = input;
@@ -200,7 +205,7 @@ export const songRouter = router({
       return res;
     }),
 
-  getPinned: protectedProcedure.query(async ({ ctx }) => {
+  getPinned: publicProcedure.query(async ({ ctx }) => {
     const now = new Date();
     const songs = await ctx.prisma.song.findMany({
       where: {
