@@ -8,10 +8,10 @@ import { detailedName } from 'utils/corps';
 const AdminSection = () => {
   const utils = api.useUtils();
   const { data: sections, isInitialLoading } =
-    api.section.getSectionLeaders.useQuery();
+    api.section.getSections.useQuery();
 
   const setSectionLeader = api.section.setSectionLeader.useMutation({
-    onSuccess: () => utils.section.getSectionLeaders.invalidate(),
+    onSuccess: () => utils.section.getSections.invalidate(),
   });
 
   return (

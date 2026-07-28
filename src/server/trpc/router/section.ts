@@ -16,15 +16,13 @@ export const sectionRouter = router({
       return section?.leader;
     }),
 
-  getSectionLeaders: restrictedProcedure('manageSections').query(
-    async ({ ctx }) => {
-      return await ctx.prisma.section.findMany({
-        include: {
-          leader: true,
-        },
-      });
-    },
-  ),
+  getSections: restrictedProcedure('manageSections').query(async ({ ctx }) => {
+    return await ctx.prisma.section.findMany({
+      include: {
+        leader: true,
+      },
+    });
+  }),
 
   setSectionLeader: restrictedProcedure('manageSections')
     .input(z.object({ sectionId: z.number(), corpsId: z.string() }))

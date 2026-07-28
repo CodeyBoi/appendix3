@@ -4,10 +4,8 @@ import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import { displayNumber } from 'utils/corps';
 
-const AccountPreferences = dynamic(
-  () => import('app/(authenticated)/account/preferences'),
-);
-const CorpsStats = dynamic(() => import('app/(authenticated)/account/stats'));
+const AccountPreferences = dynamic(() => import('./preferences'));
+const CorpsStats = dynamic(() => import('./stats'));
 
 export const metadata: Metadata = {
   title: 'Mina sidor',

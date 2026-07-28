@@ -12,38 +12,82 @@ const ALL_BOARD_ROLES = [
   'Sekreterare',
   'Kassör',
 ] as const;
+const WELLBEING_REPRESENTATIVE_NAME = 'Trivselombud';
+const CONDUCTOR_NAME = 'Dirigent';
 
 const InfoPage = async () => {
   const publicRoles = await api.permission.getPublicRoles.query();
-  const boardCorps = await Promise.all(
-    ALL_BOARD_ROLES.map(async (roleName) => {
-      const role = publicRoles.find((role) => role.name === roleName);
-      if (!role) {
-        throw new Error(
-          'Failed when getting board members. The list with board role names in ALL_BOARD_ROLES in src/app/info/page.tsx has probably desynced from the role names defined in the database.',
-        );
-      }
-      const corpsIds = role.corpsii.map((corps) => corps.id);
-      return {
-        name: roleName,
-        corpsii: filterNone(
-          await Promise.all(corpsIds.map((id) => api.corps.get.query({ id }))),
-        ),
-      };
-    }),
-  );
+  const [boardCorps, sections] = await Promise.all([
+    Promise.all(
+      ALL_BOARD_ROLES.map(async (roleName) => {
+        const role = publicRoles.find((role) => role.name === roleName);
+        if (!role) {
+          throw new Error(
+            'Failed when getting board members. The list with board role names in ALL_BOARD_ROLES in src/app/info/page.tsx has probably desynced from the role names defined in the database.',
+          );
+        }
+        const corpsIds = role.corpsii.map((corps) => corps.id);
+        return {
+          name: roleName,
+          corpsii: filterNone(
+            await Promise.all(
+              corpsIds.map((id) => api.corps.get.query({ id })),
+            ),
+          ),
+        };
+      }),
+    ),
+    api.section.getSections.query(),
+  ]);
 
-  const trivselCorps = await Promise.all(
-    publicRoles
-      .filter((role) => role.name === 'Trivselombud')
-      .flatMap((role) =>
-        role.corpsii.map(async (corps) => {
-          const result = await api.corps.get.query({ id: corps.id });
-          if (!result) throw new Error('Corps not found');
-          return result;
-        }),
+  const [wellbeingRepresentatives, conductors, sectionsWithLeaders] =
+    await Promise.all([
+      Promise.all(
+        publicRoles
+          .filter((role) => role.name === WELLBEING_REPRESENTATIVE_NAME)
+          .flatMap((role) =>
+            role.corpsii.map(async (corps) => {
+              const result = await api.corps.get.query({ id: corps.id });
+              if (!result)
+                throw new Error(
+                  `Invalid corpsId for Well-being Representative: ${corps.id}`,
+                );
+              return result;
+            }),
+          ),
       ),
-  );
+      Promise.all(
+        publicRoles
+          .filter((role) => role.name === CONDUCTOR_NAME)
+          .flatMap((role) =>
+            role.corpsii.map(async (corps) => {
+              const result = await api.corps.get.query({ id: corps.id });
+              if (!result)
+                throw new Error(`Invalid corpsId for Conductor: ${corps.id}`);
+              return result;
+            }),
+          ),
+      ),
+      Promise.all(
+        sections
+          .filter((section) => section.name !== 'Dirigenterna')
+          .map(async (section) => {
+            const leader = section.leader;
+            if (!leader) {
+              return { ...section, leader: undefined };
+            }
+            const result = await api.corps.get.query({ id: leader.id });
+            if (!result)
+              throw new Error(
+                `Invalid corpsId for Section Leader: ${leader.id}`,
+              );
+            return {
+              ...section,
+              leader: result,
+            };
+          }),
+      ),
+    ]);
 
   return (
     <div>
@@ -66,15 +110,12 @@ const InfoPage = async () => {
             {boardCorps.map(({ name, corpsii }) => (
               <div key={name}>
                 {corpsii.length > 0 && (
-                  <>
-                    <h4>{name}</h4>
-                    <div className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'>
-                      {corpsii.length > 0 &&
-                        corpsii.map((corps) => (
-                          <PositionInfobox key={corps.id} corps={corps} />
-                        ))}
-                    </div>
-                  </>
+                  <div className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'>
+                    <h5>{name}</h5>
+                    {corpsii.map((corps) => (
+                      <PositionInfobox key={corps.id} corps={corps} />
+                    ))}
+                  </div>
                 )}
               </div>
             ))}
@@ -84,43 +125,91 @@ const InfoPage = async () => {
 
       <div className='max-w-4xl'>
         <div className='flex flex-col space-y-2 p-4'>
-          <h3>Trivselombud</h3>
+          <h3>{lang('Trivselombuden', 'The Well-being Representatives')}</h3>
           {lang(
             `Trivselombuden i Bleckhornen har i uppdrag att bidra till trivsel och trygghet inom
           föreningen. Till oss kan du komma om du känner att du har upplevt något inom Bleckhornen
           som känns fel, eller om du känner att du behöver stöd eller prata om något. Trivselombuden
-          kan du alltid komma pch prata med när du känner för det, men du kan också kontakta oss via
-          våra formulär, där det även finns möjlighet att vara anonym.`,
+          kan du alltid komma pch prata med när du känner för det. Du kan även kontakta oss via
+          våra formulär, där det finns möjlighet att vara anonym.`,
 
-            `The Wellbeing Representatives in Bleckhornen are responsible for promoting comfort and
+            `The Well-being Representatives in Bleckhornen are responsible for promoting comfort and
           safety within the association. You can come to us if you've experienced something within
           Bleckhornen that feels wrong, or if you feel that you need support or just someone to talk to.
-          You can always approach the Wellbeing Representatives whenever you feel the need, but you
-          can also contact us through our forms, where there is also an option to remain anonymous.`,
+          You can always approach the Wellbeing Representatives whenever you feel the need. You
+          can also contact us through our forms, where there is an option to remain anonymous.`,
           )}
-          {publicRoles
-            .filter((role) => role.name == 'Trivselombud')
-            .map((role) => (
-              <div
-                key={role.id}
-                className='grid grid-cols-1 gap-4 lg:grid-cols-2'
-              >
-                {trivselCorps.map((corps) => (
-                  <div
-                    key={`Trivselombudbox:${corps.id}`}
-                    className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'
-                  >
-                    <PositionInfobox corps={corps} />
-                  </div>
-                ))}
-              </div>
-            ))}
+          {wellbeingRepresentatives.length > 0 && (
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+              {wellbeingRepresentatives.map((corps) => (
+                <div
+                  key={`wellbeing-box:${corps.id}`}
+                  className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'
+                >
+                  <PositionInfobox corps={corps} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className='max-w-4xl'>
         <div className='flex flex-col space-y-2 p-4'>
-          <h3>Utskott</h3>
+          <h3>{lang('Dirigenterna', 'The Conductors')}</h3>
+          {lang(
+            `Dirigenterna ansvarar för att planera repor, valla corpset under spelningar och se till att vi låter okej.`,
+
+            `The Conductors are reponsible for planning rehearsals and pushing the corps around during gigs, making sure that we sound okay.`,
+          )}
+          {conductors.length > 0 && (
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+              {conductors.map((corps) => (
+                <div
+                  key={`conductor-box:${corps.id}`}
+                  className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'
+                >
+                  <PositionInfobox corps={corps} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className='max-w-4xl'>
+        <div className='flex flex-col space-y-2 p-4'>
+          <h3>{lang('Stämledarna', 'The Section Leaders')}</h3>
+          {lang(
+            `Stämledarna ansvarar huvudsakligen för att anordna sektionsfika, välkomna nya corps och vidarebefordra info till sin sektion.`,
+
+            `The Section Leaders are primarily responsible for organizing section fika, welcome new corps and forwarding info to their section.`,
+          )}
+          {sectionsWithLeaders.length > 0 && (
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+              {sectionsWithLeaders.map((section) => {
+                const leader = section.leader;
+                if (!leader) {
+                  return null;
+                }
+                return (
+                  <div
+                    key={`section-leader-${section.name}-box:${leader.id}`}
+                    className='flex flex-col rounded border p-2 text-left text-sm shadow-md dark:border-neutral-800'
+                  >
+                    <h5>{section.name}</h5>
+                    <PositionInfobox corps={leader} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className='max-w-4xl'>
+        <div className='flex flex-col space-y-2 p-4'>
+          <h3>{lang('Utskotten', 'The Committees')}</h3>
           {lang(
             `I Bleckhornen finns flera utskott, där varje utskott har sina specifika uppgifter.
             Tillsammans ser de till att föreningen fungerar smidigt och utvecklas.
@@ -134,7 +223,7 @@ const InfoPage = async () => {
           )}
 
           <div className='flex gap-1'>
-            <h4>Notmarskeriet</h4>
+            <h4>{lang('Notmarskeriet', 'The Notmarskeri')}</h4>
             <ActionIcon
               href={`mailto:notmarsk.bleckhornen@gmail.com`}
               variant='subtle'
@@ -158,7 +247,7 @@ const InfoPage = async () => {
           )}
 
           <div className='flex gap-1'>
-            <h4>Arkivet</h4>
+            <h4>{lang('Arkivet', 'The Archive')}</h4>
             <ActionIcon
               href={`mailto:arkivet.bleckhornen@gmail.com`}
               variant='subtle'
@@ -199,7 +288,7 @@ const InfoPage = async () => {
           )}
 
           <div className='flex gap-1'>
-            <h4>Baren</h4>
+            <h4>{lang('Baren', 'The Bar')}</h4>
             <ActionIcon
               href={`mailto:baren.bleckhornen@gmail.com`}
               variant='subtle'
@@ -213,13 +302,13 @@ const InfoPage = async () => {
           Vi serverar dessutom fördrink inför corpsafton, och rattar Bussbaren hela vägen upp till SOF och STORK.
           Eins, zwei, drei, gesoffa!`,
 
-            `The Bar is the committee that keeps the corps supplied with drinks! (If you ask nicely, you might even get a cocktail 😉)
+            `The Bar is the committee that sets the bar and keeps the corps supplied with drinks! (If you ask nicely, you might even get a cocktail 😉)
           On the first Thursday of every month, we host an extra festive afterparty with extra festive beverages!
           We also serve pre-drinks before corps evenings and run the Bus Bar all the way to SOF and STORK.`,
           )}
 
           <div className='flex gap-1'>
-            <h4>Sexmästeriet</h4>
+            <h4>{lang('Sexmästeriet', 'The Culinary Committee')}</h4>
           </div>
           {lang(
             `Sexmästeriet är utskottet som ser till att ingen går hungrig! Vi lagar mat inför både Vårcorps och Höstcorps,
@@ -243,12 +332,11 @@ const InfoPage = async () => {
             `ITK har ansvar för drift av alla Bleckhornens hemsidor, samt vidareutveckling av Blindtarmen.
             Driftansvaret includerar Blindtarmen, den publika hemsidan och vår interna wiki.`,
 
-            `ITK has responsibility for the operation of all Bleckhornens websites, as well as developing Blindtarmen.
-            The operational responsebility includes Blindtarmen, the public website, and our internal wiki`,
+            `ITK has responsibility for the operation of all Bleckhornens websites, as well as developing Blindtarmen. The operational responsibility includes Blindtarmen, the public website, and our internal wiki.`,
           )}
 
           <div className='flex gap-1'>
-            <h4>Pryl & prov</h4>
+            <h4>Pryl & Prov</h4>
             <ActionIcon
               href={`mailto:prylochprovbleckhornen@gmail.com `}
               variant='subtle'
@@ -257,7 +345,7 @@ const InfoPage = async () => {
             </ActionIcon>
           </div>
           {lang(
-            `I pryl & prov har vi ansvar för corpsets merch och provelever!
+            `I Pryl & Prov har vi ansvar för corpsets merch och provelever!
           Vi försöker se till att proveleverna känner sig välkomna i föreningen
           och att de alltid har någon att rikta frågor till om föreningen.
           Detta gör vi genom att anordna tillställningar som t.ex. provelevsfördrinkar och en provelevsdag!
@@ -273,7 +361,7 @@ const InfoPage = async () => {
           )}
 
           <div className='flex gap-1'>
-            <h4>Materialförvaltarna</h4>
+            <h4>{lang('Materialförvaltarna', 'The Materials Managers')}</h4>
             <ActionIcon
               href={`mailto:materialforvaltare.bleckhornen@gmail.com `}
               variant='subtle'
@@ -285,12 +373,12 @@ const InfoPage = async () => {
             `Materialförvaltarna tar hand om och utvecklar Tarmen och ser till Bleckhornens prylar fungerar.
           Har du ett roligt projekt du skulle vilja genomföra kan du alltid dryfta din idé med oss för att få tips och stöd.`,
 
-            `The materials managers take care of and develop Tarmen and make sure the Bleckhorns’ equipment works.
+            `The Materials Managers take care of and develop Tarmen and make sure the Bleckhorns’ equipment works.
           If you have a fun project you’d like to carry out, you can always discuss your idea with us to get tips and support.`,
           )}
 
           <div className='flex gap-1'>
-            <h4>Medaljeriet</h4>
+            <h4>{lang('Medaljeriet', 'The Medal Committee')}</h4>
             <ActionIcon
               href={`mailto:medaljeriet.bleckhornen@gmail.com`}
               variant='subtle'
@@ -304,25 +392,25 @@ const InfoPage = async () => {
           Vi designar också de temaenliga julkoncertsmedaljerna varje år!
           Utskottets finurliga tolkning av temat blir en fin souvenir till alla deltagande corps.`,
 
-            `We in the Medal committee keep track of which medals are to be ordered and given out,
+            `We in the Medal Committee keep track of which medals are to be ordered and given out,
           and thus we bring that extra shine to the dinner parties and the Christmas concert banquet!
           We also design the Christmas concert medals in accordance with the concert's theme each year!
           The committee's clever interpretation of the theme ends up as a nice souvenir for all participating corps.`,
           )}
 
           <div className='flex gap-1'>
-            <h4>Import</h4>
+            <h4>{lang('Importen', 'The Import Committee')}</h4>
           </div>
           {lang(
-            `Vi i importen ser till att det finns den finaste ölen och cidern.
+            `Vi i Importen ser till att det finns den finaste ölen och cidern.
           Därför åker vi på roadtrips över Öresund och med färjan över Fehmarnbältet för att köpa de bästa danska produkterna i Tyskland.`,
 
-            `We from the import committee make sure with the finest beer and cider.
+            `We from the Import Committee make sure with the finest beer and cider.
           Therefore we go on roadtrips across the Öresund and with the ferry over Fehmarn belt to buy the best Danish products in Germany.`,
           )}
 
           <div className='flex gap-1'>
-            <h4>Export</h4>
+            <h4>{lang('Exporten', 'The Export Committee')}</h4>
           </div>
           {lang(
             `Vi i Exporten ser till att corpset aldrig går hungriga!

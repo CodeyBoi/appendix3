@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import StatisticsTable from 'app/(authenticated)/stats/statistics-table';
+import StatisticsTable from './statistics-table';
 import dayjs from 'dayjs';
 import { redirect } from 'next/navigation';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
