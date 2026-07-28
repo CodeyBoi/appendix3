@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  router,
-  restrictedProcedure,
-  protectedProcedure,
-  publicProcedure,
-} from '../trpc';
+import { router, restrictedProcedure, protectedProcedure } from '../trpc';
 import { ALL_PERMISSIONS, Permission } from 'utils/permission';
 import { corpsOrderBy } from 'utils/corps';
 
@@ -174,7 +169,7 @@ export const permissionRouter = router({
       return role;
     }),
 
-  getPublicRoles: publicProcedure.query(async ({ ctx }) => {
+  getPublicRoles: protectedProcedure.query(async ({ ctx }) => {
     const PUBLIC_ROLES = [
       'Ordförande',
       'Vice Ordförande',

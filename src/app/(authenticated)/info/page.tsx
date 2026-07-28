@@ -97,12 +97,12 @@ const InfoPage = async () => {
           <h3>{lang('Styrelsen', 'The Board')}</h3>
           {lang(
             `Styrelsen leder Bleckhornen under ett verksamhetsår. Tillsammans med dirigenter,
-          balettledare, utskottsmedlemmar och andra förtroendevalda ansvarar styrelsen för planering
+          balettledare, utskottsmedlemmar och andra förtroendevalda ansvarar vi för planering
           av repor, spelningar, sittningar, konserter, resor och andra aktiviteter. Detta görs med stöd och
           samarbete med hela corpset.`,
 
             `The board leads Bleckhornen throughout the year. Together with conductors, ballet leaders,
-          committee members, and other elected representatives, the board is responsible for planning
+          committee members, and other elected representatives, we are responsible for planning
           rehearsals, performances, formal sittings, concerts, trips, and other activities. This is done
           with the support and collaboration of the entire corps.`,
           )}
@@ -181,9 +181,9 @@ const InfoPage = async () => {
         <div className='flex flex-col space-y-2 p-4'>
           <h3>{lang('Stämledarna', 'The Section Leaders')}</h3>
           {lang(
-            `Stämledarna ansvarar huvudsakligen för att anordna sektionsfika, välkomna nya corps och vidarebefordra info till sin sektion.`,
+            `Stämledarna är länken mellan styrelsen och de olika sektionerna. Vårt huvudansvar är att anordna sektionsfika, välkomna nya corps, och vidarebefordra information till vår sektion. Utöver detta brukar vi även anordna sektionssittningar, häng och andra roliga aktiviteter.`,
 
-            `The Section Leaders are primarily responsible for organizing section fika, welcome new corps and forwarding info to their section.`,
+            `The Section Leaders are the link between the Board and the different sections. Our primary responsibilities include organizing section fika, welcoming new corps, and forwarding information to our section. In addition we also usually organize section sittnings, hangouts and other fun activities.`,
           )}
           {sectionsWithLeaders.length > 0 && (
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
