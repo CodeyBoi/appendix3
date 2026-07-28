@@ -10,8 +10,6 @@ import Button from 'components/input/button';
 import TextInput from 'components/input/text-input';
 import { IconMail } from '@tabler/icons-react';
 
-const dateWhenTheNewBlindtarmenIsntNewAnymore = new Date('2023-03-01');
-
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext,
 ) => {
@@ -32,8 +30,6 @@ const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState(false);
-  const isTheNewBlindtarmenStillNew =
-    dateWhenTheNewBlindtarmenIsntNewAnymore > new Date();
 
   trpc.auth.checkIfEmailInUse.useQuery(email, {
     onSuccess: (data) => {
@@ -87,12 +83,12 @@ const Login = () => {
       >
         <div className='flex flex-col items-center gap-6 rounded bg-red-600 p-4 shadow-2xl'>
           <h2 className='text-center text-white md:text-5xl'>
-            {`Välkommen till ${isTheNewBlindtarmenStillNew ? 'nya ' : ''}`}
-            <span className='text-red-400'>Blindtarmen</span>!
+            Välkommen till
+            <span className='text-red-400'> Blindtarmen</span>!
           </h2>
           {!success && (
             <div className='w-4/5 scale-125 lg:w-2/3 lg:scale-150'>
-              <div className='flex w-full gap-2 p-2 max-lg:flex-col'>
+              <div className='flex w-full gap-2 p-2 max-lg:flex-col lg:items-baseline'>
                 <div className='grow'>
                   <TextInput
                     variant='login'
