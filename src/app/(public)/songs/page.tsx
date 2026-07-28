@@ -31,7 +31,7 @@ const SongsLayout = () => {
           </Tooltip>
         </div>
       </div>
-      <div className='mt-8'>
+      <div className='mt-12 lg:mt-8'>
         <Suspense
           fallback={
             <Loading msg={lang('Hämtar sånger...', 'Fetching songs...')} />

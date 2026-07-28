@@ -33,7 +33,7 @@ const Song = async ({ song: songProp }: SongProps) => {
   });
 
   return (
-    <div className='flex max-w-xl flex-col'>
+    <div className='flex max-w-xl flex-col px-2 lg:px-0'>
       <div className='flex flex-nowrap items-start gap-2'>
         <div className='grow'>
           <h3>{song.title}</h3>
