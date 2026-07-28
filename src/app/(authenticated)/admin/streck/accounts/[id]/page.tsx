@@ -1,7 +1,7 @@
 import Loading from 'components/loading';
 import { Suspense } from 'react';
 import { lang } from 'utils/language';
-import TransactionsTable from 'app/account/streck/table';
+import TransactionsTable from 'app/(authenticated)/account/streck/table';
 import { api } from 'trpc/server';
 import { Language } from 'hooks/use-language';
 

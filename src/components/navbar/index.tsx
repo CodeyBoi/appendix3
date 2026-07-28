@@ -20,6 +20,8 @@ import NavbarControl from './control';
 import { api } from 'trpc/server';
 import { lang } from 'utils/language';
 import { Permission } from 'utils/permission';
+import { getServerSession } from 'next-auth';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 interface NavbarLink {
   label: React.ReactNode;
@@ -136,7 +138,10 @@ const killerLabel = { label: 'Killer', href: '/killer', icon: <IconSwords /> };
 const NavbarContent = async ({
   currentDate = new Date(),
 }: NavbarContentProps) => {
-  const permissions = await api.permission.getOwnPermissions.query();
+  const session = await getServerSession(authOptions);
+  const permissions = session
+    ? await api.permission.getOwnPermissions.query()
+    : new Set<Permission>();
 
   const adminTabLinks = adminTab.links.filter((link) =>
     link.permission ? permissions.has(link.permission) : true,
@@ -148,10 +153,12 @@ const NavbarContent = async ({
       </div>
     ) : undefined;
 
-  const [killerGame, killerPlayer] = await Promise.all([
-    api.killer.gameExists.query(),
-    api.killer.getOwnPlayerInfo.query(),
-  ]);
+  const [killerGame, killerPlayer] = session
+    ? await Promise.all([
+        api.killer.gameExists.query(),
+        api.killer.getOwnPlayerInfo.query(),
+      ])
+    : [{ exists: false }, null];
 
   const hasntSignedUpForExistingKillerGame =
     killerGame.exists &&
@@ -161,7 +168,10 @@ const NavbarContent = async ({
 
   const userTabElement = (
     <div className='flex grow flex-col gap-1'>
-      {userTab.links.map(toElement)}
+      {(session
+        ? userTab.links
+        : userTab.links.filter((link) => link.href === '/songs')
+      ).map(toElement)}
       {killerGame.exists && toElement(killerLabel)}
       {hasntSignedUpForExistingKillerGame && (
         <div className='flex justify-center p-2 text-white motion-safe:animate-bounce lg:hidden'>
@@ -189,7 +199,18 @@ const NavbarContent = async ({
           <IconInfoSquare />
           {lang('Om sidan', 'About')}
         </Button>
-        <SignOutButton />
+        {session ? (
+          <SignOutButton />
+        ) : (
+          <Button
+            className='flex justify-start hover:bg-red-600'
+            href='/login'
+            color='navbutton'
+            fullWidth
+          >
+            {lang('Logga in', 'Log in')}
+          </Button>
+        )}
       </div>
     </div>
   );

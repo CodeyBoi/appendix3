@@ -94,7 +94,9 @@ const AccountPreferences = ({
     label: i.instrument.name,
   }));
 
-  const isTrivselOmbud = corps?.roles.some(role => role.name === "Trivselombud");
+  const isTrivselOmbud = corps?.roles.some(
+    (role) => role.name === 'Trivselombud',
+  );
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -165,14 +167,12 @@ const AccountPreferences = ({
               label={lang('Pronomen', 'Pronouns')}
               {...form.getInputProps('pronouns')}
             />
-            {
-              (isTrivselOmbud) &&
-              (<TextInput
+            {isTrivselOmbud && (
+              <TextInput
                 label={lang('Kontakt URL', 'Contact URL')}
                 {...form.getInputProps('contactURL')}
-              />)
-            }
-
+              />
+            )}
           </div>
           <div className='flex flex-col gap-2 pl-2'>
             <h3>{lang('Matpreferenser', 'Food preferences')}</h3>

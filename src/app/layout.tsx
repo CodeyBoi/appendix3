@@ -7,7 +7,6 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import 'styles/globals.css';
 import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
-import { redirect } from 'next/navigation';
 import AppShell from './app-shell';
 import { bahnschrift, castelar } from 'app/fonts';
 import { prisma } from '../server/db/client';
@@ -36,19 +35,19 @@ const RootLayout = async ({
   currentDate = new Date(),
 }: RootLayoutProps) => {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect('/login');
-  }
 
   // Find the color scheme and language for this session and pass it to the provider
-  const corps = await prisma.corps.findUnique({
-    where: { id: session.user?.corps?.id },
-    select: { colorScheme: true, language: true },
-  });
+  const corpsId = session?.user?.corps?.id;
+  const corps = corpsId
+    ? await prisma.corps.findUnique({
+        where: { id: corpsId },
+        select: { colorScheme: true, language: true },
+      })
+    : null;
   const colorScheme = (
-    isAprilFools(currentDate) ? 'dark' : corps?.colorScheme
+    isAprilFools(currentDate) ? 'dark' : corps?.colorScheme ?? 'light'
   ) as ColorScheme;
-  const language = corps?.language as Language;
+  const language = (corps?.language ?? 'sv') as Language;
 
   const snowflakes = isChristmas(currentDate) ? (
     <>
