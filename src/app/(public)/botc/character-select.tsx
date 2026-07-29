@@ -9,6 +9,7 @@ import {
   CHARACTERS,
   CharacterType,
   Edition,
+  getDefaultAlignment,
   isEvil,
   isGood,
   MAX_PLAYERS,
@@ -415,7 +416,7 @@ const BotcCharacterSelect = ({
                 <h3 className='first-letter:capitalize'>{characterType}</h3>
                 <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
               </div>
-              <div className='grid grid-cols-2 lg:grid-cols-4'>
+              <div className='grid grid-cols-2'>
                 {edition[characterType]
                   .map((id) => CHARACTERS[id])
                   .map(
@@ -456,6 +457,7 @@ const BotcCharacterSelect = ({
                           imgSrc={image?.[0] ?? ''}
                           description={description}
                           showDescription={showDescriptions}
+                          alignment={getDefaultAlignment(id)}
                         />
                         {allowDuplicateCharacters && !cannotBeSelected && (
                           <input
