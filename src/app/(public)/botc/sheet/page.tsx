@@ -5,6 +5,9 @@ import {
   CharacterId,
   CHARACTERS,
   Edition,
+  getAllCharacters,
+  getDefaultAlignment,
+  getJinxes,
   getWikiLink,
   isEvil,
   isGood,
@@ -14,6 +17,7 @@ import Button from 'components/input/button';
 import { IconQrcode } from '@tabler/icons-react';
 import { CharacterCountTable } from '../character-select';
 import { cn } from 'utils/class-names';
+import Jinx from '../jinx';
 
 interface BotcSheetPageProps {
   searchParams: {
@@ -43,6 +47,7 @@ const BotcSheetPage = ({
       travellers: [],
     },
   );
+  const jinxes = getJinxes(getAllCharacters(edition));
   return (
     <div className='flex flex-col gap-2'>
       <h3 className='hidden font-castelar lg:block'>
@@ -97,7 +102,13 @@ const BotcSheetPage = ({
                           imgSrc={image?.[0] ?? ''}
                           imgLink={getWikiLink(id)}
                           description={description}
+                          alignment={getDefaultAlignment(id)}
                           showDescription
+                          jinxes={jinxes.flatMap((jinx) =>
+                            jinx[0].includes(id)
+                              ? jinx[0].filter((jinxId) => jinxId !== id)
+                              : [],
+                          )}
                         />
                       </div>
                     );
@@ -107,6 +118,23 @@ const BotcSheetPage = ({
           </div>
         );
       })}
+      <details className='flex flex-col rounded border-2 border-neutral-500'>
+        <summary className='bg-neutral-500 pl-1 font-castelar text-lg text-white hover:cursor-pointer'>
+          Jinxes
+        </summary>
+        {jinxes.map(([[first, second], description]) => (
+          <div
+            key={`jinx-${first}-${second}`}
+            className='border border-neutral-500/30 px-2 py-1'
+          >
+            <Jinx
+              first={first}
+              second={second}
+              description={description.description}
+            />
+          </div>
+        ))}
+      </details>
       <div className='flex justify-center'>
         <CharacterCountTable />
       </div>

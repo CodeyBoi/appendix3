@@ -1,5 +1,10 @@
 import { cn } from 'utils/class-names';
-import { CharacterId, CHARACTERS, getWikiLink } from './characters';
+import {
+  CharacterId,
+  CHARACTERS,
+  getDefaultAlignment,
+  getWikiLink,
+} from './characters';
 import Link from 'next/link';
 import { IconAlertCircle } from '@tabler/icons-react';
 
@@ -30,9 +35,15 @@ const NightOrderEntry = ({
 
   const imgPath = character?.image ? character.image[0] : props.imagePath;
 
+  const nameColor = !characterId
+    ? 'text-black'
+    : getDefaultAlignment(characterId) === 'good'
+    ? 'text-blue-700'
+    : 'text-red-800';
+
   const nameElement = (
     <>
-      {characterName}{' '}
+      <span className={nameColor}>{characterName}</span>{' '}
       {props.name && characterId && (
         <span className='text-xs font-light text-neutral-500'>
           ({props.name})
