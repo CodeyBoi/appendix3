@@ -176,6 +176,7 @@ export const permissionRouter = router({
       'Sekreterare',
       'Kassör',
       'Trivselombud',
+      'Dirigent',
     ];
     const roles = await ctx.prisma.role.findMany({
       where: {
@@ -190,9 +191,8 @@ export const permissionRouter = router({
           },
         },
         corpsii: {
-          include: {
-            instruments: true,
-            roles: true,
+          select: {
+            id: true,
           },
           orderBy: corpsOrderBy,
         },
