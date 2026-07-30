@@ -41,6 +41,12 @@ const CharacterToken = ({
       : alignment === 'evil'
       ? 'bg-red-600'
       : 'bg-neutral-500';
+  const textColor =
+    alignment === 'good'
+      ? 'text-blue-700'
+      : alignment === 'evil'
+      ? 'text-red-800'
+      : 'text-neutral-500';
 
   return (
     <div
@@ -105,13 +111,12 @@ const CharacterToken = ({
               draggable={false}
             />
             <svg viewBox='0 0 150 150'>
-              <path
-                d='M 13 75 C 13 160, 138 160, 138 75'
-                id='curve'
-                fill='transparent'
-              />
-              <text textAnchor='middle'>
-                <textPath startOffset='50%' href='#curve'>
+              <text textAnchor='middle' className={textColor}>
+                <textPath
+                  startOffset='50%'
+                  href='#botc-token-character-curve'
+                  className='fill-current'
+                >
                   {character.name}
                 </textPath>
               </text>

@@ -7,7 +7,6 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import 'styles/globals.css';
 import { TRPCReactProvider } from 'trpc/react';
 import AppProvider from './app-provider';
-import AppShell from './app-shell';
 import { bahnschrift, castelar } from 'app/fonts';
 import { prisma } from '../server/db/client';
 import { ColorScheme } from 'hooks/use-color-scheme';
@@ -102,7 +101,7 @@ const RootLayout = async ({
             session={session}
             initialLanguage={language}
           >
-            <AppShell>{children}</AppShell>
+            {children}
           </AppProvider>
         </TRPCReactProvider>
       </body>

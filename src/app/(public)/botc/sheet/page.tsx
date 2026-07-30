@@ -8,6 +8,7 @@ import {
   getAllCharacters,
   getDefaultAlignment,
   getJinxes,
+  getType,
   getWikiLink,
   isEvil,
   isGood,
@@ -56,26 +57,26 @@ const BotcSheetPage = ({
       ? 'border-blue-500'
       : isEvil(characterType)
       ? 'border-red-600'
-      : 'border-neutral-500';
+      : 'border-l-blue-500 border-r-red-600 border-t-0 border-b-0';
     const subtleBorder = isGood(characterType)
       ? 'border-blue-500/30'
       : isEvil(characterType)
       ? 'border-red-600/30'
-      : 'border-neutral-500/30';
+      : 'border-blue-500/30';
     const bg = isGood(characterType)
       ? 'bg-blue-500'
       : isEvil(characterType)
       ? 'bg-red-600'
-      : 'bg-neutral-500';
+      : 'bg-gradient-to-r from-blue-500 to-red-600';
     return (
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col'>
         <details
           className={cn('flex flex-col rounded border-2', border)}
           open={characterType !== 'travellers'}
         >
           <summary
             className={cn(
-              'pl-1 font-castelar text-lg text-white hover:cursor-pointer',
+              'select-none pl-1 font-castelar text-lg text-white hover:cursor-pointer',
               bg,
             )}
           >
@@ -102,11 +103,17 @@ const BotcSheetPage = ({
                           ? jinx[0].filter((jinxId) => jinxId !== id)
                           : [],
                       )}
+                      isTraveller={getType(id) === 'travellers'}
                     />
                   </div>
                 );
               })}
           </div>
+          {characterType === 'travellers' && (
+            <div className='flex w-full justify-center'>
+              <div className={cn('h-0.5 w-full', bg)} />
+            </div>
+          )}
         </details>
       </div>
     );
@@ -123,26 +130,28 @@ const BotcSheetPage = ({
       {toCharacterGroup('outsiders')}
       {toCharacterGroup('minions')}
       {toCharacterGroup('demons')}
-      <details
-        open
-        className='flex flex-col rounded border-2 border-neutral-500'
-      >
-        <summary className='bg-neutral-500 pl-1 font-castelar text-lg text-white hover:cursor-pointer'>
-          Jinxes
-        </summary>
-        {jinxes.map(([[first, second], description]) => (
-          <div
-            key={`jinx-${first}-${second}`}
-            className='border border-neutral-500/30 px-2 py-1'
-          >
-            <Jinx
-              first={first}
-              second={second}
-              description={description.description}
-            />
-          </div>
-        ))}
-      </details>
+      {jinxes.length > 0 && (
+        <details
+          open
+          className='flex flex-col rounded border-2 border-yellow-600'
+        >
+          <summary className='select-none bg-yellow-600 pl-1 font-castelar text-lg text-white hover:cursor-pointer'>
+            Jinxes
+          </summary>
+          {jinxes.map(([[first, second], description]) => (
+            <div
+              key={`jinx-${first}-${second}`}
+              className='border border-yellow-600/30 px-2 py-1'
+            >
+              <Jinx
+                first={first}
+                second={second}
+                description={description.description}
+              />
+            </div>
+          ))}
+        </details>
+      )}
       {toCharacterGroup('travellers')}
       <div className='flex justify-center'>
         <CharacterCountTable />

@@ -129,7 +129,6 @@ const Grimoire = ({
                 }}
               >
                 <CharacterToken
-                  alignment='evil'
                   playerName={player.name}
                   characterId={player.characterId}
                   dead={!player.isAlive}

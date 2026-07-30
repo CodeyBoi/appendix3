@@ -9,6 +9,7 @@ interface BotcCharacterPanelProps {
   description: string;
   showDescription: boolean;
   alignment: Alignment;
+  isTraveller?: boolean;
   jinxes?: CharacterId[];
 }
 
@@ -19,6 +20,7 @@ const BotcCharacterPanel = ({
   description,
   showDescription,
   alignment,
+  isTraveller = false,
   jinxes = [],
 }: BotcCharacterPanelProps) => {
   const imgElement = (
@@ -31,7 +33,14 @@ const BotcCharacterPanel = ({
       src={imgSrc}
     />
   );
-  const nameColor = alignment === 'good' ? 'text-blue-700' : 'text-red-800';
+  const nameColor = isTraveller
+    ? ''
+    : alignment === 'good'
+    ? 'text-blue-700'
+    : 'text-red-800';
+  const nameClass = isTraveller
+    ? 'bg-gradient-to-r from-blue-700 to-red-800 bg-clip-text text-transparent'
+    : '';
   return (
     <div className='flex gap-2'>
       <div className='absolute flex self-center'>
@@ -45,8 +54,10 @@ const BotcCharacterPanel = ({
       </div>
       <div className='ml-10 flex flex-col lg:ml-14'>
         <div className='flex items-center'>
-          <h5 className={cn('hidden lg:block', nameColor)}>{name}</h5>
-          <h6 className={cn('lg:hidden', nameColor)}>{name}</h6>
+          <h5 className={cn('hidden lg:block', nameClass, nameColor)}>
+            {name}
+          </h5>
+          <h6 className={cn('lg:hidden', nameClass, nameColor)}>{name}</h6>
           {jinxes.length > 0 && <div className='w-1' />}
           {jinxes.map((jinx) => (
             <img

@@ -10,6 +10,7 @@ import {
   CharacterType,
   Edition,
   getDefaultAlignment,
+  getType,
   isEvil,
   isGood,
   MAX_PLAYERS,
@@ -350,7 +351,7 @@ const BotcCharacterSelect = ({
         numberOfPlayers={numberOfPlayers}
         onChange={setNumberOfPlayers}
       />
-      <div className='flex flex-col gap-2 md:flex-row'>
+      <div className='flex flex-col gap-2 sm:flex-row'>
         <Switch
           label='Show character abilities'
           value={showDescriptions}
@@ -458,6 +459,7 @@ const BotcCharacterSelect = ({
                           description={description}
                           showDescription={showDescriptions}
                           alignment={getDefaultAlignment(id)}
+                          isTraveller={getType(id) === 'travellers'}
                         />
                         {allowDuplicateCharacters && !cannotBeSelected && (
                           <input
