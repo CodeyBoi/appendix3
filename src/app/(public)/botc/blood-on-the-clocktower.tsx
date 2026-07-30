@@ -123,6 +123,12 @@ const BloodOnTheClocktowerElement = () => {
     setSaveTimeout(timeout);
   }, [gameState]);
 
+  useEffect(() => {
+    if (gameState.players.length === 0) {
+      setTab('setup');
+    }
+  }, []);
+
   const startGame = (players: BotcPlayer[]) => {
     gameState.startGame({ players });
     setGameState(gameState);
@@ -205,6 +211,15 @@ const BloodOnTheClocktowerElement = () => {
 
   return (
     <>
+      <svg width={0} height={0}>
+        <defs>
+          <path
+            d='M 13 75 C 13 160, 138 160, 138 75'
+            id='botc-token-character-curve'
+            fill='transparent'
+          />
+        </defs>
+      </svg>
       <BotcActionsModal
         open={actionsModalOpen}
         setOpen={setActionsModalOpen}
