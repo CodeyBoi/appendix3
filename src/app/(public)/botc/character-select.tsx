@@ -350,7 +350,7 @@ const BotcCharacterSelect = ({
         numberOfPlayers={numberOfPlayers}
         onChange={setNumberOfPlayers}
       />
-      <div className='flex flex-col gap-2 md:flex-row'>
+      <div className='flex flex-col gap-2 sm:flex-row'>
         <Switch
           label='Show character abilities'
           value={showDescriptions}

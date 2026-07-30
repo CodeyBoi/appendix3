@@ -323,8 +323,14 @@ export const CAROUSEL_EDITIONS: readonly Edition[] = [
   },
 ];
 
-export const getAllCharacters = (edition: Edition) =>
-  CHARACTER_TYPES.flatMap((t) => edition[t]);
+export const getAllCharacters = (
+  edition: Edition,
+  includeTravellers: boolean = true,
+) =>
+  (includeTravellers
+    ? CHARACTER_TYPES
+    : CHARACTER_TYPES.filter((t) => t !== 'travellers')
+  ).flatMap((t) => edition[t]);
 
 const _CHARACTER_TYPE_MAP = EDITIONS.reduce((acc, edition) => {
   for (const type of CHARACTER_TYPES) {

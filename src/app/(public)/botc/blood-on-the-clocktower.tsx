@@ -29,6 +29,7 @@ import { cn } from 'utils/class-names';
 import NightOrderPreview from './night-order-preview';
 import ActionIcon from 'components/input/action-icon';
 import Tooltip from 'components/tooltip';
+import Switch from 'components/input/switch';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -154,6 +155,11 @@ const BloodOnTheClocktowerElement = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [drawCharactersBgColor, setDrawCharactersBgColor] =
     useState<ModalBackgroundColor>('red');
+
+  const [
+    includeTravellersInCharacterSheet,
+    setIncludeTravellersInCharacterSheet,
+  ] = useState(true);
 
   const edition = gameState.edition;
 
@@ -392,23 +398,33 @@ const BloodOnTheClocktowerElement = () => {
           )}
           {allCharacters.length > 0 && (
             <>
-              <Button
-                href={`/botc/sheet?name=${encodeURIComponent(
-                  edition.name,
-                )}&characters=${encodeURIComponent(
-                  getAllCharacters(edition).join(','),
-                )}`}
-                target='_blank'
-              >
-                Character Sheet
-                <IconExternalLink />
-              </Button>
+              <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
+                <Button
+                  href={`/botc/sheet?name=${encodeURIComponent(
+                    edition.name,
+                  )}&characters=${encodeURIComponent(
+                    getAllCharacters(
+                      edition,
+                      includeTravellersInCharacterSheet,
+                    ).join(','),
+                  )}`}
+                  target='_blank'
+                >
+                  Character Sheet
+                  <IconExternalLink />
+                </Button>
+                <Switch
+                  label='Include travellers'
+                  onChange={setIncludeTravellersInCharacterSheet}
+                  value={includeTravellersInCharacterSheet}
+                />
+              </div>
               <BotcCharacterSelectTable
                 edition={edition}
                 selectedCharacters={selectedCharacters}
                 onSelectedCharactersChange={setSelectedCharacters}
               />
-              <div className='flex justify-end gap-2 lg:flex-row'>
+              <div className='flex justify-end gap-2'>
                 <Button
                   disabled={
                     selectedCharacters.length === 0 &&
