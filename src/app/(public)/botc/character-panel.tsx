@@ -44,7 +44,7 @@ const BotcCharacterPanel = ({
         )}
       </div>
       <div className='ml-10 flex flex-col lg:ml-14'>
-        <div className='flex'>
+        <div className='flex items-center'>
           <h5 className={cn('hidden lg:block', nameColor)}>{name}</h5>
           <h6 className={cn('lg:hidden', nameColor)}>{name}</h6>
           {jinxes.length > 0 && <div className='w-1' />}

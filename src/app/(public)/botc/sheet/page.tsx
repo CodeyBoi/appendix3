@@ -1,9 +1,9 @@
 import { QRCodeSVG } from 'qrcode.react';
 import BotcCharacterPanel from '../character-panel';
 import {
-  CHARACTER_TYPES,
   CharacterId,
   CHARACTERS,
+  CharacterType,
   Edition,
   getAllCharacters,
   getDefaultAlignment,
@@ -25,7 +25,6 @@ interface BotcSheetPageProps {
     characters: string;
   };
 }
-
 const BotcSheetPage = ({
   searchParams: { characters: charactersProp, name },
 }: BotcSheetPageProps) => {
@@ -47,6 +46,72 @@ const BotcSheetPage = ({
       travellers: [],
     },
   );
+
+  const toCharacterGroup = (characterType: CharacterType) => {
+    const characters = edition[characterType];
+    if (characters.length <= 0) {
+      return null;
+    }
+    const border = isGood(characterType)
+      ? 'border-blue-500'
+      : isEvil(characterType)
+      ? 'border-red-600'
+      : 'border-neutral-500';
+    const subtleBorder = isGood(characterType)
+      ? 'border-blue-500/30'
+      : isEvil(characterType)
+      ? 'border-red-600/30'
+      : 'border-neutral-500/30';
+    const bg = isGood(characterType)
+      ? 'bg-blue-500'
+      : isEvil(characterType)
+      ? 'bg-red-600'
+      : 'bg-neutral-500';
+    return (
+      <div className='flex flex-col gap-2'>
+        <details
+          className={cn('flex flex-col rounded border-2', border)}
+          open={characterType !== 'travellers'}
+        >
+          <summary
+            className={cn(
+              'pl-1 font-castelar text-lg text-white hover:cursor-pointer',
+              bg,
+            )}
+          >
+            {characterType}
+          </summary>
+          <div className='grid grid-cols-1 lg:grid-cols-2'>
+            {characters
+              .map((characterId) => CHARACTERS[characterId])
+              .map(({ id, name, description, image }) => {
+                return (
+                  <div
+                    key={id}
+                    className={cn('border px-2 py-1', subtleBorder)}
+                  >
+                    <BotcCharacterPanel
+                      name={name}
+                      imgSrc={image?.[0] ?? ''}
+                      imgLink={getWikiLink(id)}
+                      description={description}
+                      alignment={getDefaultAlignment(id)}
+                      showDescription
+                      jinxes={jinxes.flatMap((jinx) =>
+                        jinx[0].includes(id)
+                          ? jinx[0].filter((jinxId) => jinxId !== id)
+                          : [],
+                      )}
+                    />
+                  </div>
+                );
+              })}
+          </div>
+        </details>
+      </div>
+    );
+  };
+
   const jinxes = getJinxes(getAllCharacters(edition));
   return (
     <div className='flex flex-col gap-2'>
@@ -54,71 +119,14 @@ const BotcSheetPage = ({
         {decodeURIComponent(name)}
       </h3>
       <h4 className='font-castelar lg:hidden'>{decodeURIComponent(name)}</h4>
-      {CHARACTER_TYPES.map((characterType) => {
-        const characters = edition[characterType];
-        if (characters.length <= 0) {
-          return null;
-        }
-        const border = isGood(characterType)
-          ? 'border-blue-500'
-          : isEvil(characterType)
-          ? 'border-red-600'
-          : 'border-neutral-500';
-        const subtleBorder = isGood(characterType)
-          ? 'border-blue-500/30'
-          : isEvil(characterType)
-          ? 'border-red-600/30'
-          : 'border-neutral-500/30';
-        const bg = isGood(characterType)
-          ? 'bg-blue-500'
-          : isEvil(characterType)
-          ? 'bg-red-600'
-          : 'bg-neutral-500';
-        return (
-          <div key={characters.join(',')} className='flex flex-col gap-2'>
-            <details
-              className={cn('flex flex-col rounded border-2', border)}
-              open={characterType !== 'travellers'}
-            >
-              <summary
-                className={cn(
-                  'pl-1 font-castelar text-lg text-white hover:cursor-pointer',
-                  bg,
-                )}
-              >
-                {characterType}
-              </summary>
-              <div className='grid grid-cols-1 lg:grid-cols-2'>
-                {characters
-                  .map((characterId) => CHARACTERS[characterId])
-                  .map(({ id, name, description, image }) => {
-                    return (
-                      <div
-                        key={id}
-                        className={cn('border px-2 py-1', subtleBorder)}
-                      >
-                        <BotcCharacterPanel
-                          name={name}
-                          imgSrc={image?.[0] ?? ''}
-                          imgLink={getWikiLink(id)}
-                          description={description}
-                          alignment={getDefaultAlignment(id)}
-                          showDescription
-                          jinxes={jinxes.flatMap((jinx) =>
-                            jinx[0].includes(id)
-                              ? jinx[0].filter((jinxId) => jinxId !== id)
-                              : [],
-                          )}
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
-            </details>
-          </div>
-        );
-      })}
-      <details className='flex flex-col rounded border-2 border-neutral-500'>
+      {toCharacterGroup('townsfolk')}
+      {toCharacterGroup('outsiders')}
+      {toCharacterGroup('minions')}
+      {toCharacterGroup('demons')}
+      <details
+        open
+        className='flex flex-col rounded border-2 border-neutral-500'
+      >
         <summary className='bg-neutral-500 pl-1 font-castelar text-lg text-white hover:cursor-pointer'>
           Jinxes
         </summary>
@@ -135,6 +143,7 @@ const BotcSheetPage = ({
           </div>
         ))}
       </details>
+      {toCharacterGroup('travellers')}
       <div className='flex justify-center'>
         <CharacterCountTable />
       </div>
