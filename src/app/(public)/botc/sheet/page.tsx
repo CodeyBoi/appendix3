@@ -8,6 +8,7 @@ import {
   getAllCharacters,
   getDefaultAlignment,
   getJinxes,
+  getType,
   getWikiLink,
   isEvil,
   isGood,
@@ -102,6 +103,7 @@ const BotcSheetPage = ({
                           ? jinx[0].filter((jinxId) => jinxId !== id)
                           : [],
                       )}
+                      isTraveller={getType(id) === 'travellers'}
                     />
                   </div>
                 );

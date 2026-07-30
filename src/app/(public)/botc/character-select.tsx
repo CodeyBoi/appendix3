@@ -10,6 +10,7 @@ import {
   CharacterType,
   Edition,
   getDefaultAlignment,
+  getType,
   isEvil,
   isGood,
   MAX_PLAYERS,
@@ -458,6 +459,7 @@ const BotcCharacterSelect = ({
                           description={description}
                           showDescription={showDescriptions}
                           alignment={getDefaultAlignment(id)}
+                          isTraveller={getType(id) === 'travellers'}
                         />
                         {allowDuplicateCharacters && !cannotBeSelected && (
                           <input
