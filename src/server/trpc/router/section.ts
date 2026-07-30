@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { router, restrictedProcedure } from '../trpc';
+import { router, protectedProcedure, restrictedProcedure } from '../trpc';
 import { filterNone } from 'utils/array';
 
 export const sectionRouter = router({
@@ -16,7 +16,7 @@ export const sectionRouter = router({
       return section?.leader;
     }),
 
-  getSections: restrictedProcedure('manageSections').query(async ({ ctx }) => {
+  getSections: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.section.findMany({
       include: {
         leader: true,
