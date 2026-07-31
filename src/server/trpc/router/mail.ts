@@ -90,10 +90,17 @@ export const mailRouter = router({
         email: z.string().email(),
         sections: z.array(z.string()),
         description: z.string(),
+        honung: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, email, sections, description } = input;
+      const { name, email, sections, description, honung } = input;
+
+      if (honung) {
+        // Application is very likely from a bot
+        return;
+      }
+
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
       const sectionLeaders = await ctx.prisma.section.findMany({
         where: {
