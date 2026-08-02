@@ -52,6 +52,7 @@ const CorpsDisplay = ({
   currentDate = new Date(),
 }: CorpsDisplayProps) => {
   const [open, setOpen] = useState(false);
+  const [queryActive, setQueryActive] = useState(false);
   const isBirthday =
     corps.corpsBirthday &&
     corps.corpsBirthday.getDate() === currentDate.getDate() &&
@@ -67,12 +68,17 @@ const CorpsDisplay = ({
       }}
       targetClassName='max-w-max'
       target={
-        <div className='hover:underline'>
+        <div
+          className='hover:underline'
+          onMouseEnter={() => {
+            setQueryActive(true);
+          }}
+        >
           {getName(corps, nameFormat).trim() + (isBirthday ? ' 🎂' : '')}
         </div>
       }
     >
-      <CorpsInfobox id={corps.id} open={open} />
+      <CorpsInfobox id={corps.id} open={open} queryActive={queryActive} />
     </Popover>
   );
 };
