@@ -98,7 +98,12 @@ export const mailRouter = router({
 
       if (honung) {
         // Application is very likely from a bot
-        return;
+        return {
+          success: false,
+          error: {
+            message: 'Application failed. We think you are a bot. :(',
+          },
+        };
       }
 
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
@@ -169,8 +174,12 @@ export const mailRouter = router({
       } = input;
 
       if (honung) {
-        // Request filled in the "honeypot" field, and is therefore most likely from a bot
-        return;
+        return {
+          success: false,
+          error: {
+            message: 'Booking request failed. We think you are a bot. :(',
+          },
+        };
       }
 
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
