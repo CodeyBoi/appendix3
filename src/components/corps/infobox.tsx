@@ -103,7 +103,7 @@ const CorpsInfobox = ({
     { id },
     { enabled: queryActive || open },
   );
-  const { data: self } = api.corps.getSelf.useQuery(undefined, {
+  const { data: ownId } = api.corps.getSelfId.useQuery(undefined, {
     enabled: queryActive || open,
   });
   const { data: allTimeStreak } = api.stats.getAllTimeStreak.useQuery(
@@ -130,7 +130,7 @@ const CorpsInfobox = ({
     },
   });
 
-  if (!corps || !self || !allTimeStreak || !summary) {
+  if (!corps || !ownId || !allTimeStreak || !summary) {
     return (
       <Loading
         msg={
@@ -259,7 +259,7 @@ const CorpsInfobox = ({
       <div className='text-lg font-bold'>
         <div className='flex flex-nowrap items-start gap-2 whitespace-pre'>
           {corpsName}
-          {!!number && self.id !== id && (
+          {!!number && ownId !== id && (
             <Modal
               title={lang(`Byt smeknamn`, 'Change nickname')}
               withCloseButton

@@ -33,6 +33,10 @@ export const corpsRouter = router({
     });
   }),
 
+  getSelfId: protectedProcedure.query(({ ctx }) => {
+    return ctx.session.user.corps.id;
+  }),
+
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
