@@ -150,6 +150,7 @@ export const mailRouter = router({
         phone: z.string(),
         address: z.string(),
         emailTo: z.string().optional(),
+        honung: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
@@ -164,7 +165,14 @@ export const mailRouter = router({
         phone,
         address,
         emailTo = 'styrelsen@bleckhornen.org',
+        honung,
       } = input;
+
+      if (honung) {
+        // Request filled in the "honeypot" field, and is therefore most likely from a bot
+        return;
+      }
+
       const mailTransport = createTransport(process.env.EMAIL_SERVER);
       await mailTransport.sendMail({
         subject: 'Bokningsförfrågan från ' + name.trim() + ', ' + date.trim(),

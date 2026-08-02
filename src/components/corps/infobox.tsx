@@ -5,7 +5,7 @@ import ActionIcon from 'components/input/action-icon';
 import Button from 'components/input/button';
 import Loading from 'components/loading';
 import Modal from 'components/modal';
-import useLanguage from 'hooks/use-language';
+import useLanguage, { Language } from 'hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
@@ -18,6 +18,7 @@ interface CorpsInfoboxProps {
   id: string;
   open: boolean;
   operatingYear?: number;
+  queryActive?: boolean;
 }
 
 const DEFAULT_COURAGE_MESSAGE = {
@@ -32,13 +33,13 @@ const COURAGE_MESSAGES: {
 }[] = [
   {
     lowerLimit: 2.4,
-    message: 'fullkomligt vårdslös',
-    messageEn: 'insanely reckless',
+    message: 'fullkomligt galen',
+    messageEn: 'completely nuts',
   },
-  { lowerLimit: 2.05, message: 'vårdslös', messageEn: 'reckless' },
+  { lowerLimit: 2.05, message: 'tokig', messageEn: 'nuts' },
   {
     lowerLimit: 1.98,
-    message: 'smått vårdslös',
+    message: 'smått tokig',
     messageEn: 'slightly reckless',
   },
   { lowerLimit: 1.87, message: 'dumdristig', messageEn: 'fearless' },
@@ -59,44 +60,68 @@ const getCourageMessage = (courage: number) =>
   COURAGE_MESSAGES.find(({ lowerLimit }) => lowerLimit <= courage) ??
   DEFAULT_COURAGE_MESSAGE;
 
-const genOtherInstrumentsString = (instruments: string[]) => {
+const genOtherInstrumentsString = (
+  instruments: string[],
+  language: Language = 'sv',
+) => {
   const instrumentsLower = instruments.map((i) => i.toLowerCase());
   if (instrumentsLower.length === 0) return '';
   if (instrumentsLower.length === 1) return instrumentsLower[0] ?? '';
   return `${instrumentsLower
     .slice(0, instrumentsLower.length - 1)
-    .join(', ')} och ${instrumentsLower[instrumentsLower.length - 1] ?? ''}`;
+    .join(', ')} ${language === 'sv' ? 'och' : 'and'} ${
+    instrumentsLower[instrumentsLower.length - 1] ?? ''
+  }`;
 };
 
 // A list of "instruments" which should have the prefix "är"
-const beingPrefixes = ['dirigent', 'balett', 'slagverksfröken'];
+const BEING_PREFIXES = ['dirigent', 'balett', 'slagverksfröken'];
+
+const DATE_FORMATTERS: Record<Language, Intl.DateTimeFormat> = {
+  sv: new Intl.DateTimeFormat('sv', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }),
+  en: new Intl.DateTimeFormat('en', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }),
+};
 
 const CorpsInfobox = ({
   id,
   open,
   operatingYear = getOperatingYear(),
+  queryActive = false,
 }: CorpsInfoboxProps) => {
   const router = useRouter();
   const utils = api.useUtils();
   const { language } = useLanguage();
-  const { data: corps } = api.corps.get.useQuery({ id }, { enabled: open });
+  const { data: corps } = api.corps.get.useQuery(
+    { id },
+    { enabled: queryActive || open },
+  );
   const { data: self } = api.corps.getSelf.useQuery(undefined, {
-    enabled: open,
+    enabled: queryActive || open,
   });
   const { data: allTimeStreak } = api.stats.getAllTimeStreak.useQuery(
     { corpsId: id },
-    { enabled: open },
+    { enabled: queryActive || open },
   );
 
   const { start, end } = calcOperatingYearInterval(operatingYear);
   const { data: summary } = api.stats.getSummary.useQuery(
     { corpsId: id, start, end },
-    { enabled: open },
+    { enabled: queryActive || open },
   );
 
   const [showAllStreaks, setShowAllStreaks] = useState(false);
   const [newNickName, setNewNickName] = useState('');
   const [nickNameModalOpen, setNickNameModalOpen] = useState(false);
+
+  const dateFormatter = DATE_FORMATTERS[language];
 
   const mutation = api.corps.changeNickname.useMutation({
     onSuccess: async () => {
@@ -125,6 +150,7 @@ const CorpsInfobox = ({
     points,
     firstGigDate,
     firstRehearsalDate,
+    lastSeenAt,
   } = corps;
   const mainInstrument =
     instruments.find((i) => i.isMainInstrument)?.instrument.name ?? '';
@@ -132,11 +158,11 @@ const CorpsInfobox = ({
     .filter((i) => !i.isMainInstrument)
     .map((i) => i.instrument.name);
 
-  const isPlayingMainInstrument = !beingPrefixes.includes(
+  const isPlayingMainInstrument = !BEING_PREFIXES.includes(
     mainInstrument.toLowerCase(),
   );
   const isPlayingOtherInstrument = !otherInstruments.some((i) =>
-    beingPrefixes.includes(i.toLowerCase()),
+    BEING_PREFIXES.includes(i.toLowerCase()),
   );
 
   const joinedAt =
@@ -145,27 +171,50 @@ const CorpsInfobox = ({
       ? firstGigDate
       : firstRehearsalDate;
 
-  const joinedMsg = `Gick med i corpset den ${joinedAt?.getDate()} ${joinedAt?.toLocaleDateString(
-    'sv',
-    { month: 'long' },
-  )} ${joinedAt?.getFullYear()}.`;
+  const joinedMsg = joinedAt
+    ? language === 'sv'
+      ? `Gick med i corpset den ${dateFormatter.format(joinedAt)}.`
+      : `Joined Bleckhornen ${dateFormatter.format(joinedAt)}.`
+    : undefined;
 
-  const temp1 = isPlayingMainInstrument ? 'Spelar ' : 'Är ';
+  const temp1 = isPlayingMainInstrument
+    ? language === 'sv'
+      ? 'Spelar '
+      : 'Plays '
+    : language === 'sv'
+    ? 'Är '
+    : 'Is ';
 
   // If the main instrument is the same as the other instruments, we don't need to specify it twice
   const temp2 =
     isPlayingMainInstrument !== isPlayingOtherInstrument
       ? isPlayingOtherInstrument
-        ? 'spelar '
-        : 'är '
+        ? language === 'sv'
+          ? 'spelar '
+          : 'plays '
+        : language === 'sv'
+        ? 'är '
+        : 'is '
       : '';
 
   const instrumentsMsg =
     temp1 +
-    (otherInstruments.length > 0 ? 'främst ' : '') +
+    (otherInstruments.length > 0
+      ? language === 'sv'
+        ? 'främst '
+        : 'mainly '
+      : '') +
     mainInstrument.toLowerCase() +
     (otherInstruments.length > 0
-      ? ', men ' + temp2 + 'även ' + genOtherInstrumentsString(otherInstruments)
+      ? (language === 'sv' ? ', men ' : ', but ') +
+        (language === 'en' && temp2.includes('plays') ? 'also ' : '') +
+        temp2 +
+        (language === 'sv'
+          ? 'även '
+          : !temp2.includes('plays')
+          ? 'also '
+          : '') +
+        genOtherInstrumentsString(otherInstruments)
       : '') +
     '.';
 
@@ -175,11 +224,6 @@ const CorpsInfobox = ({
       ? corpsNameTemp.slice(0, 25) + corpsNameTemp.slice(25).replace(' ', '\n')
       : corpsNameTemp;
 
-  const changeNicknameMsg =
-    language === 'sv'
-      ? 'Detta smeknamnet kommer att visas för alla på Blindtarmen och det kommer synas att det är du som ändrat det.\n\nLovar du att det är rimligt och inte kränkande?'
-      : 'This nickname will be displayed to everyone at Appendix and it will be shown that you are the one that changed it.\n\nDo you promise that it is reasonable and not offensive?';
-
   const courageMessage =
     language === 'sv'
       ? `Kan anses ${getCourageMessage(summary.courageQuotient).message}.`
@@ -187,6 +231,16 @@ const CorpsInfobox = ({
           getCourageMessage(summary.courageQuotient).messageEn
         }.`;
 
+  const lastSeenAtMsg = lastSeenAt
+    ? language === 'sv'
+      ? `Sågs senast den ${dateFormatter.format(lastSeenAt)}.`
+      : `Last seen ${dateFormatter.format(lastSeenAt)}.`
+    : undefined;
+
+  const changeNicknameMsg =
+    language === 'sv'
+      ? 'Detta smeknamnet kommer att visas för alla på Blindtarmen och det kommer synas att det är du som ändrat det.\n\nLovar du att det är rimligt och inte kränkande?'
+      : 'This nickname will be displayed to everyone at Blindtarmen and it will be shown that you are the one that changed it.\n\nDo you promise that it is reasonable and not offensive?';
   const handleNicknameSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!confirm(changeNicknameMsg)) {
@@ -267,14 +321,14 @@ const CorpsInfobox = ({
       <div className='h-1.5' />
       <div className='text-sm font-light'>
         {joinedAt && joinedMsg} {instrumentsMsg}
-        {summary.gigsAttended.total >= 2 && summary.rehearsalsAttended >= 2 && (
+        {summary.gigsAttended.total >= 3 && summary.rehearsalsAttended >= 3 && (
           <> {courageMessage}</>
         )}
         {allTimeStreak.maxStreak >= 3 && (
           <>
             {' '}
             {lang(
-              'Deras längsta spelningsstreak är ',
+              'Hens längsta spelningsstreak är ',
               'Their longest gig streak is ',
             )}
             <span
@@ -288,6 +342,12 @@ const CorpsInfobox = ({
               ? ' (' + allTimeStreak.streaks.join(', ') + ')'
               : ''}
             .
+          </>
+        )}
+        {lastSeenAtMsg && (
+          <>
+            <div className='h-2' />
+            <span className='text-xs text-neutral-500'>{lastSeenAtMsg}</span>
           </>
         )}
       </div>

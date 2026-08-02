@@ -108,6 +108,60 @@ export const corpsRouter = router({
           id: input.id,
         },
       });
+
+      const lastSeenAtQuery = ctx.prisma.corps.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          gigSignups: {
+            select: {
+              gig: {
+                select: {
+                  date: true,
+                },
+              },
+            },
+            where: {
+              attended: true,
+              gig: {
+                date: {
+                  gt: new Date('1970-01-02'),
+                },
+              },
+            },
+            orderBy: {
+              gig: {
+                date: 'desc',
+              },
+            },
+            take: 1,
+          },
+          rehearsals: {
+            select: {
+              rehearsal: {
+                select: {
+                  date: true,
+                },
+              },
+            },
+            where: {
+              rehearsal: {
+                date: {
+                  gt: new Date('1970-01-02'),
+                },
+              },
+            },
+            orderBy: {
+              rehearsal: {
+                date: 'desc',
+              },
+            },
+            take: 1,
+          },
+        },
+      });
+
       const pointsQuery = ctx.prisma.gig.aggregate({
         _sum: {
           points: true,
@@ -121,10 +175,29 @@ export const corpsRouter = router({
           },
         },
       });
-      const [corps, points] = await Promise.all([corpsQuery, pointsQuery]);
+      const [corps, points, lastSeenAtResult] = await Promise.all([
+        corpsQuery,
+        pointsQuery,
+        lastSeenAtQuery,
+      ]);
       if (!corps) {
         return null;
       }
+
+      // Return max value of two nullable dates
+      const getLastSeenAt = (date1?: Date, date2?: Date) => {
+        if (!date1) {
+          return date2 ?? null;
+        } else if (!date2) {
+          return date1;
+        } else {
+          return date1 > date2 ? date1 : date2;
+        }
+      };
+
+      const lastSeenGig = lastSeenAtResult?.gigSignups[0]?.gig.date;
+      const lastSeenRehearsal = lastSeenAtResult?.rehearsals[0]?.rehearsal.date;
+
       return {
         ...corps,
         gigSignups: undefined,
@@ -132,6 +205,7 @@ export const corpsRouter = router({
         firstGigDate: corps.gigSignups[0]?.gig.date,
         firstRehearsalDate: corps.rehearsals[0]?.rehearsal.date,
         points: points._sum.points ?? 0,
+        lastSeenAt: getLastSeenAt(lastSeenGig, lastSeenRehearsal),
       };
     }),
 

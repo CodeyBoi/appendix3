@@ -137,10 +137,22 @@ function html(params: { url: string; host: string; theme: Theme }) {
           </td>
         </tr>
         <tr>
-          <td>
+          <td align="center">
             <p>
               (Ser mailet konstigt ut? <a href="${url}" target="_blank">Klicka här</a>.)
             </p>
+          </td>
+        </tr>
+        <tr>
+          <td
+            align="center"
+            style="
+              font-size: 6px;
+              font-family: Helvetica, sans-serif;
+              color: white;
+            "
+          >
+            Detta mailet skickades ${new Date().toISOString()}.
           </td>
         </tr>
       </table>
