@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { api } from 'trpc/react';
 import { filterNone } from 'utils/array';
-import { numberAndFullName } from 'utils/corps';
+import { displayName, numberAndFullName } from 'utils/corps';
 import { calcOperatingYearInterval, getOperatingYear } from 'utils/date';
 import { lang } from 'utils/language';
 
@@ -120,6 +120,7 @@ const CorpsInfobox = ({
   const [showAllStreaks, setShowAllStreaks] = useState(false);
   const [newNickName, setNewNickName] = useState('');
   const [nickNameModalOpen, setNickNameModalOpen] = useState(false);
+  const [showAllNicknames, setShowAllNicknames] = useState(false);
 
   const dateFormatter = DATE_FORMATTERS[language];
 
@@ -151,6 +152,7 @@ const CorpsInfobox = ({
     firstGigDate,
     firstRehearsalDate,
     lastSeenAt,
+    givenNicknames,
   } = corps;
   const mainInstrument =
     instruments.find((i) => i.isMainInstrument)?.instrument.name ?? '';
@@ -309,9 +311,30 @@ const CorpsInfobox = ({
           )}
         </div>
         {(nickName || pronouns) && (
-          <div className='mb-1 bg-transparent text-xs font-light text-neutral-500'>
-            {filterNone([nickName, pronouns]).join(' • ')}
-          </div>
+          <>
+            <div
+              className='mb-1 bg-transparent text-xs font-light text-neutral-500'
+              onClick={() => {
+                setShowAllNicknames(!showAllNicknames);
+              }}
+            >
+              {filterNone([nickName, pronouns]).join(' • ')}
+            </div>
+            {showAllNicknames && givenNicknames.length > 1 && (
+              <div className='mb-1 flex flex-col gap-1 bg-transparent text-xs font-light text-neutral-500'>
+                {lang('Också varit känd som:', 'Also been known as:')}
+                {givenNicknames.map((nickname) => (
+                  <div
+                    key={`${corps.id}-nickname:${nickname.nickname}`}
+                  >{`${nickname.nickname.trim()}, ${
+                    language === 'sv' ? 'givet av' : 'given by'
+                  } ${displayName(nickname.createdBy)} ${
+                    language === 'sv' ? 'den' : 'at'
+                  } ${dateFormatter.format(nickname.createdAt)}.`}</div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
       <div className='italic'>
