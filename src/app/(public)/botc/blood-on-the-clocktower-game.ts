@@ -263,6 +263,16 @@ export class BotcPlayer {
   }
 }
 
+interface RandomFilter {
+  characterType?: CharacterType;
+  characterTypes?: CharacterType[];
+  alignment?: Alignment;
+  excludeId?: number;
+  excludeIds?: number[];
+  excludeIndex?: number;
+  excludeIndexes?: number[];
+}
+
 export class BotcPlayers extends Array<BotcPlayer> {
   constructor(players: BotcPlayer[] = []) {
     super();
@@ -291,19 +301,17 @@ export class BotcPlayers extends Array<BotcPlayer> {
 
   chooseRandom({
     characterType,
+    characterTypes = [],
     alignment,
     excludeId,
     excludeIds = [],
     excludeIndex,
     excludeIndexes = [],
-  }: {
-    characterType?: CharacterType;
-    alignment?: Alignment;
-    excludeId?: number;
-    excludeIds?: number[];
-    excludeIndex?: number;
-    excludeIndexes?: number[];
-  }) {
+  }: RandomFilter = {}) {
+    const validCharacterTypes = characterTypes.slice();
+    if (characterType) {
+      validCharacterTypes.push(characterType);
+    }
     const excludeIdSet = new Set(excludeIds);
     if (excludeId !== undefined) {
       excludeIdSet.add(excludeId);
@@ -315,10 +323,40 @@ export class BotcPlayers extends Array<BotcPlayer> {
     const filterFunc = (p: BotcPlayer, i: number) =>
       !excludeIdSet.has(p.id) &&
       !excludeIndexSet.has(i) &&
-      (characterType === undefined || p.isCharacterType(characterType)) &&
+      (validCharacterTypes.length === 0 ||
+        validCharacterTypes.find((characterType) =>
+          p.isCharacterType(characterType),
+        ) !== undefined) &&
       (alignment === undefined ||
         (alignment === 'good' ? p.isGood() : p.isEvil()));
 
     return chooseRandom(this.filter(filterFunc));
+  }
+
+  chooseRandomMultiple(amount: number, filter: RandomFilter = {}) {
+    const chosenIds: number[] = [];
+    const chosenPlayers: BotcPlayer[] = [];
+    for (let i = 0; i < 516; i++) {
+      if (chosenPlayers.length === amount) {
+        return chosenPlayers;
+      }
+
+      const player = this.chooseRandom(filter);
+      if (!player) {
+        console.error(
+          `Couldn't find ${amount} random players.\nFilter: ${JSON.stringify(
+            filter,
+            null,
+            2,
+          )}\nPlayers: ${JSON.stringify(this, null, 2)}`,
+        );
+        return chosenPlayers;
+      } else if (chosenIds.includes(player.id)) {
+        continue;
+      }
+      chosenIds.push(player.id);
+      chosenPlayers.push(player);
+    }
+    return chosenPlayers;
   }
 }

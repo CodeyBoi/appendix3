@@ -174,6 +174,11 @@ const selectRandom = (
   const selectionError = Object.entries(
     findSelectionError(selected, numberOfCharacters),
   );
+  const requiredCharacters = selectionError.flatMap(([typeOrId, _]) =>
+    !isCharacterType(typeOrId as CharacterType | CharacterId)
+      ? [typeOrId as CharacterId]
+      : [],
+  );
   for (const [typeOrIdArg, diff] of selectionError) {
     const typeOrId = typeOrIdArg as CharacterType | CharacterId;
     if (diff === 0) {
@@ -201,8 +206,50 @@ const selectRandom = (
         }
       }
     } else {
-      // TODO: Handle diffs in character ids
-      // const _characterId = typeOrId as CharacterId;
+      const characterId = typeOrId;
+      const requiredAmount = diff;
+      const characterType = getType(characterId);
+      const presentCharacters = selected.filter(
+        (cId) => cId === characterId,
+      ).length;
+      if (presentCharacters >= requiredAmount) {
+        continue;
+      }
+
+      const charactersSameType = edition[characterType].filter(
+        (id) => !requiredCharacters.includes(id),
+      );
+      for (let i = 0; i < requiredAmount - presentCharacters; i++) {
+        // Remove character belonging to character class of the required character
+        const idx = selected.findIndex((id) => charactersSameType.includes(id));
+        if (idx === -1) {
+          // If there are no Outsiders to remove, remove a Townsfolk (and vice versa). If there are no Minions, remove a Demon (and vice versa).
+          const otherCharacterType: CharacterType = isGood(characterType)
+            ? characterType === 'townsfolk'
+              ? 'outsiders'
+              : 'townsfolk'
+            : characterType === 'minions'
+            ? 'demons'
+            : 'minions';
+          const otherCharactersSameType = edition[otherCharacterType];
+          const otherIdx = selected.findIndex((id) =>
+            otherCharactersSameType.includes(id),
+          );
+          if (otherIdx === -1) {
+            console.error(
+              `Error when trying to add ${characterId} in setup. Couldn't find character of type ${characterType} or ${otherCharacterType} in ${selected.join(
+                ', ',
+              )}.`,
+            );
+            continue;
+          }
+          selected.splice(otherIdx, 1);
+        } else {
+          selected.splice(idx, 1);
+        }
+
+        selected.push(characterId);
+      }
     }
   }
 
@@ -263,38 +310,47 @@ const findSelectionError = (
         break;
 
       case 'fanggu':
+      case 'scholar':
+      case 'crazyharry':
         addOutsiders(1);
         break;
-
       case 'vigormortis':
         addOutsiders(-1);
+        break;
+      case 'balloonist':
+        if (Math.random() < 0.5) {
+          addOutsiders(1);
+        }
+        break;
+      case 'choirboy':
+        res['king'] = 1;
+        break;
+      case 'huntsman':
+        res['damsel'] = 1;
+        break;
+      case 'lilmonsta':
+        res['minions'] += 1;
+        res['demons'] -= 1;
         break;
       case 'legionary':
         res['legionary'] = Math.floor(Math.random() * 3);
         break;
-      case 'scholar':
-        addOutsiders(1);
-        break;
       case 'haruspex':
-        if (!characters.includes('spartacus')) {
-          res['spartacus'] = 1;
-        }
+        res['spartacus'] = 1;
         break;
       case 'hannibal':
-        res['hannibal'] =
-          2 -
-          characters.reduce(
-            (acc, ch) => (ch === 'hannibal' ? acc + 1 : acc),
-            0,
-          );
+        res['hannibal'] = 2;
         break;
       case 'mercenary':
-        res['mercenary'] =
-          2 -
-          characters.reduce(
-            (acc, ch) => (ch === 'mercenary' ? acc + 1 : acc),
-            0,
-          );
+        res['mercenary'] = 2;
+        break;
+      case 'misspiggy':
+        res['kermitthefrog'] = 1;
+        break;
+      case 'statler':
+      case 'waldorf':
+        res['statler'] = 1;
+        res['waldorf'] = 1;
         break;
     }
   }

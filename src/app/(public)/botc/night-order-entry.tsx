@@ -63,13 +63,15 @@ const NightOrderEntry = ({
     />
   ) : null;
 
+  const wikiLink = characterId ? getWikiLink(characterId) : null;
+
   return (
     <div className={cn('flex flex-col gap-2 px-2 py-1', muted && 'opacity-50')}>
       <div className='flex items-center gap-4'>
         {imgElement && (
           <>
-            {characterId ? (
-              <Link href={getWikiLink(characterId)} target='_blank'>
+            {wikiLink ? (
+              <Link href={wikiLink} target='_blank'>
                 {imgElement}
               </Link>
             ) : (

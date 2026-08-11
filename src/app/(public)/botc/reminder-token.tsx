@@ -43,7 +43,9 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
         <img
           className={cn(
             'absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2',
-            imgSrc.includes('Fall_of_Rome') && 'scale-75',
+            (imgSrc.includes('Fall_of_Rome') ||
+              imgSrc.includes('Muppets_on_a_Clocktower')) &&
+              'scale-75',
           )}
           src={imgSrc}
           loading='lazy'
