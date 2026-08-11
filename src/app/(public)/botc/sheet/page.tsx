@@ -1,3 +1,5 @@
+'use client';
+
 import { QRCodeSVG } from 'qrcode.react';
 import BotcCharacterPanel from '../character-panel';
 import {
@@ -19,6 +21,7 @@ import { IconQrcode } from '@tabler/icons-react';
 import { CharacterCountTable } from '../character-select';
 import { cn } from 'utils/class-names';
 import Jinx from '../jinx';
+import { useState } from 'react';
 
 interface BotcSheetPageProps {
   searchParams: {
@@ -29,6 +32,7 @@ interface BotcSheetPageProps {
 const BotcSheetPage = ({
   searchParams: { characters: charactersProp, name },
 }: BotcSheetPageProps) => {
+  const [selected, setSelected] = useState<CharacterId | null>(null);
   const url = `${process.env.NEXTAUTH_URL}/botc/sheet?name=${name}&characters=${charactersProp}`;
   const characters = decodeURIComponent(charactersProp).split(',');
   const edition = characters.reduce<Edition>(
@@ -89,12 +93,23 @@ const BotcSheetPage = ({
                 return (
                   <div
                     key={id}
-                    className={cn('border px-2 py-1', subtleBorder)}
+                    className={cn(
+                      'border px-2 py-1 hover:cursor-pointer',
+                      subtleBorder,
+                      selected === id && 'bg-red-600/20',
+                    )}
+                    onClick={() => {
+                      if (selected === id) {
+                        setSelected(null);
+                      } else {
+                        setSelected(id);
+                      }
+                    }}
                   >
                     <BotcCharacterPanel
                       name={name}
                       imgSrc={image?.[0] ?? ''}
-                      imgLink={getWikiLink(id)}
+                      imgLink={getWikiLink(id) ?? undefined}
                       description={description}
                       alignment={getDefaultAlignment(id)}
                       showDescription

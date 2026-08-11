@@ -104,7 +104,9 @@ const CharacterToken = ({
             <img
               className={cn(
                 'absolute h-full w-full',
-                imgPath?.includes('Fall_of_Rome') && 'scale-75',
+                (imgPath?.includes('Fall_of_Rome') ||
+                  imgPath?.includes('Muppets_on_a_Clocktower')) &&
+                  'scale-75',
               )}
               src={imgPath}
               loading='lazy'

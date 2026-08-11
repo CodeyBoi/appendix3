@@ -123,6 +123,29 @@ export const EDITIONS: readonly Edition[] = [
     ],
   },
   {
+    id: 'muppets-on-a-clocktower',
+    name: 'Muppets on a Clocktower',
+    townsfolk: [
+      'bunsenhoneydew',
+      'rowlfthedog',
+      'pepetheprawn',
+      'samtheeagle',
+      'kermitthefrog',
+      'camillathechicken',
+      'sweetums',
+      'swedishchef',
+      'thegreatgonzo',
+      'rizzotherat',
+      'fozziebear',
+      'beaker',
+      'drteeth',
+    ],
+    outsiders: ['longjohnsilver', 'scrooge', 'cameraman', 'human'],
+    minions: ['crazyharry', 'animal', 'constantine', 'scooter'],
+    demons: ['misspiggy', 'uncledeadly', 'statler', 'waldorf'],
+    travellers: ['bigbird', 'cookiemonster', 'countvoncount'],
+  },
+  {
     id: 'carousel',
     name: 'Carousel',
     townsfolk: [
@@ -484,11 +507,15 @@ const ABBREVIATIONS: Record<string, string> = {
   carousel: 'carousel',
   custom: 'carousel',
 };
-export const isFallOfRomeCharacter = (id: CharacterId) =>
+const isFallOfRomeCharacter = (id: CharacterId) =>
   getEdition(id).includes('fall-of-rome');
+const isMuppetsOnAClocktowerCharacter = (id: CharacterId) =>
+  getEdition(id).includes('muppets-on-a-clocktower');
 
 const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
 const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
+const muppetsOnAClocktowerBaseImgUrl =
+  '/botc/Muppets_on_a_Clocktower/<NAME>.png';
 const getImagePathFromId = (id: CharacterId) => {
   if (isFallOfRomeCharacter(id)) {
     // Centurion, Glykon and High Priest are stored at <name>1
@@ -496,6 +523,8 @@ const getImagePathFromId = (id: CharacterId) => {
       ? `${id}1`
       : id;
     return fallOfRomeBaseImgUrl.replace('<NAME>', name);
+  } else if (isMuppetsOnAClocktowerCharacter(id)) {
+    return muppetsOnAClocktowerBaseImgUrl.replace('<NAME>', id);
   } else {
     return baseImgUrl
       .replace('<EDITION>', ABBREVIATIONS[getEdition(id)] ?? '')
@@ -1343,6 +1372,202 @@ const _characters = {
       "Each day, choose the 1st execution's outcome. If you choose to protect today's execution: they survive. Otherwise, tonight you learn their alignment.",
   },
 
+  // Muppets on a Clocktower - Townsfolk
+  bunsenhoneydew: {
+    name: `Bunsen Honeydew`,
+    description: `You start knowing how many characters are in play that can create Humans.`,
+  },
+  rowlfthedog: {
+    name: `Rowlf the Dog`,
+    description: `You start knowing 2 players who are not Townsfolk.`,
+    reminderTokens: ['Not Townsfolk', 'Not Townsfolk'],
+  },
+  pepetheprawn: {
+    name: `Pepe the Prawn`,
+    description: `You start knowing which Demons are in play.`,
+  },
+  samtheeagle: {
+    name: `Sam the Eagle`,
+    description: `Each night, you learn how many steps from you to an alive evil player. [+1 Human]`,
+    reminderTokens: ['Is Human'],
+  },
+  kermitthefrog: {
+    name: `Kermit the Frog`,
+    description: `Each night*, choose a player (not yourself): a Human, if chosen, becomes a Townsfolk.`,
+  },
+  camillathechicken: {
+    name: `Camilla the Chicken`,
+    description: `Each night*, if a player died by execution today: you learn a player of their alignment.`,
+    reminderTokens: ['Executed today'],
+  },
+  sweetums: {
+    name: `Sweetums`,
+    description: `Each night*, you learn how many evil players voted today.`,
+    reminderTokens: [
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+      'Evil voted',
+    ],
+  },
+  swedishchef: {
+    name: `Swedish Chef`,
+    description: `Each night*, you learn if there are more or less Humans than last night. If you were non-verbal on the 1st day, you instead learn how many Humans are in play.`,
+    reminderTokens: ['Non-verbal'],
+  },
+  thegreatgonzo: {
+    name: `The Great Gonzo`,
+    description: `Each night*, you may choose a player: if you choose a Minion they die, if you choose a Townsfolk you die.`,
+    reminderTokens: ['Killed by'],
+  },
+  rizzotherat: {
+    name: `Rizzo the Rat`,
+    description: `Each night*, choose a player: if they are killed by the Demon tonight, you learn an alive character.`,
+    reminderTokens: ['Chosen'],
+  },
+  fozziebear: {
+    name: `Fozzie Bear`,
+    description: `Each day, you may make a public joke. Wocka! Wocka! Tonight, you learn if it was true.`,
+    reminderTokens: ['True'],
+  },
+  beaker: {
+    name: `Beaker`,
+    description: `If you were non-verbal on the 1st day, that night you learn the characters of players who were non-verbal (up to 4) & one character which is not in play.`,
+    reminderTokens: [
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+      'Non-verbal',
+    ],
+  },
+  drteeth: {
+    name: `Dr. Teeth`,
+    description: `If the Demon kills you, a Human becomes a Townsfolk: you learn who.`,
+    reminderTokens: ['Changed'],
+  },
+
+  // Muppets on a Clocktower - Outsiders
+  longjohnsilver: {
+    name: `Long John Silver`,
+    description: `Each night*, one player who voted on you that day might die, even if you are dead.`,
+    reminderTokens: [
+      'Killed by',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+      'Voted',
+    ],
+  },
+  scrooge: {
+    name: `Scrooge`,
+    description: `Each night, if a player chooses another player, they might target you instead.`,
+    reminderTokens: ['Scrooged'],
+  },
+  cameraman: {
+    name: `Cameraman`,
+    description: `If you communicate verbally on the 1st day, a Townsfolk might become Human immediately.`,
+    reminderTokens: ['Blooper'],
+  },
+  human: {
+    name: `Human`,
+    description: `You do not know you are a Human. You think you are a Townsfolk character, but you are not.`,
+    reminderTokensGlobal: [
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+      'Is Human',
+    ],
+    cannotBeSelected: true,
+    disguisedAs: ['townsfolk'],
+  },
+
+  // Muppets on a Clocktower - Minions
+  crazyharry: {
+    name: `Crazy Harry`,
+    description: `Each night*, choose a player: the 1st Outsider you choose becomes evil. [+1 Outsider]`,
+    reminderTokens: ['Turned evil'],
+  },
+  animal: {
+    name: `Animal`,
+    description: `Once per game, at night*, choose a player: they die. If you were non-verbal on the 1st day, one of their Townsfolk neighbours become Human.`,
+    reminderTokens: ['Non-verbal', 'Killed by', 'No ability'],
+  },
+  constantine: {
+    name: `Constantine`,
+    description: `Each night*, you may choose 2 players (not a Demon): they swap characters but their abilities do not refresh.`,
+  },
+  scooter: {
+    name: `Scooter`,
+    description: `If there are 5 or more players alive, once per day, you may choose to take a player off the block.`,
+    reminderTokens: ['Used today', 'No ability'],
+  },
+
+  // Muppets on a Clocktower - Demons
+  misspiggy: {
+    name: `Miss Piggy`,
+    description: `Each night*, choose a player: they die. Townsfolk chosen by Kermit the Frog might become Human instead. [+Kermit the Frog]`,
+    reminderTokens: ['Killed by', 'Corrupted'],
+  },
+  uncledeadly: {
+    name: `Uncle Deadly`,
+    description: `Each night*, choose a player: they die. Townsfolk who nominate you become Human immediately.`,
+    reminderTokens: ['Killed by'],
+  },
+  statler: {
+    name: `Statler`,
+    description: `Each night*, wake with Waldorf, together choose one player: they die. [+Waldorf, -1 Minion]`,
+    reminderTokens: ['Killed by'],
+  },
+  waldorf: {
+    name: `Waldorf`,
+    description: `Each night*, wake with Statler, together choose one player: they die. [+Statler]`,
+  },
+
+  // Muppets on a Clocktower - Travellers
+  bigbird: {
+    name: 'Big Bird',
+    description: 'You are the tallest player.',
+  },
+  cookiemonster: {
+    name: 'Cookie Monster',
+    description: 'All players must share their snacks with you.',
+  },
+  countvoncount: {
+    name: 'Count von Count',
+    description: 'You conduct and count each vote. AH AH AH.',
+  },
+
   // Carousel - Townsfolk
   acrobat: {
     name: 'Acrobat',
@@ -1394,7 +1619,7 @@ const _characters = {
     name: 'Cannibal',
     description:
       'You have the ability of the recently killed executee. If they are evil, you are poisoned until a good player dies by execution.',
-    reminderTokens: ['Executed recently', 'Poisoned'],
+    reminderTokens: ['Lunch', 'Poisoned'],
   },
   choirboy: {
     name: 'Choirboy',
@@ -1699,7 +1924,7 @@ const _characters = {
   lilmonsta: {
     name: "Lil'Monsta",
     description: `Each night, Minions choose who babysits Lil' Monsta & "is the Demon". Each night*, a player might die. [+1 Minion]`,
-    reminderTokens: ['Killed by', 'Is the Demon'],
+    reminderTokensGlobal: ['Killed by', 'Is the Demon'],
   },
   lleech: {
     name: 'Lleech',
@@ -2046,6 +2271,24 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
       'Show the hand signal for the number (1, 2, 3, etc.) of places from Demon to closest Minion.',
   },
   {
+    id: 'bunsenhoneydew',
+    description:
+      'Count how many of the following characters are in play: Sam the Eagle, Cameraman, Animal, Miss Piggy & Uncle Deadly. Show fingers equal to the number of the previously mentioned characters that are in play.',
+  },
+  {
+    id: 'rowlfthedog',
+    description: `Point to the two players marked 'Not Townsfolk'.`,
+  },
+  {
+    id: 'pepetheprawn',
+    description: 'Show the character tokens of the Demons that are in play.',
+  },
+  {
+    id: 'samtheeagle',
+    description:
+      'Show fingers (1, 2, 3, etc.) equaling the distance from Sam the Eagle to any alive evil player.',
+  },
+  {
     id: 'dreamer',
     description:
       'The Dreamer points to a player. Show 1 good and 1 evil character token; one of these is correct.',
@@ -2060,12 +2303,12 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   {
     id: 'noble',
     description:
-      'Point to 3 players including one evil player, in no particular order.',
+      'Point to 3 players including exactly one evil player, in no particular order.',
   },
   {
     id: 'balloonist',
     description:
-      "Choose a character type. Point to a player whose character is of that type. Place the Balloonist's Seen reminder next to that character.",
+      "Point to a player. Place the 'Know' reminder token by that player.",
   },
   {
     id: 'shugenja',
@@ -2135,6 +2378,10 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: 'Wake the Wraith whenever other evil players wake.',
   },
   {
+    id: 'scrooge',
+    description: `Whenever a player targets another player with their ability, you can instead choose for them to target Scrooge. Mark the affected player with the 'Scrooged' reminder token. The affected player does not know this happened. The affected player does not know this happened. The affected player does not know this happened.`,
+  },
+  {
     id: 'cacklejack',
     description:
       "Replace any player's character token (except the player with the 'Not me' reminder token) with a different character token. Wake that player, show the 'You are' info token and their new character token, then put them to sleep.",
@@ -2145,9 +2392,34 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
       "If the Philosopher has not used their ability: the Philosopher either shows a 'no' head signal, or points to a good character on their sheet. If they chose a character: Swap the out-of-play character token with the Philosopher token. Or, if the character is in play, place the drunk marker by that player and the Not the Philosopher token by the Philosopher.",
   },
   {
+    id: 'cannibal',
+    description:
+      'Wake the Cannibal whenever the inherited character would wake and make them do whichever actions the inherited character would do. If the Cannibal is poisoned, you may wake them whenever the evil character would normally wake, and pretend they have a new ability.',
+  },
+  {
     id: 'poppygrower',
     description:
       'If the Poppy Grower has died, show the Minions/Demon who each other are.',
+  },
+  {
+    id: 'thegreatgonzo',
+    description: `The Great Gonzo either shakes their head no or point at any player. Put The Great Gonzo to sleep. If The Great Gonzo chose a Minion, that player dies. If The Great Gonzo chose a Townsfolk, The Great Gonzo dies.`,
+  },
+  {
+    id: 'rizzotherat',
+    description: `Rizzo the Rat points to any player, mark that player with the 'Chosen' reminder token.`,
+  },
+  {
+    id: 'animal',
+    description: `If this is the 2nd night and Animal was non-verbal during the day, place the 'Non-verbal' reminder token next to them.\n\nAnimal shakes their head no or points to a player. If Animal chose a player, they die. If Animal is marked with 'Non-verbal', choose one of the chosen player's Townsfolk neighbours to become a Human: mark that player with the 'Is Human' reminder token. Mark Animal with the 'No ability' reminder token; they no longer wake at night.`,
+  },
+  {
+    id: 'crazyharry',
+    description: `Crazy Harry points to any player. If Crazy Harry chose an Outsider and no player has the 'Turned evil' reminder token, mark the chosen player with the 'Turned evil' reminder token. Wake the Outsider to inform them of their alignment change by showing the 'You are' info token and giving a thumbs down.`,
+  },
+  {
+    id: 'constantine',
+    description: `Constantine either shakes their head no or points to two player (neither of which can be the Demon).\n\nIf Constantine chose two players, swap the character tokens of the two chosen players. One at a time, wake each swapped player, show them the 'You are' info token and their new character token, then put them to sleep. You may wish to remind them that their alignment has not changed.`,
   },
   {
     id: 'sailor',
@@ -2278,7 +2550,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'pithag',
     description:
-      "The Pit-Hag points to a player and a character on the sheet. If this character is not in play, exchange the chosen player's character token with the chosen character token, then wake that player and show them the 'You are' card and their new character token. If the character is in play, nothing happens.",
+      "The Pit-Hag points to a player and a character on the sheet.\n\nIf the character is in play, nothing happens. If this character is not in play, exchange the chosen player's character token with the chosen character token, then wake that player and show them the 'You are' card and their new character token. (You may wish to remind the player that their alignment hasn't changed.)",
   },
   {
     id: 'fearmonger',
@@ -2422,6 +2694,22 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
       "If there is no 'Kill used' reminder token next to Caesar and an evil player died by execution today, ask Caesar to choose two players. Mark the chosen players with the 'Killed by' reminder tokens. They die. Place the 'Kill used' reminder token next to Caesar.\n\nOtherwise, ask Caesar to choose a player. Mark the chosen player with the 'Killed by' reminder token. They die.",
   },
   {
+    id: 'misspiggy',
+    description: `Miss Piggy points to a player. That player dies.`,
+  },
+  {
+    id: 'uncledeadly',
+    description: `Uncle Deadly points to a player. That player dies.`,
+  },
+  {
+    id: 'statler',
+    description: `Wake Statler & Waldorf (even if dead). They both point to any player. When they agree and both point to the same player, that player dies.`,
+  },
+  {
+    id: 'rizzotherat',
+    description: `If the player marked with the 'Chosen' reminder token was killed by the Demon tonight, wake Rizzo the Rat and show them an alive in-play character token. Remove the 'Chosen' reminder token.`,
+  },
+  {
     id: 'assassin',
     description:
       "If the Assassin has not yet used their ability: The Assassin either shows the 'no' head signal, or points to a player. That player dies.",
@@ -2445,6 +2733,43 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     id: 'gossip',
     description:
       "If the Gossip's public statement was true: Choose a player not protected from dying tonight. That player dies.",
+  },
+  {
+    id: 'longjohnsilver',
+    description: `You may kill one of the players who voted for Long John Silver during the day (mark them with the 'Voted' reminder token after the vote).`,
+  },
+  {
+    id: 'kermitthefrog',
+    description: `Kermit the Frog points to a player (not themselves). If a Human was chosen, remove their 'Is Human' reminder token: the chosen player is now the Townsfolk they believe they are. Neither Kermit the Frog nor the chosen player learn this.\n\nIf Kermit the Frog has the 'Corrupted' reminder token and a Townsfolk was chosen, they might turn into a Human.`,
+  },
+  {
+    id: 'drteeth',
+    description: `If Dr. Teeth was killed by the Demon tonight, choose a player that is a Human and turn them into the Townsfolk they thought they were. Wake Dr. Teeth and point at the changed player. If there are no Humans in play, instead wake Dr. Teeth and shake your head no.`,
+  },
+  {
+    id: 'samtheeagle',
+    description:
+      'Show fingers (1, 2, 3, etc.) equaling the distance from Sam the Eagle to any alive evil player.',
+  },
+  {
+    id: 'camillathechicken',
+    description: `(When a player is executed, mark them with the 'Executed today' reminder token.)\n\nIf a player died by execution today, wake Camilla the Chicken and point at a player who is the same alignment as the player who was executed. Remove any 'Executed today' reminder tokens.`,
+  },
+  {
+    id: 'sweetums',
+    description: `(Whenever an evil player votes for a nomination, mark them with an 'Evil voted' reminder token. If they vote on multiple executions, it still only counts as one.)\n\nShow Sweetums fingers equalling the number of 'Evil voted' tokens. Remove all 'Evil voted' reminder tokens from players.`,
+  },
+  {
+    id: 'fozziebear',
+    description: `(Each day, Fozzie Bear may make a public statement about the game in the form of a joke. These jokes do not have to be good, funny, nor verbal but MUST end with Fozzie Bear's classic catchphrase "Wocka! Wocka!". If Fozzie Bear's statement is true, place the 'True' reminder token next to them.)\n\nIf Fozzie Bear made a public joke today, wake them and nod your head if it was true, or shake your head if it was false. The truth value of the joke is determined when it was said, not during the night. (Although Fozzie Bear might still get wrong info if they are a Human during the night.)`,
+  },
+  {
+    id: 'beaker',
+    description: `(If Beaker is non-verbal during the first day, mark them with the 'Non-verbal' reminder token. Also do this with other non-verbal players.)\n\nIf Beaker is marked with the 'Non-verbal' reminder token, select up to 4 players who are also marked 'Non-verbal'. Wake Beaker and show them the chosen players' character tokens in addition to one not-in-play character token.`,
+  },
+  {
+    id: 'swedishchef',
+    description: `(If Swedish Chef is non-verbal during the first day, mark them with the 'Non-verbal' reminder token.)\n\nIf Swedish Chef is marked with the 'Non-verbal' reminder token, show them fingers (0, 1, 2, etc.) equalling the number of Humans in play. Otherwise, give a thumbs up if there are more Humans, thumbs down if there are less Humans, or a thumb to the side if there has been no change in the amount of Humans (compared to last night).`,
   },
   {
     id: 'gladiator',
@@ -2606,7 +2931,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'balloonist',
     description:
-      "Choose a character type that does not yet have a Seen reminder next to a character of that type. Point to a player whose character is of that type, if there are any. Place the Balloonist's Seen reminder next to that character.",
+      "Point to a player with a different character type than the player marked with the 'Know' reminder token. Mark that player with the 'Know' reminder token.",
   },
   {
     id: 'villageidiot',
@@ -2935,6 +3260,51 @@ export const START_OF_GAME_ABILITIES: Partial<
 
     return players;
   },
+
+  widow: ({ players }) => {
+    const player = players.chooseRandom({ alignment: 'good' });
+    if (!player) {
+      console.error(`No good player found when setting up Widow.`);
+      return players;
+    }
+    player.reminders.push({ characterId: 'widow', message: 'Know' });
+    return players;
+  },
+
+  rowlfthedog: ({ players }) => {
+    for (const player of players.chooseRandomMultiple(2, {
+      characterTypes: ['outsiders', 'minions', 'demons'],
+    })) {
+      player.reminders.push({
+        characterId: 'rowlfthedog',
+        message: 'Not Townsfolk',
+      });
+    }
+    return players;
+  },
+
+  samtheeagle: ({ players }) => {
+    const human = players.chooseRandom({ characterTypes: ['townsfolk'] });
+    if (!human) {
+      console.error(`No Townsfolk player found when setting up Sam the Eagle.`);
+      return players;
+    }
+    human.reminders.push({ characterId: 'samtheeagle', message: 'Is Human' });
+    return players;
+  },
+
+  misspiggy: ({ players }) => {
+    for (const player of players) {
+      if (player.characterId === 'kermitthefrog') {
+        player.reminders.push({
+          characterId: 'misspiggy',
+          message: 'Corrupted',
+        });
+        break;
+      }
+    }
+    return players;
+  },
 };
 
 export const CHARACTERS = Object.entries(_characters).reduce(
@@ -2977,13 +3347,19 @@ export const CHARACTERS = Object.entries(_characters).reduce(
 export const getWikiLink = (id: CharacterId) =>
   isFallOfRomeCharacter(id)
     ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
+    : isMuppetsOnAClocktowerCharacter(id)
+    ? null
     : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
         CHARACTERS[id].name.replaceAll(' ', '_'),
       )}`;
 
 const checkDroisoned = (reminder: Reminder) => {
   const text = reminder.message.toLowerCase();
-  return text.includes('drunk') || text.includes('poisoned');
+  return (
+    text.includes('drunk') ||
+    text.includes('poisoned') ||
+    text.includes('is human')
+  );
 };
 export const isDroisoned = (player: BotcPlayer) =>
   (player.reminders.find(checkDroisoned) ??
