@@ -107,6 +107,26 @@ export const corpsRouter = router({
             },
             take: 1,
           },
+          givenNicknames: {
+            select: {
+              createdBy: {
+                select: {
+                  number: true,
+                  bNumber: true,
+                  firstName: true,
+                  nickName: true,
+                  lastName: true,
+                  displayName: true,
+                },
+              },
+              createdAt: true,
+              nickname: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            distinct: ['nickname'],
+          },
         },
         where: {
           id: input.id,
@@ -290,6 +310,16 @@ export const corpsRouter = router({
         });
       }
 
+      if (nickName && nickName !== corps.nickName) {
+        await ctx.prisma.nickname.create({
+          data: {
+            nickname: nickName,
+            createdById: corps.id,
+            forId: corps.id,
+          },
+        });
+      }
+
       return ctx.prisma.corps.update({
         where: {
           id: corps.id,
@@ -379,6 +409,24 @@ export const corpsRouter = router({
             corpsId: input.id,
           },
         });
+        const oldNickname = await ctx.prisma.corps.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+          select: {
+            nickName: true,
+          },
+        });
+
+        if (input.nickName !== oldNickname.nickName) {
+          await ctx.prisma.nickname.create({
+            data: {
+              nickname: input.nickName,
+              createdById: ctx.session.user.corps.id,
+              forId: input.id,
+            },
+          });
+        }
       }
 
       const res = await ctx.prisma.corps.upsert({
