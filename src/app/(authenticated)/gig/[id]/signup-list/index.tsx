@@ -195,7 +195,7 @@ const SignupList = ({ gigId, currentDate = new Date() }: SignupListProps) => {
   const splitList = signupsSorted.reduce(
     (acc, signup) => {
       // If gig has happened everyone who attended should be shown under the same list
-      if (gigHasHappened || signup.status.value === 'Ja') {
+      if ((gigHasHappened && !showAdminTools) || signup.status.value === 'Ja') {
         acc.yesList.push(signup);
       } else if (signup.status.value === 'Kanske') {
         acc.maybeList.push(signup);
@@ -458,13 +458,11 @@ const SignupList = ({ gigId, currentDate = new Date() }: SignupListProps) => {
       )}
       {maybeList.length > 0 && (
         <div>
-          {!gigHasHappened && (
-            <h3>
-              {lang('Dessa', 'These')}
-              {` ${maybeList.length} `}
-              {lang('kanske kommer:', 'might come:')}
-            </h3>
-          )}
+          <h3>
+            {lang('Dessa', 'These')}
+            {` ${maybeList.length} `}
+            {lang('kanske kommer:', 'might come:')}
+          </h3>
           {maybeTable}
         </div>
       )}
