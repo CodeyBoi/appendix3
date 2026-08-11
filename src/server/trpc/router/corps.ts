@@ -125,7 +125,7 @@ export const corpsRouter = router({
             orderBy: {
               createdAt: 'desc',
             },
-            distinct: ['nickname'],
+            distinct: ['nickname', 'createdById'],
           },
         },
         where: {

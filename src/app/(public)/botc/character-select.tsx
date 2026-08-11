@@ -348,6 +348,11 @@ const findSelectionError = (
         res['kermitthefrog'] = 1;
         break;
       case 'statler':
+        res['minions'] -= 1;
+        res['demons'] += 1;
+        res['statler'] = 1;
+        res['waldorf'] = 1;
+        break;
       case 'waldorf':
         res['statler'] = 1;
         res['waldorf'] = 1;
