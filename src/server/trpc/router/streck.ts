@@ -6,6 +6,7 @@ import { initObject, sum, toMap } from 'utils/array';
 import { sortCorpsByName } from 'utils/corps';
 import ExcelJS from 'exceljs';
 import { Context } from '../context';
+import { Language } from 'hooks/use-language';
 
 interface ActiveCorps {
   id: string;
@@ -15,6 +16,8 @@ interface ActiveCorps {
   lastName: string;
   nickName: string | null;
   balance: number;
+  email: string;
+  language: Language;
 }
 
 const getStreckList = async (ctx: Context, id: number) => {
@@ -128,10 +131,13 @@ const getBalances = async (
           firstName,
           lastName,
           nickName,
-          SUM(COALESCE(amount * pricePer, 0)) AS balance
+          SUM(COALESCE(amount * pricePer, 0)) AS balance,
+          email,
+          language
         FROM Corps
         LEFT JOIN StreckTransaction ON Corps.id = corpsId
         LEFT JOIN StreckList ON streckListId = StreckList.id
+        LEFT JOIN User ON Corps.userId = User.id
           AND StreckList.time <= ${time}
           AND deleted = false
         WHERE Corps.id IN (${Prisma.join(additionalCorps)})
