@@ -15,12 +15,10 @@ export const createMailtoLink = ({
 }: EmailObject) => {
   const fields = [];
 
-  if (subject) fields.push(`subject=${subject}`);
-  if (body) fields.push(`body=${body}`);
-  if (cc) fields.push(`cc=${cc}`);
-  if (bcc) fields.push(`bcc=${bcc}`);
+  if (subject) fields.push(`subject=${encodeURIComponent(subject)}`);
+  if (body) fields.push(`body=${encodeURIComponent(body)}`);
+  if (cc) fields.push(`cc=${encodeURIComponent(cc)}`);
+  if (bcc) fields.push(`bcc=${encodeURIComponent(bcc)}`);
 
-  return encodeURIComponent(
-    `mailto:${to}${fields.length > 0 ? '?' + fields.join('&') : ''}`,
-  );
+  return `mailto:${to}${fields.length > 0 ? '?' + fields.join('&') : ''}`;
 };
