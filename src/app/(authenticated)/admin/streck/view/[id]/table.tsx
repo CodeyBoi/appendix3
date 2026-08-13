@@ -68,11 +68,9 @@ const StreckList = async ({ id }: StreckListProps) => {
             <th className='px-1'>{lang('Förnamn', 'First name')}</th>
             <th className='px-1'>{lang('Efternamn', 'Surname')}</th>
             <th className='px-1'>{lang('Kostnad', 'Cost')}</th>
-            {listType === 'deposit' && (
-              <th className='px-1'>
-                {lang('Verifikatsnr.', 'Verification nr.')}
-              </th>
-            )}
+            <th className='px-1'>
+              {lang('Verifikatsnr.', 'Verification nr.')}
+            </th>
             <th className='px-1'>{lang('Anteckning', 'Note')}</th>
           </tr>
         </thead>

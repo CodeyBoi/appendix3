@@ -259,13 +259,13 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                       isNaN(item.price) ? '' : `${item.price}p`
                     }`}</th>
                   ))}
-                  {type === 'deposit' && (
-                    <th className='sticky top-0 bg-white px-1'>
-                      Verifikatsnummer
-                    </th>
-                  )}
                   {(type === 'deposit' || type === 'cost') && (
-                    <th className='sticky top-0 bg-white px-1'>Anteckning</th>
+                    <>
+                      <th className='sticky top-0 bg-white px-1'>
+                        Verifikatsnummer
+                      </th>
+                      <th className='sticky top-0 bg-white px-1'>Anteckning</th>
+                    </>
                   )}
                 </tr>
               </thead>
@@ -305,29 +305,29 @@ const AdminStreckForm = ({ streckList, items, type }: AdminStreckFormProps) => {
                         </td>
                       );
                     })}
-                    {type === 'deposit' && initialNotes && (
-                      <td className='px-1'>
-                        <input
-                          className='w-24 bg-transparent px-2 py-0.5'
-                          type='text'
-                          defaultValue={
-                            initialNotes.get(corps.id)?.verificationNumber ||
-                            undefined
-                          }
-                          {...register(`${corps.id}:verificationNumber`)}
-                        />
-                      </td>
-                    )}
                     {(type === 'deposit' || type === 'cost') &&
                       initialNotes && (
-                        <td className='px-1'>
-                          <input
-                            className='bg-transparent px-2 py-0.5'
-                            type='text'
-                            defaultValue={initialNotes.get(corps.id)?.note}
-                            {...register(`${corps.id}:note`)}
-                          />
-                        </td>
+                        <>
+                          <td className='px-1'>
+                            <input
+                              className='w-24 bg-transparent px-2 py-0.5'
+                              type='text'
+                              defaultValue={
+                                initialNotes.get(corps.id)
+                                  ?.verificationNumber || undefined
+                              }
+                              {...register(`${corps.id}:verificationNumber`)}
+                            />
+                          </td>
+                          <td className='px-1'>
+                            <input
+                              className='bg-transparent px-2 py-0.5'
+                              type='text'
+                              defaultValue={initialNotes.get(corps.id)?.note}
+                              {...register(`${corps.id}:note`)}
+                            />
+                          </td>
+                        </>
                       )}
                   </tr>
                 ))}
