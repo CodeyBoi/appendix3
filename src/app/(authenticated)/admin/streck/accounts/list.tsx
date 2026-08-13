@@ -159,12 +159,11 @@ const StreckAccountsList = ({ balances }: StreckAccountsListProps) => {
             <Restricted permissions='manageStreck'>
               <td>
                 {corps.balance < 0 && (
-                  <ActionIcon
-                    variant='subtle'
-                    href={generateStreckMailtoLink(corps)}
-                  >
-                    <IconMailShare />
-                  </ActionIcon>
+                  <a href={generateStreckMailtoLink(corps)}>
+                    <ActionIcon variant='subtle'>
+                      <IconMailShare />
+                    </ActionIcon>
+                  </a>
                 )}
               </td>
             </Restricted>
