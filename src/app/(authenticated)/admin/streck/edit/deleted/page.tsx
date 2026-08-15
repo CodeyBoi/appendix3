@@ -2,8 +2,9 @@ import { Suspense } from 'react';
 import StreckListTable from '../../strecklist-table';
 import Loading from 'components/loading';
 import { lang } from 'utils/language';
+import { api } from 'trpc/server';
 
-const ViewDeletedStreckListsPage = () => {
+const ViewDeletedStreckListsPage = async () => {
   return (
     <div className='flex flex-col gap-4'>
       <h2>Borttagna strecklistor</h2>
@@ -17,7 +18,11 @@ const ViewDeletedStreckListsPage = () => {
           />
         }
       >
-        <StreckListTable showDeleted showDelete />
+        <StreckListTable
+          streckLists={await api.streck.getStreckLists.query({})}
+          showDeleted
+          showDelete
+        />
       </Suspense>
     </div>
   );

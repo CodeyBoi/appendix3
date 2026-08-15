@@ -56,7 +56,12 @@ const AdminStreckPage = async ({
                 />
               }
             >
-              <StreckListTable take={50} showDelete={!!showDelete} />
+              <StreckListTable
+                streckLists={await api.streck.getStreckLists.query({
+                  take: 50,
+                })}
+                showDelete={!!showDelete}
+              />
             </Suspense>
           </div>
         </div>

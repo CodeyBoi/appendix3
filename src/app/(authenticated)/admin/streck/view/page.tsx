@@ -6,12 +6,13 @@ import Loading from 'components/loading';
 import { lang } from 'utils/language';
 import TransactionsSummary from './transactions-summary';
 import StreckListTable from '../strecklist-table';
+import { api } from 'trpc/server';
 
 export const metadata: Metadata = {
   title: 'Streck',
 };
 
-const AdminStreckEditPage = ({
+const AdminStreckEditPage = async ({
   searchParams,
 }: {
   searchParams: { start?: string; end?: string };
@@ -26,6 +27,13 @@ const AdminStreckEditPage = ({
   const end = (searchParams.end ? dayjs(searchParams.end) : dayjs())
     .endOf('day')
     .toDate();
+
+  const streckLists = await api.streck.getStreckLists.query({
+    start,
+    end,
+    take: 0x1337,
+    getTransactions: true,
+  });
 
   return (
     <div className='flex flex-col gap-4'>
@@ -53,7 +61,13 @@ const AdminStreckEditPage = ({
         <h3>Sammanfattning</h3>
         <TransactionsSummary start={start} end={end} take={0x1337} />
         <h3>Alla strecklistor</h3>
-        <StreckListTable start={start} end={end} showDelete showDownloadAll />
+        <StreckListTable
+          start={start}
+          end={end}
+          streckLists={streckLists}
+          showDelete
+          showDownloadAll
+        />
       </Suspense>
     </div>
   );
