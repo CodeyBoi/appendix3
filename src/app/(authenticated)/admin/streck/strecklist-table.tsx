@@ -1,6 +1,6 @@
-import Restricted from 'components/restricted/server';
+'use client';
+
 import dayjs from 'dayjs';
-import { api } from 'trpc/server';
 import { IconDownload, IconPencil } from '@tabler/icons-react';
 import ActionIcon from 'components/input/action-icon';
 import DeleteStreckListButton from './delete-streck-list';
@@ -11,37 +11,31 @@ import { lang } from 'utils/language';
 import Tooltip from 'components/tooltip';
 import Link from 'next/link';
 import { getStreckListType } from 'utils/streck';
+import { StreckList as RouterStreckList } from 'server/trpc/router/streck';
+import { Corps } from '@prisma/client';
+import Restricted from 'components/restricted/client';
+
+type StreckList = RouterStreckList & { createdBy: Corps; totalChange: number };
 
 interface StreckListTableProps {
   start?: Date;
   end?: Date;
-  take?: number;
-  skip?: number;
-  dateFormat?: string;
+  streckLists: StreckList[];
   showDelete?: boolean;
-  showDownloadAll?: boolean;
   showDeleted?: boolean;
+  dateFormat?: string;
+  showDownloadAll?: boolean;
 }
 
-const StreckListTable = async ({
+const StreckListTable = ({
   start,
   end,
-  take,
-  skip,
-  dateFormat = 'YYYY-MM-DD HH:mm',
+  streckLists,
   showDelete = false,
-  showDownloadAll = false,
   showDeleted = false,
+  dateFormat = 'YYYY-MM-DD HH:mm',
+  showDownloadAll = false,
 }: StreckListTableProps) => {
-  const streckLists = await api.streck.getStreckLists.query({
-    start,
-    end,
-    take,
-    skip,
-    getTransactions: true,
-    deleted: showDeleted,
-  });
-
   if (streckLists.length === 0) {
     return <h4 className='italic'>Här var det tomt...</h4>;
   }
