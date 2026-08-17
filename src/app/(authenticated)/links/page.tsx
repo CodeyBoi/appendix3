@@ -148,6 +148,14 @@ const Links = () => {
               Mummy Maze (WIP)
             </Link>
           </li>
+          <li>
+            <Link
+              className='cursor-pointer text-red-600 underline'
+              href='/scoundrel'
+            >
+              Scoundrel (WIP)
+            </Link>
+          </li>
         </ul>
       </span>
     </div>
