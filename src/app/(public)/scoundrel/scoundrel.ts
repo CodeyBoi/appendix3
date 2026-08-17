@@ -44,7 +44,7 @@ export class ScoundrelGame {
     hasDrunkInRoom: boolean;
     hasSkipped: boolean;
   }) {
-    this.deck = initial?.deck ?? shuffle(STARTING_DECK.slice()).slice(0, 5);
+    this.deck = initial?.deck ?? shuffle(STARTING_DECK.slice());
     this.room = initial?.room ?? [undefined, undefined, undefined, undefined];
     this.health = initial?.health ?? MAX_HEALTH;
     this.equippedWeapon = initial?.equippedWeapon;
