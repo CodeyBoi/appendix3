@@ -15,7 +15,7 @@ const RoomElement = ({ room, onClick }: RoomElementProps) => {
           return (
             <p
               key={`empty-${i}`}
-              className='mt-2 h-auto w-min text-6xl text-transparent lg:text-8xl'
+              className='mt-2 h-auto w-min text-7xl text-transparent lg:text-8xl'
             >
               {cardToString({ rank: 1, suit: 'spade' })}
             </p>
@@ -25,7 +25,7 @@ const RoomElement = ({ room, onClick }: RoomElementProps) => {
           <p
             key={`${card.rank}-${card.suit}`}
             className={cn(
-              'mt-2 h-auto w-min text-6xl hover:cursor-pointer lg:text-8xl',
+              'mt-2 h-auto w-min text-7xl hover:cursor-pointer lg:text-8xl',
               ['heart', 'diamond'].includes(card.suit) && 'text-red-600',
             )}
             onClick={() => {
