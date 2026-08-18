@@ -7,7 +7,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <header
-        className='top-0 box-border flex h-14 w-full flex-none items-center justify-between bg-red-600 px-4 shadow-md lg:sticky'
+        className='top-0 box-border flex h-14 w-screen flex-none items-center justify-between bg-red-600 px-4 shadow-md lg:sticky'
         style={{ zIndex: 516 }}
       >
         <Logo />
