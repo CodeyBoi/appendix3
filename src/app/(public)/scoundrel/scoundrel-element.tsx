@@ -8,6 +8,11 @@ import RoomElement from './room';
 import { Card, cardToString, Rank, Suit } from 'utils/card';
 import { cn } from 'utils/class-names';
 import { filterNone } from 'utils/array';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Scoundrel',
+};
 
 const ScoundrelElement = () => {
   const [gameState, _setGameState] = useState(new ScoundrelGame());
@@ -16,7 +21,10 @@ const ScoundrelElement = () => {
   };
   const [monsterLimitSuit, setMonsterLimitSuit] = useState<Suit>('spade');
   const [isWeaponSelected, setIsWeaponSelected] = useState(false);
-  const [score, setScore] = useState<number | undefined>(undefined);
+  const [score, setScore] = useState<number | undefined>();
+  const [healthChangePreview, setHealthChangePreview] = useState<
+    number | undefined
+  >();
 
   useEffect(() => {
     const game = new ScoundrelGame();
@@ -55,10 +63,26 @@ const ScoundrelElement = () => {
       }
     }
 
+    setHealthChangePreview(undefined);
     setGameState(gameState);
   };
 
   const equippedWeapon = gameState.equippedWeapon;
+
+  const healthChangePreviewElement =
+    healthChangePreview !== undefined ? (
+      <span
+        className={cn(
+          healthChangePreview <= 0 ? 'text-red-600' : 'text-green-600',
+        )}
+      >{`${
+        healthChangePreview > 0 ? '+' : healthChangePreview === 0 ? '-' : ''
+      }${healthChangePreview}${
+        gameState.health + healthChangePreview <= 0 ? ' -> DEATH' : ''
+      }`}</span>
+    ) : (
+      ''
+    );
 
   return (
     <div className='flex flex-col gap-2'>
@@ -67,12 +91,38 @@ const ScoundrelElement = () => {
       {score !== undefined && <h4>Score: {score}</h4>}
 
       <div>
-        Deck: {gameState.deck.length}
-        <br />
-        Health: {gameState.health}
+        <div>Deck: {gameState.deck.length}</div>
+        <div>
+          Health: {gameState.health} {healthChangePreviewElement}
+        </div>
       </div>
 
-      <RoomElement room={gameState.room} onClick={handleCardClick} />
+      <RoomElement
+        room={gameState.room}
+        onClick={handleCardClick}
+        onMouseEnter={(card) => {
+          const newState = new ScoundrelGame(gameState);
+          switch (card.suit) {
+            case 'spade':
+            case 'club':
+              newState.killMonster(
+                getMonsterStrength(card.rank),
+                isWeaponSelected,
+              );
+              setHealthChangePreview(newState.health - gameState.health);
+              break;
+            case 'heart':
+              newState.heal(card.rank);
+              setHealthChangePreview(newState.health - gameState.health);
+              break;
+            case 'diamond':
+              break;
+          }
+        }}
+        onMouseLeave={() => {
+          setHealthChangePreview(undefined);
+        }}
+      />
 
       <div className='flex select-none flex-col gap-2'>
         <h5>Weapon:</h5>
@@ -80,7 +130,7 @@ const ScoundrelElement = () => {
           <div className='flex gap-2'>
             <p
               className={cn(
-                'mt-2 h-auto w-min text-6xl text-red-600 hover:cursor-pointer lg:text-8xl',
+                'mt-2 h-auto w-min text-8xl text-red-600 hover:cursor-pointer',
                 isWeaponSelected && 'shadow-lg shadow-red-600',
               )}
               onClick={() => {
@@ -90,7 +140,7 @@ const ScoundrelElement = () => {
               {cardToString({ rank: equippedWeapon.strength, suit: 'diamond' })}
             </p>
             {equippedWeapon.monsterStrengthLimit && (
-              <p className='mt-2 h-auto w-min text-6xl lg:text-8xl'>
+              <p className='mt-2 h-auto w-min text-8xl'>
                 {cardToString({
                   rank:
                     equippedWeapon.monsterStrengthLimit === 14
@@ -102,7 +152,7 @@ const ScoundrelElement = () => {
             )}
           </div>
         ) : (
-          <p className='mt-2 h-auto w-min text-6xl text-transparent lg:text-8xl'>
+          <p className='mt-2 h-auto w-min text-8xl text-transparent'>
             {cardToString({ rank: 1, suit: 'diamond' })}
           </p>
         )}

@@ -47,7 +47,9 @@ export class ScoundrelGame {
     this.deck = initial?.deck ?? shuffle(STARTING_DECK.slice());
     this.room = initial?.room ?? [undefined, undefined, undefined, undefined];
     this.health = initial?.health ?? MAX_HEALTH;
-    this.equippedWeapon = initial?.equippedWeapon;
+    this.equippedWeapon = initial?.equippedWeapon
+      ? { ...initial.equippedWeapon }
+      : undefined;
     this.hasDrunkInRoom = initial?.hasDrunkInRoom ?? false;
     this.hasSkipped = initial?.hasSkipped ?? false;
   }
@@ -97,7 +99,7 @@ export class ScoundrelGame {
       useWeapon &&
       this.equippedWeapon &&
       (!this.equippedWeapon.monsterStrengthLimit ||
-        this.equippedWeapon.monsterStrengthLimit >= strength)
+        this.equippedWeapon.monsterStrengthLimit > strength)
     ) {
       this.equippedWeapon.monsterStrengthLimit = strength;
       this.takeDamage(Math.max(strength - this.equippedWeapon.strength, 0));
