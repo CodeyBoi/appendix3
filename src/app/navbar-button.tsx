@@ -3,6 +3,7 @@
 import Burger from 'components/burger';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
+import { cn } from 'utils/class-names';
 import { isJuly, isPrideMonth } from 'utils/date';
 
 interface NavbarButtonProps {
@@ -15,11 +16,22 @@ const NavbarButton = ({
   currentDate = new Date(),
 }: NavbarButtonProps) => {
   const [open, setOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    setIsClosing(true);
+    const timeout = setTimeout(() => {
+      setIsClosing(false);
+    }, 200);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [open]);
 
   return (
     <>
@@ -37,19 +49,21 @@ const NavbarButton = ({
         }
       />
       <div
-        className={
-          'absolute top-0 bottom-0 h-screen left-0 z-20 right-0 w-screen duration-200 transition-colors mt-14' +
-          (open ? ' bg-black/50' : ' bg-transparent pointer-events-none')
-        }
+        className={cn(
+          'absolute inset-0 z-20 mt-14 h-[100vh-56px] w-screen transition-colors duration-200',
+          open ? 'bg-black/50' : 'pointer-events-none bg-transparent',
+          (open || isClosing) && 'h-screen',
+        )}
         onClick={() => {
           setOpen(false);
         }}
       />
       <div
-        className={
-          'absolute top-0 right-0 transition-transform z-30 duration-200 rounded-md shadow-lg mt-14' +
-          (open ? '' : ' ' + 'translate-x-72')
-        }
+        className={cn(
+          'absolute right-0 top-0 z-30 mt-14 rounded-md shadow-lg transition-transform duration-200',
+          !open && 'translate-x-72',
+          !open && !isClosing && 'fixed',
+        )}
       >
         <div
           role='menu'
