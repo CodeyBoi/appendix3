@@ -423,7 +423,6 @@ const BloodOnTheClocktowerElement = () => {
                       includeTravellersInCharacterSheet,
                     ).join(','),
                   )}`}
-                  target='_blank'
                 >
                   Character Sheet
                   <IconExternalLink />
