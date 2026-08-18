@@ -38,17 +38,16 @@ const NavbarButton = ({
       />
       <div
         className={
-          'fixed top-0 bottom-0 left-0 z-10 right-0 w-screen duration-200 transition-colors mt-14' +
+          'absolute top-0 bottom-0 h-screen left-0 z-20 right-0 w-screen duration-200 transition-colors mt-14' +
           (open ? ' bg-black/50' : ' bg-transparent pointer-events-none')
         }
-        style={{ height: 'calc(100vh - 56px)' }}
         onClick={() => {
           setOpen(false);
         }}
       />
       <div
         className={
-          'fixed top-0 right-0 transition-transform z-20 duration-200 rounded-md shadow-lg mt-14' +
+          'absolute top-0 right-0 transition-transform z-30 duration-200 rounded-md shadow-lg mt-14' +
           (open ? '' : ' ' + 'translate-x-72')
         }
       >

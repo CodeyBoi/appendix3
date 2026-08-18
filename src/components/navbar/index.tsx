@@ -182,14 +182,11 @@ const NavbarContent = async ({
   );
 
   return (
-    <div
-      style={{ height: 'calc(100vh - 56px)' }}
-      className='flex w-72 flex-col justify-between gap-2 border-0 bg-red-700 px-3 pb-16 pt-3 lg:pb-4'
-    >
+    <div className='flex h-screen w-72 flex-col justify-between gap-2 border-0 bg-red-700 px-3 pb-16 pt-3 lg:pb-4'>
       <div className='overflow-y-auto'>
         <NavbarControl userTab={userTabElement} adminTab={adminTabElement} />
       </div>
-      <div className='flex flex-col'>
+      <div className='mb-12 flex flex-col'>
         <Button
           className='flex justify-start hover:bg-red-600'
           href='/about'
