@@ -11,7 +11,7 @@ const STARTING_DECK = range(2, 11)
     ),
   );
 
-interface Weapon {
+export interface Weapon {
   strength: Rank;
   monsterStrengthLimit?: number;
 }
@@ -27,6 +27,13 @@ const MAX_HEALTH = 20;
 export const getMonsterStrength = (rank: Rank) => (rank === 1 ? 14 : rank);
 
 const isMonster = (card: Card) => ['spade', 'club'].includes(card.suit);
+
+export const canAttackWithWeapon = (
+  weapon: Weapon | undefined,
+  strength: number,
+) =>
+  weapon !== undefined &&
+  (!weapon.monsterStrengthLimit || weapon.monsterStrengthLimit > strength);
 
 export class ScoundrelGame {
   deck: Card[];
@@ -94,15 +101,12 @@ export class ScoundrelGame {
     this.room[index] = undefined;
   }
 
-  killMonster(strength: number, useWeapon: boolean) {
-    if (
-      useWeapon &&
-      this.equippedWeapon &&
-      (!this.equippedWeapon.monsterStrengthLimit ||
-        this.equippedWeapon.monsterStrengthLimit > strength)
-    ) {
-      this.equippedWeapon.monsterStrengthLimit = strength;
-      this.takeDamage(Math.max(strength - this.equippedWeapon.strength, 0));
+  fightMonster(strength: number, useWeapon: boolean) {
+    if (useWeapon && canAttackWithWeapon(this.equippedWeapon, strength)) {
+      if (this.equippedWeapon) {
+        this.equippedWeapon.monsterStrengthLimit = strength;
+        this.takeDamage(Math.max(strength - this.equippedWeapon.strength, 0));
+      }
       return 'weapon';
     } else {
       this.takeDamage(strength);
