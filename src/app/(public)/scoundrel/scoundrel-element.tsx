@@ -9,6 +9,7 @@ import { Card, cardToString, Rank, Suit } from 'utils/card';
 import { cn } from 'utils/class-names';
 import { filterNone } from 'utils/array';
 import { Metadata } from 'next';
+import { api } from 'trpc/react';
 
 export const metadata: Metadata = {
   title: 'Scoundrel',
@@ -25,6 +26,16 @@ const ScoundrelElement = () => {
     number | undefined
   >();
   const [gameRunning, setGameRunning] = useState(true);
+  const [startedAt, _setStartedAt] = useState(() => new Date());
+
+  const scoreMutation = api.games.createScoundrelScore.useMutation();
+
+  const endGame = () => {
+    const finalScore = gameState.calculateScore();
+    setScore(finalScore);
+    setGameRunning(false);
+    scoreMutation.mutate({ score: finalScore, startedAt });
+  };
 
   useEffect(() => {
     const game = new ScoundrelGame();
@@ -57,12 +68,10 @@ const ScoundrelElement = () => {
 
     // Check if game is over
     if (gameState.health <= 0) {
-      setScore(gameState.calculateScore());
-      setGameRunning(false);
+      endGame();
     } else if (filterNone(gameState.room).length <= 1) {
       if (gameState.fillRoom() === 'complete') {
-        setScore(gameState.calculateScore());
-        setGameRunning(false);
+        endGame();
       }
     }
 
