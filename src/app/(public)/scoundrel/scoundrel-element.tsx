@@ -9,6 +9,7 @@ import { Card, cardToString, Rank, Suit } from 'utils/card';
 import { cn } from 'utils/class-names';
 import { filterNone } from 'utils/array';
 import { Metadata } from 'next';
+import { api } from 'trpc/react';
 
 export const metadata: Metadata = {
   title: 'Scoundrel',
@@ -20,11 +21,21 @@ const ScoundrelElement = () => {
     _setGameState(new ScoundrelGame(newState));
   };
   const [monsterLimitSuit, setMonsterLimitSuit] = useState<Suit>('spade');
-  const [isWeaponSelected, setIsWeaponSelected] = useState(false);
   const [score, setScore] = useState<number | undefined>();
   const [healthChangePreview, setHealthChangePreview] = useState<
     number | undefined
   >();
+  const [gameRunning, setGameRunning] = useState(true);
+  const [startedAt, _setStartedAt] = useState(() => new Date());
+
+  const scoreMutation = api.games.createScoundrelScore.useMutation();
+
+  const endGame = () => {
+    const finalScore = gameState.calculateScore();
+    setScore(finalScore);
+    setGameRunning(false);
+    scoreMutation.mutate({ score: finalScore, startedAt });
+  };
 
   useEffect(() => {
     const game = new ScoundrelGame();
@@ -32,15 +43,16 @@ const ScoundrelElement = () => {
     setGameState(game);
   }, []);
 
-  const handleCardClick = (card: Card, index: number) => {
+  const handleCardClick = (card: Card, index: number, useWeapon: boolean) => {
+    if (!gameRunning) {
+      return;
+    }
     switch (card.suit) {
       case 'spade':
       case 'club':
         if (
-          gameState.killMonster(
-            getMonsterStrength(card.rank),
-            isWeaponSelected,
-          ) === 'weapon'
+          gameState.fightMonster(getMonsterStrength(card.rank), useWeapon) ===
+          'weapon'
         ) {
           setMonsterLimitSuit(card.suit);
         }
@@ -56,10 +68,10 @@ const ScoundrelElement = () => {
 
     // Check if game is over
     if (gameState.health <= 0) {
-      setScore(gameState.calculateScore());
+      endGame();
     } else if (filterNone(gameState.room).length <= 1) {
       if (gameState.fillRoom() === 'complete') {
-        setScore(gameState.calculateScore());
+        endGame();
       }
     }
 
@@ -99,16 +111,14 @@ const ScoundrelElement = () => {
 
       <RoomElement
         room={gameState.room}
+        equippedWeapon={gameState.equippedWeapon}
         onClick={handleCardClick}
-        onMouseEnter={(card) => {
+        onMouseEnter={(card, useWeapon) => {
           const newState = new ScoundrelGame(gameState);
           switch (card.suit) {
             case 'spade':
             case 'club':
-              newState.killMonster(
-                getMonsterStrength(card.rank),
-                isWeaponSelected,
-              );
+              newState.fightMonster(getMonsterStrength(card.rank), useWeapon);
               setHealthChangePreview(newState.health - gameState.health);
               break;
             case 'heart':
@@ -128,15 +138,7 @@ const ScoundrelElement = () => {
         <h5>Weapon:</h5>
         {equippedWeapon ? (
           <div className='flex gap-2'>
-            <p
-              className={cn(
-                'mt-2 h-auto w-min text-8xl text-red-600 hover:cursor-pointer',
-                isWeaponSelected && 'shadow-lg shadow-red-600',
-              )}
-              onClick={() => {
-                setIsWeaponSelected(!isWeaponSelected);
-              }}
-            >
+            <p className='mt-2 h-auto w-min text-8xl text-red-600'>
               {cardToString({ rank: equippedWeapon.strength, suit: 'diamond' })}
             </p>
             {equippedWeapon.monsterStrengthLimit && (
@@ -179,8 +181,8 @@ const ScoundrelElement = () => {
             const game = new ScoundrelGame();
             game.fillRoom();
             setGameState(game);
-            setIsWeaponSelected(false);
             setScore(undefined);
+            setGameRunning(true);
           }}
         >
           {lang('Nytt spel', 'New game')}

@@ -169,4 +169,28 @@ export const gamesRouter = router({
 
       return res;
     }),
+
+  createScoundrelScore: protectedProcedure
+    .input(
+      z.object({
+        startedAt: z.date(),
+        score: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { startedAt, score } = input;
+      const corpsId = ctx.session.user.corps.id;
+      const res = await ctx.prisma.scoundrelScore.create({
+        data: {
+          startedAt,
+          score,
+          corps: {
+            connect: {
+              id: corpsId,
+            },
+          },
+        },
+      });
+      return res;
+    }),
 });

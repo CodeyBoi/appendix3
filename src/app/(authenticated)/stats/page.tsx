@@ -52,7 +52,7 @@ const Statistics = async ({
   const isNow = !end;
 
   const nbrOfGigsMsg =
-    gigs.total !== 0
+    gigs.total > 0
       ? lang(
           `Denna period ${isNow ? 'har vi hittills haft' : 'hade vi'} ${
             gigs.ordinary
@@ -76,7 +76,7 @@ const Statistics = async ({
       : '';
 
   const ownPointsMsg =
-    gigs.total !== 0
+    gigs.total > 0 && gigsAttended.total > 0
       ? lang(
           `Du ${isNow ? 'har varit' : 'var'} med på ${gigsAttended.ordinary}${
             gigsAttended.positive > 0 ? `+${gigsAttended.positive}` : ''
