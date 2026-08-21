@@ -159,6 +159,14 @@ const HomePage = async ({ currentDate = new Date() }: HomePageProps) => {
           {fire}
         </div>
       )}
+      <a className='max-w-max hover:underline' href='account/streck'>
+        <h5>
+          {lang('Strecksaldo:', 'Streck balance:')}{' '}
+          <span className={streckAccount.balance < 0 ? 'text-red-600' : ''}>
+            {streckAccount.balance.toString()}
+          </span>
+        </h5>
+      </a>
       <Suspense
         fallback={
           <>

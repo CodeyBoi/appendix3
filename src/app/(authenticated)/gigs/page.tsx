@@ -72,9 +72,14 @@ const GigsPage = ({
             {lang('Skapa spelning', 'Create gig')}
           </Button>
         </Restricted>
-        <h5 className='text-sm font-light italic'>
-          {lang('* = positiv spelning', '* = positive gig')}
-        </h5>
+        <div className='flex flex-col md:flex-row md:gap-4'>
+          <h5 className='text-sm font-light italic'>
+            {lang('* = positiv spelning', '* = positive gig')}
+          </h5>
+          <h5 className='text-sm font-light italic'>
+            {lang('** = ger ej spelpoäng', '** = does not give gig points')}
+          </h5>
+        </div>
         <Tabs options={tabs} />
       </div>
       <Suspense

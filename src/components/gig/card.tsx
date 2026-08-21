@@ -30,40 +30,27 @@ const isGig = (gig: Gig | GigId): gig is Gig => {
   return typeof gig !== 'string';
 };
 
-const PLACE_NAMES = [
-  'Malmö',
-  'Lomma',
-  'Bjärred',
-  'Jönköping',
-  'Linköping',
-  'Uppsala',
-  'Hjärup',
-  'Vellinge',
-  'Limhamn',
-];
-
-const SIGNUP_OPTION_YES = {
-  label: lang('Ja', 'Yes'),
-  value: 'Ja',
-  color: 'green',
-};
-const SIGNUP_OPTION_NO = {
-  label: lang('Nej', 'No'),
-  value: 'Nej',
-  color: 'var(--corps-red)',
-};
-const SIGNUP_OPTION_MAYBE = {
-  label: lang('Kanske', 'Maybe'),
-  value: 'Kanske',
-  color: 'orange',
+const SIGNUP_OPTIONS = {
+  yes: {
+    label: lang('Ja', 'Yes'),
+    value: 'Ja',
+    color: 'green',
+  },
+  no: {
+    label: lang('Nej', 'No'),
+    value: 'Nej',
+    color: 'var(--corps-red)',
+  },
+  maybe: {
+    label: lang('Kanske', 'Maybe'),
+    value: 'Kanske',
+    color: 'orange',
+  },
 };
 
 const constructGoogleMapsUrl = (location: string) => {
-  // Add ", Lund" to end of query if no city could be found
-  const loc =
-    PLACE_NAMES.find((place) => location.includes(' ' + place)) === undefined
-      ? `${location}, Lund`
-      : location;
+  // Add ", Lund" to end of query if it has no comma
+  const loc = location.includes(', ') ? `${location}, Lund` : location;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     loc,
   )}`;
@@ -112,8 +99,8 @@ const GigCard = async ({
       <div className='flex flex-col space-y-2 p-4'>
         <div className='flex flex-nowrap items-start justify-between'>
           <Link className='grow' href={`/gig/${gig.id}`}>
-            <h4 className='cursor-pointer'>{`${gig.title}${
-              gig.countsPositively ? '*' : ''
+            <h4 className='cursor-pointer'>{`${gig.title.trim()}${
+              gig.points === 0 ? '**' : gig.countsPositively ? '*' : ''
             }`}</h4>
           </Link>
           <Popover
@@ -176,11 +163,11 @@ const GigCard = async ({
                   signupOptions={
                     allowMaybe
                       ? [
-                          SIGNUP_OPTION_YES,
-                          SIGNUP_OPTION_NO,
-                          SIGNUP_OPTION_MAYBE,
+                          SIGNUP_OPTIONS.yes,
+                          SIGNUP_OPTIONS.no,
+                          SIGNUP_OPTIONS.maybe,
                         ]
-                      : [SIGNUP_OPTION_YES, SIGNUP_OPTION_NO]
+                      : [SIGNUP_OPTIONS.yes, SIGNUP_OPTIONS.no]
                   }
                 />
               </>
