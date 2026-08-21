@@ -193,4 +193,45 @@ export const gamesRouter = router({
       });
       return res;
     }),
+
+  getScoundrelHighscores: publicProcedure.query(async ({ ctx }) => {
+    const scores = await ctx.prisma.corps.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        nickName: true,
+        number: true,
+        bNumber: true,
+        displayName: true,
+        scoundrelScores: {
+          where: {
+            score: {
+              gt: 0,
+            },
+          },
+        },
+      },
+      where: {
+        scoundrelScores: {
+          some: {
+            score: {
+              gt: 0,
+            },
+          },
+        },
+      },
+    });
+
+    const res = scores.map((corps) => ({
+      corps: {
+        ...corps,
+        scoundrelScores: undefined,
+      },
+      score: corps.scoundrelScores.reduce((acc, s) => acc + s.score, 0),
+    }));
+    res.sort((a, b) => b.score - a.score);
+
+    return res;
+  }),
 });
