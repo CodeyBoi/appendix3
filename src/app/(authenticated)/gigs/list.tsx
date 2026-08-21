@@ -66,7 +66,8 @@ const GigList = async ({ year, tab }: GigListProps) => {
                   {gigDate.toString() + ':' + numberSuffix(gigDate)}
                 </div>
                 <span className='grow'>
-                  {gig.title.trim() + (gig.countsPositively ? '*' : '')}
+                  {gig.title.trim() +
+                    (gig.points === 0 ? '**' : gig.countsPositively ? '*' : '')}
                 </span>
                 {tab === 'all' && gig.attended && (
                   <div className='w-6'>
