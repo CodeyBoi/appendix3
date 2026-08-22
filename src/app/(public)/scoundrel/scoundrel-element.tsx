@@ -29,14 +29,17 @@ const ScoundrelElement = () => {
   const [gameRunning, setGameRunning] = useState(true);
   const [startedAt, _setStartedAt] = useState(() => new Date());
 
-  const scoreMutation = api.games.createScoundrelScore.useMutation();
+  const scoreMutation = api.games.createScoundrelScore.useMutation({
+    onSuccess: () => {
+      void utils.games.getScoundrelHighscores.invalidate();
+    },
+  });
 
   const endGame = () => {
     const finalScore = gameState.calculateScore();
     setScore(finalScore);
     setGameRunning(false);
     scoreMutation.mutate({ score: finalScore, startedAt });
-    void utils.games.getScoundrelHighscores.invalidate();
   };
 
   useEffect(() => {
