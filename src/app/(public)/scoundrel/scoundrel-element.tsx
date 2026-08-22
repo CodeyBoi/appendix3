@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 const ScoundrelElement = () => {
+  const utils = api.useUtils();
   const [gameState, _setGameState] = useState(new ScoundrelGame());
   const setGameState = (newState: ScoundrelGame) => {
     _setGameState(new ScoundrelGame(newState));
@@ -35,6 +36,7 @@ const ScoundrelElement = () => {
     setScore(finalScore);
     setGameRunning(false);
     scoreMutation.mutate({ score: finalScore, startedAt });
+    void utils.games.getScoundrelHighscores.invalidate();
   };
 
   useEffect(() => {
