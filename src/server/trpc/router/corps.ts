@@ -353,6 +353,7 @@ export const corpsRouter = router({
         nickName: z.string(),
         pronouns: z.string(),
         number: z.number().nullable(),
+        numberMarker: z.string().nullable(),
         bNumber: z.number().nullable(),
         email: z.string(),
         contactURL: z.string(),
@@ -377,6 +378,7 @@ export const corpsRouter = router({
         contactURL:
           input.contactURL.trim().length > 0 ? input.contactURL.trim() : null,
         number: input.number,
+        numberMarker: input.numberMarker,
         bNumber: input.bNumber,
         instruments: {
           createMany: {

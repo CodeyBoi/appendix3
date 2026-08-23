@@ -17,6 +17,7 @@ const initialValues = {
   nickName: '',
   pronouns: '',
   number: '',
+  numberMarker: '',
   bNumber: '',
   email: '',
   contactURL: '',
@@ -77,6 +78,7 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
         nickName: corps.nickName ?? '',
         pronouns: corps.pronouns ?? '',
         number: corps.number?.toString() || '',
+        numberMarker: corps.numberMarker ?? '',
         bNumber: corps.bNumber?.toString() || '',
         email: corps.user.email ?? '',
         contactURL: corps.contactURL ?? '',
@@ -108,9 +110,13 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
     const bNumber = values.bNumber.trim()
       ? parseInt(values.bNumber.trim())
       : null;
+    const numberMarker = values.numberMarker.trim()
+      ? values.numberMarker.trim()
+      : null;
     mutation.mutate({
       ...values,
       number,
+      numberMarker,
       bNumber,
       id: creatingCorps ? undefined : corpsId,
       language: values.language as Language,
@@ -143,6 +149,10 @@ const CorpsForm = ({ corpsId }: AdminCorpsProps) => {
             <TextInput label='Nummer' {...form.getInputProps('number')} />
             <TextInput label='Balettnr.' {...form.getInputProps('bNumber')} />
           </div>
+          <TextInput
+            label='Nummermarkör'
+            {...form.getInputProps('numberMarker')}
+          />
           <span className='self-end'>
             <TextInput
               withAsterisk
