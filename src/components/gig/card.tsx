@@ -50,7 +50,7 @@ const SIGNUP_OPTIONS = {
 
 const constructGoogleMapsUrl = (location: string) => {
   // Add ", Lund" to end of query if it has no comma
-  const loc = location.includes(', ') ? `${location}, Lund` : location;
+  const loc = !location.includes(', ') ? `${location}, Lund` : location;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     loc,
   )}`;
