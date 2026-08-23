@@ -65,20 +65,21 @@ model VerifiedToken {
 }
 
 model Corps {
-  id          String   @id @default(cuid())
-  number      Int?
-  bNumber     Int?
-  firstName   String
-  lastName    String
-  nickName    String?
-  pronouns    String?
-  isActive    Boolean  @default(true)
-  userId      String   @unique
-  colorScheme String   @default("light")
-  language    String   @default("sv")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  contactURL  String?
+  id           String   @id @default(cuid())
+  number       Int?
+  numberMarker String?
+  bNumber      Int?
+  firstName    String
+  lastName     String
+  nickName     String?
+  pronouns     String?
+  isActive     Boolean  @default(true)
+  userId       String   @unique
+  colorScheme  String   @default("light")
+  language     String   @default("sv")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  contactURL   String?
 
   roles              Role[]
   permissions        Permission[]

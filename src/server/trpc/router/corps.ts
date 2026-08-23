@@ -112,6 +112,7 @@ export const corpsRouter = router({
               createdBy: {
                 select: {
                   number: true,
+                  numberMarker: true,
                   bNumber: true,
                   firstName: true,
                   nickName: true,
@@ -555,6 +556,7 @@ export const corpsRouter = router({
           fullName: true,
           displayName: true,
           number: true,
+          numberMarker: true,
           bNumber: true,
           instruments: {
             select: {
@@ -577,6 +579,7 @@ export const corpsRouter = router({
         fullName: corps.fullName,
         displayName: corps.displayName,
         number: corps.number,
+        numberMarker: corps.numberMarker,
         bNumber: corps.bNumber,
         mainInstrument: corps.instruments.find((i) => i.isMainInstrument)
           ?.instrument.name,

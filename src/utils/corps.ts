@@ -16,6 +16,7 @@ export const displayName = (
         lastName: string;
         nickName: string | null;
         number: number | null;
+        numberMarker: string | null;
         bNumber: number | null;
       }
     | null
@@ -34,6 +35,7 @@ export const detailedName = (
         lastName: string;
         nickName: string | null;
         number: number | null;
+        numberMarker: string | null;
         bNumber: number | null;
       }
     | null
@@ -49,6 +51,7 @@ export const displayNumber = (
   corps:
     | {
         number: number | null;
+        numberMarker: string | null;
         bNumber: number | null;
       }
     | null
@@ -57,7 +60,7 @@ export const displayNumber = (
   corps === null || corps === undefined
     ? ''
     : corps.number
-    ? `#${corps.number}`
+    ? `${corps.numberMarker ?? '#'}${corps.number}`
     : corps.bNumber
     ? `b${corps.bNumber}`
     : 'p.e.';
@@ -68,6 +71,7 @@ export const numberAndFullName = (
         firstName: string;
         lastName: string;
         number: number | null;
+        numberMarker: string | null;
         bNumber: number | null;
       }
     | null

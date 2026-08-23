@@ -20,6 +20,7 @@ interface Corps {
   nickName: string | null;
   pronouns: string | null;
   number: number | null;
+  numberMarker: string | null;
   bNumber: number | null;
   contactURL: string | null;
   points: number;

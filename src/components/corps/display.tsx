@@ -22,6 +22,7 @@ interface Corps {
   lastName: string;
   nickName: string | null;
   number: number | null;
+  numberMarker: string | null;
   bNumber: number | null;
   corpsBirthday?: Date;
 }

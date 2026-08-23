@@ -18,6 +18,7 @@ interface Role {
     firstName: string;
     lastName: string;
     number: number | null;
+    numberMarker: string | null;
     bNumber: number | null;
     nickName: string | null;
   }[];

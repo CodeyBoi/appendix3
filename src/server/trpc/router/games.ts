@@ -94,6 +94,7 @@ export const gamesRouter = router({
               firstName: true,
               lastName: true,
               number: true,
+              numberMarker: true,
               bNumber: true,
               nickName: true,
             },
@@ -202,6 +203,7 @@ export const gamesRouter = router({
         lastName: true,
         nickName: true,
         number: true,
+        numberMarker: true,
         bNumber: true,
         displayName: true,
         scoundrelScores: {
