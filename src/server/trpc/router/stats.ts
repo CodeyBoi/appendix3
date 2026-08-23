@@ -45,6 +45,7 @@ export const statsRouter = router({
       interface CorpsStats {
         id: string;
         number: number | null;
+        numberMarker: string | null;
         bNumber: number | null;
         firstName: string;
         lastName: string;
@@ -58,6 +59,7 @@ export const statsRouter = router({
         SELECT
           Corps.id as id,
           number,
+          numberMarker,
           bNumber,
           firstName,
           lastName,

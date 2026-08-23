@@ -48,6 +48,7 @@ export const permissionRouter = router({
           firstName: true,
           lastName: true,
           number: true,
+          numberMarker: true,
           bNumber: true,
           nickName: true,
           permissions: {

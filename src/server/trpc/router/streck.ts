@@ -11,6 +11,7 @@ import { Language } from 'hooks/use-language';
 interface ActiveCorps {
   id: string;
   number: number | null;
+  numberMarker: string | null;
   bNumber: number | null;
   firstName: string;
   lastName: string;
@@ -127,6 +128,7 @@ const getBalances = async (
         SELECT
           Corps.id as id,
           number,
+          numberMarker,
           bNumber,
           firstName,
           lastName,
