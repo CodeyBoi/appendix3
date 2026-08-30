@@ -57,6 +57,7 @@ const NightOrderEntry = ({
       className={cn(
         'relative z-0 h-12 w-12 scale-150',
         imgPath.includes('Fall_of_Rome') && 'translate-y-1.5',
+        imgPath.includes('Murder_on_the_Dancefloor') && 'scale-105',
       )}
       loading='lazy'
       src={imgPath}
@@ -110,7 +111,7 @@ const NightOrderEntry = ({
           </div>
         )}
       </div>
-      <span className='text-sm'>{text}</span>
+      <span className='whitespace-pre-wrap text-sm'>{text}</span>
     </div>
   );
 };
