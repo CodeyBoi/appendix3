@@ -2995,6 +2995,10 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: `The Kuppbar points to a player. Move the 'Drunk' token to the chosen player. That player is drunk.`,
   },
   {
+    id: 'kamerer',
+    description: `If the Kamerer died today or tonight: they choose a player. If the chosen player is a Townsfolk, the chosen player becomes a not-in-play Outsider.`,
+  },
+  {
     id: 'balettledare',
     description: `The Balettledare points to a player. Mark that player as 'Sober'. They are sober until dusk.`,
   },
