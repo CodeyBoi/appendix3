@@ -299,7 +299,15 @@ export const streckRouter = router({
 
       const data = await ctx.prisma.streckTransaction.findMany({
         include: {
-          corps: true,
+          corps: {
+            select: {
+              firstName: true,
+              lastName: true,
+              number: true,
+              numberMarker: true,
+              bNumber: true,
+            },
+          },
         },
         where: {
           streckList: {

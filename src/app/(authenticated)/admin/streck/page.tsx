@@ -74,6 +74,10 @@ const AdminStreckPage = async ({
             <IconSearch />
             {lang('Se transaktioner...', 'View transactions...')}
           </Button>
+          <Button href='streck/verifications'>
+            <IconSearch />
+            {lang('Se verifikat...', 'View verifications...')}
+          </Button>
           <Restricted permissions='manageStreck'>
             <Button href='streck/edit/new'>
               <IconTablePlus />
