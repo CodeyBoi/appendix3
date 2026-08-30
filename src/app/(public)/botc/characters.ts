@@ -146,6 +146,29 @@ export const EDITIONS: readonly Edition[] = [
     travellers: ['bigbird', 'cookiemonster', 'countvoncount'],
   },
   {
+    id: 'murder-on-the-dancefloor',
+    name: 'Murder on the Dancefloor',
+    townsfolk: [
+      'sexmastare',
+      'export',
+      'provelev',
+      'bar',
+      'itk',
+      'balettledare',
+      'trivselombud',
+      'stamledare',
+      'arkivarie',
+      'medaljeri',
+      'prylprov',
+      'materialforvaltare',
+      'pr',
+    ],
+    outsiders: ['kuppbar', 'theclique', 'kamerer', 'puff'],
+    minions: ['notmarsk', 'dirigent', 'spexare', 'piff'],
+    demons: ['deathbox', 'styrelse', 'sekreterare', 'gammaldryg'],
+    travellers: [],
+  },
+  {
     id: 'carousel',
     name: 'Carousel',
     townsfolk: [
@@ -511,11 +534,15 @@ const isFallOfRomeCharacter = (id: CharacterId) =>
   getEdition(id).includes('fall-of-rome');
 const isMuppetsOnAClocktowerCharacter = (id: CharacterId) =>
   getEdition(id).includes('muppets-on-a-clocktower');
+const isMurderOnTheDancefloorCharacter = (id: CharacterId) =>
+  getEdition(id).includes('murder-on-the-dancefloor');
 
-const baseImgUrl = `https://script.bloodontheclocktower.com/src/assets/icons/<EDITION>/<NAME><ALIGNMENT>.webp`;
+const baseImgUrl = `https://release.botc.app/resources/characters/<EDITION>/<NAME><ALIGNMENT>.webp`;
 const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
 const muppetsOnAClocktowerBaseImgUrl =
   '/botc/Muppets_on_a_Clocktower/<NAME>.png';
+const murderOnTheDanceFloorBaseImgUrl =
+  '/botc/Murder_on_the_Dancefloor/<NAME>.png';
 const getImagePathFromId = (id: CharacterId) => {
   if (isFallOfRomeCharacter(id)) {
     // Centurion, Glykon and High Priest are stored at <name>1
@@ -525,6 +552,8 @@ const getImagePathFromId = (id: CharacterId) => {
     return fallOfRomeBaseImgUrl.replace('<NAME>', name);
   } else if (isMuppetsOnAClocktowerCharacter(id)) {
     return muppetsOnAClocktowerBaseImgUrl.replace('<NAME>', id);
+  } else if (isMurderOnTheDancefloorCharacter(id)) {
+    return murderOnTheDanceFloorBaseImgUrl.replace('<NAME>', id);
   } else {
     return baseImgUrl
       .replace('<EDITION>', ABBREVIATIONS[getEdition(id)] ?? '')
@@ -1568,6 +1597,154 @@ const _characters = {
     description: 'You conduct and count each vote. AH AH AH.',
   },
 
+  // Murder on the Dancefloor - Townsfolk
+  sexmastare: {
+    name: `Sexmästare`,
+    description: `You start knowing 3 characters, 2 of which are in-play.`,
+  },
+  export: {
+    name: 'Export',
+    description:
+      'You start knowing how many characters which can cause drunkenness are in-play.',
+  },
+  provelev: {
+    name: `Provelev`,
+    description: `You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.`,
+    reminderTokens: ['Mad as'],
+  },
+  bar: {
+    name: `Bar`,
+    description: `Each night, you learn how many players are drunk.`,
+  },
+  itk: {
+    name: `ITK`,
+    description: `Each night, you learn how many players woke tonight due to their ability.`,
+  },
+  balettledare: {
+    name: `Balettledare`,
+    description: `Each night, choose a player: they are sober until dusk. You cannot be drunk.`,
+    reminderTokens: ['Sober'],
+  },
+  trivselombud: {
+    name: `Trivselombud`,
+    description: `Each night, you learn all players which were chosen tonight by an evil player.`,
+    reminderTokens: [
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+    ],
+  },
+  stamledare: {
+    name: `Stämledare`,
+    description: `Each night, choose a player: you learn any info they learn tonight due to their ability.`,
+    reminderTokens: ['Forwarded'],
+  },
+  arkivarie: {
+    name: `Arkivarie`,
+    description: `Each night*, you learn a character who died today or tonight.`,
+  },
+  medaljeri: {
+    name: `Medaljeri`,
+    description: `Each night*, choose a player: they may use their ability tonight, even if dead.`,
+    reminderTokens: ['Medal awarded'],
+  },
+  prylprov: {
+    name: `Pryl & Prov`,
+    description: `Each night*, choose a player: the 1st Outsider chosen becomes a not-in-play Townsfolk. If a Minion is chosen, you are drunk. [+0 to +1 Outsider]`,
+    reminderTokens: ['Drunk', 'Recruited'],
+  },
+  materialforvaltare: {
+    name: `Materialförvaltare`,
+    description: `Once per game, at night*, choose a dead player: if they are a Townsfolk, they are resurrected.`,
+    reminderTokens: ['No ability', 'Resurrected'],
+  },
+  pr: {
+    name: `PR`,
+    description: `Once per game, during the day, publicly declare a good character. If not-in-play, a Townsfolk immediately becomes the chosen character.`,
+    reminderTokens: ['No ability'],
+  },
+
+  // Murder on the Dancefloor - Outsiders
+  kuppbar: {
+    name: `Kuppbar`,
+    description: `Each night, choose a player (not yourself): if a Townsfolk, they are drunk until dusk.`,
+    reminderTokens: ['Drunk'],
+  },
+  theclique: {
+    name: `The Clique`,
+    description: `On your 1st night, choose a player: you are mad that they are evil and must vote when they are nominated or you might be executed.`,
+    reminderTokens: ['Cliqued'],
+  },
+  kamerer: {
+    name: `Kamerer`,
+    description: `When you die, that night, choose an alive player: if not the Demon, they become a not-in-play Outsider.`,
+  },
+  puff: {
+    name: `Puff`,
+    description: `TBD`,
+  },
+
+  // Murder on the Dancefloor - Minions
+  notmarsk: {
+    name: 'Notmarsk',
+    description:
+      'Each night, choose a player: move them either first or last in the night order.',
+    reminderTokens: ['First', 'Last'],
+  },
+  dirigent: {
+    name: 'Dirigent',
+    description:
+      'Each night, choose a player: if they make a choice tonight, you learn their choice and may change it.',
+    reminderTokens: ['Conducted'],
+  },
+  spexare: {
+    name: 'Spexare',
+    description:
+      'Once per game, at night, choose two players: one of them becomes evil, the other is drunk.',
+    reminderTokens: ['Evil', 'Drunk', 'No ability'],
+  },
+  piff: {
+    name: 'Piff',
+    description: 'TBD',
+  },
+
+  // Murder on the Dancefloor - Demons
+  deathbox: {
+    name: 'Deathbox',
+    description:
+      'Each night, choose a player: they are drunk. The previously chosen player dies then becomes sober.',
+    reminderTokens: ['Killed by', 'Drunk'],
+  },
+  styrelse: {
+    name: 'Styrelse',
+    description:
+      'Each night*, choose a character: they die. If they are not-in-play, the Storyteller chooses who dies.',
+    reminderTokens: ['Killed by'],
+  },
+  sekreterare: {
+    name: 'Sekreterare',
+    description:
+      "Each night*, choose a player: they die. If you publicly guess all player's characters correctly (once), your team wins. [+1 Outsider]",
+    reminderTokens: ['Killed by'],
+  },
+  gammaldryg: {
+    name: 'Gammal & Dryg',
+    description:
+      'You think you are a Townsfolk character, but you are not. Each night*, a player might die. If there are 5 or more players alive & the 1st Gammal & Dryg dies by execution, the nominator becomes an evil Gammal & Dryg.',
+    reminderTokensGlobal: [
+      'Killed by',
+      'Is Gammal & Dryg',
+      '1st Gammal & Dryg',
+    ],
+    cannotBeSelected: true,
+    disguisedAs: ['townsfolk'],
+  },
+
+  // Murder on the Dancefloor - Travellers
+
   // Carousel - Townsfolk
   acrobat: {
     name: 'Acrobat',
@@ -2043,6 +2220,18 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     description: 'Show the Yaggababble their secret phrase.',
   },
   {
+    id: 'dirigent',
+    description: `The Dirigent points to a player. Mark that player with the 'Conducted' token. If the marked player makes a choice tonight, wake the Dirigent, show them the choice that was made and allow the Dirigent to change it before carrying out the effects.`,
+  },
+  {
+    id: 'notmarsk',
+    description: `The Notmarsk points to a player, and then shows a thumbs up to move the chosen player first in the night order, or a thumbs down to move them last. Mark that player with the 'First' or 'Last' reminder token. If 'First' is marked and they are supposed to wake tonight, wake them now. If 'Last' is marked and they are supposed to wake tonight, wake them after everyone else has woken.`,
+  },
+  {
+    id: 'spexare',
+    description: `The Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
+  },
+  {
     id: 'temptress',
     description:
       "Wake the Temptress and ask them to choose two players. Place the 'Seduced' reminder token next to the two players. Wake the two players separately showing the 'This character selected you' card, then the Temptress token.",
@@ -2169,6 +2358,11 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
       "The Pukka points to a player. Mark the chosen player with the 'Poisoned' token; that player is poisoned.",
   },
   {
+    id: 'deathbox',
+    description:
+      "Deathbox points to a player. Mark the chosen player with the 'Drunk' token: they are drunk.",
+  },
+  {
     id: 'cleopatra',
     description:
       "Wake Cleopatra and ask them to choose two players. Place the 'Chosen by' reminder token next to the two players.",
@@ -2187,6 +2381,14 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     id: 'thetwins',
     description:
       "Wake The Twins, and point to a player. Place the 'Twin' reminder token next to that player (Note that all references to 'The Twins' are to the Outsider character itself, i.e. 'Wake The Twins' means wake the player playing as The Twins).",
+  },
+  {
+    id: 'kuppbar',
+    description: `The Kuppbar points to a player. Mark that player with the 'Drunk' token: they are drunk.`,
+  },
+  {
+    id: 'balettledare',
+    description: `The Balettledare points to a player. Mark that player as 'Sober'. They are sober until dusk.`,
   },
   {
     id: 'physician',
@@ -2209,8 +2411,20 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
       'Wake the Legionaries separately. They learn the number of evil players sitting clockwise between them and the next living Legionary. If they are the only Legionary, they learn clockwise to themselves. If a Legionary dies and there are other Legionaries alive, you still wake the living Legionaries. ',
   },
   {
+    id: 'theclique',
+    description: `The Clique points to a player. Mark that player with the 'Cliqued' token. The Clique is mad that the marked player is evil and must vote when they are nominated or might be executed.`,
+  },
+  {
+    id: 'stamledare',
+    description: `The Stämledare points to a player. Mark that player with the 'Forwarded' token. Whenever the marked player learns any info tonight due to their ability, also wake the Stämledare and show them the same info.`,
+  },
+  {
+    id: 'trivselombud',
+    description: `(Whenever an evil player chooses a player, mark them with the 'Chosen by evil' token.)\n\nPoint to each of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
+  },
+  {
     id: 'pixie',
-    description: 'Show the Pixie 1 in-play Townsfolk character token.',
+    description: `Show the Pixie 1 in-play Townsfolk character token. Mark that player with the 'Mad as' token.`,
   },
   {
     id: 'huntsman',
@@ -2246,6 +2460,24 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     id: 'chef',
     description:
       'Show the finger signal (0, 1, 2, …) for the number of pairs of neighbouring evil players.',
+  },
+  {
+    id: 'sexmastare',
+    description: 'Show 3 character tokens, 2 of which are in-play.',
+  },
+  {
+    id: 'export',
+    description:
+      'Count how many of the following characters are in play: Pryl & Prov, Kuppbar, Spexare & Deathbox. Show fingers equal to the number of the previously mentioned characters that are in play.',
+  },
+  {
+    id: 'provelev',
+    description: `Show the Provelev 1 in-play Townsfolk character token. Mark that player with the 'Mad as' token.`,
+  },
+  {
+    id: 'bar',
+    description:
+      'Show the finger signal (0, 1, 2, etc.) for the number of currently drunk players.',
   },
   {
     id: 'empath',
@@ -2361,6 +2593,10 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
       'Show the hand signal for the number (0, 1, 2, etc.) of players whose ability malfunctioned due to other abilities.',
   },
   {
+    id: 'itk',
+    description: `Show the finger signal (0, 1, 2, etc.) for the number of players who woke tonight due to their ability (i.e. NOT waking for other reasons, e.g. Demon info).`,
+  },
+  {
     id: 'leviathan',
     description:
       "Place the Leviathan 'Day 1' marker. Announce 'The Leviathan is in play; this is Day 1.'",
@@ -2379,7 +2615,19 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'scrooge',
-    description: `Whenever a player targets another player with their ability, you can instead choose for them to target Scrooge. Mark the affected player with the 'Scrooged' reminder token. The affected player does not know this happened. The affected player does not know this happened. The affected player does not know this happened.`,
+    description: `Whenever a player targets another player with their ability, you can instead choose for them to target Scrooge. Mark the affected player with the 'Scrooged' reminder token. The affected player does not know this happened.`,
+  },
+  {
+    id: 'dirigent',
+    description: `The Dirigent points to a player. Mark that player with the 'Conducted' token. If the marked player makes a choice tonight, wake the Dirigent, show them the choice that was made and allow the Dirigent to change it before carrying out the effects.`,
+  },
+  {
+    id: 'notmarsk',
+    description: `The Notmarsk points to a player, and then shows a thumbs up to move the chosen player first in the night order, or a thumbs down to move them last. Mark that player with the 'First' or 'Last' reminder token. If 'First' is marked and they are supposed to wake tonight, wake them now. If 'Last' is marked and they are supposed to wake tonight, wake them after everyone else has woken.`,
+  },
+  {
+    id: 'spexare',
+    description: `If the Spexare has not used their ability yet: the Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
   },
   {
     id: 'cacklejack',
@@ -2706,6 +2954,24 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: `Wake Statler & Waldorf (even if dead). They both point to any player. When they agree and both point to the same player, that player dies.`,
   },
   {
+    id: 'deathbox',
+    description:
+      "Deathbox points to a player. Kill the player with the 'Drunk' token, and then move the token to the chosen player; that player is drunk.\n\n(If Deathbox is drunk, do not move the 'Drunk' token and do not kill any players.)",
+  },
+  {
+    id: 'styrelse',
+    description:
+      'The Styrelse points to a character on the sheet; if in play, that player dies. If it is not in play, the Storyteller chooses who dies instead.',
+  },
+  {
+    id: 'sekreterare',
+    description: 'The Sekreterare points to a player. That player dies.',
+  },
+  {
+    id: 'gammaldryg',
+    description: 'For each alive Gammal & Dryg, a player might die.',
+  },
+  {
     id: 'rizzotherat',
     description: `If the player marked with the 'Chosen' reminder token was killed by the Demon tonight, wake Rizzo the Rat and show them an alive in-play character token. Remove the 'Chosen' reminder token.`,
   },
@@ -2723,6 +2989,14 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     id: 'haruspex',
     description:
       "Wake the Haruspex and ask them to choose a player. Place the 'Foretold' reminder token next to the chosen player and show the Haruspex the chosen player's character. If the chosen player already has a 'Foretold' reminder token, show the Haruspex that player's character, then swap the existing 'Foretold' reminder token with the 'Killed by' reminder token, the chosen player dies, then place the 'Can't kill' reminder token next to the Haruspex.",
+  },
+  {
+    id: 'kuppbar',
+    description: `The Kuppbar points to a player. Move the 'Drunk' token to the chosen player. That player is drunk.`,
+  },
+  {
+    id: 'balettledare',
+    description: `The Balettledare points to a player. Mark that player as 'Sober'. They are sober until dusk.`,
   },
   {
     id: 'blacksmith',
@@ -2830,6 +3104,36 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     id: 'sweetheart',
     description:
       "If the Sweetheart died today: Choose a player and mark them with the 'Drunk' token; that player is drunk from now on.",
+  },
+  {
+    id: 'prylprov',
+    description: `Pryl & Prov points to a player. If a Minion is chosen: mark Pryl & Prov with the 'Drunk' token, they are drunk for the rest of the game. If an Outsider is chosen and an Outsider hasn't been chosen earlier: the chosen player becomes a not-in-play Townsfolk. Wake the chosen player to inform them of the change.`,
+  },
+  {
+    id: 'medaljeri',
+    description: `The Medaljeri points to a player. Mark that player with the 'Medal awarded' token. The marked player may use their ability tonight, even if dead or if it's an already used 'once per game' ability.`,
+  },
+  {
+    id: 'materialforvaltare',
+    description:
+      "If the Materialförvaltare has not used their ability: The Materialförvaltare either shakes their head 'no', or points to a player. If that player is a Townsfolk, they are now alive.",
+  },
+  {
+    id: 'stamledare',
+    description: `The Stämledare points to a player. Move the 'Forwarded' token to the chosen player. Whenever the marked player learns any info tonight due to their ability, also wake the Stämledare and show them the same info.`,
+  },
+  {
+    id: 'trivselombud',
+    description: `(Whenever an evil player chooses a player, mark them with the 'Chosen by evil' token.)\n\nPoint to each of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
+  },
+  {
+    id: 'bar',
+    description:
+      'Show the finger signal (0, 1, 2, etc.) for the number of currently drunk players.',
+  },
+  {
+    id: 'arkivarie',
+    description: `Show the character token of a player who died today or tonight.`,
   },
   {
     id: 'sage',
@@ -2981,6 +3285,10 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     id: 'mathematician',
     description:
       'Show the hand signal for the number (0, 1, 2, etc.) of players whose ability malfunctioned due to other abilities.',
+  },
+  {
+    id: 'itk',
+    description: `Show the finger signal (0, 1, 2, etc.) for the number of players who woke tonight due to their ability.`,
   },
   {
     id: 'leviathan',

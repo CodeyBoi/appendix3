@@ -107,6 +107,7 @@ const CharacterToken = ({
                 (imgPath?.includes('Fall_of_Rome') ||
                   imgPath?.includes('Muppets_on_a_Clocktower')) &&
                   'scale-75',
+                imgPath?.includes('Murder_on_the_Dancefloor') && 'scale-[0.65]',
               )}
               src={imgPath}
               loading='lazy'

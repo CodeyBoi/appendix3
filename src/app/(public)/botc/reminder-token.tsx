@@ -46,6 +46,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
             (imgSrc.includes('Fall_of_Rome') ||
               imgSrc.includes('Muppets_on_a_Clocktower')) &&
               'scale-75',
+            imgSrc.includes('Murder_on_the_Dancefloor') && 'scale-[0.65]',
           )}
           src={imgSrc}
           loading='lazy'
