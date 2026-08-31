@@ -166,7 +166,7 @@ export const EDITIONS: readonly Edition[] = [
     outsiders: ['kuppbar', 'puff', 'theclique', 'kamerer'],
     minions: ['notmarsk', 'dirigent', 'piff', 'spexare'],
     demons: ['deathbox', 'styrelse', 'sekreterare', 'gammaldryg'],
-    travellers: [],
+    travellers: ['lekstek'],
   },
   {
     id: 'carousel',
@@ -1789,6 +1789,10 @@ const _characters = {
   },
 
   // Murder on the Dancefloor - Travellers
+  lekstek: {
+    name: 'Lek & Stek',
+    description: 'TBD',
+  },
 
   // Carousel - Townsfolk
   acrobat: {
