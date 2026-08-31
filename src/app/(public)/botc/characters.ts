@@ -164,7 +164,7 @@ export const EDITIONS: readonly Edition[] = [
       'pr',
     ],
     outsiders: ['kuppbar', 'theclique', 'kamerer', 'puff'],
-    minions: ['notmarsk', 'dirigent', 'spexare', 'piff'],
+    minions: ['notmarsk', 'dirigent', 'piff', 'spexare'],
     demons: ['deathbox', 'styrelse', 'sekreterare', 'gammaldryg'],
     travellers: [],
   },
@@ -1667,7 +1667,7 @@ const _characters = {
   },
   prylprov: {
     name: `Pryl & Prov`,
-    description: `Each night*, choose a player: the 1st Outsider chosen becomes a not-in-play Townsfolk. If a Minion is chosen, you are drunk. [+0 to +1 Outsider]`,
+    description: `Each night*, choose a player: the 1st Outsider chosen becomes a not-in-play Townsfolk. If a Minion is chosen, you become drunk. [+0 to +1 Outsider]`,
     reminderTokens: ['Drunk', 'Recruited'],
   },
   materialforvaltare: {
@@ -1714,15 +1714,43 @@ const _characters = {
       'Each night, choose a player: if they make a choice tonight, you learn their choice and may change it.',
     reminderTokens: ['Conducted'],
   },
+  piff: {
+    name: 'Piff',
+    description:
+      'Each night, choose a player. For each time a Townsfolk has been chosen, they receive info an additional time, which may be incorrect.',
+    reminderTokens: [
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+      'Piffed',
+    ],
+  },
   spexare: {
     name: 'Spexare',
     description:
       'Once per game, at night, choose two players: one of them becomes evil, the other is drunk.',
     reminderTokens: ['Evil', 'Drunk', 'No ability'],
-  },
-  piff: {
-    name: 'Piff',
-    description: 'TBD',
   },
 
   // Murder on the Dancefloor - Demons
@@ -2246,6 +2274,11 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     description: `The Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
   },
   {
+    id: 'piff',
+    description:
+      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time for each 'Piffed' token they are marked with. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
+  },
+  {
     id: 'temptress',
     description:
       "Wake the Temptress and ask them to choose two players. Place the 'Seduced' reminder token next to the two players. Wake the two players separately showing the 'This character selected you' card, then the Temptress token.",
@@ -2642,6 +2675,11 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'spexare',
     description: `If the Spexare has not used their ability yet: the Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
+  },
+  {
+    id: 'piff',
+    description:
+      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time for each 'Piffed' token they are marked with. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
   },
   {
     id: 'cacklejack',
