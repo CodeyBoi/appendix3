@@ -1,6 +1,6 @@
 'use client';
 
-import { IconExternalLink, IconScript, IconTrash } from '@tabler/icons-react';
+import { IconQrcode, IconScript, IconTrash } from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
 import { Metadata } from 'next';
@@ -30,6 +30,8 @@ import NightOrderPreview from './night-order-preview';
 import ActionIcon from 'components/input/action-icon';
 import Tooltip from 'components/tooltip';
 import Switch from 'components/input/switch';
+import Link from 'next/link';
+import { QRCodeSVG } from 'qrcode.react';
 
 export const metadata: Metadata = {
   title: 'Blood on the Clocktower',
@@ -208,6 +210,19 @@ const BloodOnTheClocktowerElement = () => {
     setSelectedCharacters([]);
     setCustomScriptUrl('');
   };
+
+  const sheetLink =
+    includeTravellersInCharacterSheet &&
+    EDITIONS.concat(CAROUSEL_EDITIONS).find((e) => e.id === edition.id) !==
+      undefined
+      ? `/botc/sheet?editionId=${encodeURIComponent(edition.id)}`
+      : `/botc/sheet?name=${encodeURIComponent(
+          edition.name,
+        )}&characters=${encodeURIComponent(
+          getAllCharacters(edition, includeTravellersInCharacterSheet).join(
+            ',',
+          ),
+        )}`;
 
   return (
     <>
@@ -414,19 +429,29 @@ const BloodOnTheClocktowerElement = () => {
           {allCharacters.length > 0 && (
             <>
               <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
-                <Button
-                  href={`/botc/sheet?name=${encodeURIComponent(
-                    edition.name,
-                  )}&characters=${encodeURIComponent(
-                    getAllCharacters(
-                      edition,
-                      includeTravellersInCharacterSheet,
-                    ).join(','),
-                  )}`}
+                <Modal
+                  title='Character Sheet'
+                  hideBackground
+                  withCloseButton
+                  stayOpenOnBackgroundClicked
+                  target={
+                    <Button>
+                      <IconQrcode />
+                      Character Sheet
+                    </Button>
+                  }
                 >
-                  Character Sheet
-                  <IconExternalLink />
-                </Button>
+                  <div className='flex justify-center'>
+                    <Link className='hover:cursor-pointer' href={sheetLink}>
+                      <QRCodeSVG
+                        value={`${process.env.NEXTAUTH_URL}${sheetLink}`}
+                        size={256}
+                        fgColor='#ce0c00'
+                      />
+                    </Link>
+                  </div>
+                </Modal>
+
                 <Switch
                   label='Include travellers'
                   onChange={setIncludeTravellersInCharacterSheet}
