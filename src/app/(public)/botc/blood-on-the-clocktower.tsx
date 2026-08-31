@@ -81,7 +81,13 @@ const removeCustomScript = (id: string) => {
   localStorage.setItem(BOTC_CUSTOM_SCRIPTS_KEY, JSON.stringify(customScripts));
 };
 
-const BloodOnTheClocktowerElement = () => {
+interface BloodOnTheClocktowerElementProps {
+  baseUrl: string;
+}
+
+const BloodOnTheClocktowerElement = ({
+  baseUrl,
+}: BloodOnTheClocktowerElementProps) => {
   const [gameState, _setGameState] = useState<BotcGame>(() => {
     const savedStateString = localStorage.getItem(BOTC_GAME_STATE_KEY);
     if (savedStateString) {
@@ -444,7 +450,7 @@ const BloodOnTheClocktowerElement = () => {
                   <div className='flex justify-center'>
                     <Link className='hover:cursor-pointer' href={sheetLink}>
                       <QRCodeSVG
-                        value={`appendix.bleckhornen.org${sheetLink}`}
+                        value={`${baseUrl}${sheetLink}`}
                         size={256}
                         fgColor='#ce0c00'
                       />
