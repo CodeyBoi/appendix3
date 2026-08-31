@@ -163,7 +163,7 @@ export const EDITIONS: readonly Edition[] = [
       'materialforvaltare',
       'pr',
     ],
-    outsiders: ['kuppbar', 'theclique', 'kamerer', 'puff'],
+    outsiders: ['kuppbar', 'puff', 'theclique', 'kamerer'],
     minions: ['notmarsk', 'dirigent', 'piff', 'spexare'],
     demons: ['deathbox', 'styrelse', 'sekreterare', 'gammaldryg'],
     travellers: [],
@@ -1653,7 +1653,7 @@ const _characters = {
   },
   stamledare: {
     name: `Stämledare`,
-    description: `Each night, choose a player: you learn any info they learn tonight due to their ability.`,
+    description: `Each night, choose a player: tonight, you learn any info they learn due to their ability.`,
     reminderTokens: ['Forwarded'],
   },
   arkivarie: {
@@ -1662,7 +1662,7 @@ const _characters = {
   },
   medaljeri: {
     name: `Medaljeri`,
-    description: `Each night*, choose a player: they may use their ability tonight, even if dead.`,
+    description: `Each night*, choose a player: until dusk, they may use their ability, even if dead.`,
     reminderTokens: ['Medal awarded'],
   },
   prylprov: {
@@ -1684,8 +1684,31 @@ const _characters = {
   // Murder on the Dancefloor - Outsiders
   kuppbar: {
     name: `Kuppbar`,
-    description: `Each night, choose a player (not yourself): if a Townsfolk, they are drunk until dusk.`,
+    description: `Each night, choose an alive player (not yourself): if the last chosen player is a Townsfolk, they are drunk, even if you are dead.`,
     reminderTokens: ['Drunk'],
+  },
+  puff: {
+    name: `Puff`,
+    description: `Each night, choose an alive player (not yourself): Piff learns who you chose and their character. If a good player is chosen twice by you, they die. [+Piff]`,
+    reminderTokens: [
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+      'Chosen',
+    ],
   },
   theclique: {
     name: `The Clique`,
@@ -1695,10 +1718,6 @@ const _characters = {
   kamerer: {
     name: `Kamerer`,
     description: `When you die, that night, choose an alive player: if not the Demon, they become a not-in-play Outsider.`,
-  },
-  puff: {
-    name: `Puff`,
-    description: `TBD`,
   },
 
   // Murder on the Dancefloor - Minions
@@ -1717,24 +1736,8 @@ const _characters = {
   piff: {
     name: 'Piff',
     description:
-      'Each night, choose a player. For each time a Townsfolk has been chosen, they receive info an additional time, which may be incorrect.',
+      'Each night, choose a player. Townsfolk that have been chosen by you receive info an additional time which may be incorrect.',
     reminderTokens: [
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
-      'Piffed',
       'Piffed',
       'Piffed',
       'Piffed',
@@ -2274,9 +2277,14 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     description: `The Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
   },
   {
+    id: 'puff',
+    description:
+      "Puff chooses a player: If the chosen player is good, mark that player with a 'Chosen' reminder token. Wake Piff, point to the chosen player and show their character token.",
+  },
+  {
     id: 'piff',
     description:
-      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time for each 'Piffed' token they are marked with. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
+      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
   },
   {
     id: 'temptress',
@@ -2677,9 +2685,14 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
     description: `If the Spexare has not used their ability yet: the Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
   },
   {
+    id: 'puff',
+    description:
+      "Puff chooses a player: If the chosen player is good, mark that player with a 'Chosen' reminder token, or kill them if they are already marked. Wake Piff, point to the chosen player and show their character token.",
+  },
+  {
     id: 'piff',
     description:
-      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time for each 'Piffed' token they are marked with. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
+      "Piff chooses a player: If the chosen player is a Townsfolk, mark that player with the 'Piffed' token. Whenever a Townsfolk marked with 'Piffed' learns info, they learn it an additional time. This info may be incorrect.\n\n(Their ability info and the additional info may be given in any order, i.e. the info from their ability does not have to be given first.)",
   },
   {
     id: 'cacklejack',

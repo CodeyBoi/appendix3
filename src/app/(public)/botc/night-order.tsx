@@ -75,6 +75,17 @@ const NightOrder = ({
 
   return (
     <div className='flex flex-col divide-y'>
+      <Select
+        label='Show nights'
+        options={[
+          { value: 'first', label: 'First night' },
+          { value: 'other', label: 'Following nights' },
+        ]}
+        onChange={(v) => {
+          setShowFirstNight(v === 'first');
+        }}
+      />
+      <div className='h-2' />
       {!isTeensyville && showFirstNight && (
         <>
           <NightOrderEntry
@@ -120,17 +131,6 @@ const NightOrder = ({
           </div>
         );
       })}
-      <div className='h-2' />
-      <Select
-        label='Show nights'
-        options={[
-          { value: 'first', label: 'First night' },
-          { value: 'other', label: 'Following nights' },
-        ]}
-        onChange={(v) => {
-          setShowFirstNight(v === 'first');
-        }}
-      />
       <div className='flex flex-col gap-4 p-2 pt-3 lg:flex-row'>
         <Switch
           label='Show dead characters'
