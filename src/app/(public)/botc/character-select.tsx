@@ -303,7 +303,7 @@ const findSelectionError = (
       case 'godfather':
         // Remove 1 outsider if number of outsiders is 2 and Fang Gu is in the game, otherwise add 1
         addOutsiders(
-          numberOfCharacters['outsiders'] == 2 && characters.includes('fanggu')
+          numberOfCharacters['outsiders'] === 2 && characters.includes('fanggu')
             ? -1
             : 1,
         );
@@ -356,6 +356,17 @@ const findSelectionError = (
       case 'waldorf':
         res['statler'] = 1;
         res['waldorf'] = 1;
+        break;
+      case 'prylprov':
+        if (numberOfCharacters['outsiders'] === 0 || Math.random() < 0.2) {
+          addOutsiders(1);
+        }
+        break;
+      case 'puff':
+        res['piff'] = 1;
+        break;
+      case 'sekreterare':
+        addOutsiders(1);
         break;
     }
   }
