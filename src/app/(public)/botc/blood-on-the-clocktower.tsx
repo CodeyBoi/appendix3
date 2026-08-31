@@ -444,7 +444,7 @@ const BloodOnTheClocktowerElement = () => {
                   <div className='flex justify-center'>
                     <Link className='hover:cursor-pointer' href={sheetLink}>
                       <QRCodeSVG
-                        value={`${process.env.NEXTAUTH_URL}${sheetLink}`}
+                        value={`appendix.bleckhornen.org${sheetLink}`}
                         size={256}
                         fgColor='#ce0c00'
                       />
