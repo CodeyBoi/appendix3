@@ -63,6 +63,7 @@ const BotcCharacterPanel = ({
           {jinxes.length > 0 && <div className='w-1' />}
           {jinxes.map((jinx) => (
             <img
+              key={`jinx-icon-${name}-${jinx}`}
               className='h-6 w-6'
               src={CHARACTERS[jinx].image?.[0]}
               loading='lazy'

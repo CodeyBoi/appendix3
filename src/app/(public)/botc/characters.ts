@@ -1635,6 +1635,20 @@ const _characters = {
       'Chosen by evil',
       'Chosen by evil',
       'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
+      'Chosen by evil',
     ],
   },
   stamledare: {
@@ -3661,6 +3675,8 @@ export const getWikiLink = (id: CharacterId) =>
     ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
     : isMuppetsOnAClocktowerCharacter(id)
     ? null
+    : isMurderOnTheDancefloorCharacter(id)
+    ? null
     : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
         CHARACTERS[id].name.replaceAll(' ', '_'),
       )}`;
@@ -3670,7 +3686,8 @@ const checkDroisoned = (reminder: Reminder) => {
   return (
     text.includes('drunk') ||
     text.includes('poisoned') ||
-    text.includes('is human')
+    text.includes('is human') ||
+    text.includes('gammal & dryg')
   );
 };
 export const isDroisoned = (player: BotcPlayer) =>
@@ -4271,4 +4288,97 @@ export const getJinxes = (characterIds: CharacterId[]) => {
     }
   }
   return result;
+};
+
+const CHARACTER_TYPE_ORDER: CharacterType[] = [
+  'townsfolk',
+  'outsiders',
+  'minions',
+  'demons',
+  'travellers',
+];
+const getCharacterTypeIndex = (t: CharacterType) => {
+  const idx = CHARACTER_TYPE_ORDER.findIndex(
+    (characterType) => characterType === t,
+  );
+  return idx === -1 ? 0x516 : idx;
+};
+
+const ABILITY_TEXT_ORDER: string[] = [
+  'You start knowing',
+  'At night',
+  'Each dusk*',
+  'Each night',
+  'Each night*',
+  'Each day',
+  'Once per game, at night',
+  'Once per game, at night*',
+  'Once per game, during the day',
+  'Once per game',
+  'On your 1st night',
+  'On your 1st day',
+  'You think',
+  'You are',
+  'You have',
+  'You do not know',
+  'You might',
+  'You',
+  'When you die',
+  'When you learn that you died',
+  'When',
+  'If you die',
+  'If you died',
+  'If you are “mad”',
+  `If you are "mad"`,
+  `If you are 'mad'`,
+  'If you are mad',
+  'If you',
+  'If the Demon dies',
+  'If the Demon kills',
+  'If the Demon',
+  'If both',
+  'If there are 5 or more players alive',
+  'If',
+  'All players',
+  'All',
+  'The 1st time',
+  'The',
+  'Good',
+  'Evil',
+  'Players',
+  'Minions',
+];
+const getAbilityTextIndex = (abilityText: string) => {
+  const idx = ABILITY_TEXT_ORDER.findIndex((abilityType) =>
+    abilityText.includes(abilityType),
+  );
+  return idx === -1 ? 0x516 : idx;
+};
+
+export const sortByStandardSortOrder = (a: CharacterId, b: CharacterId) => {
+  // Standard sort order is defined at https://bloodontheclocktower.com/blogs/news/sort-order-sao-update
+  const aCharacter = CHARACTERS[a];
+  const bCharacter = CHARACTERS[b];
+
+  if (aCharacter.team !== bCharacter.team) {
+    return (
+      getCharacterTypeIndex(aCharacter.team) -
+      getCharacterTypeIndex(bCharacter.team)
+    );
+  }
+  const aAbilityIndex = getAbilityTextIndex(aCharacter.description);
+  const bAbilityIndex = getAbilityTextIndex(bCharacter.description);
+
+  if (aAbilityIndex !== bAbilityIndex) {
+    return aAbilityIndex - bAbilityIndex;
+  }
+
+  // If abilities are in the same ability description group, sort by ability description length, then character name length, then sort character name alphabetically
+  else if (aCharacter.description.length !== bCharacter.description.length) {
+    return aCharacter.description.length - bCharacter.description.length;
+  } else if (aCharacter.name.length !== bCharacter.name.length) {
+    return aCharacter.name.length - bCharacter.name.length;
+  } else {
+    return aCharacter.name.localeCompare(bCharacter.name, 'en');
+  }
 };

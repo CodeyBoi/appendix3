@@ -3,10 +3,12 @@
 import { QRCodeSVG } from 'qrcode.react';
 import BotcCharacterPanel from '../character-panel';
 import {
+  CAROUSEL_EDITIONS,
   CharacterId,
   CHARACTERS,
   CharacterType,
   Edition,
+  EDITIONS,
   getAllCharacters,
   getDefaultAlignment,
   getJinxes,
@@ -22,35 +24,72 @@ import { CharacterCountTable } from '../character-select';
 import { cn } from 'utils/class-names';
 import Jinx from '../jinx';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface BotcSheetPageProps {
-  searchParams: {
-    name: string;
-    characters: string;
-  };
+  searchParams: BotcSheetPageSearchParams;
 }
-const BotcSheetPage = ({
-  searchParams: { characters: charactersProp, name },
-}: BotcSheetPageProps) => {
+
+interface BotcSheetPageSearchParams {
+  name?: string;
+  characters?: string;
+  editionId?: string;
+}
+
+const getEdition = (searchParams: BotcSheetPageSearchParams) => {
+  const { name, characters, editionId } = searchParams;
+  if (name && characters) {
+    const editionCharacters = decodeURIComponent(characters).split(',');
+    const edition = editionCharacters.reduce<Edition>(
+      (acc, id) => {
+        const character = CHARACTERS[id as CharacterId];
+        acc[character.team].push(id as CharacterId);
+        return acc;
+      },
+      {
+        id: 'custom',
+        name: decodeURIComponent(name),
+        townsfolk: [],
+        outsiders: [],
+        minions: [],
+        demons: [],
+        travellers: [],
+      },
+    );
+    return edition;
+  } else if (editionId) {
+    const edition = EDITIONS.concat(CAROUSEL_EDITIONS).find(
+      (edition) => edition.id === decodeURIComponent(editionId),
+    );
+    if (!edition) {
+      console.error(`Edition with id '${editionId}' could not be found`);
+      return undefined;
+    }
+    return edition;
+  } else {
+    console.error(
+      `Insufficient character sheet search parameters: ${JSON.stringify(
+        searchParams,
+      )}`,
+    );
+    return undefined;
+  }
+};
+
+const BotcSheetPage = ({ searchParams }: BotcSheetPageProps) => {
   const [selected, setSelected] = useState<CharacterId | null>(null);
-  const url = `${process.env.NEXTAUTH_URL}/botc/sheet?name=${name}&characters=${charactersProp}`;
-  const characters = decodeURIComponent(charactersProp).split(',');
-  const edition = characters.reduce<Edition>(
-    (acc, id) => {
-      const character = CHARACTERS[id as CharacterId];
-      acc[character.team].push(id as CharacterId);
-      return acc;
-    },
-    {
-      id: 'custom',
-      name,
-      townsfolk: [],
-      outsiders: [],
-      minions: [],
-      demons: [],
-      travellers: [],
-    },
-  );
+
+  const edition = getEdition(searchParams);
+  if (!edition) {
+    return (
+      <h5>
+        Insufficient character sheet search parameters:{' '}
+        {JSON.stringify(searchParams)}
+      </h5>
+    );
+  }
+
+  const qrUrl = window.location.toString();
 
   const toCharacterGroup = (characterType: CharacterType) => {
     const characters = edition[characterType];
@@ -137,10 +176,8 @@ const BotcSheetPage = ({
   const jinxes = getJinxes(getAllCharacters(edition));
   return (
     <div className='flex flex-col gap-2'>
-      <h3 className='hidden font-castelar lg:block'>
-        {decodeURIComponent(name)}
-      </h3>
-      <h4 className='font-castelar lg:hidden'>{decodeURIComponent(name)}</h4>
+      <h3 className='hidden font-castelar lg:block'>{edition.name}</h3>
+      <h4 className='font-castelar lg:hidden'>{edition.name}</h4>
       {toCharacterGroup('townsfolk')}
       {toCharacterGroup('outsiders')}
       {toCharacterGroup('minions')}
@@ -171,22 +208,26 @@ const BotcSheetPage = ({
       <div className='flex justify-center'>
         <CharacterCountTable />
       </div>
-      <div className='flex justify-center'>
-        <Modal
-          title='Share Character Sheet'
-          withCloseButton
-          target={
-            <Button compact>
-              <IconQrcode />
-              Share Character Sheet
-            </Button>
-          }
-        >
-          <div className='flex justify-center'>
-            <QRCodeSVG value={url} size={256} fgColor='#ce0c00' />
-          </div>
-        </Modal>
-      </div>
+      {qrUrl && (
+        <div className='flex justify-center'>
+          <Modal
+            title='Share Character Sheet'
+            withCloseButton
+            target={
+              <Button compact>
+                <IconQrcode />
+                Share Character Sheet
+              </Button>
+            }
+          >
+            <div className='flex justify-center'>
+              <Link href={qrUrl}>
+                <QRCodeSVG value={qrUrl} size={256} fgColor='#ce0c00' />
+              </Link>
+            </div>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 };
