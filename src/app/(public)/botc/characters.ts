@@ -461,6 +461,91 @@ interface BotcMetadata {
   author: string;
   name: string;
 }
+
+interface SpecialRule {
+  name: string;
+  type: string;
+}
+
+interface BotcCharacterJson {
+  id: string;
+  name: string;
+  image: string;
+  ability: string;
+  firstNight?: number;
+  firstNightReminder?: string;
+  otherNight?: number;
+  otherNightReminder?: string;
+  reminders: string[];
+  remindersGlobal?: string[];
+  setup?: boolean;
+  team: string;
+  special?: SpecialRule[];
+}
+
+const TEAM_MAP: Record<CharacterType, string> = {
+  townsfolk: 'townsfolk',
+  outsiders: 'outsider',
+  minions: 'minion',
+  demons: 'demon',
+  travellers: 'traveller',
+};
+
+const HAS_SETUP_REGEX = /.*\[.*\]/;
+
+const characterToJson = (characterId: CharacterId) => {
+  const character = CHARACTERS[characterId];
+
+  const special: SpecialRule[] = [];
+
+  if (character.cannotBeSelected) {
+    special.push({ name: 'bag-disabled', type: 'selection' });
+  }
+
+  const imgPath = character.image?.[0];
+
+  return {
+    id: character.id,
+    name: character.name,
+    image: imgPath?.startsWith('/')
+      ? `https://${process.env.NEXTAUTH_URL}${imgPath}`
+      : imgPath,
+    ability: character.description,
+    firstNight: character.nightReminders.first?.index,
+    firstNightReminder: character.nightReminders.first?.text,
+    otherNight: character.nightReminders.other?.index,
+    otherNightReminder: character.nightReminders.other?.text,
+    reminders: character.reminderTokens?.slice() ?? [],
+    remindersGlobal: character.reminderTokensGlobal,
+    setup: HAS_SETUP_REGEX.test(character.description) ? true : undefined,
+    team: TEAM_MAP[character.team],
+  } as BotcCharacterJson;
+};
+
+// const isOfficialCharacter = (characterId: CharacterId) =>
+//   [
+//     'trouble-brewing',
+//     'bad-moon-rising',
+//     'sects-and-violets',
+//     'carousel',
+//   ].includes(getEdition(characterId));
+
+export const editionToJson = (edition: Edition) => {
+  const data = [];
+
+  data.push({
+    id: '_meta',
+    name: edition.name,
+    isOfficial: false,
+  });
+
+  for (const character of getAllCharacters(edition)) {
+    data.push(characterToJson(character));
+  }
+
+  return data;
+};
+
 const isCharacterId = (data: BotcScriptJsonEntry): data is CharacterId =>
   typeof data === 'string';
 // const isCharacter = (data: BotcScriptJsonEntry): data is { id: CharacterId } =>

@@ -11,6 +11,7 @@ import {
   CharacterId,
   Edition,
   EDITIONS,
+  editionToJson,
   getAllCharacters,
   urlToEdition,
 } from './characters';
@@ -363,6 +364,23 @@ const BloodOnTheClocktowerElement = ({
               </div>
             )}
           </div>
+          <Button
+            onClick={() => {
+              const data = editionToJson(gameState.edition);
+              const filename = `${gameState.edition.id}.json`;
+              const blob = new Blob([JSON.stringify(data)], {
+                type: 'application/json',
+              });
+              const url = window.URL.createObjectURL(blob);
+              const anchor = document.createElement('a');
+              anchor.href = url;
+              anchor.download = filename;
+              anchor.click();
+              window.URL.revokeObjectURL(url);
+            }}
+          >
+            Download JSON
+          </Button>
           <Button
             onClick={() => {
               if (
