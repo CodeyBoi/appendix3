@@ -41,13 +41,7 @@ const ReminderToken = ({ characterId, text, onClick }: ReminderTokenProps) => {
     >
       {imgSrc !== undefined && (
         <img
-          className={cn(
-            'absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2',
-            (imgSrc.includes('Fall_of_Rome') ||
-              imgSrc.includes('Muppets_on_a_Clocktower')) &&
-              'scale-75',
-            imgSrc.includes('Murder_on_the_Dancefloor') && 'scale-[0.65]',
-          )}
+          className='absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2'
           src={imgSrc}
           loading='lazy'
         />

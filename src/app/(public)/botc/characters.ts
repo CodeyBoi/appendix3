@@ -166,7 +166,7 @@ export const EDITIONS: readonly Edition[] = [
     outsiders: ['kuppbar', 'puff', 'theclique', 'kamerer'],
     minions: ['notmarsk', 'dirigent', 'piff', 'spexare'],
     demons: ['deathbox', 'styrelse', 'sekreterare', 'gammaldryg'],
-    travellers: ['lekstek'],
+    travellers: ['lekstek', 'delilah'],
   },
   {
     id: 'carousel',
@@ -454,8 +454,11 @@ const parsePocketGrimoireUrl = (url: string): Edition => {
 };
 
 const BOTC_SCRIPTS_BASE_URL = 'https://www.botcscripts.com';
-type BotcScriptJsonEntry = BotcMetadata | { id: CharacterId } | CharacterId;
-type BotcScriptJsonCharacterEntry = { id: CharacterId } | CharacterId;
+type BotcScriptJsonEntry = BotcMetadata | BotcScriptJsonCharacterEntry;
+type BotcScriptJsonCharacterEntry =
+  | BotcCharacterJson
+  | { id: CharacterId }
+  | CharacterId;
 interface BotcMetadata {
   id: string;
   author: string;
@@ -547,14 +550,72 @@ export const editionToJson = (edition: Edition) => {
 };
 
 const isCharacterId = (data: BotcScriptJsonEntry): data is CharacterId =>
-  typeof data === 'string';
+  typeof data === 'string' && data in CHARACTERS;
 // const isCharacter = (data: BotcScriptJsonEntry): data is { id: CharacterId } =>
 //   typeof data !== 'string' && 'id' in data && !('name' in data);
 const isMetadata = (data: BotcScriptJsonEntry): data is BotcMetadata =>
-  typeof data !== 'string' && 'name' in data;
+  !isCharacterId(data) && 'name' in data && !('ability' in data);
+
+const isCustomCharacter = (
+  data: BotcScriptJsonEntry,
+): data is BotcCharacterJson =>
+  !isCharacterId(data) &&
+  !isMetadata(data) &&
+  'ability' in data &&
+  !(data.id in CHARACTERS);
 
 const getCharacterIdFromJsonEntry = (data: BotcScriptJsonEntry) =>
   isCharacterId(data) ? data : (data.id.replaceAll('_', '') as CharacterId);
+
+export const botcCharacterFromJson = (
+  data: BotcScriptJsonCharacterEntry,
+): BotcCharacter => {
+  // Check if it's an official character
+  if (isCharacterId(data)) {
+    return CHARACTERS[data];
+  } else if (!isCustomCharacter(data)) {
+    return CHARACTERS[data.id];
+  }
+
+  const firstNightReminder =
+    data.firstNight !== undefined && data.firstNightReminder !== undefined
+      ? {
+          text: data.firstNightReminder,
+          index: data.firstNight,
+        }
+      : undefined;
+  const otherNightReminder =
+    data.otherNight !== undefined && data.otherNightReminder !== undefined
+      ? {
+          text: data.otherNightReminder,
+          index: data.otherNight,
+        }
+      : undefined;
+
+  const cannotBeSelected =
+    data.special?.find(
+      (rule) => rule.name === 'bag-disabled' && rule.type === 'selection',
+    ) !== undefined
+      ? true
+      : undefined;
+
+  return {
+    id: data.id as CharacterId,
+    name: data.name,
+    description: data.ability,
+    reminderTokens: data.reminders,
+    reminderTokensGlobal: data.remindersGlobal,
+    team: (data.team === 'townsfolk'
+      ? data.team
+      : `${data.team}s`) as CharacterType,
+    image: [data.image, data.image],
+    nightReminders: {
+      first: firstNightReminder,
+      other: otherNightReminder,
+    },
+    cannotBeSelected,
+  };
+};
 
 type BotcScriptsJsonData = [
   BotcMetadata | BotcScriptJsonCharacterEntry,
@@ -623,11 +684,11 @@ const isMurderOnTheDancefloorCharacter = (id: CharacterId) =>
   getEdition(id).includes('murder-on-the-dancefloor');
 
 const baseImgUrl = `https://release.botc.app/resources/characters/<EDITION>/<NAME><ALIGNMENT>.webp`;
-const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.png';
+const fallOfRomeBaseImgUrl = '/botc/Fall_of_Rome/<NAME>_fall_of_rome.webp';
 const muppetsOnAClocktowerBaseImgUrl =
-  '/botc/Muppets_on_a_Clocktower/<NAME>.png';
+  '/botc/Muppets_on_a_Clocktower/<NAME>.webp';
 const murderOnTheDanceFloorBaseImgUrl =
-  '/botc/Murder_on_the_Dancefloor/<NAME>.png';
+  '/botc/Murder_on_the_Dancefloor/<NAME>.webp';
 const getImagePathFromId = (id: CharacterId) => {
   if (isFallOfRomeCharacter(id)) {
     // Centurion, Glykon and High Priest are stored at <name>1
@@ -1762,7 +1823,7 @@ const _characters = {
   },
   pr: {
     name: `PR`,
-    description: `Once per game, during the day, publicly declare a good character. If not-in-play, a Townsfolk immediately becomes the chosen character.`,
+    description: `Once per game, during the day, publicly choose a good character. If not-in-play, a Townsfolk immediately becomes the chosen character.`,
     reminderTokens: ['No ability'],
   },
 
@@ -1857,7 +1918,7 @@ const _characters = {
   sekreterare: {
     name: 'Sekreterare',
     description:
-      "Each night*, choose a player: they die. If you publicly guess all player's characters correctly (once), your team wins. [+1 Outsider]",
+      "Each night*, choose a player: they die. If you publicly guess all player's characters (once), your team wins. [+1 Outsider]",
     reminderTokens: ['Killed by'],
   },
   gammaldryg: {
@@ -1876,7 +1937,13 @@ const _characters = {
   // Murder on the Dancefloor - Travellers
   lekstek: {
     name: 'Lek & Stek',
-    description: 'TBD',
+    description:
+      'Each day, you may publicly choose a sound. Tonight, that sound may be played.',
+  },
+  delilah: {
+    name: 'Delilah',
+    description:
+      'When a Townsfolk or Minion is about to die, you change to their alignment.',
   },
 
   // Carousel - Townsfolk
