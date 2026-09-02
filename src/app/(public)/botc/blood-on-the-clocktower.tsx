@@ -371,7 +371,7 @@ const BloodOnTheClocktowerElement = ({
           </div>
           <Button
             onClick={() => {
-              const data = editionToJson(gameState.edition);
+              const data = editionToJson(gameState.edition, baseUrl);
               const filename = `${gameState.edition.id}.json`;
               const blob = new Blob([JSON.stringify(data)], {
                 type: 'application/json',

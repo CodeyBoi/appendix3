@@ -496,7 +496,7 @@ const TEAM_MAP: Record<CharacterType, string> = {
 
 const HAS_SETUP_REGEX = /.*\[.*\]/;
 
-const characterToJson = (characterId: CharacterId) => {
+const characterToJson = (characterId: CharacterId, baseUrl: string) => {
   const character = CHARACTERS[characterId];
 
   const special: SpecialRule[] = [];
@@ -510,9 +510,7 @@ const characterToJson = (characterId: CharacterId) => {
   return {
     id: character.id,
     name: character.name,
-    image: imgPath?.startsWith('/')
-      ? `https://${process.env.NEXTAUTH_URL}${imgPath}`
-      : imgPath,
+    image: imgPath?.startsWith('/') ? `https://${baseUrl}${imgPath}` : imgPath,
     ability: character.description,
     firstNight: character.nightReminders.first?.index,
     firstNightReminder: character.nightReminders.first?.text,
@@ -533,7 +531,7 @@ const characterToJson = (characterId: CharacterId) => {
 //     'carousel',
 //   ].includes(getEdition(characterId));
 
-export const editionToJson = (edition: Edition) => {
+export const editionToJson = (edition: Edition, baseUrl: string) => {
   const data = [];
 
   data.push({
@@ -543,7 +541,7 @@ export const editionToJson = (edition: Edition) => {
   });
 
   for (const character of getAllCharacters(edition)) {
-    data.push(characterToJson(character));
+    data.push(characterToJson(character, baseUrl));
   }
 
   return data;
