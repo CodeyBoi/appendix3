@@ -369,38 +369,6 @@ const BloodOnTheClocktowerElement = ({
               </div>
             )}
           </div>
-          <Button
-            onClick={() => {
-              const data = editionToJson(gameState.edition, baseUrl);
-              const filename = `${gameState.edition.id}.json`;
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = window.URL.createObjectURL(blob);
-              const anchor = document.createElement('a');
-              anchor.href = url;
-              anchor.download = filename;
-              anchor.click();
-              window.URL.revokeObjectURL(url);
-            }}
-          >
-            <IconDownload />
-            Download JSON
-          </Button>
-          <Button
-            onClick={() => {
-              if (
-                confirm(
-                  'This will reset everything to a clean slate. Are you sure?',
-                )
-              ) {
-                setSelectedCharacters([]);
-                setGameState(newGameState);
-              }
-            }}
-          >
-            Clear cache
-          </Button>
           {gameState.edition.id === 'custom' && (
             <div className='flex flex-col gap-4'>
               <div className='flex flex-wrap gap-x-4'>
@@ -471,7 +439,7 @@ const BloodOnTheClocktowerElement = ({
                     </Button>
                   }
                 >
-                  <div className='flex justify-center'>
+                  <div className='flex flex-col items-center gap-4'>
                     <Link className='hover:cursor-pointer' href={sheetLink}>
                       <QRCodeSVG
                         value={`${baseUrl}${sheetLink}`}
@@ -479,14 +447,13 @@ const BloodOnTheClocktowerElement = ({
                         fgColor='#ce0c00'
                       />
                     </Link>
+                    <Switch
+                      label='Include travellers'
+                      onChange={setIncludeTravellersInCharacterSheet}
+                      value={includeTravellersInCharacterSheet}
+                    />
                   </div>
                 </Modal>
-
-                <Switch
-                  label='Include travellers'
-                  onChange={setIncludeTravellersInCharacterSheet}
-                  value={includeTravellersInCharacterSheet}
-                />
               </div>
               <BotcCharacterSelectTable
                 edition={edition}
@@ -524,6 +491,38 @@ const BloodOnTheClocktowerElement = ({
               </div>
             </>
           )}
+          <Button
+            onClick={() => {
+              const data = editionToJson(gameState.edition, baseUrl);
+              const filename = `${gameState.edition.id}.json`;
+              const blob = new Blob([JSON.stringify(data)], {
+                type: 'application/json',
+              });
+              const url = window.URL.createObjectURL(blob);
+              const anchor = document.createElement('a');
+              anchor.href = url;
+              anchor.download = filename;
+              anchor.click();
+              window.URL.revokeObjectURL(url);
+            }}
+          >
+            <IconDownload />
+            Download JSON
+          </Button>
+          <Button
+            onClick={() => {
+              if (
+                confirm(
+                  'This will reset everything to a clean slate. Are you sure?',
+                )
+              ) {
+                setSelectedCharacters([]);
+                setGameState(newGameState);
+              }
+            }}
+          >
+            Clear cache
+          </Button>
         </div>
         <div
           className={cn(

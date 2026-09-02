@@ -434,8 +434,8 @@ const parsePocketGrimoireUrl = (url: string): Edition => {
   const characterIds = searchParams.get('characters')?.split(',') ?? [];
   const characters = characterIds.reduce<Record<CharacterType, CharacterId[]>>(
     (acc, id) => {
-      const type = getType(id as CharacterId);
-      acc[type].push(id as CharacterId);
+      const type = getType(id);
+      acc[type].push(id);
       return acc;
     },
     {
@@ -465,10 +465,53 @@ interface BotcMetadata {
   name: string;
 }
 
-interface SpecialRule {
-  name: string;
-  type: string;
-}
+type SpecialRuleTime =
+  | 'pregame'
+  | 'day'
+  | 'night'
+  | 'firstNight'
+  | 'firstDay'
+  | 'otherNight'
+  | 'otherDay';
+type SpecialRule = (
+  | {
+      type: 'selection';
+      name:
+        | 'bag-disabled'
+        | 'bag-duplicate'
+        | 'evil-duplicate'
+        | 'good-duplicate';
+    }
+  | {
+      type: 'ability';
+      name: 'pointing' | 'ghost-votes' | 'distribute-roles';
+      time: SpecialRuleTime;
+    }
+  | {
+      type: 'player';
+      name: 'open-eyes';
+    }
+  | {
+      type: 'signal';
+      name: 'grimoire' | 'card' | 'player';
+      time: SpecialRuleTime;
+    }
+  | {
+      type: 'vote';
+      name: 'hidden' | 'multiplier';
+    }
+  | {
+      type: 'reveal';
+      name: 'replace-character';
+    }
+  | {
+      type: 'reminder';
+      name: 'public';
+    }
+) & {
+  value?: number | string;
+  global?: 'townsfolk' | 'outsider' | 'minion' | 'demon' | 'traveller' | 'dead';
+};
 
 interface BotcCharacterJson {
   id: string;
@@ -499,18 +542,16 @@ const HAS_SETUP_REGEX = /.*\[.*\]/;
 const characterToJson = (characterId: CharacterId, baseUrl: string) => {
   const character = CHARACTERS[characterId];
 
-  const special: SpecialRule[] = [];
-
-  if (character.cannotBeSelected) {
-    special.push({ name: 'bag-disabled', type: 'selection' });
+  if (!character) {
+    return undefined;
   }
 
-  const imgPath = character.image?.[0];
+  const imgPath = character.image[0];
 
   return {
     id: character.id,
     name: character.name,
-    image: imgPath?.startsWith('/') ? `${baseUrl}${imgPath}` : imgPath,
+    image: imgPath.startsWith('/') ? `${baseUrl}${imgPath}` : imgPath,
     ability: character.description,
     firstNight: character.nightReminders.first?.index,
     firstNightReminder: character.nightReminders.first?.text,
@@ -520,7 +561,7 @@ const characterToJson = (characterId: CharacterId, baseUrl: string) => {
     remindersGlobal: character.reminderTokensGlobal,
     setup: HAS_SETUP_REGEX.test(character.description) ? true : undefined,
     team: TEAM_MAP[character.team],
-    special: special.length > 0 ? special : undefined,
+    special: character.special,
   } as BotcCharacterJson;
 };
 
@@ -564,11 +605,11 @@ const isCustomCharacter = (
   !(data.id in CHARACTERS);
 
 const getCharacterIdFromJsonEntry = (data: BotcScriptJsonEntry) =>
-  isCharacterId(data) ? data : (data.id.replaceAll('_', '') as CharacterId);
+  isCharacterId(data) ? data : data.id.replaceAll('_', '');
 
 export const botcCharacterFromJson = (
   data: BotcScriptJsonCharacterEntry,
-): BotcCharacter => {
+): BotcCharacter | undefined => {
   // Check if it's an official character
   if (isCharacterId(data)) {
     return CHARACTERS[data];
@@ -593,13 +634,13 @@ export const botcCharacterFromJson = (
 
   const cannotBeSelected =
     data.special?.find(
-      (rule) => rule.name === 'bag-disabled' && rule.type === 'selection',
+      (rule) => rule.type === 'selection' && rule.name === 'bag-disabled',
     ) !== undefined
       ? true
       : undefined;
 
   return {
-    id: data.id as CharacterId,
+    id: data.id,
     name: data.name,
     description: data.ability,
     reminderTokens: data.reminders,
@@ -613,6 +654,7 @@ export const botcCharacterFromJson = (
       other: otherNightReminder,
     },
     cannotBeSelected,
+    special: data.special,
   };
 };
 
@@ -740,7 +782,7 @@ export interface BotcCharacter {
   reminderTokensGlobal?: readonly string[];
   setupFunction?: (players: BotcPlayer[]) => BotcPlayer[];
   team: CharacterType;
-  image?: [string, string];
+  image: [string, string];
   nightReminders: {
     first?: {
       text: string;
@@ -753,9 +795,13 @@ export interface BotcCharacter {
   };
   cannotBeSelected?: boolean;
   disguisedAs?: readonly CharacterType[];
+  special?: SpecialRule[];
 }
 
-const _characters = {
+const _characters: Record<
+  string,
+  Omit<BotcCharacter, 'id' | 'team' | 'nightReminders' | 'image'>
+> = {
   // Trouble Brewing - Townsfolk
   washerwoman: {
     name: 'Washerwoman',
@@ -841,8 +887,11 @@ const _characters = {
     description:
       'You do not know you are the Drunk. You think you are a Townsfolk character, but you are not.',
     reminderTokensGlobal: ['Is the Drunk'],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
   recluse: {
     name: 'Recluse',
@@ -1168,6 +1217,7 @@ const _characters = {
       'Once per game, at night, choose a good character: gain that ability. If this character is in play, they are drunk.',
     reminderTokens: ['Drunk'],
     reminderTokensGlobal: ['Is the Philosopher'],
+    special: [{ type: 'reveal', name: 'replace-character' }],
   },
   artist: {
     name: 'Artist',
@@ -1420,8 +1470,11 @@ const _characters = {
     description:
       'You do not know you are a Bad Omen. You think you are a Townsfolk, but you receive false information. You might register as evil, even if dead.',
     reminderTokensGlobal: ['Is the Bad Omen'],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
 
   // Fall of Rome - Minions
@@ -1504,8 +1557,11 @@ const _characters = {
       'Killed by',
       'Killed by',
     ],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk', 'outsiders'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
   caesar: {
     name: 'Caesar',
@@ -1681,9 +1737,13 @@ const _characters = {
       'Is Human',
       'Is Human',
       'Is Human',
+      'Is Human',
     ],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
 
   // Muppets on a Clocktower - Minions
@@ -1926,8 +1986,11 @@ const _characters = {
     description:
       'You think you are a Townsfolk character, but you are not. Each night*, a player might die. If there are 5 or more players alive & the 1st Gammal & Dryg dies by execution, the nominator becomes an evil Gammal & Dryg.',
     reminderTokensGlobal: ['Is Gammal & Dryg', 'Is Gammal & Dryg', 'Killed by'],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
 
   // Murder on the Dancefloor - Travellers
@@ -2209,8 +2272,11 @@ const _characters = {
     description:
       'You think you are a good character, but you are not. The Demon knows who you are. [You neighbor the Demon]',
     reminderTokensGlobal: ['Is the Marionette'],
-    cannotBeSelected: true,
     disguisedAs: ['townsfolk', 'outsiders'],
+    special: [
+      { type: 'selection', name: 'bag-disabled' },
+      { type: 'reveal', name: 'replace-character' },
+    ],
   },
   mezepheles: {
     name: 'Mezepheles',
@@ -2349,7 +2415,7 @@ const _characters = {
 export type CharacterId = keyof typeof _characters;
 
 export interface Reminder {
-  characterId?: CharacterId | Alignment;
+  characterId?: CharacterId;
   message: string;
 }
 
@@ -3836,53 +3902,64 @@ export const START_OF_GAME_ABILITIES: Partial<
   },
 };
 
-export const CHARACTERS = Object.entries(_characters).reduce(
-  (acc, [id, val]) => {
-    const firstNightReminderIndex = FIRST_NIGHT_TEXT.findIndex(
-      (r) => r.id === id,
-    );
-    const otherNightReminderIndex = OTHER_NIGHTS_TEXT.findIndex(
-      (r) => r.id === id,
-    );
-    const firstNightReminder = FIRST_NIGHT_TEXT[firstNightReminderIndex];
-    const otherNightReminder = OTHER_NIGHTS_TEXT[otherNightReminderIndex];
-    const nightReminders: BotcCharacter['nightReminders'] = {
-      first: firstNightReminder
-        ? {
-            text: firstNightReminder.description,
-            index: firstNightReminderIndex,
-          }
-        : undefined,
-      other: otherNightReminder
-        ? {
-            text: otherNightReminder.description,
-            index: otherNightReminderIndex,
-          }
-        : undefined,
-    };
-    const imgPath = getImagePathFromId(id as CharacterId);
-    acc[id as CharacterId] = {
-      ...val,
-      id: id as CharacterId,
-      team: getType(id as CharacterId),
-      image: [imgPath, imgPath],
-      nightReminders,
-    };
-    return acc;
-  },
-  {} as Record<CharacterId, BotcCharacter>,
-);
+export const CHARACTERS = Object.entries(_characters).reduce<
+  Record<CharacterId, BotcCharacter>
+>((acc, [id, val]) => {
+  const cannotBeSelected =
+    val.special?.find(
+      (rule) => rule.type === 'selection' && rule.name === 'bag-disabled',
+    ) !== undefined
+      ? true
+      : undefined;
+  const firstNightReminderIndex = FIRST_NIGHT_TEXT.findIndex(
+    (r) => r.id === id,
+  );
+  const otherNightReminderIndex = OTHER_NIGHTS_TEXT.findIndex(
+    (r) => r.id === id,
+  );
+  const firstNightReminder = FIRST_NIGHT_TEXT[firstNightReminderIndex];
+  const otherNightReminder = OTHER_NIGHTS_TEXT[otherNightReminderIndex];
+  const nightReminders: BotcCharacter['nightReminders'] = {
+    first: firstNightReminder
+      ? {
+          text: firstNightReminder.description,
+          index: firstNightReminderIndex,
+        }
+      : undefined,
+    other: otherNightReminder
+      ? {
+          text: otherNightReminder.description,
+          index: otherNightReminderIndex,
+        }
+      : undefined,
+  };
+  const imgPath = getImagePathFromId(id);
+  acc[id] = {
+    ...val,
+    id: id,
+    team: getType(id),
+    image: [imgPath, imgPath],
+    nightReminders,
+    cannotBeSelected,
+  };
+  return acc;
+}, {});
 
-export const getWikiLink = (id: CharacterId) =>
-  isFallOfRomeCharacter(id)
+export const getWikiLink = (id: CharacterId) => {
+  const character = CHARACTERS[id];
+  if (!character) {
+    return null;
+  }
+  return isFallOfRomeCharacter(id)
     ? `https://www.bloodstar.xyz/p/AlexS/Fall_of_Rome/almanac.html#${id}_fall_of_rome`
     : isMuppetsOnAClocktowerCharacter(id)
     ? null
     : isMurderOnTheDancefloorCharacter(id)
     ? null
     : `https://wiki.bloodontheclocktower.com/${encodeURIComponent(
-        CHARACTERS[id].name.replaceAll(' ', '_'),
+        character.name.replaceAll(' ', '_'),
       )}`;
+};
 
 const checkDroisoned = (reminder: Reminder) => {
   const text = reminder.message.toLowerCase();
@@ -4562,6 +4639,10 @@ export const sortByStandardSortOrder = (a: CharacterId, b: CharacterId) => {
   // Standard sort order is defined at https://bloodontheclocktower.com/blogs/news/sort-order-sao-update
   const aCharacter = CHARACTERS[a];
   const bCharacter = CHARACTERS[b];
+
+  if (!aCharacter || !bCharacter) {
+    return 0;
+  }
 
   if (aCharacter.team !== bCharacter.team) {
     return (

@@ -1,7 +1,13 @@
 'use client';
 
 import Switch from 'components/input/switch';
-import { chooseRandom, initObject, range, shuffle } from 'utils/array';
+import {
+  chooseRandom,
+  filterNone,
+  initObject,
+  range,
+  shuffle,
+} from 'utils/array';
 import { cn } from 'utils/class-names';
 import {
   CHARACTER_TYPES,
@@ -159,9 +165,7 @@ const selectRandom = (
   edition: Edition,
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
-  const isCharacterType = (
-    typeOrId: CharacterType | CharacterId,
-  ): typeOrId is CharacterType =>
+  const isCharacterType = (typeOrId: CharacterId): typeOrId is CharacterType =>
     (CHARACTER_TYPES as readonly string[]).includes(typeOrId);
 
   const selected: CharacterId[] = [];
@@ -175,12 +179,10 @@ const selectRandom = (
     findSelectionError(selected, numberOfCharacters),
   );
   const requiredCharacters = selectionError.flatMap(([typeOrId, _]) =>
-    !isCharacterType(typeOrId as CharacterType | CharacterId)
-      ? [typeOrId as CharacterId]
-      : [],
+    !isCharacterType(typeOrId) ? [typeOrId] : [],
   );
   for (const [typeOrIdArg, diff] of selectionError) {
-    const typeOrId = typeOrIdArg as CharacterType | CharacterId;
+    const typeOrId = typeOrIdArg;
     if (diff === 0) {
       continue;
     }
@@ -257,13 +259,16 @@ const selectRandom = (
   // Change characters which don't know who they are (e.g. Drunk) to a "disguise"
   const result = selected.map((characterId) => {
     const character = CHARACTERS[characterId];
+    if (!character) {
+      return characterId;
+    }
     if (character.cannotBeSelected) {
       const validDisguises =
         character.disguisedAs?.flatMap((characterType) =>
           edition[characterType].filter(
             (characterId) =>
               !selectedSet.has(characterId) &&
-              !CHARACTERS[characterId].cannotBeSelected,
+              !(CHARACTERS[characterId]?.cannotBeSelected ?? true),
           ),
         ) ?? [];
       const disguise = chooseRandom(validDisguises);
@@ -284,8 +289,8 @@ const findSelectionError = (
   characters: CharacterId[],
   numberOfCharacters: Record<CharacterType, number>,
 ) => {
-  const res: Record<CharacterType, number> &
-    Partial<Record<CharacterId, number>> = initObject(CHARACTER_TYPES, 0);
+  const res: Record<CharacterType, number> & Record<CharacterId, number> =
+    initObject(CHARACTER_TYPES, 0);
   const addOutsiders = (n: number) => {
     // Don't modify if number of outsiders would go below 0
     if (res['outsiders'] + numberOfCharacters['outsiders'] + n < 0) {
@@ -490,74 +495,74 @@ const BotcCharacterSelect = ({
                 <h3>{`${numberOfSelectedCharacters[characterType]} / ${numberOfCharacters[characterType]}`}</h3>
               </div>
               <div className='grid grid-cols-2'>
-                {edition[characterType]
-                  .map((id) => CHARACTERS[id])
-                  .map(
-                    ({
-                      id,
-                      name,
-                      description,
-                      image,
-                      cannotBeSelected = false,
-                    }) => (
-                      <div
-                        key={id}
-                        className={cn(
-                          'border px-2 py-1',
-                          !allowDuplicateCharacters &&
-                            !cannotBeSelected &&
-                            'hover:cursor-pointer',
-                          subtleBorder,
-                          selectedCharacters.includes(id) && bgShade,
-                          cannotBeSelected && 'opacity-50 grayscale',
-                        )}
-                        onClick={() => {
-                          if (allowDuplicateCharacters || cannotBeSelected) {
-                            return;
+                {filterNone(
+                  edition[characterType].map((id) => CHARACTERS[id]),
+                ).map(
+                  ({
+                    id,
+                    name,
+                    description,
+                    image,
+                    cannotBeSelected = false,
+                  }) => (
+                    <div
+                      key={id}
+                      className={cn(
+                        'border px-2 py-1',
+                        !allowDuplicateCharacters &&
+                          !cannotBeSelected &&
+                          'hover:cursor-pointer',
+                        subtleBorder,
+                        selectedCharacters.includes(id) && bgShade,
+                        cannotBeSelected && 'opacity-50 grayscale',
+                      )}
+                      onClick={() => {
+                        if (allowDuplicateCharacters || cannotBeSelected) {
+                          return;
+                        }
+                        const newSelected = selectedCharacters.slice();
+                        const idx = newSelected.findIndex((c) => c === id);
+                        if (idx !== -1) {
+                          newSelected.splice(idx, 1);
+                        } else {
+                          newSelected.push(id);
+                        }
+                        onSelectedCharactersChange(newSelected);
+                      }}
+                    >
+                      <BotcCharacterPanel
+                        name={name}
+                        imgSrc={image[0]}
+                        description={description}
+                        showDescription={showDescriptions}
+                        alignment={getDefaultAlignment(id)}
+                        isTraveller={getType(id) === 'travellers'}
+                      />
+                      {allowDuplicateCharacters && !cannotBeSelected && (
+                        <input
+                          className='w-full border'
+                          type='number'
+                          min={0}
+                          defaultValue={
+                            selectedCharacters.filter((c) => c === id).length
                           }
-                          const newSelected = selectedCharacters.slice();
-                          const idx = newSelected.findIndex((c) => c === id);
-                          if (idx !== -1) {
-                            newSelected.splice(idx, 1);
-                          } else {
-                            newSelected.push(id);
-                          }
-                          onSelectedCharactersChange(newSelected);
-                        }}
-                      >
-                        <BotcCharacterPanel
-                          name={name}
-                          imgSrc={image?.[0] ?? ''}
-                          description={description}
-                          showDescription={showDescriptions}
-                          alignment={getDefaultAlignment(id)}
-                          isTraveller={getType(id) === 'travellers'}
-                        />
-                        {allowDuplicateCharacters && !cannotBeSelected && (
-                          <input
-                            className='w-full border'
-                            type='number'
-                            min={0}
-                            defaultValue={
-                              selectedCharacters.filter((c) => c === id).length
+                          onChange={(e) => {
+                            // Filter out all entries of the id and add back the desired amount
+                            const val = e.currentTarget.valueAsNumber;
+                            const newSelectedCharacters =
+                              selectedCharacters.filter(
+                                (characterId) => characterId !== id,
+                              );
+                            for (let i = 0; i < val; i++) {
+                              newSelectedCharacters.push(id);
                             }
-                            onChange={(e) => {
-                              // Filter out all entries of the id and add back the desired amount
-                              const val = e.currentTarget.valueAsNumber;
-                              const newSelectedCharacters =
-                                selectedCharacters.filter(
-                                  (characterId) => characterId !== id,
-                                );
-                              for (let i = 0; i < val; i++) {
-                                newSelectedCharacters.push(id);
-                              }
-                              onSelectedCharactersChange(newSelectedCharacters);
-                            }}
-                          />
-                        )}
-                      </div>
-                    ),
-                  )}
+                            onSelectedCharactersChange(newSelectedCharacters);
+                          }}
+                        />
+                      )}
+                    </div>
+                  ),
+                )}
               </div>
             </div>
             <div className='h-2' />

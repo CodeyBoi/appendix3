@@ -11,6 +11,10 @@ const Jinx = ({ first, second, description }: BotcCharacterPanelProps) => {
   const firstCharacter = CHARACTERS[first];
   const secondCharacter = CHARACTERS[second];
 
+  if (!firstCharacter || !secondCharacter) {
+    return null;
+  }
+
   const firstNameColor =
     getDefaultAlignment(first) === 'good' ? 'text-blue-700' : 'text-red-800';
   const secondNameColor =
@@ -30,20 +34,20 @@ const Jinx = ({ first, second, description }: BotcCharacterPanelProps) => {
           <img
             className={cn(
               'absolute left-0 top-0 h-6 w-6 scale-150',
-              firstCharacter.image?.[0].includes('Fall_of_Rome') &&
+              firstCharacter.image[0].includes('Fall_of_Rome') &&
                 'translate-y-1.5',
             )}
             loading='lazy'
-            src={firstCharacter.image?.[0]}
+            src={firstCharacter.image[0]}
           />
           <img
             className={cn(
               'absolute left-4 top-4 h-6 w-6 scale-150',
-              secondCharacter.image?.[0].includes('Fall_of_Rome') &&
+              secondCharacter.image[0].includes('Fall_of_Rome') &&
                 'translate-y-1.5',
             )}
             loading='lazy'
-            src={secondCharacter.image?.[0]}
+            src={secondCharacter.image[0]}
           />
         </div>
       </div>

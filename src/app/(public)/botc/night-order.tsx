@@ -5,6 +5,7 @@ import { CharacterId, CHARACTERS } from './characters';
 import Switch from 'components/input/switch';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import { cn } from 'utils/class-names';
+import { filterNone } from 'utils/array';
 
 interface NightOrderProps {
   players: BotcPlayer[];
@@ -13,9 +14,11 @@ interface NightOrderProps {
 }
 
 export const getNightOrder = (characterIds: CharacterId[]) => {
-  const characters = characterIds
-    .filter((id, i) => i === characterIds.indexOf(id))
-    .map((id) => CHARACTERS[id]);
+  const characters = filterNone(
+    characterIds
+      .filter((id, i) => i === characterIds.indexOf(id))
+      .map((id) => CHARACTERS[id]),
+  );
   return {
     firstNight: characters
       .flatMap((character) =>
