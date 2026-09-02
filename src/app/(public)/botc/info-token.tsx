@@ -108,7 +108,7 @@ const InfoToken = ({
               ))}
             {characterTokens.length === 1 &&
               firstCharacterToken &&
-              CHARACTERS[firstCharacterToken].description}
+              CHARACTERS[firstCharacterToken]?.description}
           </div>
         </>
       )}

@@ -59,14 +59,20 @@ const BotcCharacterPanel = ({
           </h5>
           <h6 className={cn('lg:hidden', nameClass, nameColor)}>{name}</h6>
           {jinxes.length > 0 && <div className='w-1' />}
-          {jinxes.map((jinx) => (
-            <img
-              key={`jinx-icon-${name}-${jinx}`}
-              className='h-6 w-6'
-              src={CHARACTERS[jinx].image?.[0]}
-              loading='lazy'
-            />
-          ))}
+          {jinxes.map((jinx) => {
+            const character = CHARACTERS[jinx];
+            if (!character) {
+              return null;
+            }
+            return (
+              <img
+                key={`jinx-icon-${name}-${jinx}`}
+                className='h-6 w-6'
+                src={character.image[0]}
+                loading='lazy'
+              />
+            );
+          })}
         </div>
         {showDescription && <p className='text-xs lg:text-sm'>{description}</p>}
       </div>

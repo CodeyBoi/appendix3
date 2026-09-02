@@ -68,7 +68,7 @@ const BotcActionsModal = ({
           : allCharacters.filter((id) => characterSet.has(id))
         ).flatMap(
           (id) =>
-            CHARACTERS[id].reminderTokens?.map((reminderText) => ({
+            CHARACTERS[id]?.reminderTokens?.map((reminderText) => ({
               characterId: id,
               message: reminderText,
             })) ?? [],
@@ -77,7 +77,7 @@ const BotcActionsModal = ({
         .concat(
           allCharacters.flatMap(
             (id) =>
-              CHARACTERS[id].reminderTokensGlobal?.map((reminderText) => ({
+              CHARACTERS[id]?.reminderTokensGlobal?.map((reminderText) => ({
                 characterId: id,
                 message: reminderText,
               })) ?? [],
@@ -149,7 +149,8 @@ const BotcActionsModal = ({
     <Modal
       title={
         selectMode === 'none'
-          ? character.name + (player.name ? ` (${player.name})` : '')
+          ? (character?.name ?? 'Unknown character') +
+            (player.name ? ` (${player.name})` : '')
           : selectMode === 'character'
           ? 'Replace Character Token'
           : selectMode === 'showToken'
@@ -173,7 +174,7 @@ const BotcActionsModal = ({
       hideBackground={selectMode === 'showToken'}
       bgColor={bgColor}
     >
-      {selectMode !== 'showToken' && character.description}
+      {selectMode !== 'showToken' && character?.description}
       {selectMode === 'none' && (
         <div className='flex flex-col gap-2'>
           <Button compact fullWidth onClick={killOrRevivePlayer}>
@@ -291,9 +292,9 @@ const BotcActionsModal = ({
             onClick={() => {
               if (
                 confirm(
-                  `Are you sure you want to remove ${character.name}${
-                    player.name ? ` (${player.name})` : ''
-                  }?`,
+                  `Are you sure you want to remove ${
+                    character?.name ?? 'the empty character token'
+                  }${player.name ? ` (${player.name})` : ''}?`,
                 )
               ) {
                 setPlayers(players.toSpliced(playerIndex, 1));

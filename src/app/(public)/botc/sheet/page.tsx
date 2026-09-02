@@ -25,6 +25,7 @@ import { cn } from 'utils/class-names';
 import Jinx from '../jinx';
 import { useState } from 'react';
 import Link from 'next/link';
+import { filterNone } from 'utils/array';
 
 interface BotcSheetPageProps {
   searchParams: BotcSheetPageSearchParams;
@@ -42,8 +43,11 @@ const getEdition = (searchParams: BotcSheetPageSearchParams) => {
     const editionCharacters = decodeURIComponent(characters).split(',');
     const edition = editionCharacters.reduce<Edition>(
       (acc, id) => {
-        const character = CHARACTERS[id as CharacterId];
-        acc[character.team].push(id as CharacterId);
+        const character = CHARACTERS[id];
+        if (!character) {
+          return acc;
+        }
+        acc[character.team].push(id);
         return acc;
       },
       {
@@ -126,42 +130,42 @@ const BotcSheetPage = ({ searchParams }: BotcSheetPageProps) => {
             {characterType}
           </summary>
           <div className='grid grid-cols-1 lg:grid-cols-2'>
-            {characters
-              .map((characterId) => CHARACTERS[characterId])
-              .map(({ id, name, description, image }) => {
-                return (
-                  <div
-                    key={id}
-                    className={cn(
-                      'border px-2 py-1 hover:cursor-pointer',
-                      subtleBorder,
-                      selected === id && 'bg-red-600/20',
+            {filterNone(
+              characters.map((characterId) => CHARACTERS[characterId]),
+            ).map(({ id, name, description, image }) => {
+              return (
+                <div
+                  key={id}
+                  className={cn(
+                    'border px-2 py-1 hover:cursor-pointer',
+                    subtleBorder,
+                    selected === id && 'bg-red-600/20',
+                  )}
+                  onClick={() => {
+                    if (selected === id) {
+                      setSelected(null);
+                    } else {
+                      setSelected(id);
+                    }
+                  }}
+                >
+                  <BotcCharacterPanel
+                    name={name}
+                    imgSrc={image[0]}
+                    imgLink={getWikiLink(id) ?? undefined}
+                    description={description}
+                    alignment={getDefaultAlignment(id)}
+                    showDescription
+                    jinxes={jinxes.flatMap((jinx) =>
+                      jinx[0].includes(id)
+                        ? jinx[0].filter((jinxId) => jinxId !== id)
+                        : [],
                     )}
-                    onClick={() => {
-                      if (selected === id) {
-                        setSelected(null);
-                      } else {
-                        setSelected(id);
-                      }
-                    }}
-                  >
-                    <BotcCharacterPanel
-                      name={name}
-                      imgSrc={image?.[0] ?? ''}
-                      imgLink={getWikiLink(id) ?? undefined}
-                      description={description}
-                      alignment={getDefaultAlignment(id)}
-                      showDescription
-                      jinxes={jinxes.flatMap((jinx) =>
-                        jinx[0].includes(id)
-                          ? jinx[0].filter((jinxId) => jinxId !== id)
-                          : [],
-                      )}
-                      isTraveller={getType(id) === 'travellers'}
-                    />
-                  </div>
-                );
-              })}
+                    isTraveller={getType(id) === 'travellers'}
+                  />
+                </div>
+              );
+            })}
           </div>
           {characterType === 'travellers' && (
             <div className='flex w-full justify-center'>
