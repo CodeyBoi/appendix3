@@ -3336,7 +3336,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'medaljeri',
-    description: `The Medaljeri points to a player. Mark that player with the 'Medal awarded' token. The marked player may use their ability tonight, even if dead or if it's an already used 'once per game' ability.`,
+    description: `The Medaljeri points to a player. Mark that player with the 'Medal awarded' token. The marked player may use their ability tonight, even if dead.`,
   },
   {
     id: 'materialforvaltare',
