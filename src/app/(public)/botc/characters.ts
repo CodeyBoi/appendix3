@@ -541,7 +541,7 @@ export const editionToJson = (edition: Edition, baseUrl: string) => {
     isOfficial: false,
   });
 
-  for (const character of getAllCharacters(edition)) {
+  for (const character of getAllCharacters(edition, true)) {
     data.push(characterToJson(character, baseUrl));
   }
 
@@ -1755,7 +1755,7 @@ const _characters = {
   provelev: {
     name: `Provelev`,
     description: `You start knowing 1 in-play Townsfolk. If you were mad that you were this character, you gain their ability when they die.`,
-    reminderTokens: ['Mad as'],
+    reminderTokens: ['Is the Provelev', 'Mad as'],
   },
   bar: {
     name: `Bar`,
@@ -1881,8 +1881,9 @@ const _characters = {
   piff: {
     name: 'Piff',
     description:
-      'Each night, choose a player. Townsfolk that have been chosen by you receive info an additional time which may be incorrect.',
+      'Each night, choose a player. Townsfolk that have been chosen by you receive info an additional time which might be incorrect.',
     reminderTokens: [
+      'Piffed',
       'Piffed',
       'Piffed',
       'Piffed',
@@ -1933,12 +1934,12 @@ const _characters = {
   lekstek: {
     name: 'Lek & Stek',
     description:
-      'Each day, you may publicly choose a sound. Tonight, that sound may be played.',
+      'Each day, you may publicly choose a sound. Tonight, that sound might be played.',
   },
   delilah: {
     name: 'Delilah',
     description:
-      'When a Townsfolk or Minion is about to die, you change to their alignment.',
+      'When a Townsfolk or Minion is about to die, you become their alignment.',
   },
 
   // Carousel - Townsfolk
@@ -2590,7 +2591,7 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'kuppbar',
-    description: `The Kuppbar points to a player. Mark that player with the 'Drunk' token: they are drunk.`,
+    description: `The Kuppbar points to a player. Mark that player with the 'Drunk' token: they are drunk, even if the Kuppbar is dead.`,
   },
   {
     id: 'balettledare',
@@ -3208,7 +3209,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'kuppbar',
-    description: `The Kuppbar points to a player. Move the 'Drunk' token to the chosen player. That player is drunk.`,
+    description: `The Kuppbar points to a player. Move the 'Drunk' token to the chosen player. That player is drunk, even if the Kuppbar is dead.`,
   },
   {
     id: 'kamerer',
