@@ -28,8 +28,6 @@ const BotcCharacterPanel = ({
       className={cn(
         'w-8 scale-150 lg:h-12 lg:w-12',
         imgSrc.includes('Fall_of_Rome') && 'translate-y-1.5',
-        imgSrc.includes('Muppets_on_a_Clocktower') && 'lg:scale-125',
-        imgSrc.includes('Murder_on_the_Dancefloor') && 'scale-105',
       )}
       loading='lazy'
       src={imgSrc}

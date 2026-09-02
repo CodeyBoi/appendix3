@@ -1,6 +1,11 @@
 'use client';
 
-import { IconQrcode, IconScript, IconTrash } from '@tabler/icons-react';
+import {
+  IconDownload,
+  IconQrcode,
+  IconScript,
+  IconTrash,
+} from '@tabler/icons-react';
 import Button from 'components/input/button';
 import Select from 'components/input/select';
 import { Metadata } from 'next';
@@ -379,6 +384,7 @@ const BloodOnTheClocktowerElement = ({
               window.URL.revokeObjectURL(url);
             }}
           >
+            <IconDownload />
             Download JSON
           </Button>
           <Button
