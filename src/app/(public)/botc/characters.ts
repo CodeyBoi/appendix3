@@ -510,7 +510,7 @@ const characterToJson = (characterId: CharacterId, baseUrl: string) => {
   return {
     id: character.id,
     name: character.name,
-    image: imgPath?.startsWith('/') ? `https://${baseUrl}${imgPath}` : imgPath,
+    image: imgPath?.startsWith('/') ? `${baseUrl}${imgPath}` : imgPath,
     ability: character.description,
     firstNight: character.nightReminders.first?.index,
     firstNightReminder: character.nightReminders.first?.text,
@@ -520,6 +520,7 @@ const characterToJson = (characterId: CharacterId, baseUrl: string) => {
     remindersGlobal: character.reminderTokensGlobal,
     setup: HAS_SETUP_REGEX.test(character.description) ? true : undefined,
     team: TEAM_MAP[character.team],
+    special,
   } as BotcCharacterJson;
 };
 
