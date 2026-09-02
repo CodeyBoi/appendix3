@@ -520,7 +520,7 @@ const characterToJson = (characterId: CharacterId, baseUrl: string) => {
     remindersGlobal: character.reminderTokensGlobal,
     setup: HAS_SETUP_REGEX.test(character.description) ? true : undefined,
     team: TEAM_MAP[character.team],
-    special,
+    special: special.length > 0 ? special : undefined,
   } as BotcCharacterJson;
 };
 
@@ -1924,11 +1924,7 @@ const _characters = {
     name: 'Gammal & Dryg',
     description:
       'You think you are a Townsfolk character, but you are not. Each night*, a player might die. If there are 5 or more players alive & the 1st Gammal & Dryg dies by execution, the nominator becomes an evil Gammal & Dryg.',
-    reminderTokensGlobal: [
-      'Killed by',
-      'Is Gammal & Dryg',
-      '1st Gammal & Dryg',
-    ],
+    reminderTokensGlobal: ['Is Gammal & Dryg', 'Is Gammal & Dryg', 'Killed by'],
     cannotBeSelected: true,
     disguisedAs: ['townsfolk'],
   },
