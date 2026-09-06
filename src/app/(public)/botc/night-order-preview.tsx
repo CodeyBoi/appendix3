@@ -5,11 +5,14 @@ import NightOrderEntry from './night-order-entry';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import {
   CharacterId,
+  CHARACTERS,
+  getTrueRole,
   getType,
   isDroisoned,
   isGlobalDroisoned,
 } from './characters';
 import { getNightOrder } from './night-order';
+import { filterNone } from 'utils/array';
 
 interface NightOrderPreviewProps {
   players: BotcPlayer[];
@@ -97,7 +100,14 @@ const NightOrderPreview = ({
 }: NightOrderPreviewProps) => {
   const isTeensyville = players.length < 7;
 
-  const characters = players.map((p) => p.characterId);
+  const characters = players.flatMap((p) => {
+    const res = [p.characterId];
+    const trueRole = getTrueRole(p);
+    if (trueRole) {
+      res.push(trueRole);
+    }
+    return res;
+  });
   const allNightOrders = useMemo(() => {
     const nightOrder = getNightOrder(characters);
     return {
@@ -168,14 +178,27 @@ const NightOrderPreview = ({
   const isGlobalDroison =
     reminder.entry.id && isGlobalDroisoned(getType(reminder.entry.id), players);
   const currentPlayers = players
-    .filter((player) => player.characterId === reminder.entry.id)
-    .map((player) => ({ name: player.name, isDroisoned: isDroisoned(player) }));
+    .filter(
+      (player) =>
+        player.characterId === reminder.entry.id ||
+        (reminder.entry.id !== undefined &&
+          getTrueRole(player) === reminder.entry.id),
+    )
+    .map((player) => ({
+      name: player.name,
+      isDroisoned: isDroisoned(player),
+      trueRole: getTrueRole(player),
+    }));
   const isAnyCurrentPlayerDroisoned =
     currentPlayers.find((player) => player.isDroisoned) !== undefined ||
     isGlobalDroison;
   const areAllCurrentPlayersDroisoned =
     currentPlayers.find((player) => !player.isDroisoned) === undefined ||
     isGlobalDroison;
+
+  const currentPlayerDisguises = filterNone(
+    currentPlayers.map((p) => p.trueRole),
+  ).filter((trueRole) => trueRole !== reminder.entry.id);
 
   return (
     <div className='flex gap-2'>
@@ -204,14 +227,23 @@ const NightOrderPreview = ({
             reminder.entry.name !== 'Minions' &&
             reminder.entry.name !== 'Daytime' &&
             players.find(
-              (p) => p.characterId === reminder.entry.id && p.isAlive,
+              (p) =>
+                (p.characterId === reminder.entry.id ||
+                  getTrueRole(p) === reminder.entry.id) &&
+                p.isAlive,
             ) === undefined
           }
           topRightText={`${formatCardinal(reminder.night)} ${
             reminder.entry.name === 'Daytime' ? 'day' : 'night'
           }`}
           warnings={
-            currentPlayers.length === 0
+            currentPlayerDisguises.length > 0
+              ? [
+                  `Is actually ${currentPlayerDisguises
+                    .map((characterId) => CHARACTERS[characterId]?.name)
+                    .join(', ')}`,
+                ]
+              : currentPlayers.length === 0
               ? []
               : currentPlayers.length === 1
               ? areAllCurrentPlayersDroisoned || isAnyCurrentPlayerDroisoned

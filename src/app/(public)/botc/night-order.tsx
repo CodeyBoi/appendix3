@@ -1,7 +1,7 @@
 import Select from 'components/input/select';
 import { useState } from 'react';
 import NightOrderEntry from './night-order-entry';
-import { CharacterId, CHARACTERS } from './characters';
+import { CharacterId, CHARACTERS, getTrueRole } from './characters';
 import Switch from 'components/input/switch';
 import { BotcPlayer } from './blood-on-the-clocktower-game';
 import { cn } from 'utils/class-names';
@@ -62,7 +62,14 @@ const NightOrder = ({
 
   const allNightOrders = getNightOrder(allCharacterIds);
 
-  const gameCharacters = players.map((p) => p.characterId);
+  const gameCharacters = players.flatMap((p) => {
+    const res = [p.characterId];
+    const trueRole = getTrueRole(p);
+    if (trueRole) {
+      res.push(trueRole);
+    }
+    return res;
+  });
   const deadCharacters = players
     .filter((p) => !p.isAlive)
     .map((p) => p.characterId);
@@ -121,7 +128,7 @@ const NightOrder = ({
           >
             <NightOrderEntry
               name={players
-                .filter((p) => p.characterId === id)
+                .filter((p) => p.characterId === id || getTrueRole(p) === id)
                 .filter((p) => p.name?.trim())
                 .map((p) => p.name)
                 .join(', ')}

@@ -1832,7 +1832,7 @@ const _characters: Record<
   },
   trivselombud: {
     name: `Trivselombud`,
-    description: `Each night, you learn all players which were chosen tonight by an evil player.`,
+    description: `Each night, you learn 1 player which was chosen tonight by an evil player.`,
     reminderTokens: [
       'Chosen by evil',
       'Chosen by evil',
@@ -1889,12 +1889,12 @@ const _characters: Record<
   // Murder on the Dancefloor - Outsiders
   kuppbar: {
     name: `Kuppbar`,
-    description: `Each night, choose an alive player (not yourself): if the last chosen player is a Townsfolk, they are drunk, even if you are dead.`,
+    description: `Each night, choose an alive player (not yourself): if the previously chosen player is a Townsfolk, they are drunk, even if you are dead.`,
     reminderTokens: ['Drunk'],
   },
   puff: {
     name: `Puff`,
-    description: `Each night, choose an alive player (not yourself): Piff learns who you chose and their character. If a good player is chosen twice by you, they die. [+Piff]`,
+    description: `Each night, choose an alive player (not yourself): Piff learns who you chose and their character. If a good player is chosen twice by you, that player dies. [+Piff]`,
     reminderTokens: [
       'Chosen',
       'Chosen',
@@ -1958,7 +1958,7 @@ const _characters: Record<
   spexare: {
     name: 'Spexare',
     description:
-      'Once per game, at night, choose two players: one of them becomes evil, the other is drunk.',
+      'Once per game, at night*, choose two players: one of them becomes evil, the other is drunk.',
     reminderTokens: ['Evil', 'Drunk', 'No ability'],
   },
 
@@ -1978,13 +1978,13 @@ const _characters: Record<
   sekreterare: {
     name: 'Sekreterare',
     description:
-      "Each night*, choose a player: they die. If you publicly guess all player's characters (once), your team wins. [+1 Outsider]",
+      "Each night*, choose a player: they die. Each day, if you publicly guess all players' characters, your team wins. [+1 Outsider]",
     reminderTokens: ['Killed by'],
   },
   gammaldryg: {
     name: 'Gammal & Dryg',
     description:
-      'You think you are a Townsfolk character, but you are not. Each night*, a player might die. If there are 5 or more players alive & the 1st Gammal & Dryg dies by execution, the nominator becomes an evil Gammal & Dryg.',
+      'You think you are a Townsfolk character, but you are not. Minions learn 3 bluffs. Each night*, a player might die. If there are 5 or more players alive & the 1st Gammal & Dryg dies by execution, the nominator becomes an evil Gammal & Dryg.',
     reminderTokensGlobal: ['Is Gammal & Dryg', 'Is Gammal & Dryg', 'Killed by'],
     disguisedAs: ['townsfolk'],
     special: [
@@ -2451,6 +2451,11 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
       "During Minion information, when showing the Demon point to the players who have the 'Is Hannibal' token next to their characters and show the Hannibal token. Show the other Minions as normal. Show the minions three not-in-play characters.",
   },
   {
+    id: 'gammaldryg',
+    description:
+      "During Minion information, when showing the Demon point to the player who has the 'Is Gammal & Dryg' token next to their character and show the Gammal & Dryg token. Show the other Minions as normal. Show the minions three not-in-play characters.",
+  },
+  {
     id: 'lordoftyphon',
     description:
       "Wake the players on either side of the Demon. Show them the 'You Are' card, the token of the Minion they now are, and a thumbs down to indicate they are evil.",
@@ -2491,13 +2496,9 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
     description: `The Notmarsk points to a player, and then shows a thumbs up to move the chosen player first in the night order, or a thumbs down to move them last. Mark that player with the 'First' or 'Last' reminder token. If 'First' is marked and they are supposed to wake tonight, wake them now. If 'Last' is marked and they are supposed to wake tonight, wake them after everyone else has woken.`,
   },
   {
-    id: 'spexare',
-    description: `The Spexare either shows a 'no' head signal, or points to two players. Put the Spexare to sleep. If they chose two players: Mark one of them with 'Evil'. Wake that player and inform them of their new alignment. Mark the other player with 'Drunk'; they are drunk. Mark the Spexare with the 'No ability' token.`,
-  },
-  {
     id: 'puff',
     description:
-      "Puff chooses a player: If the chosen player is good, mark that player with a 'Chosen' reminder token. Wake Piff, point to the chosen player and show their character token.",
+      "Puff chooses an alive player (not themselves): If the chosen player is good, mark that player with a 'Chosen' reminder token. Wake Piff, point to the chosen player and show their character token.",
   },
   {
     id: 'piff',
@@ -2657,7 +2658,7 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'kuppbar',
-    description: `The Kuppbar points to a player. Mark that player with the 'Drunk' token: they are drunk, even if the Kuppbar is dead.`,
+    description: `The Kuppbar points to an alive player (not themselves). Mark that player with the 'Drunk' token: they are drunk, even if the Kuppbar is dead.`,
   },
   {
     id: 'balettledare',
@@ -2693,7 +2694,7 @@ export const FIRST_NIGHT_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'trivselombud',
-    description: `(Whenever an evil player chooses a player, mark them with the 'Chosen by evil' token.)\n\nPoint to each of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
+    description: `(Whenever an evil player chooses a player, mark them with the 'Chosen by evil' token.)\n\nPoint to one of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
   },
   {
     id: 'pixie',
@@ -2905,7 +2906,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   {
     id: 'puff',
     description:
-      "Puff chooses a player: If the chosen player is good, mark that player with a 'Chosen' reminder token, or kill them if they are already marked. Wake Piff, point to the chosen player and show their character token.",
+      "Puff chooses an alive player (not themselves): If the chosen player is good, mark that player with a 'Chosen' reminder token, or kill them if they are already marked. Wake Piff, point to the chosen player and show their character token.",
   },
   {
     id: 'piff',
@@ -3275,11 +3276,11 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'kuppbar',
-    description: `The Kuppbar points to a player. Move the 'Drunk' token to the chosen player. That player is drunk, even if the Kuppbar is dead.`,
+    description: `The Kuppbar points to an alive player (not themselves). Move the 'Drunk' token to the chosen player. That player is drunk, even if the Kuppbar is dead.`,
   },
   {
     id: 'kamerer',
-    description: `If the Kamerer died today or tonight: they choose a player. If the chosen player is a Townsfolk, the chosen player becomes a not-in-play Outsider.`,
+    description: `If the Kamerer died today or tonight: they choose an alive player. If the chosen player is a Townsfolk, the chosen player becomes a not-in-play Outsider.`,
   },
   {
     id: 'balettledare',
@@ -3411,7 +3412,7 @@ export const OTHER_NIGHTS_TEXT: NightOrderAbility[] = [
   },
   {
     id: 'trivselombud',
-    description: `(Whenever an evil player chooses a player, mark them with the 'Chosen by evil' token.)\n\nPoint to each of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
+    description: `Point to one of the players marked with 'Chosen by evil'. Remove all 'Chosen by evil' tokens.`,
   },
   {
     id: 'bar',
@@ -3866,6 +3867,19 @@ export const START_OF_GAME_ABILITIES: Partial<
     return players;
   },
 
+  pixie: ({ players, playerId }) => {
+    const madTarget = players.chooseRandom({
+      characterType: 'townsfolk',
+      excludeId: playerId,
+    });
+    if (!madTarget) {
+      console.error('No Townsfolk player found when setting up Pixie.');
+      return players;
+    }
+    madTarget.reminders.push({ characterId: 'provelev', message: 'Mad as' });
+    return players;
+  },
+
   rowlfthedog: ({ players }) => {
     for (const player of players.chooseRandomMultiple(2, {
       characterTypes: ['outsiders', 'minions', 'demons'],
@@ -3898,6 +3912,19 @@ export const START_OF_GAME_ABILITIES: Partial<
         break;
       }
     }
+    return players;
+  },
+
+  provelev: ({ players, playerId }) => {
+    const madTarget = players.chooseRandom({
+      characterType: 'townsfolk',
+      excludeId: playerId,
+    });
+    if (!madTarget) {
+      console.error('No Townsfolk player found when setting up Provelev.');
+      return players;
+    }
+    madTarget.reminders.push({ characterId: 'provelev', message: 'Mad as' });
     return players;
   },
 };
@@ -3963,12 +3990,7 @@ export const getWikiLink = (id: CharacterId) => {
 
 const checkDroisoned = (reminder: Reminder) => {
   const text = reminder.message.toLowerCase();
-  return (
-    text.includes('drunk') ||
-    text.includes('poisoned') ||
-    text.includes('is human') ||
-    text.includes('gammal & dryg')
-  );
+  return text.includes('drunk') || text.includes('poisoned');
 };
 export const isDroisoned = (player: BotcPlayer) =>
   (player.reminders.find(checkDroisoned) ??
@@ -3992,6 +4014,23 @@ export const isGlobalDroisoned = (
     }) !== undefined
   );
 };
+
+export const getTrueRole = (player: BotcPlayer) =>
+  player.reminders.find((reminder) => {
+    if (!reminder.characterId) {
+      return false;
+    }
+    const reminderCharacter = CHARACTERS[reminder.characterId];
+    if (!reminderCharacter) {
+      return false;
+    }
+
+    return (
+      reminder.message === reminderCharacter.reminderTokensGlobal?.[0] &&
+      reminderCharacter.special?.find((rule) => rule.type === 'reveal') !==
+        undefined
+    );
+  })?.characterId ?? undefined;
 
 const JINXES: Partial<
   Record<CharacterId, Partial<Record<CharacterId, { description: string }>>>
