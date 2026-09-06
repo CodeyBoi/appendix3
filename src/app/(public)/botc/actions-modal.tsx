@@ -88,7 +88,7 @@ const BotcActionsModal = ({
           { characterId: 'evil', message: 'Is Evil' },
           { message: 'Custom reminder' },
         ]),
-    [showAllReminders, allCharacters.join('::')],
+    [showAllReminders, characters.join('::'), charactersNotInPlay.join('::')],
   );
 
   const killOrRevivePlayer = () => {
