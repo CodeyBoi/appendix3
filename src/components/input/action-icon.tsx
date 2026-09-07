@@ -30,6 +30,7 @@ const ActionIcon = ({
         'flex items-center justify-center rounded p-1',
         variants[variant],
         className,
+        props.disabled && 'pointer-events-none opacity-50 grayscale',
       )}
       onClick={onClick}
       {...props}

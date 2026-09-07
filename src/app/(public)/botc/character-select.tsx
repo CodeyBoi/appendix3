@@ -268,7 +268,7 @@ const selectRandom = (
           edition[characterType].filter(
             (characterId) =>
               !selectedSet.has(characterId) &&
-              !(CHARACTERS[characterId]?.cannotBeSelected ?? true),
+              !(CHARACTERS[characterId]?.cannotBeSelected ?? false),
           ),
         ) ?? [];
       const disguise = chooseRandom(validDisguises);

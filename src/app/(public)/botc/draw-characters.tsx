@@ -11,14 +11,12 @@ interface DrawCharactersProps {
   characters: CharacterId[];
   startGame: (players: BotcPlayer[]) => void;
   setModalBgColor: (color: ModalBackgroundColor) => void;
-  fixedCharacterOrder?: boolean;
 }
 
 const DrawCharacters = ({
   characters,
   startGame,
   setModalBgColor,
-  fixedCharacterOrder = false,
 }: DrawCharactersProps) => {
   const [characterIndex, setCharacterIndex] = useState<number | null>(null);
   const [players, setPlayers] = useState<BotcPlayer[]>([]);
@@ -43,7 +41,7 @@ const DrawCharacters = ({
             if (pickedNumbers.has(i)) {
               return;
             }
-            const selectedIndex = fixedCharacterOrder ? players.length : i;
+            const selectedIndex = players.length;
             const selectedCharacterId = characters[selectedIndex];
             setCharacterIndex(selectedIndex);
             setPickedNumbers(new Set(pickedNumbers).add(i));

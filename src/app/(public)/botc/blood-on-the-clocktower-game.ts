@@ -3,6 +3,7 @@ import {
   Alignment,
   CHARACTER_TYPES,
   CharacterId,
+  CHARACTERS,
   CharacterType,
   Edition,
   getDefaultAlignment,
@@ -10,6 +11,7 @@ import {
   Reminder,
   START_OF_GAME_ABILITIES,
 } from './characters';
+import { ClassProperties } from 'utils/types';
 
 export class BotcGame {
   edition: Edition;
@@ -26,20 +28,28 @@ export class BotcGame {
     this.demonBluffs = initial.demonBluffs ?? [];
   }
 
-  startGame({ players: playersArg }: { players: BotcPlayer[] }) {
+  startGame({
+    players: playersArg,
+    placeReminders = false,
+  }: {
+    players: BotcPlayer[];
+    placeReminders?: boolean;
+  }) {
     const scriptCharacters = this.scriptCharacters();
     let players = BotcPlayers.fromArray(playersArg.slice());
-    playersArg.forEach((player, i) => {
-      const startOfGameAbility = START_OF_GAME_ABILITIES[player.characterId];
-      if (startOfGameAbility) {
-        players = startOfGameAbility({
-          players,
-          playerId: player.id,
-          playerIndex: i,
-          scriptCharacters,
-        });
-      }
-    });
+    if (placeReminders) {
+      playersArg.forEach((player, i) => {
+        const startOfGameAbility = START_OF_GAME_ABILITIES[player.characterId];
+        if (startOfGameAbility) {
+          players = startOfGameAbility({
+            players,
+            playerId: player.id,
+            playerIndex: i,
+            scriptCharacters,
+          });
+        }
+      });
+    }
 
     this.players = players;
     this.demonBluffs = this.generateDemonBluffs();
@@ -116,6 +126,16 @@ const getNeighbours = (
   return { left, right };
 };
 
+const IS_THE_DRUNK_MESSAGE = CHARACTERS['drunk']?.reminderTokensGlobal?.[0];
+
+const checkDroisoned = (reminder: Reminder) => {
+  const text = reminder.message.toLowerCase();
+  return (
+    (text.includes('drunk') || text.includes('poisoned')) &&
+    reminder.message !== IS_THE_DRUNK_MESSAGE
+  );
+};
+
 export class BotcPlayer {
   name?: string;
   characterId: CharacterId;
@@ -125,8 +145,6 @@ export class BotcPlayer {
   reminders: Reminder[];
   automaticReminders: Reminder[];
   isAlive: boolean;
-  isDrunk: boolean;
-  isPoisoned: boolean;
   hasVoteToken: boolean;
 
   constructor({
@@ -148,13 +166,22 @@ export class BotcPlayer {
     this.automaticReminders = [];
     this.alignment = getDefaultAlignment(characterId);
     this.isAlive = true;
-    this.isDrunk = false;
-    this.isPoisoned = false;
     this.hasVoteToken = true;
   }
 
-  isAbilityActive() {
-    return !this.isDrunk && !this.isPoisoned;
+  static fromObject(data: ClassProperties<BotcPlayer>) {
+    const player = new BotcPlayer({
+      characterId: data.characterId,
+      id: data.id,
+      name: data.name,
+      corpsId: data.corpsId,
+    });
+    player.reminders = data.reminders.slice();
+    player.automaticReminders = data.automaticReminders.slice();
+    player.alignment = getDefaultAlignment(data.characterId);
+    player.isAlive = data.isAlive;
+    player.hasVoteToken = data.hasVoteToken;
+    return player;
   }
 
   type(): CharacterType {
@@ -166,26 +193,6 @@ export class BotcPlayer {
     filter: (p: BotcPlayer) => boolean = () => true,
   ) {
     return getNeighbours(players, this.id, filter);
-  }
-
-  addAutomaticReminders(game: BotcGame) {
-    if (!this.isAbilityActive()) {
-      return;
-    }
-    switch (this.characterId) {
-      case 'empath': {
-        const neighbours = this.getNeighbours(game.players, (p) => p.isAlive);
-        const numberOfEvilNeighbours =
-          (neighbours.left && neighbours.left.alignment === 'evil' ? 1 : 0) +
-          (neighbours.right && neighbours.right.alignment === 'evil' ? 1 : 0);
-        this.automaticReminders.push({
-          characterId: 'empath',
-          message: `${numberOfEvilNeighbours} evil neighbours`,
-        });
-
-        break;
-      }
-    }
   }
 
   isGood(): boolean {
@@ -260,6 +267,33 @@ export class BotcPlayer {
         return thisType === characterType;
       }
     }
+  }
+
+  isDroisoned() {
+    return (
+      (this.reminders.find(checkDroisoned) ??
+        this.automaticReminders.find(checkDroisoned)) !== undefined
+    );
+  }
+
+  getTrueRole() {
+    return (
+      this.reminders.find((reminder) => {
+        if (!reminder.characterId) {
+          return false;
+        }
+        const reminderCharacter = CHARACTERS[reminder.characterId];
+        if (!reminderCharacter) {
+          return false;
+        }
+
+        return (
+          reminder.message === reminderCharacter.reminderTokensGlobal?.[0] &&
+          reminderCharacter.special?.find((rule) => rule.type === 'reveal') !==
+            undefined
+        );
+      })?.characterId ?? undefined
+    );
   }
 }
 

@@ -92,7 +92,7 @@ const NightOrderEntry = ({
           )}
           <h4 className='hidden lg:block'>{nameElement}</h4>
           <h5 className='lg:hidden'>{nameElement}</h5>
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col'>
             {warnings.map((msg) => (
               <div
                 key={msg}

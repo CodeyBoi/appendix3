@@ -1832,7 +1832,7 @@ const _characters: Record<
   },
   trivselombud: {
     name: `Trivselombud`,
-    description: `Each night, you learn 1 player which was chosen tonight by an evil player.`,
+    description: `Each night, you learn 1 player who was chosen tonight by an evil player.`,
     reminderTokens: [
       'Chosen by evil',
       'Chosen by evil',
@@ -3988,14 +3988,6 @@ export const getWikiLink = (id: CharacterId) => {
       )}`;
 };
 
-const checkDroisoned = (reminder: Reminder) => {
-  const text = reminder.message.toLowerCase();
-  return text.includes('drunk') || text.includes('poisoned');
-};
-export const isDroisoned = (player: BotcPlayer) =>
-  (player.reminders.find(checkDroisoned) ??
-    player.automaticReminders.find(checkDroisoned)) !== undefined;
-
 export const isGlobalDroisoned = (
   characterType: CharacterType,
   players: BotcPlayer[],
@@ -4014,23 +4006,6 @@ export const isGlobalDroisoned = (
     }) !== undefined
   );
 };
-
-export const getTrueRole = (player: BotcPlayer) =>
-  player.reminders.find((reminder) => {
-    if (!reminder.characterId) {
-      return false;
-    }
-    const reminderCharacter = CHARACTERS[reminder.characterId];
-    if (!reminderCharacter) {
-      return false;
-    }
-
-    return (
-      reminder.message === reminderCharacter.reminderTokensGlobal?.[0] &&
-      reminderCharacter.special?.find((rule) => rule.type === 'reveal') !==
-        undefined
-    );
-  })?.characterId ?? undefined;
 
 const JINXES: Partial<
   Record<CharacterId, Partial<Record<CharacterId, { description: string }>>>
