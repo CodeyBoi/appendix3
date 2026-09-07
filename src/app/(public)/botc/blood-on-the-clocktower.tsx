@@ -29,7 +29,7 @@ import Tabs from 'components/input/tabs';
 import { useSearchParams } from 'next/navigation';
 import TextInput from 'components/input/text-input';
 import Modal, { ModalBackgroundColor } from 'components/modal';
-import { shuffle } from 'utils/array';
+import { zip } from 'utils/array';
 import DrawCharacters from './draw-characters';
 import { cn } from 'utils/class-names';
 import NightOrderPreview from './night-order-preview';
@@ -59,7 +59,7 @@ const CUSTOM_EDITION: Edition = {
   demons: [],
   travellers: [],
 };
-const newGameState = new BotcGame({ edition: TROUBLE_BREWING });
+const NEW_GAME_STATE = new BotcGame({ edition: TROUBLE_BREWING });
 
 const getCustomScripts = () => {
   return JSON.parse(
@@ -100,9 +100,12 @@ const BloodOnTheClocktowerElement = ({
       const savedState = new BotcGame(
         JSON.parse(savedStateString) as InstanceType<typeof BotcGame>,
       );
+      savedState.players = savedState.players.map((player) =>
+        BotcPlayer.fromObject(player),
+      );
       return savedState;
     } else {
-      return newGameState;
+      return NEW_GAME_STATE;
     }
   });
 
@@ -133,7 +136,7 @@ const BloodOnTheClocktowerElement = ({
     const timeout = setTimeout(() => {
       localStorage.setItem(BOTC_GAME_STATE_KEY, JSON.stringify(gameState));
       setSaveTimeout(null);
-    }, 250);
+    }, 1000);
     setSaveTimeout(timeout);
   }, [gameState]);
 
@@ -143,10 +146,17 @@ const BloodOnTheClocktowerElement = ({
     }
   }, []);
 
+  const [isDoneDrawingCharacters, setIsDoneDrawingCharacters] = useState(false);
   const startGame = (players: BotcPlayer[]) => {
-    gameState.startGame({ players });
+    gameState.players = zip(gameState.players, players).map(
+      ([player, playerName]) => {
+        player.name = playerName.name;
+        return player;
+      },
+    );
+    setIsDoneDrawingCharacters(true);
     setGameState(gameState);
-    setNightOrderIndex(0);
+    setNightOrderIndex(-1);
   };
 
   const searchParams = useSearchParams();
@@ -171,7 +181,6 @@ const BloodOnTheClocktowerElement = ({
   );
   const [actionsModalOpen, setActionsModalOpen] = useState(false);
   const [drawCharactersModalOpen, setDrawCharactersModalOpen] = useState(false);
-  const [isGardener, setIsGardener] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [drawCharactersBgColor, setDrawCharactersBgColor] =
     useState<ModalBackgroundColor>('red');
@@ -266,11 +275,10 @@ const BloodOnTheClocktowerElement = ({
         stayOpenOnBackgroundClicked
         open={drawCharactersModalOpen}
         onFocus={() => {
-          gameState.players = [];
-          setGameState(gameState);
+          setIsDoneDrawingCharacters(false);
         }}
         onBlur={() => {
-          if (gameState.players.length === selectedCharacters.length) {
+          if (isDoneDrawingCharacters) {
             const bluffs = gameState.generateDemonBluffs();
             gameState.demonBluffs = bluffs;
             setGameState(gameState);
@@ -293,7 +301,6 @@ const BloodOnTheClocktowerElement = ({
           characters={selectedCharacters}
           startGame={startGame}
           setModalBgColor={setDrawCharactersBgColor}
-          fixedCharacterOrder={isGardener}
         />
       </Modal>
       <div className='flex flex-col gap-2 lg:max-w-3xl'>
@@ -468,8 +475,12 @@ const BloodOnTheClocktowerElement = ({
                   }
                   onClick={() => {
                     gameState.assignCharacters(selectedCharacters);
+                    gameState.startGame({
+                      players: gameState.players,
+                      placeReminders: true,
+                    });
                     setGameState(gameState);
-                    setNightOrderIndex(0);
+                    setNightOrderIndex(-1);
                     setTab('grimoire');
                   }}
                 >
@@ -477,8 +488,16 @@ const BloodOnTheClocktowerElement = ({
                 </Button>
                 <Button
                   onClick={() => {
-                    setSelectedCharacters(shuffle(selectedCharacters.slice()));
-                    setIsGardener(false);
+                    gameState.assignCharacters(selectedCharacters);
+                    gameState.startGame({
+                      players: gameState.players,
+                      placeReminders: true,
+                    });
+                    setSelectedCharacters(
+                      gameState.players.map((player) => player.characterId),
+                    );
+                    setGameState(gameState);
+                    setNightOrderIndex(-1);
                     setDrawCharactersModalOpen(true);
                   }}
                   disabled={
@@ -517,7 +536,7 @@ const BloodOnTheClocktowerElement = ({
                 )
               ) {
                 setSelectedCharacters([]);
-                setGameState(newGameState);
+                setGameState(NEW_GAME_STATE);
               }
             }}
           >
@@ -562,7 +581,6 @@ const BloodOnTheClocktowerElement = ({
                   setSelectedCharacters(
                     gameState.players.map((player) => player.characterId),
                   );
-                  setIsGardener(true);
                   setDrawCharactersModalOpen(true);
                 }}
               >

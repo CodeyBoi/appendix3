@@ -6,9 +6,7 @@ import { BotcPlayer } from './blood-on-the-clocktower-game';
 import {
   CharacterId,
   CHARACTERS,
-  getTrueRole,
   getType,
-  isDroisoned,
   isGlobalDroisoned,
 } from './characters';
 import { getNightOrder } from './night-order';
@@ -102,7 +100,7 @@ const NightOrderPreview = ({
 
   const characters = players.flatMap((p) => {
     const res = [p.characterId];
-    const trueRole = getTrueRole(p);
+    const trueRole = p.getTrueRole();
     if (trueRole) {
       res.push(trueRole);
     }
@@ -138,6 +136,17 @@ const NightOrderPreview = ({
   );
 
   useEffect(() => {
+    if (nightOrderIndex === -1) {
+      setPreviousReminder(
+        getNightOrderEntry({
+          index: 0,
+          firstNight: allNightOrders.firstNight,
+          otherNights: allNightOrders.otherNights,
+        }),
+      );
+      setNightOrderIndex(0);
+      return;
+    }
     setPreviousReminder(
       getNightOrderEntry({
         index: nightOrderIndex,
@@ -148,7 +157,7 @@ const NightOrderPreview = ({
   }, [nightOrderIndex]);
 
   useEffect(() => {
-    if (nightOrderIndex === 0) {
+    if (nightOrderIndex === 0 || nightOrderIndex === -1) {
       return;
     }
     for (let i = 0; i < 516; i++) {
@@ -182,12 +191,12 @@ const NightOrderPreview = ({
       (player) =>
         player.characterId === reminder.entry.id ||
         (reminder.entry.id !== undefined &&
-          getTrueRole(player) === reminder.entry.id),
+          player.getTrueRole() === reminder.entry.id),
     )
     .map((player) => ({
       name: player.name,
-      isDroisoned: isDroisoned(player),
-      trueRole: getTrueRole(player),
+      isDroisoned: player.isDroisoned(),
+      trueRole: player.getTrueRole(),
     }));
   const isAnyCurrentPlayerDroisoned =
     currentPlayers.find((player) => player.isDroisoned) !== undefined ||
@@ -199,6 +208,33 @@ const NightOrderPreview = ({
   const currentPlayerDisguises = filterNone(
     currentPlayers.map((p) => p.trueRole),
   ).filter((trueRole) => trueRole !== reminder.entry.id);
+
+  const warnings = [];
+  if (currentPlayerDisguises.length > 0) {
+    warnings.push(
+      `Is actually ${currentPlayerDisguises
+        .map((characterId) =>
+          CHARACTERS[characterId]?.reminderTokensGlobal?.[0]?.startsWith('Is ')
+            ? CHARACTERS[characterId].reminderTokensGlobal[0]
+                .replace('Is', '')
+                .trim()
+            : CHARACTERS[characterId]?.name,
+        )
+        .join('/')}`,
+    );
+  }
+  if (
+    currentPlayers.length === 1 &&
+    (areAllCurrentPlayersDroisoned || isAnyCurrentPlayerDroisoned)
+  ) {
+    warnings.push('Drunk/Poisoned');
+  } else if (currentPlayers.length > 1) {
+    if (areAllCurrentPlayersDroisoned) {
+      warnings.push('These players are all drunk/poisoned');
+    } else if (isAnyCurrentPlayerDroisoned) {
+      warnings.push('Some of these players are drunk/poisoned');
+    }
+  }
 
   return (
     <div className='flex gap-2'>
@@ -229,32 +265,14 @@ const NightOrderPreview = ({
             players.find(
               (p) =>
                 (p.characterId === reminder.entry.id ||
-                  getTrueRole(p) === reminder.entry.id) &&
+                  p.getTrueRole() === reminder.entry.id) &&
                 p.isAlive,
             ) === undefined
           }
           topRightText={`${formatCardinal(reminder.night)} ${
             reminder.entry.name === 'Daytime' ? 'day' : 'night'
           }`}
-          warnings={
-            currentPlayerDisguises.length > 0
-              ? [
-                  `Is actually ${currentPlayerDisguises
-                    .map((characterId) => CHARACTERS[characterId]?.name)
-                    .join(', ')}`,
-                ]
-              : currentPlayers.length === 0
-              ? []
-              : currentPlayers.length === 1
-              ? areAllCurrentPlayersDroisoned || isAnyCurrentPlayerDroisoned
-                ? ['Drunk/Poisoned']
-                : []
-              : areAllCurrentPlayersDroisoned
-              ? ['These players are all drunk/poisoned']
-              : isAnyCurrentPlayerDroisoned
-              ? ['Some of these players are drunk/poisoned']
-              : []
-          }
+          warnings={warnings}
         />
       </div>
       <ActionIcon
