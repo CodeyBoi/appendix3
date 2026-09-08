@@ -112,7 +112,7 @@ const Statistics = async ({
             />
           }
         >
-          <div className='overflow-x-auto overflow-y-hidden'>
+          <div className='overflow-x-auto overflow-y-hidden pb-72'>
             <FetchStatisticsTable start={start} end={end} />
           </div>
         </Suspense>
