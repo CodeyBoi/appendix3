@@ -74,6 +74,51 @@ const genOtherInstrumentsString = (
   }`;
 };
 
+const findFactor = (n: number) => {
+  if (n % 2 === 0) {
+    return 2;
+  }
+  const squareRoot = Math.sqrt(n);
+  for (let i = 3; i <= squareRoot; i += 2) {
+    if (n % i === 0) {
+      return i;
+    }
+  }
+  return n;
+};
+
+const getPrimeFactors = (n: number) => {
+  let value = n;
+  const factors = [];
+  for (;;) {
+    const factor = findFactor(value);
+    if (factor < value) {
+      factors.push(factor);
+      value /= factor;
+    } else {
+      factors.push(value);
+      break;
+    }
+  }
+  return factors;
+};
+
+const getPrimeFactorsMessage = (n: number, language: Language = 'sv') => {
+  const factors = getPrimeFactors(n);
+
+  if (factors.length === 1) {
+    return language === 'sv' ? 'Är prima!' : 'Is prime!';
+  }
+
+  return language === 'sv'
+    ? `Kan primtalsfaktoriseras till ${factors
+        .slice(0, factors.length - 1)
+        .join(', ')} och ${factors[factors.length - 1]}.`
+    : `Their prime factors are ${factors
+        .slice(0, factors.length - 1)
+        .join(', ')} and ${factors[factors.length - 1]}.`;
+};
+
 // A list of "instruments" which should have the prefix "är"
 const BEING_PREFIXES = ['dirigent', 'balett', 'slagverksfröken'];
 
@@ -239,6 +284,11 @@ const CorpsInfobox = ({
       : `Last seen ${dateFormatter.format(lastSeenAt)}.`
     : undefined;
 
+  const primeFactorsMsg =
+    corps.number !== null
+      ? getPrimeFactorsMessage(corps.number, language)
+      : undefined;
+
   const changeNicknameMsg =
     language === 'sv'
       ? 'Detta smeknamnet kommer att visas för alla på Blindtarmen och det kommer synas att det är du som ändrat det.\n\nLovar du att det är rimligt och inte kränkande?'
@@ -347,6 +397,7 @@ const CorpsInfobox = ({
         {summary.gigsAttended.total >= 3 && summary.rehearsalsAttended >= 3 && (
           <> {courageMessage}</>
         )}
+        {primeFactorsMsg && <> {primeFactorsMsg}</>}
         {allTimeStreak.maxStreak >= 3 && (
           <>
             {' '}
