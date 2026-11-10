@@ -65,7 +65,7 @@ const userTab: NavbarLinkGroup = {
     },
     { label: lang('Sånger', 'Songs'), href: '/songs', icon: <IconMusic /> },
     {
-      label: 'Tarmenbokningar',
+      label: lang('Tarmenkalendern', 'The Tarmen Calendar'),
       href: '/bookings',
       icon: <IconCalendarEvent />,
     },

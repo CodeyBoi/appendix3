@@ -13,9 +13,13 @@ import { useSearchParamsState } from 'hooks/use-search-params-state';
 import { cn } from 'utils/class-names';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+import Restricted from 'components/restricted/client';
+import Modal from 'components/modal';
+import BookingForm from 'app/(authenticated)/bookings/form';
+import { lang } from 'utils/language';
 dayjs.extend(weekOfYear);
 
-const startYear = 2023;
+const startYear = 2026;
 const endYear = new Date().getFullYear() + 2;
 const years = Array.from({ length: endYear - startYear }, (_, i) => ({
   label: (startYear + i).toString(),
@@ -27,11 +31,7 @@ const weeks = Array.from({ length: 52 }, (_, i) => ({
   value: (i + 1).toString(),
 }));
 
-type CalendarControlProps = {
-  isAdmin: boolean;
-};
-
-const CalendarControl = ({ isAdmin }: CalendarControlProps) => {
+const CalendarControl = () => {
   const [week, setWeek] = useSearchParamsState(
     'week',
     dayjs().week().toString(),
@@ -44,16 +44,23 @@ const CalendarControl = ({ isAdmin }: CalendarControlProps) => {
   return (
     <div className='flex items-center justify-between gap-2 p-2'>
       <div className='flex gap-2'>
-        <Button href='/bookings/new'>
-          <IconPlus />
-          Ny bokning
-        </Button>
-        {isAdmin && (
+        <Modal
+          title={lang('Ny bokning', 'New booking')}
+          target={
+            <Button>
+              <IconPlus />
+              {lang('Skapa bokningsförfrågan', 'Create booking request')}
+            </Button>
+          }
+        >
+          <BookingForm />
+        </Modal>
+        <Restricted permissions={'manageBookings'}>
           <Button href='/admin/bookings'>
             <IconPencil />
             Godkänn bokningar
           </Button>
-        )}
+        </Restricted>
       </div>
       <div className='flex gap-2'>
         <ActionIcon
@@ -88,7 +95,7 @@ const CalendarControl = ({ isAdmin }: CalendarControlProps) => {
           variant='subtle'
           onClick={() => {
             if (week === '52') {
-              setYear((year + 1).toString());
+              setYear((+year + 1).toString());
             }
             setWeek(((+week + 1) % 52).toString());
           }}

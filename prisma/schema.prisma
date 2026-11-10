@@ -103,7 +103,8 @@ model Corps {
   botcSessions       BotcSession[]
   botcProfiles       BotcPlayer[]
   scoundrelScores    ScoundrelScore[]
-  bookings           Booking[]
+  createdBookings    Booking[]           @relation("CreatedBookings")
+  approvedBookings   Booking[]           @relation("ApprovedBookings")
 }
 
 model Role {
@@ -426,15 +427,18 @@ model ScoundrelScore {
 }
 
 model Booking {
-  id               String   @id @default(cuid())
-  title            String
-  description      String   @default("") @db.Text
-  start            DateTime
-  end              DateTime
-  approved         Boolean  @default(false)
-  createdByCorpsId String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                String    @id @default(cuid())
+  title             String
+  description       String    @default("") @db.Text
+  start             DateTime
+  end               DateTime
+  approved          Boolean?
+  createdByCorpsId  String
+  approvedByCorpsId String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  approvedAt        DateTime?
 
-  createdBy Corps @relation(fields: [createdByCorpsId], references: [id], onDelete: Cascade)
+  createdBy  Corps  @relation("CreatedBookings", fields: [createdByCorpsId], references: [id], onDelete: Cascade)
+  approvedBy Corps? @relation("ApprovedBookings", fields: [approvedByCorpsId], references: [id], onDelete: Cascade)
 }

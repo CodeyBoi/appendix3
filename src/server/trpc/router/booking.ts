@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { router, protectedProcedure, adminProcedure } from '../trpc';
+import { router, protectedProcedure, restrictedProcedure } from '../trpc';
 
 export const bookingRouter = router({
   get: protectedProcedure
@@ -19,7 +19,7 @@ export const bookingRouter = router({
       z.object({
         start: z.date().optional(),
         end: z.date().optional(),
-        approved: z.boolean().optional(),
+        approved: z.boolean().optional().nullable(),
       }),
     )
     .query(({ ctx, input }) => {
@@ -50,7 +50,6 @@ export const bookingRouter = router({
     )
     .mutation(({ ctx, input }) => {
       const { id = '', ...inputData } = input;
-      const isAdmin = ctx.session.user.corps.role?.name === 'admin';
       const data = {
         ...inputData,
         description: inputData.description || '',
@@ -59,7 +58,6 @@ export const bookingRouter = router({
             id: ctx.session.user.corps.id,
           },
         },
-        approved: isAdmin,
       };
       const res = ctx.prisma.booking.upsert({
         where: { id },
@@ -69,7 +67,7 @@ export const bookingRouter = router({
       return res;
     }),
 
-  delete: adminProcedure
+  delete: restrictedProcedure('manageBookings')
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
       const { id } = input;
@@ -79,14 +77,32 @@ export const bookingRouter = router({
       return res;
     }),
 
-  approve: adminProcedure
-    .input(z.object({ id: z.string(), approved: z.boolean().optional() }))
+  approve: restrictedProcedure('manageBookings')
+    .input(
+      z.object({ id: z.string(), approved: z.boolean().optional().nullable() }),
+    )
     .mutation(({ ctx, input }) => {
-      const { id, approved = true } = input;
+      const { id, approved } = input;
+      const corpsId = ctx.session.user.corps.id;
       const res = ctx.prisma.booking.update({
         where: { id },
-        data: { approved },
+        data: {
+          approved,
+          approvedBy: {
+            connect: {
+              id: corpsId,
+            },
+          },
+          approvedAt: new Date(),
+        },
       });
       return res;
     }),
+
+  getUnprocessed: restrictedProcedure('manageBookings').mutation(({ ctx }) => {
+    const res = ctx.prisma.booking.findMany({
+      where: { approved: null },
+    });
+    return res;
+  }),
 });

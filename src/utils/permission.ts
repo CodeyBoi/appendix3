@@ -15,6 +15,7 @@ export const ALL_PERMISSIONS = [
   'manageStreck',
   'viewStreck',
   'viewAttendance',
+  'manageBookings',
 ] as const;
 export type Permission = (typeof ALL_PERMISSIONS)[number];
 
