@@ -22,6 +22,7 @@ const SongsLayout = () => {
               label={lang('Sök...', 'Search...')}
               icon={<IconSearch />}
               paramName='search'
+              shallowRefresh
             />
           </div>
           <Tooltip position='bottom' text={lang('Skapa sång', 'Create song')}>
