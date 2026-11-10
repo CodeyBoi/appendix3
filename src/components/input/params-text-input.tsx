@@ -5,16 +5,19 @@ import TextInput, { TextInputProps } from './text-input';
 
 type ParamsTextInputProps = TextInputProps & {
   paramName: string;
+  shallowRefresh?: boolean;
 };
 
 const ParamsTextInput = ({
   paramName,
   defaultValue,
+  shallowRefresh = false,
   ...props
 }: ParamsTextInputProps) => {
   const [value, setValue] = useSearchParamsState(
     paramName,
     defaultValue?.toString(),
+    shallowRefresh,
   );
   return (
     <TextInput

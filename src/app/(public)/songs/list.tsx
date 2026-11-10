@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useEffect, useMemo } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SongListEntry from './entry';
 import { api } from 'trpc/react';
@@ -15,7 +15,6 @@ export interface Song {
 }
 
 interface SongListProps {
-  songs: Song[];
   pinnedSongs: Song[];
 }
 
@@ -70,22 +69,24 @@ const genSongList = (songs: ReturnType<typeof filterSongs>) => {
   });
 };
 
-const SongList = ({ songs, pinnedSongs: pinnedSongsProp }: SongListProps) => {
+const SongList = ({ pinnedSongs: pinnedSongsProp }: SongListProps) => {
   const router = useRouter();
 
   const { data: pinnedSongs, refetch: refetchPinnedSongs } =
     api.song.getPinned.useQuery(undefined, { initialData: pinnedSongsProp });
 
+  const { data: allSongs } = api.song.getAll.useQuery();
+
   useEffect(() => {
     for (const song of pinnedSongs) {
       router.prefetch(`/songs/${song.id}`);
     }
-  }, [pinnedSongs]);
+  }, [pinnedSongs.map((song) => song.id).join(':')]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       void refetchPinnedSongs();
-    }, 500);
+    }, 3000);
     return () => {
       clearInterval(interval);
     };
@@ -93,10 +94,6 @@ const SongList = ({ songs, pinnedSongs: pinnedSongsProp }: SongListProps) => {
 
   const searchParams = useSearchParams();
   const search = searchParams?.get('search') ?? '';
-  const songList = useMemo(
-    () => genSongList(filterSongs(songs, search)),
-    [songs, search],
-  );
   return (
     <div className='flex flex-col divide-y divide-solid text-base dark:divide-neutral-700'>
       {pinnedSongs.length > 0 && (
@@ -109,7 +106,9 @@ const SongList = ({ songs, pinnedSongs: pinnedSongsProp }: SongListProps) => {
           ))}
         </>
       )}
-      {songList}
+      {allSongs &&
+        allSongs.length > 0 &&
+        genSongList(filterSongs(allSongs, search))}
     </div>
   );
 };
