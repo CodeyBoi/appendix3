@@ -23,7 +23,7 @@ import { IconQrcode } from '@tabler/icons-react';
 import { CharacterCountTable } from '../character-select';
 import { cn } from 'utils/class-names';
 import Jinx from '../jinx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { filterNone } from 'utils/array';
 
@@ -82,6 +82,7 @@ const getEdition = (searchParams: BotcSheetPageSearchParams) => {
 
 const BotcSheetPage = ({ searchParams }: BotcSheetPageProps) => {
   const [selected, setSelected] = useState<CharacterId | null>(null);
+  const [qrUrl, setQrUrl] = useState(window.location.toString());
 
   const edition = getEdition(searchParams);
   if (!edition) {
@@ -93,7 +94,9 @@ const BotcSheetPage = ({ searchParams }: BotcSheetPageProps) => {
     );
   }
 
-  const qrUrl = window.location.toString();
+  useEffect(() => {
+    setQrUrl(window.location.toString());
+  }, [window.location, setQrUrl]);
 
   const toCharacterGroup = (characterType: CharacterType) => {
     const characters = edition[characterType];
